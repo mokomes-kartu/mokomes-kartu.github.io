@@ -2,40 +2,326 @@
 <html lang="lt">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="/netaisyklingieji/icon-192.png">
+<meta name="theme-color" content="#f5f9ff">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 <title>MokomėsKartu.lt</title>
-<meta name="description" content="Žaidimai ir priemonės mokytis kartu">
-<link rel="icon" href="/netaisyklingieji/icon-192.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Grandstander:wght@800&family=Nunito:wght@500;800&display=swap">
+<meta name="description" content="Mokomieji žaidimai 1–12 klasių mokiniams">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Grandstander:wght@800&family=Manrope:wght@500;700;800&family=Unbounded:wght@600;800&display=swap">
 <style>
-:root{--bg:#f6faff;--grid:#d3e2f4;--ink:#1b2a4e;--soft:#5b6a8f;--card:#fff;--pen:#d11f3a;--mark:#ffe14d;--mink:#1b2a4e;color-scheme:light}
-@media(prefers-color-scheme:dark){:root{--bg:#0e1630;--grid:#1b2850;--ink:#eef2ff;--soft:#a5b3d8;--card:#16214a;--pen:#ff6b80;--mark:#ffd94a;--mink:#14203f;color-scheme:dark}}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;color:var(--ink);font:17px/1.5 Nunito,system-ui,sans-serif}
-main{max-width:720px;margin:0 auto;padding:48px max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left))}
-h1{font:800 clamp(40px,11vw,76px)/1 Grandstander,"Comic Sans MS",sans-serif;margin:0}
-h1 b{background:var(--mark);color:var(--mink);border-radius:.12em;padding:0 .12em;display:inline-block;transform:rotate(-2deg)}
-h1 small{font:700 .55em Caveat,cursive;color:var(--pen)}
-p.lead{max-width:34ch;margin:16px 0 34px}
-a.card{display:flex;align-items:center;gap:16px;padding:16px;background:var(--card);color:inherit;text-decoration:none;border:2px solid var(--ink);border-radius:8px;box-shadow:5px 5px 0 var(--ink);transition:transform .1s,box-shadow .1s}
-a.card:hover,a.card:focus-visible{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink)}
-a.card img{width:64px;height:64px;border-radius:14px;flex:none}
-.t{font:800 24px/1.1 Grandstander,sans-serif}
-.s{color:var(--soft);font-size:15px}
-.go{margin-left:auto;font:700 28px Caveat,cursive;color:var(--pen);white-space:nowrap}
-footer{margin-top:40px;color:var(--soft);font-size:13px}
+/* Layout: math-notebook page with drifting pen formulas behind; home = three tier rows of four class tiles; class view re-skins by age tier (1–4 playful, 5–8 notebook, 9–12 sleek dark) */
+:root{
+  --paper:#f5f9ff; --grid:#d6e4f6; --grid-strong:#b9cfee;
+  --ink:#121a33; --ink-soft:#56627f; --card:#ffffff; --line:#121a33;
+  --pen:#e5243b; --hl:#ffdf3d;
+  --c1:#ff4f5e; --c2:#ff8a1f; --c3:#ffc61a; --c4:#7bd13a; --c5:#12b886; --c6:#13a8d6;
+  --c7:#2f6bff; --c8:#6b4dff; --c9:#a43dff; --c10:#ff3d9a; --c11:#ff5c39; --c12:#00c2a8;
+  --dark-tile:#141c38; --dark-tile-ink:#eef2ff;
+  --f-display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --f-kid:"Grandstander","Chalkboard SE","Comic Sans MS",system-ui,sans-serif;
+  --f-body:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-pen:"Caveat","Segoe Print","Bradley Hand",cursive;
+  color-scheme:light;
+}
+/* The site deliberately keeps one light look, also when the device is in dark mode. */
+*,*::before,*::after{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;background-position:-1px -1px;
+  color:var(--ink);font:16px/1.5 var(--f-body);
+  -webkit-tap-highlight-color:transparent;
+}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--c7);outline-offset:3px}
+
+/* drifting formulas */
+.doodles{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.doodles span{position:absolute;font-family:var(--f-pen);font-weight:700;white-space:nowrap;opacity:.22;animation:drift var(--d,18s) ease-in-out infinite alternate}
+@keyframes drift{from{transform:translateY(0) rotate(var(--r,0deg))}to{transform:translateY(-18px) rotate(calc(var(--r,0deg) + 4deg))}}
+
+.wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 48px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{display:inline-flex;align-items:baseline;gap:1px;text-decoration:none;font:800 20px/1 var(--f-display);letter-spacing:-.02em;color:var(--ink);background:none;border:0;padding:6px 0;cursor:pointer}
+.logo b{background:var(--hl);color:#121a33;padding:2px 6px 3px;border-radius:6px;transform:rotate(-3deg);display:inline-block;margin-left:2px}
+.logo i{font:700 22px var(--f-pen);font-style:normal;color:var(--pen);margin-left:2px}
+
+/* HOME */
+.hero{display:grid;gap:10px;padding:34px 0 26px}
+.eyebrow{margin:0;font:800 12px/1.2 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+h1{margin:0;font:800 clamp(38px,8.6vw,92px)/.98 var(--f-display);letter-spacing:-.035em;text-wrap:balance}
+h1 .u{position:relative;display:inline-block}
+h1 .u svg{position:absolute;left:-2%;right:-2%;bottom:-.16em;width:104%;height:.32em;overflow:visible}
+h1 .u path{fill:none;stroke:var(--pen);stroke-width:5;stroke-linecap:round}
+.lead{margin:6px 0 0;max-width:40ch;font-size:clamp(16px,2.2vw,19px);color:var(--ink-soft)}
+
+.pick-title{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:8px 0 14px}
+.pick-title h2{margin:0;font:800 clamp(22px,3.4vw,30px)/1.1 var(--f-display);letter-spacing:-.02em}
+.pick-title .note{font:700 26px/1 var(--f-pen);color:var(--pen);transform:rotate(-3deg)}
+
+.tiers{display:grid;gap:18px;max-width:860px}
+.tier{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:center}
+.tier-label{display:grid;gap:2px}
+.tier-label strong{font:800 15px/1.2 var(--f-display);letter-spacing:-.01em}
+.tier-label span{font-size:13px;color:var(--ink-soft)}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:720px){
+  .tier{grid-template-columns:1fr;gap:8px}
+  .tier-label{grid-auto-flow:column;justify-content:start;align-items:baseline;gap:8px}
+  .tiles{gap:9px}
+}
+.tile{position:relative;display:grid;place-items:center;aspect-ratio:1/1;max-width:100%;border:0;cursor:pointer;text-decoration:none;
+  background:var(--tc);color:var(--tink);transition:transform .14s ease,box-shadow .14s ease}
+.tile .n{font:800 clamp(34px,7vw,64px)/1 var(--f-display);letter-spacing:-.04em}
+.tile .k{position:absolute;left:0;right:0;bottom:9%;text-align:center;font:800 clamp(10px,1.3vw,13px)/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+.tile .mine{position:absolute;top:6px;right:8px;font:700 18px/1 var(--f-pen);opacity:0}
+.tile[aria-current="true"] .mine{opacity:1}
+/* tier A: bubbly */
+.tA .tile{border-radius:32% 26% 30% 24%/26% 30% 26% 32%;box-shadow:0 6px 0 rgba(18,26,51,.25)}
+.tA .tile .n{font-family:var(--f-kid);font-size:clamp(40px,8vw,74px)}
+.tA .tile:hover{transform:translateY(-4px) rotate(-3deg)}
+.tA .tile:active{transform:translateY(2px)}
+/* tier B: notebook card */
+.tB .tile{border-radius:10px;border:2.5px solid #121a33;box-shadow:5px 5px 0 #121a33}
+.tB .tile:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 #121a33}
+.tB .tile:active{transform:translate(3px,3px);box-shadow:2px 2px 0 #121a33}
+/* tier C: sleek dark */
+.tC .tile{background:var(--dark-tile);color:var(--tc);border-radius:16px;border:1.5px solid color-mix(in srgb,var(--tc) 55%,transparent);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),0 10px 24px -14px var(--tc)}
+.tC .tile .n{font-weight:600;letter-spacing:-.05em}
+.tC .tile .k{color:var(--dark-tile-ink);opacity:.7}
+.tC .tile:hover{transform:translateY(-3px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 16px 30px -12px var(--tc)}
+
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:40px}
+@media (max-width:720px){.how{grid-template-columns:1fr}}
+.how div{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:14px 16px}
+.how b{display:block;font:800 15px/1.2 var(--f-display);margin-bottom:4px}
+.how p{margin:0;color:var(--ink-soft);font-size:14.5px}
+.how .num{font:700 30px/1 var(--f-pen);color:var(--pen)}
+
+/* CLASS VIEW */
+.cls-head{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center;padding:28px 0 22px}
+.badge{display:grid;place-items:center;width:clamp(86px,16vw,128px);aspect-ratio:1/1;background:var(--tc);color:var(--tink);
+  font:800 clamp(44px,9vw,74px)/1 var(--f-display);letter-spacing:-.05em}
+.cls-head h1{font-size:clamp(32px,6.4vw,64px)}
+.cls-head p{margin:6px 0 0;color:var(--ink-soft)}
+.back{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:8px 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);font-weight:800;font-size:14px;cursor:pointer}
+.sec-title{margin:22px 0 12px;font:800 13px/1.2 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:16px}
+.game{display:grid;grid-template-columns:76px minmax(0,1fr);gap:14px;align-items:center;padding:16px;background:var(--card);border:2.5px solid var(--line);text-decoration:none;color:inherit}
+.game img{width:76px;height:76px;border-radius:16px;display:block}
+.game .subj{font:800 12px/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--tcText)}
+.game h3{margin:2px 0 4px;font:800 21px/1.15 var(--f-display);letter-spacing:-.02em}
+.game p{margin:0;color:var(--ink-soft);font-size:14.5px;line-height:1.4}
+.game .play{grid-column:1/-1;justify-self:start;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:var(--tc);color:var(--tink);font-weight:800}
+.soon{display:flex;flex-wrap:wrap;gap:10px;list-style:none;margin:0;padding:0}
+.soon li{display:inline-flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;background:var(--card);border:1.5px dashed var(--grid-strong);font-weight:700;font-size:15px;color:var(--ink-soft)}
+.soon .sym{display:grid;place-items:center;min-width:46px;height:34px;padding:0 8px;background:var(--paper);border:1.5px solid var(--grid-strong);font:700 20px/1 var(--f-pen);color:var(--ink)}
+.empty-note{margin:0;padding:18px;background:var(--card);border:2px dashed var(--grid-strong);color:var(--ink-soft)}
+
+/* tier skins for the class view */
+body[data-tier="A"]{--paper:#fff9e6;--grid:#f6e7b6;--grid-strong:#e9d28a;--ink:#121a33;--ink-soft:#5f5a45;--card:#ffffff;--line:#121a33;--pen:#e5243b;color-scheme:light}
+body[data-tier="A"] .badge{border-radius:34% 28% 32% 26%/28% 32% 28% 34%;font-family:var(--f-kid);box-shadow:0 7px 0 rgba(18,26,51,.25)}
+body[data-tier="A"] .cls-head h1,body[data-tier="A"] .game h3{font-family:var(--f-kid);letter-spacing:0}
+body[data-tier="A"] .game{border-radius:26px;box-shadow:0 7px 0 rgba(18,26,51,.2);border-color:transparent}
+body[data-tier="A"] .game .play{border-radius:999px;font-family:var(--f-kid);font-size:18px}
+body[data-tier="A"] .soon li{border-radius:999px}
+body[data-tier="A"] .soon .sym{border-radius:999px}
+body[data-tier="B"] .badge{border-radius:12px;border:3px solid #121a33;box-shadow:6px 6px 0 #121a33}
+body[data-tier="B"] .game{border-radius:10px;box-shadow:6px 6px 0 var(--line)}
+body[data-tier="B"] .game .play{border-radius:10px;border:2px solid #121a33;box-shadow:3px 3px 0 #121a33}
+body[data-tier="B"] .soon li,body[data-tier="B"] .soon .sym{border-radius:8px}
+body[data-tier="C"]{--paper:#f6f7fb;--grid:#e7eaf3;--grid-strong:#d3d9e8;--ink:#0d1222;--ink-soft:#586178;--card:#ffffff;--line:#0d1222}
+body[data-tier="C"] .badge{border-radius:20px;background:var(--dark-tile);color:var(--tc);font-weight:600;box-shadow:0 16px 34px -18px var(--tc)}
+body[data-tier="C"] .cls-head h1{font-weight:600;letter-spacing:-.045em}
+body[data-tier="C"] .game{border-radius:18px;border-width:1.5px;box-shadow:0 22px 40px -30px var(--tc)}
+body[data-tier="C"] .game .play{border-radius:12px;background:var(--dark-tile);color:var(--dark-tile-ink)}
+body[data-tier="C"] .soon li,body[data-tier="C"] .soon .sym{border-radius:12px;border-style:solid}
+body[data-tier="C"] .doodles span{opacity:.12}
+
+footer{margin-top:44px;padding-top:16px;border-top:2px solid var(--grid-strong);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--ink-soft);font-size:13.5px}
+footer .sig{font:700 22px/1 var(--f-pen);color:var(--pen)}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
 </style>
 </head>
 <body>
-<main>
-<h1>Mokomės<b>Kartu</b><small>.lt</small></h1>
-<p class="lead">Žaidimai ir priemonės, su kuriomis mokytis smagiau.</p>
-<a class="card" href="/netaisyklingieji/">
-<img src="/netaisyklingieji/icon-192.png" alt="">
-<span><span class="t">Netaisyklingieji</span><br><span class="s">Anglų kalbos netaisyklingieji veiksmažodžiai: paveikslėliai, tarimas ir pažymiai</span></span>
-<span class="go">Žaisti →</span>
-</a>
-<footer>MokomėsKartu.lt</footer>
-</main>
+
+<div class="doodles" id="doodles" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="#pradzia" id="logo" aria-label="MokomėsKartu.lt – pradžia">Mokomės<b>Kartu</b><i>.lt</i></a>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <p class="eyebrow">Žaidimai 1–12 klasių mokiniams</p>
+      <h1>Mokomės <span class="u">žaisdami<svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M4 14 C 60 4, 120 18, 180 9 S 270 6, 296 12"/></svg></span>.</h1>
+      <p class="lead">Pasirink savo klasę. Žaidimai pritaikyti tavo pamokoms ir amžiui.</p>
+    </section>
+
+    <div class="pick-title">
+      <h2>Kurioje klasėje mokaisi?</h2>
+      <span class="note">↓ spausk savo</span>
+    </div>
+    <div class="tiers" id="tiers"></div>
+
+    <section class="how" aria-label="Kaip tai veikia">
+      <div><span class="num">1</span><b>Pasirink klasę</b><p>Telefonas ją įsimins, todėl kitą kartą iškart pateksi į savo puslapį.</p></div>
+      <div><span class="num">2</span><b>Rinkis dalyką</b><p>Kiekvienai pamokai kuriamas atskiras žaidimas.</p></div>
+      <div><span class="num">3</span><b>Žaisk ir tobulėk</b><p>Rink taškus, sek savo pažangą ir kartok tai, kas dar sunkiau sekasi.</p></div>
+    </section>
+  </main>
+
+  <main id="cls" hidden>
+    <section class="cls-head">
+      <div class="badge" id="clsBadge">5</div>
+      <div>
+        <p class="eyebrow" id="clsTier">5–8 klasės</p>
+        <h1 id="clsTitle">5 klasė</h1>
+        <button class="back" id="changeBtn" type="button">← Keisti klasę</button>
+      </div>
+    </section>
+    <h2 class="sec-title" id="gamesTitle">Jau galima žaisti</h2>
+    <div class="games" id="games"></div>
+    <h2 class="sec-title">Netrukus</h2>
+    <ul class="soon" id="soon"></ul>
+  </main>
+
+  <footer>
+    <span>MokomėsKartu.lt – mokomieji žaidimai mokiniams</span>
+    <span class="sig">mokomės kartu!</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const GAME_URL = "/netaisyklingieji/";
+  const GAME_ICON = "/netaisyklingieji/icon-192.png";
+  const CLASSES = Array.from({ length: 12 }, (_, i) => i + 1);
+  const TIERS = [
+    { id:"A", from:1, to:4, label:"1–4 klasės", sub:"Pradinukai" },
+    { id:"B", from:5, to:8, label:"5–8 klasės", sub:"Progimnazija" },
+    { id:"C", from:9, to:12, label:"9–12 klasės", sub:"Gimnazija" }
+  ];
+  const ROMAN = { 9:"I g.", 10:"II g.", 11:"III g.", 12:"IV g." };
+  const tierOf = n => TIERS.find(t => n >= t.from && n <= t.to);
+  // Subjects and the grades they appear in (main subjects only; refined game by game).
+  const SUBJECTS = [
+    { id:"lt",   name:"Lietuvių kalba",        sym:"Ąą",   from:1, to:12 },
+    { id:"mat",  name:"Matematika",            sym:"2+2",  from:1, to:12 },
+    { id:"en",   name:"Anglų kalba",           sym:"Hi!",  from:2, to:12 },
+    { id:"uk2",  name:"Antroji užsienio kalba", sym:"Hallo", from:6, to:12 },
+    { id:"gam",  name:"Gamtos mokslai",        sym:"°C",   from:1, to:6 },
+    { id:"vis",  name:"Visuomeninis ugdymas",  sym:"LT",   from:1, to:4 },
+    { id:"ist",  name:"Istorija",              sym:"1918", from:5, to:12 },
+    { id:"geo",  name:"Geografija",            sym:"54°N", from:6, to:12 },
+    { id:"bio",  name:"Biologija",             sym:"DNR",  from:7, to:12 },
+    { id:"fiz",  name:"Fizika",                sym:"F=ma", from:7, to:12 },
+    { id:"che",  name:"Chemija",               sym:"H₂O",  from:8, to:12 },
+    { id:"inf",  name:"Informatika",           sym:"</>",  from:1, to:12 },
+    { id:"tech", name:"Technologijos",         sym:"⚙",    from:1, to:12 },
+    { id:"dai",  name:"Dailė",                 sym:"✎",    from:1, to:12 },
+    { id:"muz",  name:"Muzika",                sym:"♪♫",   from:1, to:12 },
+    { id:"fu",   name:"Fizinis ugdymas",       sym:"100 m", from:1, to:12 }
+  ];
+  const GAMES = [
+    { id:"netaisyklingieji", subject:"en", grades:[5], title:"Netaisyklingieji", url:GAME_URL, icon:GAME_ICON,
+      desc:"100 netaisyklingųjų veiksmažodžių: paveikslėliai, tikras tarimas, pažymiai ir statistika." }
+  ];
+  const DOODLES = ["2+2","2×2=4","a²+b²=c²","ABC","π","H₂O","x = ?","½","√16","E=mc²","♪♫","Ąą","1918","%","∑","△","3·3=9","10:2=5","Hi!","54°N","</>","∞","7×8","F=ma","?","!","1+1=2","Aa Bb","°C","<",">","=","DNR","12:00"];
+  const COLORS = CLASSES.map(n => `var(--c${n})`);
+  const DARK_TEXT = new Set([3, 4, 6, 12]);
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+  const KEY = "mokomeskartu-klase";
+  const saved = () => { try { const v = +localStorage.getItem(KEY); return v >= 1 && v <= 12 ? v : 0; } catch(e){ return 0; } };
+  const save = n => { try { localStorage.setItem(KEY, String(n)); } catch(e){} };
+
+  function doodles(){
+    const box = $("doodles"); const n = innerWidth < 600 ? 16 : 30;
+    let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+    const pens = ["var(--c1)","var(--c7)","var(--c5)","var(--c8)","var(--c2)","var(--c10)","var(--ink)"];
+    let html = "";
+    for(let i = 0; i < n; i++){
+      const x = (i % 6) / 6 * 100 + rnd() * 12, y = Math.floor(i / 6) / Math.ceil(n / 6) * 100 + rnd() * 10;
+      html += `<span style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;font-size:${(22 + rnd() * 26).toFixed(0)}px;color:${pens[i % pens.length]};--r:${(rnd() * 24 - 12).toFixed(1)}deg;--d:${(14 + rnd() * 12).toFixed(1)}s">${esc(DOODLES[i % DOODLES.length])}</span>`;
+    }
+    box.innerHTML = html;
+  }
+
+  function renderTiers(){
+    const mine = saved();
+    $("tiers").innerHTML = TIERS.map(t => `
+      <div class="tier t${t.id}">
+        <div class="tier-label"><strong>${t.label}</strong><span>${t.sub}</span></div>
+        <div class="tiles">${CLASSES.filter(n => n >= t.from && n <= t.to).map(n => `
+          <a class="tile" href="#klase-${n}" data-n="${n}" aria-current="${n === mine}" aria-label="${n} klasė"
+             style="--tc:${COLORS[n - 1]};--tink:${DARK_TEXT.has(n) ? "#121a33" : "#ffffff"}">
+            <span class="n">${n}</span><span class="k">${ROMAN[n] || "klasė"}</span><span class="mine">★</span>
+          </a>`).join("")}</div>
+      </div>`).join("");
+  }
+
+  function renderClass(n){
+    const t = tierOf(n);
+    document.body.dataset.tier = t.id;
+    const tc = COLORS[n - 1], tink = DARK_TEXT.has(n) ? "#121a33" : "#ffffff";
+    document.body.style.setProperty("--tc", tc);
+    document.body.style.setProperty("--tink", tink);
+    document.body.style.setProperty("--tcText", t.id === "C" ? tc : "var(--ink-soft)");
+    $("clsBadge").textContent = n;
+    $("clsTier").textContent = `${t.label} · ${t.sub}`;
+    $("clsTitle").textContent = ROMAN[n] ? `${n} klasė (${ROMAN[n].replace(" g.", " gimn.")})` : `${n} klasė`;
+    const subs = SUBJECTS.filter(s => n >= s.from && n <= s.to);
+    const games = GAMES.filter(g => g.grades.includes(n));
+    $("gamesTitle").hidden = false;
+    $("games").innerHTML = games.length ? games.map(g => {
+      const s = SUBJECTS.find(x => x.id === g.subject);
+      return `<a class="game" href="${esc(g.url)}">
+        <img src="${esc(g.icon)}" alt="" width="76" height="76">
+        <div><span class="subj">${esc(s ? s.name : "")}</span><h3>${esc(g.title)}</h3><p>${esc(g.desc)}</p></div>
+        <span class="play">Žaisti →</span></a>`;
+    }).join("") : `<p class="empty-note">Šiai klasei žaidimai dar kuriami. Užsuk netrukus!</p>`;
+    const withGames = new Set(games.map(g => g.subject));
+    $("soon").innerHTML = subs.filter(s => !withGames.has(s.id)).map(s =>
+      `<li><span class="sym">${esc(s.sym)}</span>${esc(s.name)}</li>`).join("");
+  }
+
+  function route(){
+    const m = /^#klase-(\d{1,2})$/.exec(location.hash);
+    const n = m ? +m[1] : 0;
+    if(n >= 1 && n <= 12){
+      save(n);
+      renderClass(n);
+      $("home").hidden = true; $("cls").hidden = false;
+    } else {
+      delete document.body.dataset.tier;
+      ["--tc","--tink","--tcText"].forEach(p => document.body.style.removeProperty(p));
+      renderTiers();
+      $("cls").hidden = true; $("home").hidden = false;
+    }
+    window.scrollTo(0, 0);
+  }
+
+  $("changeBtn").addEventListener("click", () => { location.hash = "pradzia"; });
+  window.addEventListener("hashchange", route);
+  doodles();
+  // A returning pupil goes straight to the class they picked last time.
+  if(!location.hash){ const s = saved(); if(s){ history.replaceState(null, "", "#klase-" + s); } }
+  route();
+})();
+</script>
+
 </body>
 </html>
