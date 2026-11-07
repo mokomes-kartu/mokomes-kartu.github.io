@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Daugybos lenktynės – MokomėsKartu.lt</title>
+<meta name="description" content="2 klasės matematikos žaidimas: atsakyk į daugybos ir dalybos pavyzdžius ir aplenk varžovą.">
+<meta name="theme-color" content="#fff9e6">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiNmZjhhMWYiLz48cmVjdCB4PSI0NCIgeT0iOCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjQ4IiBmaWxsPSIjZmZmIi8+PGcgZmlsbD0iIzEyMWEzMyI+PHJlY3QgeD0iNDQiIHk9IjgiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI1MCIgeT0iMTQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI0NCIgeT0iMjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI1MCIgeT0iMjYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI0NCIgeT0iMzIiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI1MCIgeT0iMzgiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI0NCIgeT0iNDQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI1MCIgeT0iNTAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48L2c+PHBhdGggZD0iTTEyIDIwbDIwIDIwTTMyIDIwTDEyIDQwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHBhdGggZD0iTTggNTJoMjYiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWRhc2hhcnJheT0iNSA1Ii8+PC9zdmc+">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<style>
+/* Meniu: ką treniruoti, varžovas, mano daugybos lentelė. Lenktynės: dvi juostos, pavyzdys ir keturi dideli atsakymai. */
+body{--ac:#ff8a1f;--ac-ink:#fff;--ac-soft:#ffe8d1}
+.step{margin:18px 0 10px;font:800 13px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--soft);text-align:center}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:520px;margin:0 auto}
+.chip{min-width:58px;min-height:48px;padding:6px 14px;border-radius:16px;border:0;cursor:pointer;background:var(--card);font:800 21px/1 var(--kid);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16)}
+.chip.wide{min-width:120px}
+.chip[aria-pressed="true"]{background:var(--ac);color:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.3)}
+.rivals .mk-lvl-art svg{width:60px;height:44px}
+.lent{max-width:440px;margin:22px auto 0;background:var(--card);border-radius:24px;padding:14px;box-shadow:inset 0 0 0 2.5px var(--ink),0 6px 0 rgba(18,26,51,.14)}
+.lent h2{margin:0 0 2px;font:800 21px/1.1 var(--kid);text-align:center}
+.lent p{margin:0 0 10px;text-align:center;color:var(--soft);font-weight:700;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:2px}
+.grid span{aspect-ratio:1;display:grid;place-items:center;border-radius:6px;font:800 clamp(9px,2.6vw,13px)/1 var(--body);background:#f6f0de;color:transparent}
+.grid span.h{background:transparent;color:var(--ink);font-family:var(--kid);font-size:clamp(11px,3vw,15px)}
+.grid span.on{background:var(--ac);color:#fff}
+.grid span.sq.on{background:#e0610b}
+/* lenktynės */
+.track{position:relative;border-radius:22px;overflow:hidden;background:#4b5468;box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.16);padding:6px 0;margin-bottom:12px}
+.lane{position:relative;height:66px}
+.lane+.lane{border-top:3px dashed rgba(255,255,255,.55)}
+.lane .who{position:absolute;left:8px;top:4px;font:800 11px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.finish{position:absolute;right:10px;top:0;bottom:0;width:16px;background:repeating-conic-gradient(#fff 0 25%,#121a33 0 50%) 0 0/16px 16px;z-index:1}
+.racer{position:absolute;bottom:4px;width:78px;height:46px;left:0;transition:left .55s cubic-bezier(.3,1.3,.5,1);z-index:2}
+.racer svg{width:100%;height:100%;display:block}
+.racer.rival{transition:none}
+.racer.rival svg{animation:bob .5s infinite alternate ease-in-out}
+.racer.me.go svg{animation:zoom .5s}
+@keyframes bob{to{transform:translateY(-3px)}}
+@keyframes zoom{30%{transform:translateX(6px) rotate(-3deg)}}
+.cd{position:absolute;inset:0;display:grid;place-items:center;font:800 64px/1 var(--kid);color:#fff;background:rgba(18,26,51,.45);z-index:5;text-shadow:0 4px 0 rgba(0,0,0,.3)}
+.cd span{animation:mkPop .4s cubic-bezier(.2,1.6,.4,1)}
+.qcard{display:flex;justify-content:center;align-items:center;gap:.25em;font:800 clamp(44px,12vw,68px)/1 var(--kid);padding:4px 0 12px}
+.qcard i{font-style:normal;color:var(--ac)}
+.qcard .q{display:inline-grid;place-items:center;min-width:1.5em;height:1.2em;padding:0 .1em;border-radius:.28em;background:var(--card);box-shadow:inset 0 0 0 .06em var(--ink)}
+.qcard .q.ok{background:#c9f5c0}
+.qcard .q.no{background:#ffd8cc}
+.ans{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:520px;width:100%;margin:0 auto}
+.ans button{min-height:78px;border:0;border-radius:22px;cursor:pointer;background:var(--card);font:800 38px/1 var(--kid);
+  box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.2);transition:transform .1s}
+.ans button:active{transform:translateY(4px);box-shadow:inset 0 0 0 3px var(--ink),0 2px 0 rgba(18,26,51,.2)}
+.ans button.ok{background:#7ee08a}
+.ans button.no{background:#ff9d84}
+.status{text-align:center;color:var(--soft);font-weight:800;margin-top:12px;font-size:15px}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1>Daugybos <em>lenktynės</em></h1>
+      <p>Kuo greičiau atsakai, tuo greičiau važiuoja tavo mašina!</p>
+    </div>
+    <div class="step">1. Ką treniruosi?</div>
+    <div class="chips" id="chips"></div>
+    <div class="step">2. Pasirink varžovą</div>
+    <div class="rivals" id="rivals"></div>
+    <section class="lent" aria-labelledby="lentT">
+      <h2 id="lentT">Mano daugybos lentelė</h2>
+      <p id="lentP"></p>
+      <div class="grid" id="grid"></div>
+    </section>
+  </section>
+  <section id="race" hidden>
+    <div class="track" id="track">
+      <div class="lane"><span class="who" id="rivalName"></span><div class="racer rival" id="rival"></div></div>
+      <div class="lane"><span class="who">Tu</span><div class="racer me" id="me"></div></div>
+      <div class="finish"></div>
+    </div>
+    <div class="qcard" id="qcard" aria-live="polite"></div>
+    <div class="ans" id="ans"></div>
+    <div class="status" id="status"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "daugybos-lenktynes", GOAL = 10, X = "×";
+const CAR = `<svg viewBox="0 0 120 70"><path d="M8 50 C8 38 18 34 30 33 L44 18 C47 15 52 14 56 14 L78 14 C84 14 88 17 91 22 L98 33 C110 34 116 40 116 50 Z" fill="#ff8a1f" stroke="#121a33" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M50 22 L57 20 L74 20 C78 20 81 22 83 25 L88 33 L44 33 Z" fill="#bfe9ff" stroke="#121a33" stroke-width="3"/><path d="M64 20v13" stroke="#121a33" stroke-width="3"/>
+  <path d="M4 30 L4 40 L16 40" fill="none" stroke="#121a33" stroke-width="3.5" stroke-linecap="round"/><circle cx="104" cy="40" r="3.5" fill="#ffe14d"/>
+  <circle cx="32" cy="52" r="12" fill="#121a33"/><circle cx="32" cy="52" r="5" fill="#c9cfdb"/><circle cx="92" cy="52" r="12" fill="#121a33"/><circle cx="92" cy="52" r="5" fill="#c9cfdb"/>
+  <text x="58" y="47" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="13" fill="#fff" text-anchor="middle">×</text></svg>`;
+const ANIMALS = {
+  sraige: `<svg viewBox="0 0 120 70"><path d="M10 60 C10 52 20 50 40 50 L96 50 C104 50 108 40 106 32 L104 22" fill="none" stroke="#7cc96b" stroke-width="12" stroke-linecap="round"/>
+    <path d="M100 26 L96 8 M108 26 L112 9" stroke="#5aa24c" stroke-width="3.5" stroke-linecap="round"/><circle cx="96" cy="7" r="4.5" fill="#121a33"/><circle cx="112" cy="8" r="4.5" fill="#121a33"/>
+    <circle cx="58" cy="34" r="24" fill="#ffb347" stroke="#121a33" stroke-width="3.5"/><path d="M58 34 m-4 0 a4 4 0 1 1 8 0 a9 9 0 1 1 -17 2 a14 14 0 1 1 26 -6" fill="none" stroke="#c96a00" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M100 38 q4 3 8 0" fill="none" stroke="#121a33" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+  eziukas: `<svg viewBox="0 0 120 70"><path d="M14 56 L10 42 L20 40 L16 26 L28 28 L28 14 L40 22 L46 8 L54 20 L64 8 L68 22 L80 14 L80 28 L92 28 L86 40 L96 44 L92 56 Z" fill="#8a5a36" stroke="#121a33" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M78 56 C78 40 90 30 104 40 L116 48 C117 52 112 56 106 56 Z" fill="#f2c79a" stroke="#121a33" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="117" cy="49" r="3.5" fill="#121a33"/><circle cx="96" cy="42" r="3.2" fill="#121a33"/><circle cx="92" cy="50" r="3" fill="#ff8aa0" opacity=".7"/>
+    <path d="M30 56v8M46 56v8M74 56v8M88 56v8" stroke="#121a33" stroke-width="4" stroke-linecap="round"/></svg>`,
+  kiskis: `<svg viewBox="0 0 120 70"><ellipse cx="54" cy="44" rx="34" ry="18" fill="#d9dde6" stroke="#121a33" stroke-width="3"/><circle cx="20" cy="38" r="7" fill="#fff" stroke="#121a33" stroke-width="3"/>
+    <path d="M86 30 C80 14 82 2 88 2 C94 2 94 16 92 28 M96 28 C98 12 104 4 108 6 C112 9 106 22 100 30" fill="#d9dde6" stroke="#121a33" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="96" cy="38" r="15" fill="#d9dde6" stroke="#121a33" stroke-width="3"/><circle cx="101" cy="35" r="3.2" fill="#121a33"/><circle cx="110" cy="41" r="2.5" fill="#ff8aa0"/>
+    <path d="M36 60 l-8 6 M72 60 l10 5" stroke="#121a33" stroke-width="4.5" stroke-linecap="round"/></svg>`
+};
+const RIVALS = [
+  { id: "sraige",  name: "Sraigė",  sub: "Lėta ir rami",        dur: 100, adj: "greitesnė" },
+  { id: "eziukas", name: "Ežiukas", sub: "Greitesnis",          dur: 60,  adj: "greitesnis" },
+  { id: "kiskis",  name: "Kiškis",  sub: "Pats greičiausias!",  dur: 38,  adj: "greitesnis" }
+];
+const MODES = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "visa", "dalyba"];
+const modeLabel = m => m === "visa" ? "Visa lentelė" : m === "dalyba" ? "Dalyba" : X + m;
+
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), race = $("race");
+app.prepend(MK.top({ title: "Daugybos lenktynės", grade: 2 }));
+$("heroArt").innerHTML = `<svg viewBox="0 0 260 120" aria-hidden="true"><rect x="6" y="70" width="248" height="40" rx="14" fill="#4b5468" stroke="#121a33" stroke-width="3"/>
+  <path d="M20 90h220" stroke="#fff" stroke-width="3" stroke-dasharray="12 10"/><rect x="214" y="70" width="14" height="40" fill="url(#chk)"/>
+  <defs><pattern id="chk" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#fff"/><rect width="7" height="7" fill="#121a33"/><rect x="7" y="7" width="7" height="7" fill="#121a33"/></pattern></defs>
+  <g transform="translate(70 30) scale(.95)">${CAR.replace(/<\/?svg[^>]*>/g, "")}</g>
+  <path d="M40 46h22M30 58h26M46 34h14" stroke="#ff8a1f" stroke-width="5" stroke-linecap="round"/></svg>`;
+$("me").innerHTML = CAR;
+
+/* ---------- išmoktų faktų lentelė ---------- */
+const store = MK.get("mk-daugyba", { mode: "2", facts: {} });
+const key = (a, b) => Math.min(a, b) + "x" + Math.max(a, b);
+function drawGrid(){
+  let h = "", n = 0;
+  for(let r = 0; r <= 10; r++) for(let c = 0; c <= 10; c++){
+    if(r === 0 && c === 0) h += `<span class="h">${X}</span>`;
+    else if(r === 0 || c === 0) h += `<span class="h">${r || c}</span>`;
+    else { const on = !!store.facts[key(r, c)]; if(on) n++; h += `<span class="${on ? "on" : ""}${r === c ? " sq" : ""}">${r * c}</span>`; }
+  }
+  $("grid").innerHTML = h;
+  $("lentP").textContent = n ? `Nuspalvinta ${n} iš 100 langelių. Kiekvienas teisingas atsakymas nuspalvina langelį.` : "Kiekvienas teisingas atsakymas nuspalvins langelį.";
+}
+
+/* ---------- meniu ---------- */
+function drawMenu(){
+  $("chips").innerHTML = MODES.map(m => `<button type="button" class="chip${m.length > 2 ? " wide" : ""}" data-m="${m}" aria-pressed="${store.mode === m}">${modeLabel(m)}</button>`).join("");
+  const best = MK.best(GAME);
+  $("rivals").innerHTML = "";
+  MK.levels($("rivals"), {
+    game: "__none__",
+    levels: RIVALS.map(r => ({ id: r.id, name: r.name, sub: r.sub, art: ANIMALS[r.id] })),
+    onPick: i => start(i)
+  });
+  $("rivals").querySelectorAll(".mk-lvl").forEach((b, i) => {
+    const s = best[store.mode + "-" + RIVALS[i].id] || 0;
+    b.querySelector(".mk-srow").outerHTML = MK.starRow(s, "sm");
+  });
+  drawGrid();
+}
+$("chips").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if(!b) return;
+  MK.unlock(); MK.sfx.tap(); store.mode = b.dataset.m; MK.set("mk-daugyba", store); drawMenu();
+});
+function showMenu(){ stopRace(); race.hidden = true; menu.hidden = false; drawMenu(); window.scrollTo(0, 0); }
+
+/* ---------- pavyzdžiai ---------- */
+let deck = [], lastQ = "";
+function nextQuestion(){
+  const m = store.mode; let q;
+  for(let guard = 0; guard < 20; guard++){
+    if(m === "dalyba"){ const t = MK.rnd(2, 10), r = MK.rnd(1, 10); q = { text: [t * r, ":", t], ans: r, a: t, b: r }; }
+    else if(m === "visa"){ const a = MK.rnd(2, 10), b = MK.rnd(2, 10); q = { text: [a, X, b], ans: a * b, a, b }; }
+    else {
+      const t = +m; if(!deck.length) deck = MK.shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      const b = deck.pop(); q = Math.random() < 0.5 ? { text: [t, X, b], ans: t * b, a: t, b } : { text: [b, X, t], ans: t * b, a: b, b: t };
+    }
+    if(q.text.join() !== lastQ) break;
+  }
+  lastQ = q.text.join();
+  q.opts = options(q);
+  return q;
+}
+function options(q){
+  const set = new Set(), a = q.a, b = q.b, ans = q.ans;
+  const cand = store.mode === "dalyba" ? [ans + 1, ans - 1, ans + 2, ans - 2, ans + 3] :
+    [a * (b + 1), a * (b - 1), (a + 1) * b, (a - 1) * b, ans + 1, ans - 1, ans + 10, ans - 10, ans + 2];
+  for(const c of MK.shuffle(cand)){ if(c > 0 && c !== ans && !set.has(c)) set.add(c); if(set.size === 3) break; }
+  let extra = ans + 4; while(set.size < 3){ if(!set.has(extra)) set.add(extra); extra++; }
+  return MK.shuffle([ans, ...set]);
+}
+
+/* ---------- lenktynės ---------- */
+let rival = null, raceT = 0, last = 0, raf = 0, running = false, correct = 0, mistakes = 0, q = null, locked = true, missedThis = false;
+const meEl = $("me"), rivalEl = $("rival");
+function setPos(el, p){ el.style.left = `calc((100% - 78px - 30px) * ${Math.min(1, p).toFixed(4)} + 4px)`; }
+function start(i){
+  rival = RIVALS[i];
+  menu.hidden = true; race.hidden = false; window.scrollTo(0, 0);
+  rivalEl.innerHTML = ANIMALS[rival.id]; $("rivalName").textContent = rival.name;
+  correct = 0; mistakes = 0; raceT = 0; deck = []; lastQ = "";
+  setPos(meEl, 0); setPos(rivalEl, 0);
+  $("qcard").innerHTML = ""; $("ans").innerHTML = ""; $("status").textContent = modeLabel(store.mode) + " · " + rival.name;
+  countdown();
+}
+async function countdown(){
+  locked = true;
+  const cd = document.createElement("div"); cd.className = "cd"; $("track").appendChild(cd);
+  for(const s of ["3", "2", "1"]){ cd.innerHTML = `<span>${s}</span>`; MK.sfx.beep(false); await MK.wait(700); if(race.hidden){ cd.remove(); return; } }
+  cd.innerHTML = "<span>Važiuojam!</span>"; MK.sfx.beep(true);
+  setTimeout(() => cd.remove(), 600);
+  running = true; last = performance.now(); raf = requestAnimationFrame(tick);
+  ask();
+}
+function tick(t){
+  if(!running) return;
+  const dt = Math.min(t - last, 100); last = t; raceT += dt;
+  const dur = rival.dur * (store.mode === "dalyba" ? 1.15 : 1) * 1000;
+  const p = raceT / dur; setPos(rivalEl, p);
+  if(p >= 1){ end(false); return; }
+  raf = requestAnimationFrame(tick);
+}
+function stopRace(){ running = false; cancelAnimationFrame(raf); }
+function ask(){
+  q = nextQuestion(); missedThis = false; locked = false;
+  $("qcard").innerHTML = `<b>${q.text[0]}</b><i>${q.text[1]}</i><b>${q.text[2]}</b><i>=</i><span class="q" id="qq">?</span>`;
+  $("ans").innerHTML = q.opts.map(v => `<button type="button" data-v="${v}">${v}</button>`).join("");
+}
+$("ans").addEventListener("click", async e => {
+  const b = e.target.closest("button"); if(!b || locked || !running) return;
+  const v = +b.dataset.v, qq = $("qq");
+  locked = true;
+  if(v === q.ans){
+    b.classList.add("ok"); qq.textContent = q.ans; qq.classList.add("ok");
+    MK.sfx.good(); MK.sfx.vroom();
+    if(!missedThis){ store.facts[key(q.a, q.b)] = 1; MK.set("mk-daugyba", store); }
+    correct++; setPos(meEl, correct / GOAL);
+    meEl.classList.remove("go"); void meEl.offsetWidth; meEl.classList.add("go");
+    if(correct >= GOAL){ await MK.wait(450); end(true); return; }
+    await MK.wait(420); if(running) ask();
+  } else {
+    mistakes++; missedThis = true; MK.sfx.bad();
+    b.classList.add("no", "mk-shake");
+    const right = $("ans").querySelector(`[data-v="${q.ans}"]`); if(right) right.classList.add("ok");
+    qq.textContent = q.ans; qq.classList.add("no");
+    await MK.wait(1300); if(running) ask();
+  }
+});
+function end(win){
+  stopRace(); locked = true;
+  const stars = win ? (mistakes <= 1 ? 3 : 2) : 1;
+  MK.best(GAME, store.mode + "-" + rival.id, stars);
+  const ri = RIVALS.indexOf(rival);
+  MK.result({
+    stars,
+    title: win ? (stars === 3 ? "Nugalėjai!" : "Laimėjai!") : "Beveik pavyko!",
+    text: win ? `${rival.name} liko už nugaros. Klaidų: ${mistakes}.` : `${rival.name} šįkart ${rival.adj}. Teisingai atsakei ${correct} iš ${GOAL}. Bandyk dar!`,
+    next: win && ri < RIVALS.length - 1 ? () => start(ri + 1) : null,
+    nextLabel: "Kitas varžovas →", menuLabel: "Meniu",
+    again: () => start(ri), menu: showMenu
+  });
+}
+document.addEventListener("visibilitychange", () => { if(!document.hidden) last = performance.now(); });
+showMenu();
+})();
+</script>
+</body>
+</html>
