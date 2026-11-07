@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Koordinačių lobis – MokomėsKartu.lt</title>
+<meta name="description" content="4 klasės matematikos žaidimas: rask lobį salos žemėlapyje pagal koordinates.">
+<meta name="theme-color" content="#fff9e6">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM3YmQxM2EiLz48cGF0aCBkPSJNMjQgMTJ2MzhNMzQgMTJ2MzhNNDQgMTJ2MzhNMTQgMjBoNDBNMTQgMzBoNDBNMTQgNDBoNDAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjYiIG9wYWNpdHk9Ii43NSIvPjxwYXRoIGQ9Ik0xNCAxMHY0MGg0MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTM4IDE2bDEwIDEwTTQ4IDE2TDM4IDI2IiBzdHJva2U9IiNlNTI0M2IiIHN0cm9rZS13aWR0aD0iNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<style>
+/* Salos žemėlapis su koordinačių tinkleliu; pelėdžiukas sako užduotį, apačioje – atsakymų mygtukai. */
+body{--ac:#1f9d55;--ac-ink:#fff;--ac-soft:#d9f5e3}
+#dots{margin:2px 0 10px}
+.map{width:100%;max-width:520px;margin:10px auto 0;display:block}
+.map svg{width:100%;height:auto;display:block;touch-action:manipulation}
+.pt{fill:transparent;cursor:pointer}
+@media (hover:hover){.pt:hover{fill:rgba(255,255,255,.45)}}
+.coord{font:800 1.15em/1 var(--kid);background:#fff3b0;border-radius:10px;padding:2px 8px;white-space:nowrap}
+.trace{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:trace .9s forwards ease-in-out}
+.trace.y{animation-delay:.9s}
+@keyframes trace{to{stroke-dashoffset:0}}
+.pop{transform-box:fill-box;transform-origin:50% 100%;animation:popIn .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes popIn{from{transform:scale(0)}}
+.coin{animation:coin .9s ease-out forwards}
+@keyframes coin{to{transform:translate(var(--dx),-70px);opacity:0}}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:520px;margin:12px auto 0}
+.opts button{min-height:62px;border:0;border-radius:20px;cursor:pointer;background:var(--card);font:800 28px/1 var(--kid);white-space:nowrap;
+  box-shadow:inset 0 0 0 3px var(--ink),0 5px 0 rgba(18,26,51,.2)}
+.opts button.ok{background:#7ee08a}
+.opts button.no{background:#ffb4a2;opacity:.75;pointer-events:none}
+.legend{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:8px;font-weight:800;font-size:14px;color:var(--soft)}
+.legend b{display:inline-block;width:18px;height:5px;border-radius:3px;vertical-align:middle;margin-right:5px}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1>Koordinačių <em>lobis</em></h1>
+      <p>Saloje paslėpti lobiai. Pirmas skaičius – kiek eiti į dešinę, antras – kiek aukštyn.</p>
+    </div>
+    <div id="levels"></div>
+  </section>
+  <section id="play" hidden>
+    <div id="dots"></div>
+    <div id="guideBox"></div>
+    <div class="map" id="map"></div>
+    <div class="legend" id="legend" hidden><span><b style="background:#ff8a1f"></b>x – į dešinę</span><span><b style="background:#2f6bff"></b>y – aukštyn</span></div>
+    <div class="opts" id="opts"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "koordinaciu-lobis", ROUND = 8, C = 40, L = 40, T = 46, NS = "http://www.w3.org/2000/svg";
+const CHEST = `<g><rect x="-15" y="-20" width="30" height="20" rx="3" fill="#a5642e" stroke="#121a33" stroke-width="2.5"/>
+  <path d="M-15 -20 Q0 -34 15 -20Z" fill="#c9823e" stroke="#121a33" stroke-width="2.5"/><rect x="-15" y="-21" width="30" height="4" fill="#ffc61a" stroke="#121a33" stroke-width="1.5"/>
+  <rect x="-3" y="-19" width="6" height="7" rx="1" fill="#ffc61a" stroke="#121a33" stroke-width="1.5"/></g>`;
+const ITEMS = [
+  { q: "Kokiame taške tupi papūga?", svg: `<g><ellipse cx="0" cy="-12" rx="9" ry="12" fill="#ff4f5e" stroke="#121a33" stroke-width="2.5"/><circle cx="0" cy="-26" r="8" fill="#ff4f5e" stroke="#121a33" stroke-width="2.5"/>
+      <path d="M6 -28 q8 2 5 8 l-5 -3Z" fill="#ffc61a" stroke="#121a33" stroke-width="2"/><circle cx="2" cy="-28" r="2" fill="#121a33"/><path d="M-8 -10 q-8 6 -6 14 l7 -6Z" fill="#13a8d6" stroke="#121a33" stroke-width="2"/><path d="M-3 0v4M3 0v4" stroke="#121a33" stroke-width="2.5" stroke-linecap="round"/></g>` },
+  { q: "Kokiame taške slepiasi krabas?", svg: `<g><ellipse cx="0" cy="-9" rx="13" ry="9" fill="#ff6b4a" stroke="#121a33" stroke-width="2.5"/><path d="M-6 -17v-6M6 -17v-6" stroke="#121a33" stroke-width="2.5"/><circle cx="-6" cy="-24" r="3" fill="#121a33"/><circle cx="6" cy="-24" r="3" fill="#121a33"/>
+      <path d="M-13 -10 q-9 -6 -6 -14 q4 4 0 7M13 -10 q9 -6 6 -14 q-4 4 0 7" fill="none" stroke="#121a33" stroke-width="2.5" stroke-linecap="round"/><path d="M-10 -2l-5 5M10 -2l5 5M-5 0l-3 5M5 0l3 5" stroke="#121a33" stroke-width="2.5" stroke-linecap="round"/></g>` },
+  { q: "Kokiame taške butelis su laišku?", svg: `<g transform="rotate(-25)"><rect x="-8" y="-26" width="16" height="26" rx="6" fill="#9fe3c4" stroke="#121a33" stroke-width="2.5"/><rect x="-4" y="-34" width="8" height="9" fill="#9fe3c4" stroke="#121a33" stroke-width="2.5"/>
+      <rect x="-4" y="-37" width="8" height="5" rx="1.5" fill="#a5642e" stroke="#121a33" stroke-width="2"/><rect x="-5" y="-20" width="10" height="13" rx="1" fill="#fff6dc" stroke="#121a33" stroke-width="1.5"/></g>` }
+];
+const LEVELS = [
+  { id: "kask",   name: "Kask lobį",          sub: "Rask tašką pagal koordinates", art: '<span style="font:800 18px var(--kid)">(3; 5)</span>', N: 8,  kinds: ["dig"] },
+  { id: "kur",    name: "Kur jie slepiasi?",  sub: "Užrašyk taško koordinates",    art: '<span style="font:800 26px var(--kid)">?;?</span>', N: 8,  kinds: ["name"] },
+  { id: "didysis",name: "Didysis žemėlapis",  sub: "Iki 10 ir viskas kartu",       art: '<span style="font:800 18px var(--kid)">(10; 7)</span>', N: 10, kinds: ["dig", "name"] }
+];
+const P = (x, y) => `(${x}; ${y})`;
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), mapEl = $("map"), opts = $("opts");
+app.prepend(MK.top({ title: "Koordinačių lobis", grade: 4 }));
+$("heroArt").innerHTML = `<svg viewBox="0 0 260 150" aria-hidden="true"><ellipse cx="130" cy="112" rx="124" ry="32" fill="#a9e2ff" stroke="#121a33" stroke-width="3"/>
+  <path d="M40 112 Q60 70 130 74 Q200 70 222 112 Q130 128 40 112Z" fill="#f6dc9b" stroke="#121a33" stroke-width="3"/>
+  <path d="M84 98 l14 -14 M84 84 l14 14" stroke="#e5243b" stroke-width="5" stroke-linecap="round"/>
+  <path d="M176 100 Q172 60 182 30" fill="none" stroke="#8a5a36" stroke-width="7" stroke-linecap="round"/>
+  <path d="M182 30 q-24 -6 -36 10 q20 -6 36 -10 q-6 -22 -30 -24 q20 10 30 24 q10 -20 34 -18 q-22 4 -34 18 q24 0 32 20 q-16 -14 -32 -20Z" fill="#3fae4f" stroke="#121a33" stroke-width="2.5" stroke-linejoin="round"/>
+  <g transform="translate(130 104) scale(1.3)">${CHEST}</g></svg>`;
+$("guideBox").innerHTML = MK.guide("");
+const guide = $("guideBox").firstElementChild;
+
+/* ---------- žemėlapis ---------- */
+let N = 8, svg = null, layer = null;
+const X = i => L + i * C, Y = j => T + (N - j) * C;
+function el(tag, attrs, parent){ const e = document.createElementNS(NS, tag); for(const k in attrs) e.setAttribute(k, attrs[k]); (parent || layer).appendChild(e); return e; }
+function drawMap(){
+  const W = L + N * C + 28, H = T + N * C + 40;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Salos žemėlapis su koordinačių tinkleliu nuo 0 iki ${N}">
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" orient="auto"><path d="M0 0L10 5L0 10z" fill="#121a33"/></marker>
+    <marker id="aro" viewBox="0 0 10 10" refX="6" refY="5" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff8a1f"/></marker>
+    <marker id="arb" viewBox="0 0 10 10" refX="6" refY="5" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2f6bff"/></marker></defs>
+    <rect x="2" y="2" width="${W - 4}" height="${H - 4}" rx="26" fill="#a9e2ff" stroke="#121a33" stroke-width="3"/>`;
+  for(let k = 0; k < 7; k++){ const wx = 20 + (k * 97) % (W - 60), wy = 14 + (k * 53) % (H - 30); s += `<path d="M${wx} ${wy}q5 -5 10 0t10 0" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>`; }
+  const x0 = X(0) - 16, y0 = Y(N) - 16, x1 = X(N) + 16, y1 = Y(0) + 16;
+  s += `<path d="M${x0 + 24} ${y0} Q${(x0 + x1) / 2} ${y0 - 12} ${x1 - 24} ${y0} Q${x1 + 10} ${y0} ${x1} ${y0 + 30} Q${x1 + 12} ${(y0 + y1) / 2} ${x1} ${y1 - 30} Q${x1 + 6} ${y1 + 6} ${x1 - 30} ${y1}
+    Q${(x0 + x1) / 2} ${y1 + 14} ${x0 + 30} ${y1} Q${x0 - 8} ${y1 + 4} ${x0} ${y1 - 30} Q${x0 - 12} ${(y0 + y1) / 2} ${x0} ${y0 + 30} Q${x0 - 6} ${y0 - 4} ${x0 + 24} ${y0}Z" fill="#f6dc9b" stroke="#c99a4a" stroke-width="3"/>`;
+  for(let i = 1; i <= N; i++){
+    s += `<line x1="${X(i)}" y1="${Y(0)}" x2="${X(i)}" y2="${Y(N)}" stroke="#d1a85f" stroke-width="1.6" stroke-dasharray="4 4"/>`;
+    s += `<line x1="${X(0)}" y1="${Y(i)}" x2="${X(N)}" y2="${Y(i)}" stroke="#d1a85f" stroke-width="1.6" stroke-dasharray="4 4"/>`;
+  }
+  s += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(N) + 18}" y2="${Y(0)}" stroke="#121a33" stroke-width="3" marker-end="url(#ar)"/>
+    <line x1="${X(0)}" y1="${Y(0)}" x2="${X(0)}" y2="${Y(N) - 18}" stroke="#121a33" stroke-width="3" marker-end="url(#ar)"/>
+    <text x="${X(N) + 14}" y="${Y(0) - 12}" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="20" fill="#ff8a1f" text-anchor="middle">x</text>
+    <text x="${X(0) + 18}" y="${Y(N) - 6}" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="20" fill="#2f6bff" text-anchor="middle">y</text>`;
+  for(let i = 0; i <= N; i++){
+    s += `<text x="${X(i)}" y="${Y(0) + 22}" font-family="Manrope,system-ui,sans-serif" font-weight="800" font-size="15" fill="#121a33" text-anchor="middle">${i}</text>`;
+    if(i) s += `<text x="${X(0) - 10}" y="${Y(i) + 5}" font-family="Manrope,system-ui,sans-serif" font-weight="800" font-size="15" fill="#121a33" text-anchor="end">${i}</text>`;
+  }
+  s += `<g id="layer"></g><g id="hits">`;
+  for(let i = 0; i <= N; i++) for(let j = 0; j <= N; j++) s += `<circle class="pt" cx="${X(i)}" cy="${Y(j)}" r="${C * 0.46}" data-x="${i}" data-y="${j}"><title>${P(i, j)}</title></circle>`;
+  mapEl.innerHTML = s + "</g></svg>";
+  svg = mapEl.firstElementChild; layer = svg.querySelector("#layer");
+}
+
+/* ---------- piešiniai ant žemėlapio ---------- */
+function put(html, x, y, scale){ const g = el("g", { transform: `translate(${X(x)} ${Y(y)}) scale(${scale || 1})` }); g.innerHTML = `<g class="pop">${html}</g>`; return g; }
+function hole(x, y){ el("ellipse", { cx: X(x), cy: Y(y), rx: 12, ry: 6, fill: "#8a5a36", opacity: .7 }); }
+function coins(x, y){ for(let k = 0; k < 6; k++){ const c = el("circle", { cx: X(x), cy: Y(y) - 10, r: 5, fill: "#ffc61a", stroke: "#121a33", "stroke-width": 1.5, class: "coin" }); c.style.setProperty("--dx", (k - 2.5) * 12 + "px"); c.style.animationDelay = k * 40 + "ms"; } }
+function trace(x, y){
+  const ax = el("path", { d: `M${X(0)} ${Y(0) - 3}H${X(x)}`, stroke: "#ff8a1f", "stroke-width": 6, fill: "none", "stroke-linecap": "round", class: "trace", "marker-end": x ? "url(#aro)" : "" });
+  ax.style.setProperty("--len", Math.max(1, x * C));
+  const ay = el("path", { d: `M${X(x)} ${Y(0)}V${Y(y)}`, stroke: "#2f6bff", "stroke-width": 6, fill: "none", "stroke-linecap": "round", class: "trace y", "marker-end": y ? "url(#arb)" : "" });
+  ay.style.setProperty("--len", Math.max(1, y * C));
+  $("legend").hidden = false;
+}
+function guides(x, y){
+  el("path", { d: `M${X(x)} ${Y(y)}V${Y(0)}M${X(x)} ${Y(y)}H${X(0)}`, stroke: "#121a33", "stroke-width": 2, "stroke-dasharray": "5 5", fill: "none" });
+  el("circle", { cx: X(x), cy: Y(0), r: 7, fill: "#ff8a1f" }); el("circle", { cx: X(0), cy: Y(y), r: 7, fill: "#2f6bff" });
+}
+
+/* ---------- užduotys ---------- */
+let lvl = 0, tasks = [], ti = 0, task = null, firstOK = 0, tries = 0, busy = false, dots = null;
+function makeTasks(def){
+  const out = [], seen = new Set();
+  while(out.length < ROUND){
+    const x = Math.random() < 0.12 ? 0 : MK.rnd(1, def.N), y = Math.random() < 0.12 ? 0 : MK.rnd(1, def.N);
+    if(x === 0 && y === 0) continue;
+    const k = x + "," + y; if(seen.has(k)) continue; seen.add(k);
+    const kind = def.kinds[out.length % def.kinds.length];
+    out.push({ kind, x, y, item: MK.pick(ITEMS) });
+  }
+  return MK.shuffle(out);
+}
+function showMenu(){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); window.scrollTo(0, 0); }
+function start(i){
+  lvl = i; N = LEVELS[i].N; ti = 0; firstOK = 0; tasks = makeTasks(LEVELS[i]);
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), ROUND); window.scrollTo(0, 0);
+  next();
+}
+function next(){
+  if(ti >= ROUND) return finish();
+  task = tasks[ti]; tries = 0; busy = false; dots.cur(ti);
+  drawMap(); $("legend").hidden = true; opts.innerHTML = "";
+  if(task.kind === "dig"){
+    MK.say(guide, `Kask lobį taške <span class="coord">${P(task.x, task.y)}</span>`);
+  } else {
+    put(task.item.svg, task.x, task.y, 1.05);
+    MK.say(guide, task.item.q);
+    const { x, y } = task, set = new Map([[P(x, y), [x, y]]]);
+    const cands = MK.shuffle([[y, x], [x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1], [x + 1, y + 1]]);
+    for(const [a, b] of cands){ if(set.size === 4) break; if(a < 0 || b < 0 || a > N || b > N) continue; set.set(P(a, b), [a, b]); }
+    opts.innerHTML = MK.shuffle([...set.values()]).map(([a, b]) => `<button type="button" data-x="${a}" data-y="${b}">${P(a, b)}</button>`).join("");
+  }
+}
+async function solved(){
+  busy = true; if(tries === 0) firstOK++;
+  dots.mark(ti, tries === 0);
+  await MK.wait(1600); ti++; next();
+}
+mapEl.addEventListener("click", e => {
+  const pt = e.target.closest(".pt"); if(!pt || busy || !task || task.kind !== "dig") return;
+  MK.unlock();
+  const x = +pt.dataset.x, y = +pt.dataset.y;
+  MK.sfx.dig();
+  if(x === task.x && y === task.y){
+    put(CHEST, x, y, 1.15); coins(x, y);
+    setTimeout(() => MK.sfx.coins(), 250);
+    MK.say(guide, `${MK.praise()} Lobis rastas taške <span class="coord">${P(x, y)}</span>`);
+    solved();
+    return;
+  }
+  tries++; hole(x, y); setTimeout(() => MK.sfx.bad(), 200);
+  if(x === task.y && y === task.x) MK.say(guide, `Sukeitei skaičius! Pirma eik į dešinę ${task.x}, tada aukštyn ${task.y}.`, "bad");
+  else MK.say(guide, `Čia tik smėlis. Eik į dešinę ${task.x}, tada aukštyn ${task.y}.`, "bad");
+  if(tries === 1) trace(task.x, task.y);
+});
+opts.addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b || busy || !task || task.kind !== "name") return;
+  MK.unlock();
+  const x = +b.dataset.x, y = +b.dataset.y;
+  if(x === task.x && y === task.y){
+    b.classList.add("ok"); MK.sfx.good();
+    if(!tries) guides(task.x, task.y);
+    MK.say(guide, `${MK.praise()} <span class="coord">${P(x, y)}</span>`);
+    solved();
+    return;
+  }
+  tries++; b.classList.add("no"); MK.sfx.bad();
+  if(tries === 1) guides(task.x, task.y);
+  MK.say(guide, x === task.y && y === task.x ? "Sukeitei vietomis! Pirmas skaičius – x, į dešinę." : "Sek punktyrus iki ašių.", "bad");
+});
+function finish(){
+  const stars = MK.starsFor(firstOK, ROUND);
+  MK.best(GAME, LEVELS[lvl].id, stars);
+  MK.result({ stars, text: `Iš pirmo karto teisingai: ${firstOK} iš ${ROUND}.`,
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+showMenu();
+})();
+</script>
+</body>
+</html>
