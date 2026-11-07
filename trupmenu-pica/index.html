@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Trupmenų pica – MokomėsKartu.lt</title>
+<meta name="description" content="3 klasės matematikos žaidimas: kepk picą pagal užsakymą, lygink ir rask lygias trupmenas.">
+<meta name="theme-color" content="#fff9e6">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiNmZmM2MWEiLz48cGF0aCBkPSJNMzIgMzNMNTYgMzNBMjQgMjQgMCAxIDEgMzIgOVoiIGZpbGw9IiNlNWExNGEiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzIgMzNMNTEgMzNBMTkgMTkgMCAxIDEgMzIgMTRaIiBmaWxsPSIjZmZmMWM0Ii8+PHBhdGggZD0iTTMyIDMzVjUyTTEzIDMzSDMyIiBzdHJva2U9IiNiOTc3MmMiIHN0cm9rZS13aWR0aD0iMiIvPjxnIGZpbGw9IiNjOTMwMmMiPjxjaXJjbGUgY3g9IjIzIiBjeT0iMjQiIHI9IjQiLz48Y2lyY2xlIGN4PSIyMyIgY3k9IjQyIiByPSI0Ii8+PGNpcmNsZSBjeD0iNDEiIGN5PSI0MyIgcj0iNCIvPjwvZz48cGF0aCBkPSJNMzYgMTNMNTIgMTMgNTIgMjlaIiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTM4IDlsMTQgMCAwIDE0IiBmaWxsPSJub25lIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1kYXNoYXJyYXk9IjMgNCIvPjwvc3ZnPg==">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<style>
+/* Picerija: viršuje pelėdžiukas su užsakymu, centre pica arba dėžutės, apačioje veiksmo mygtukai. */
+body{--ac:#e8432e;--ac-ink:#fff;--ac-soft:#fff0c2}
+#dots{margin:2px 0 12px}
+.stage{display:grid;justify-items:center;gap:12px;flex:1}
+.pz{width:min(300px,78vw);height:auto;display:block;overflow:visible}
+.pz .sl{cursor:pointer;transition:filter .15s}
+.pz .sl:hover{filter:brightness(1.04)}
+.pz.sm{width:min(150px,38vw)}
+.pz.wobble{animation:mkShake .45s}
+.pz.done{animation:baked .7s ease-out}
+@keyframes baked{40%{transform:scale(1.06) rotate(4deg);filter:drop-shadow(0 0 18px #ffb347)}}
+.count{min-height:24px;font:800 18px/1.2 var(--kid);color:var(--soft)}
+.q-title{font:800 clamp(20px,5.4vw,26px)/1.2 var(--kid);text-align:center;margin:0;text-wrap:balance}
+.boxes{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:520px}
+.box{position:relative;display:grid;place-items:center;aspect-ratio:1;border:0;padding:8px;cursor:pointer;border-radius:22px;background:#f4d7a5;
+  box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.2);transition:transform .12s}
+.box:active{transform:translateY(3px)}
+.box .lid{display:grid;place-items:center;width:72%;aspect-ratio:1;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 3px var(--ink);font-size:clamp(40px,11vw,58px)}
+.box .lid .mk-fr{font-size:1em}
+.box::before{content:"";position:absolute;inset:10px;border:2px dashed rgba(18,26,51,.25);border-radius:14px;pointer-events:none}
+.box.open{background:#fff;cursor:default}
+.box.open .pz{width:84%}
+.box .tag{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:999px;padding:3px 10px;font:800 18px/1 var(--kid);z-index:2}
+.box .tag .mk-fr{font-size:.9em}
+.box.win{box-shadow:inset 0 0 0 4px var(--good),0 6px 0 rgba(47,179,107,.5)}
+.box.win::after{content:"✓";position:absolute;right:-8px;top:-8px;width:40px;height:40px;border-radius:50%;background:var(--good);color:#fff;display:grid;place-items:center;font:800 24px/1 var(--body)}
+.show{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+.big-fr{font-size:clamp(50px,13vw,72px)}
+.opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%;max-width:480px}
+.opts button{min-height:98px;border:0;border-radius:22px;cursor:pointer;background:var(--card);font-size:clamp(34px,9vw,44px);
+  box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.2)}
+.opts button.ok{background:#7ee08a}
+.opts button.no{background:#ffb4a2;opacity:.75;pointer-events:none}
+.cmp{display:flex;gap:16px;align-items:center;justify-content:center;min-height:10px}
+.cmp figure{margin:0;display:grid;justify-items:center;gap:4px;font-size:30px}
+.why{max-width:440px;text-align:center;font-weight:700;color:var(--soft);min-height:22px;margin:0}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1>Trupmenų <em>pica</em></h1>
+      <p>Pelėdžiukas atidarė piceriją. Kepk picas pagal užsakymus!</p>
+    </div>
+    <div id="levels"></div>
+  </section>
+  <section id="play" hidden>
+    <div id="dots"></div>
+    <div id="guideBox"></div>
+    <div class="stage" id="stage"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "trupmenu-pica", ROUND = 8;
+const F = MK.frac;
+
+/* ---------- picos piešinys ---------- */
+function pizza(n, filled, cls){
+  const cx = 110, cy = 110, r = 92, w = 2 * Math.PI / n;
+  const pr = Math.min(12, 0.6 * r * Math.sin(Math.PI / n) * 0.62);
+  let s = `<svg class="pz ${cls || ""}" viewBox="0 0 220 220" aria-hidden="true">
+    <circle cx="110" cy="114" r="106" fill="rgba(18,26,51,.12)"/><circle cx="110" cy="110" r="106" fill="#e5a14a" stroke="#121a33" stroke-width="4"/>`;
+  let tops = "";
+  for(let i = 0; i < n; i++){
+    const a0 = -Math.PI / 2 + i * w, a1 = a0 + w, m = a0 + w / 2;
+    const x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0), x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+    const on = filled[i];
+    s += `<path class="sl" data-i="${i}" d="M${cx} ${cy}L${x0.toFixed(2)} ${y0.toFixed(2)}A${r} ${r} 0 ${w > Math.PI ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}Z"
+      fill="${on ? "#ffcb45" : "#f8e3b5"}" stroke="#b9772c" stroke-width="3" stroke-linejoin="round"/>`;
+    if(on){
+      const spots = [[0.62, 0]];
+      if(n <= 4) spots.push([0.33, 0.18], [0.82, -0.2], [0.82, 0.22]);
+      else if(n <= 6) spots.push([0.86, 0.18]);
+      for(const [rr, da] of spots){
+        const ang = m + da * w, px = cx + rr * r * Math.cos(ang), py = cy + rr * r * Math.sin(ang);
+        tops += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${pr.toFixed(1)}" fill="#c9302c"/><circle cx="${(px - pr * .3).toFixed(1)}" cy="${(py - pr * .3).toFixed(1)}" r="${(pr * .28).toFixed(1)}" fill="#e5594f"/>`;
+      }
+      const lx = cx + 0.45 * r * Math.cos(m + w * 0.24), ly = cy + 0.45 * r * Math.sin(m + w * 0.24);
+      if(n <= 8) tops += `<ellipse cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" rx="${(pr * .55).toFixed(1)}" ry="${(pr * .3).toFixed(1)}" fill="#3f9c45" transform="rotate(${(m * 57.3).toFixed(0)} ${lx.toFixed(1)} ${ly.toFixed(1)})"/>`;
+    }
+  }
+  return s + `<g pointer-events="none">${tops}</g></svg>`;
+}
+const fillFirst = (n, k) => Array.from({ length: n }, (_, i) => i < k);
+
+/* ---------- užduotys ---------- */
+const DEN = [2, 3, 4, 4, 5, 6, 6, 8, 8, 10];
+const EQ = [];
+for(let n1 = 2; n1 <= 10; n1++) for(let k1 = 1; k1 < n1; k1++) for(let n2 = 2; n2 <= 10; n2++) for(let k2 = 1; k2 < n2; k2++)
+  if(n1 !== n2 && k1 * n2 === k2 * n1) EQ.push([k1, n1, k2, n2]);
+const same = (a, b, c, d) => a * d === b * c;
+function genOrder(){ const n = MK.pick(DEN); return { type: "order", n, k: MK.rnd(1, n - 1) }; }
+function genCompare(){
+  if(Math.random() < 0.5){ const n = MK.rnd(3, 10); let k1 = MK.rnd(1, n - 1), k2; do { k2 = MK.rnd(1, n - 1); } while(k2 === k1); return { type: "cmp", a: [k1, n], b: [k2, n] }; }
+  const k = MK.pick([1, 1, 2, 3]); let n1 = MK.rnd(k + 1, 10), n2; do { n2 = MK.rnd(k + 1, 10); } while(n2 === n1);
+  return { type: "cmp", a: [k, n1], b: [k, n2] };
+}
+function genEqual(){
+  const [k1, n1, k2, n2] = MK.pick(EQ), opts = [[k2, n2]], seen = new Set([k2 + "/" + n2]);
+  const cands = MK.shuffle([[k2 + 1, n2], [k2 - 1, n2], [k1, n2], [k2, n1], [k1 + 1, n1 + 1], [k2 + 1, n2 + 1], [k1, n1 + 1]]);
+  for(const [a, b] of cands){
+    if(opts.length === 3) break;
+    if(a < 1 || a >= b || b > 10 || seen.has(a + "/" + b) || same(a, b, k1, n1)) continue;
+    seen.add(a + "/" + b); opts.push([a, b]);
+  }
+  return { type: "eq", show: [k1, n1], ans: [k2, n2], opts: MK.shuffle(opts) };
+}
+const LEVELS = [
+  { id: "uzsakymai", name: "Užsakymai",          sub: "Iškepk tiek, kiek prašo",   art: pizza(4, fillFirst(4, 3)), gen: genOrder },
+  { id: "lyginimas", name: "Kurioje daugiau?",   sub: "Palygink trupmenas",        art: `<span style="font-size:22px">${F(2, 5)}<b style="margin:0 3px">?</b>${F(3, 5)}</span>`, gen: genCompare },
+  { id: "lygios",    name: "Tiek pat picos",     sub: "Rask lygią trupmeną",       art: `<span style="font-size:22px">${F(1, 2)}<b style="margin:0 3px">=</b>${F(2, 4)}</span>`, gen: genEqual }
+];
+
+/* ---------- elementai ---------- */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), stage = $("stage");
+app.prepend(MK.top({ title: "Trupmenų pica", grade: 3 }));
+$("heroArt").innerHTML = pizza(8, [1, 1, 1, 0, 1, 1, 0, 1].map(Boolean), "hero");
+$("heroArt").querySelector(".pz").style.width = "min(200px,52vw)";
+$("heroArt").style.display = "grid"; $("heroArt").style.justifyItems = "center";
+$("guideBox").innerHTML = MK.guide("");
+const guide = $("guideBox").firstElementChild;
+
+let lvl = 0, tasks = [], ti = 0, task = null, firstOK = 0, tries = 0, busy = false, dots = null;
+function showMenu(){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); window.scrollTo(0, 0); }
+function start(i){
+  lvl = i; ti = 0; firstOK = 0; tasks = [];
+  const seen = new Set();
+  while(tasks.length < ROUND){ const t = LEVELS[i].gen(), k = JSON.stringify(t); if(!seen.has(k)){ seen.add(k); tasks.push(t); } }
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), ROUND); window.scrollTo(0, 0);
+  next();
+}
+function next(){
+  if(ti >= ROUND) return finish();
+  task = tasks[ti]; tries = 0; busy = false; dots.cur(ti);
+  ({ order: drawOrder, cmp: drawCompare, eq: drawEqual })[task.type]();
+}
+async function solved(){
+  busy = true; if(tries === 0) firstOK++;
+  dots.mark(ti, tries === 0);
+  await MK.wait(1500); ti++; next();
+}
+
+/* 1. Užsakymai */
+let sel = [];
+function drawOrder(){
+  sel = Array(task.n).fill(false);
+  MK.say(guide, `Man ${F(task.k, task.n)} picos, prašau!`);
+  stage.innerHTML = `<div id="pz">${pizza(task.n, sel)}</div><div class="count" id="count"></div>
+    <button type="button" class="mk-btn" id="bake" disabled>Paruošta!</button>`;
+}
+stage.addEventListener("click", e => {
+  if(busy || !task) return;
+  const sl = e.target.closest(".sl");
+  if(task.type === "order" && sl){
+    MK.unlock(); MK.sfx.tap();
+    sel[+sl.dataset.i] = !sel[+sl.dataset.i];
+    $("pz").innerHTML = pizza(task.n, sel);
+    const c = sel.filter(Boolean).length;
+    $("bake").disabled = c === 0;
+    if(tries) $("count").textContent = `Pažymėta ${c} iš ${task.n}`;
+    return;
+  }
+  if(e.target.closest("#bake")) return bake();
+  const box = e.target.closest(".box"); if(box && task.type === "cmp") return pickBox(box);
+  const op = e.target.closest(".opts button"); if(op && task.type === "eq") return pickEqual(op);
+});
+function bake(){
+  MK.unlock();
+  const c = sel.filter(Boolean).length, pz = $("pz").firstElementChild;
+  if(c === task.k){
+    MK.sfx.good(); pz.classList.add("done"); $("bake").disabled = true;
+    MK.say(guide, MK.pick(["Skanu! Ačiū!", "Kaip tik tiek!", "Puiki pica!", "Mmm, valio!"]));
+    solved();
+  } else {
+    tries++; MK.sfx.bad(); pz.classList.remove("wobble"); void pz.getBoundingClientRect(); pz.classList.add("wobble");
+    $("count").textContent = `Pažymėta ${c} iš ${task.n}`;
+    MK.say(guide, `Užsakiau ${F(task.k, task.n)}. Reikia ${task.k} ${task.k === 1 ? "riekelės" : "riekelių"} iš ${task.n}.`, "bad");
+  }
+}
+
+/* 2. Kurioje daugiau? */
+function drawCompare(){
+  MK.say(guide, "Kurioje dėžutėje daugiau picos?");
+  stage.innerHTML = `<div class="boxes">${[task.a, task.b].map((f, i) => `<button type="button" class="box" data-i="${i}" aria-label="${f[0]} iš ${f[1]}"><span class="lid">${F(f[0], f[1])}</span></button>`).join("")}</div>
+    <p class="why" id="why"></p>`;
+}
+async function pickBox(box){
+  MK.unlock(); busy = true;
+  const i = +box.dataset.i, A = task.a, B = task.b;
+  const bigger = A[0] * B[1] > B[0] * A[1] ? 0 : 1, ok = i === bigger;
+  stage.querySelectorAll(".box").forEach((b, j) => {
+    const f = j ? B : A;
+    b.classList.add("open"); b.innerHTML = `<span class="tag">${F(f[0], f[1])}</span>${pizza(f[1], fillFirst(f[1], f[0]))}`;
+    if(j === bigger) b.classList.add("win");
+  });
+  MK.sfx.whoosh();
+  const sameDen = A[1] === B[1];
+  const why = sameDen ? `Riekelės vienodo dydžio, todėl daugiau picos ten, kur daugiau riekelių.`
+                      : `Kuo į daugiau dalių supjaustyta pica, tuo mažesnė riekelė.`;
+  $("why").innerHTML = why;
+  if(ok){ MK.sfx.good(); MK.say(guide, MK.praise()); }
+  else { tries++; MK.sfx.bad(); MK.say(guide, "Pažiūrėk, kurioje daugiau!", "bad"); }
+  await MK.wait(ok ? 1200 : 2600);
+  solved();
+}
+
+/* 3. Tiek pat picos */
+function drawEqual(){
+  MK.say(guide, "Kuri trupmena rodo tiek pat picos?");
+  const s = task.show;
+  stage.innerHTML = `<div class="show">${pizza(s[1], fillFirst(s[1], s[0]), "sm")}<span class="big-fr">${F(s[0], s[1])}</span></div>
+    <div class="opts">${task.opts.map(o => `<button type="button" data-f="${o[0]}/${o[1]}" aria-label="${o[0]} iš ${o[1]}">${F(o[0], o[1])}</button>`).join("")}</div>
+    <div class="cmp" id="cmp"></div>`;
+}
+async function pickEqual(btn){
+  MK.unlock();
+  const [a, b] = btn.dataset.f.split("/").map(Number), s = task.show;
+  const fig = `<figure>${pizza(s[1], fillFirst(s[1], s[0]), "sm")}${F(s[0], s[1])}</figure><b style="font:800 34px var(--kid)">${same(a, b, s[0], s[1]) ? "=" : "≠"}</b><figure>${pizza(b, fillFirst(b, a), "sm")}${F(a, b)}</figure>`;
+  if(same(a, b, s[0], s[1])){
+    btn.classList.add("ok"); MK.sfx.good(); MK.say(guide, `${MK.praise()} ${F(s[0], s[1])} = ${F(a, b)}`);
+    stage.querySelector(".show").hidden = true; $("cmp").innerHTML = fig;
+    solved();
+  } else {
+    tries++; btn.classList.add("no"); MK.sfx.bad();
+    $("cmp").innerHTML = fig;
+    MK.say(guide, "Matai? Ne tiek pat. Bandyk kitą!", "bad");
+  }
+}
+
+function finish(){
+  const stars = MK.starsFor(firstOK, ROUND);
+  MK.best(GAME, LEVELS[lvl].id, stars);
+  MK.result({ stars, text: `Iš pirmo karto teisingai: ${firstOK} iš ${ROUND}.`,
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+showMenu();
+})();
+</script>
+</body>
+</html>
