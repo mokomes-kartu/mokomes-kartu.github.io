@@ -6,6 +6,7 @@
 <link rel="icon" type="image/png" href="/netaisyklingieji/icon-192.png">
 <meta name="theme-color" content="#f5f9ff">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<script src="/zaidimai.js"></script>
 <title>MokomėsKartu.lt</title>
 <meta name="description" content="Mokomieji žaidimai 1–12 klasių mokiniams">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -235,10 +236,11 @@ footer .sig{font:700 22px/1 var(--f-pen);color:var(--pen)}
     { id:"muz",  name:"Muzika",                sym:"♪♫",   from:1, to:12 },
     { id:"fu",   name:"Fizinis ugdymas",       sym:"100 m", from:1, to:12 }
   ];
-  const GAMES = [
-    { id:"netaisyklingieji", subject:"en", grades:[5], title:"Netaisyklingieji", url:GAME_URL, icon:GAME_ICON,
+  // The games list lives in /zaidimai.js so a new game is added without touching this page.
+  const GAMES = (window.MK_ZAIDIMAI || [
+    { id:"netaisyklingieji", subject:"en", grades:[5], title:"Netaisyklingieji",
       desc:"100 netaisyklingųjų veiksmažodžių: paveikslėliai, tikras tarimas, pažymiai ir statistika." }
-  ];
+  ]).map(g => g.id === "netaisyklingieji" ? Object.assign({}, g, { url: GAME_URL, icon: GAME_ICON }) : g);
   const DOODLES = ["2+2","2×2=4","a²+b²=c²","ABC","π","H₂O","x = ?","½","√16","E=mc²","♪♫","Ąą","1918","%","∑","△","3·3=9","10:2=5","Hi!","54°N","</>","∞","7×8","F=ma","?","!","1+1=2","Aa Bb","°C","<",">","=","DNR","12:00"];
   const COLORS = CLASSES.map(n => `var(--c${n})`);
   const DARK_TEXT = new Set([3, 4, 6, 12]);
