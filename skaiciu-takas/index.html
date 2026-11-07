@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Skaičių takas – MokomėsKartu.lt</title>
+<meta name="description" content="1 klasės matematikos žaidimas: varlytė šokinėja skaičių taku, o vaikas sudeda ir atima.">
+<meta name="theme-color" content="#fff9e6">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiNmZjRmNWUiLz48ZWxsaXBzZSBjeD0iMzIiIGN5PSI1MCIgcng9IjIzIiByeT0iOCIgZmlsbD0iIzVjYzY1YSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSIyMyIgY3k9IjIyIiByPSI3LjUiIGZpbGw9IiM0M2I4NWEiLz48Y2lyY2xlIGN4PSI0MSIgY3k9IjIyIiByPSI3LjUiIGZpbGw9IiM0M2I4NWEiLz48ZWxsaXBzZSBjeD0iMzIiIGN5PSIzNyIgcng9IjE5IiByeT0iMTMiIGZpbGw9IiM0M2I4NWEiLz48ZWxsaXBzZSBjeD0iMzIiIGN5PSI0MiIgcng9IjExIiByeT0iNyIgZmlsbD0iI2I5ZWU4ZiIvPjxjaXJjbGUgY3g9IjIzIiBjeT0iMjEiIHI9IjUiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSI0MSIgY3k9IjIxIiByPSI1IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMjQiIGN5PSIyMiIgcj0iMi42IiBmaWxsPSIjMTIxYTMzIi8+PGNpcmNsZSBjeD0iNDAiIGN5PSIyMiIgcj0iMi42IiBmaWxsPSIjMTIxYTMzIi8+PHBhdGggZD0iTTI1IDMzcTcgNSAxNCAwIiBmaWxsPSJub25lIiBzdHJva2U9IiMxYjVlMmEiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<style>
+/* Žaidimo ekranas: lygtis viršuje, tvenkinys su vingiuotu lelijų lapų taku, apačioje pelėdžiukas. */
+body{--ac:#ff4f5e;--ac-ink:#fff;--ac-soft:#ffe1e4}
+.la{font:800 22px/1 var(--kid)}
+.eq{display:flex;justify-content:center;align-items:center;gap:.28em;font:800 clamp(40px,11vw,64px)/1 var(--kid);padding:2px 0 6px}
+.eq i{font-style:normal;color:var(--ac)}
+.eq .q{display:inline-grid;place-items:center;min-width:1.3em;height:1.2em;padding:0 .12em;border-radius:.3em;background:var(--card);box-shadow:inset 0 0 0 .06em var(--ink)}
+.eq .q.done{background:#c9f5c0;animation:mkPop .4s cubic-bezier(.2,1.6,.4,1)}
+#dots{margin-bottom:10px}
+.pond{position:relative;border-radius:30px;margin:0 0 12px;
+  background:radial-gradient(circle at 18% 28%,rgba(255,255,255,.55) 0 6px,transparent 7px),radial-gradient(circle at 82% 70%,rgba(255,255,255,.45) 0 5px,transparent 6px),
+    repeating-radial-gradient(circle at 50% 120%,#a9e2ff 0 18px,#b8e8ff 18px 36px);
+  box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.15)}
+.trail{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.stone{position:absolute;display:grid;justify-items:center;align-items:end;border:0;padding:0 0 6%;cursor:pointer;border-radius:50%;
+  background:conic-gradient(from -14deg,transparent 0 28deg,var(--pad,#5cc65a) 28deg 360deg);filter:drop-shadow(0 4px 0 rgba(18,60,30,.35));transition:transform .15s}
+.stone b{position:absolute;left:21%;bottom:7%;display:grid;place-items:center;width:58%;aspect-ratio:1;border-radius:50%;background:#fffdf2;color:#173b22;font:800 var(--fs,20px)/1 var(--kid);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.stone:active{transform:scale(.92)}
+.stone.start{--pad:#ffc61a}
+.stone.yes{--pad:#ffc61a}
+.stone.yes b{background:#fff3b0}
+.stone.no{--pad:#ff8a7a}
+.stone.goal{animation:mkPulse .9s infinite}
+.frog{position:absolute;left:0;top:0;pointer-events:none;will-change:transform;z-index:3}
+.frog svg{width:100%;height:100%;display:block;filter:drop-shadow(0 4px 0 rgba(18,60,30,.25))}
+.hopn{position:absolute;z-index:4;transform:translate(-50%,-50%);font:800 18px/1 var(--kid);color:var(--ink);background:#fff;border-radius:999px;padding:4px 8px;
+  box-shadow:inset 0 0 0 2px var(--ink);pointer-events:none;animation:hopn .9s ease-out forwards}
+@keyframes hopn{0%{opacity:0;margin-top:0}20%{opacity:1}100%{opacity:0;margin-top:-34px}}
+.mk-guide{margin-top:auto}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1>Skaičių <em>takas</em></h1>
+      <p>Varlytė šokinėja lelijų lapais. Paspausk, kur ji nušoks!</p>
+    </div>
+    <div id="levels"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="eq" id="eq" aria-live="polite"></div>
+    <div id="dots"></div>
+    <div class="pond" id="pond">
+      <svg class="trail" id="trail" aria-hidden="true"></svg>
+      <div id="stones"></div>
+      <div class="frog" id="frog" aria-hidden="true"></div>
+    </div>
+    <div id="guideBox"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "skaiciu-takas", ROUND = 8;
+const FROG = `<svg viewBox="0 0 100 94"><circle cx="30" cy="30" r="15" fill="#43b85a"/><circle cx="70" cy="30" r="15" fill="#43b85a"/>
+  <ellipse cx="50" cy="62" rx="40" ry="28" fill="#43b85a"/><ellipse cx="50" cy="71" rx="24" ry="15" fill="#b9ee8f"/>
+  <circle cx="30" cy="29" r="10" fill="#fff"/><circle cx="70" cy="29" r="10" fill="#fff"/>
+  <circle cx="32" cy="31" r="5.5" fill="#121a33"/><circle cx="68" cy="31" r="5.5" fill="#121a33"/>
+  <circle cx="34" cy="28.5" r="1.9" fill="#fff"/><circle cx="70" cy="28.5" r="1.9" fill="#fff"/>
+  <path d="M35 53q15 11 30 0" fill="none" stroke="#1b5e2a" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="24" cy="54" r="5" fill="#ff8aa0" opacity=".6"/><circle cx="76" cy="54" r="5" fill="#ff8aa0" opacity=".6"/>
+  <ellipse cx="25" cy="87" rx="13" ry="5.5" fill="#2f9a47"/><ellipse cx="75" cy="87" rx="13" ry="5.5" fill="#2f9a47"/></svg>`;
+const MINUS = "−";
+
+/* ---------- užduočių generatoriai ---------- */
+const R = MK.rnd;
+function line(from, to, step){ const p = []; for(let v = from; v <= to; v += step) p.push(v); return p; }
+function genTo10(){
+  if(Math.random() < 0.5){ const a = R(0, 8), b = R(1, Math.min(5, 10 - a)); return { a, b, op: "+", ans: a + b, path: line(0, 10, 1) }; }
+  const a = R(2, 10), b = R(1, Math.min(5, a)); return { a, b, op: MINUS, ans: a - b, path: line(0, 10, 1) };
+}
+function genTo20(){
+  if(Math.random() < 0.5){ const a = R(5, 9), b = R(11 - a, 9); return { a, b, op: "+", ans: a + b, path: line(0, 20, 1) }; }
+  const a = R(11, 18), b = R(a - 9, 9); return { a, b, op: MINUS, ans: a - b, path: line(0, 20, 1) };
+}
+function genTo100(){
+  if(Math.random() < 0.45){
+    if(Math.random() < 0.5){ const a = 10 * R(0, 7), b = 10 * R(1, Math.min(5, (100 - a) / 10)); return { a, b, op: "+", ans: a + b, path: line(0, 100, 10), tens: true }; }
+    const a = 10 * R(2, 10), b = 10 * R(1, Math.min(5, a / 10)); return { a, b, op: MINUS, ans: a - b, path: line(0, 100, 10), tens: true };
+  }
+  if(Math.random() < 0.5){ const d = R(1, 8), u = R(5, 9), a = d * 10 + u, b = R(10 - u, 9); return { a, b, op: "+", ans: a + b, path: line(d * 10, d * 10 + 20, 1) }; }
+  const d = R(2, 9), u = R(0, 4), a = d * 10 + u, b = R(u + 1, 9); return { a, b, op: MINUS, ans: a - b, path: line(d * 10 - 10, d * 10 + 10, 1) };
+}
+const LEVELS = [
+  { id: "10",  name: "Iki 10",  sub: "Sudėk ir atimk",   art: '<span class="la">3+2</span>', gen: genTo10 },
+  { id: "20",  name: "Iki 20",  sub: "Peršok dešimtį",   art: '<span class="la">8+5</span>', gen: genTo20 },
+  { id: "100", name: "Iki 100", sub: "Dideli šuoliai",   art: '<span class="la">47+5</span>', gen: genTo100 }
+];
+
+/* ---------- elementai ---------- */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), pond = $("pond"), stonesEl = $("stones"), trail = $("trail"), frog = $("frog"), eq = $("eq");
+app.prepend(MK.top({ title: "Skaičių takas", grade: 1 }));
+$("heroArt").innerHTML = `<svg viewBox="0 0 260 150" aria-hidden="true">
+  <ellipse cx="130" cy="122" rx="120" ry="24" fill="#b8e8ff"/><ellipse cx="130" cy="122" rx="120" ry="24" fill="none" stroke="#121a33" stroke-width="3"/>
+  <ellipse cx="58" cy="122" rx="30" ry="11" fill="#5cc65a"/><ellipse cx="130" cy="124" rx="34" ry="12" fill="#ffc61a"/><ellipse cx="204" cy="122" rx="30" ry="11" fill="#5cc65a"/>
+  <path d="M58 112q36-60 72-6" fill="none" stroke="#121a33" stroke-width="2.5" stroke-dasharray="3 7" stroke-linecap="round"/>
+  <g transform="translate(92 22) scale(.78)">${FROG.replace(/<\/?svg[^>]*>/g, "")}</g></svg>`;
+frog.innerHTML = FROG;
+$("guideBox").innerHTML = MK.guide("Kur nušoks varlytė?");
+const guide = $("guideBox").firstElementChild;
+const dotsEl = $("dots");
+
+/* ---------- būsena ---------- */
+let lvl = 0, tasks = [], ti = 0, task = null, cur = 0, firstOK = 0, tries = 0, busy = false, dots = null, pos = [], S = 50, tensSeen = false;
+
+function showMenu(){
+  play.hidden = true; menu.hidden = false;
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  window.scrollTo(0, 0);
+}
+function start(i){
+  lvl = i; ti = 0; firstOK = 0; tensSeen = false;
+  const seen = new Set(); tasks = [];
+  while(tasks.length < ROUND){ const t = LEVELS[i].gen(), k = t.a + t.op + t.b; if(!seen.has(k)){ seen.add(k); tasks.push(t); } }
+  menu.hidden = true; play.hidden = false;
+  dots = MK.dots(dotsEl, ROUND);
+  window.scrollTo(0, 0);
+  next();
+}
+function next(){
+  if(ti >= ROUND) return finish();
+  task = tasks[ti]; tries = 0; busy = false;
+  dots.cur(ti);
+  eq.innerHTML = `<b>${task.a}</b><i>${task.op}</i><b>${task.b}</b><i>=</i><span class="q" id="q">?</span>`;
+  cur = task.path.indexOf(task.a);
+  render();
+  if(task.tens && !tensSeen){ tensSeen = true; MK.say(guide, "Čia kiekvienas šuolis – 10. Kur nušoks varlytė?"); }
+  else MK.say(guide, ti === 0 ? "Kur nušoks varlytė?" : MK.pick(["Kur nušoks varlytė?", "O dabar kur?", "Kur ji nusileis?"]));
+}
+
+/* ---------- tvenkinio išdėstymas ---------- */
+function render(){
+  const n = task.path.length, PAD = 12;
+  const W = pond.clientWidth - PAD * 2;
+  const C = n <= 11 ? (W > 560 ? 6 : 4) : (W > 560 ? 7 : 5);
+  const rows = Math.ceil(n / C), cw = W / C;
+  S = Math.min(cw * 0.8, 78);
+  const rh = S * 1.42, top = PAD + S * 0.6;
+  pond.style.height = Math.round(top + rows * rh + PAD - S * 0.2) + "px";
+  pos = task.path.map((v, k) => {
+    const r = Math.floor(k / C), c0 = k % C, c = r % 2 ? C - 1 - c0 : c0;
+    return { x: PAD + (c + 0.5) * cw, y: top + (r + 0.5) * rh - S * 0.2 };
+  });
+  trail.setAttribute("viewBox", `0 0 ${pond.clientWidth} ${pond.clientHeight}`);
+  trail.innerHTML = `<polyline points="${pos.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ")}" fill="none" stroke="#fff" stroke-width="${(S * 0.12).toFixed(1)}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 ${(S * 0.3).toFixed(1)}" opacity=".9"/>`;
+  stonesEl.innerHTML = task.path.map((v, k) => `<button type="button" class="stone${k === cur ? " start" : ""}" data-k="${k}" aria-label="${v}"
+     style="left:${(pos[k].x - S / 2).toFixed(1)}px;top:${(pos[k].y - S / 2).toFixed(1)}px;width:${S.toFixed(1)}px;height:${S.toFixed(1)}px;--fs:${Math.round(S * (v >= 100 ? 0.3 : 0.38))}px"><b>${v}</b></button>`).join("");
+  const F = S * 0.9; frog.style.width = F + "px"; frog.style.height = F * 0.94 + "px";
+  placeFrog(cur);
+}
+function frogXY(k){ const F = S * 0.9; return { x: pos[k].x - F / 2, y: pos[k].y - F * 0.94 - S * 0.2 }; }
+function placeFrog(k){ const p = frogXY(k); frog.style.transform = `translate(${p.x}px,${p.y}px)`; }
+function hop(a, b, i, down){
+  MK.sfx.hop(i, down);
+  const p = frogXY(a), q = frogXY(b), peak = Math.min(p.y, q.y) - S * 0.6;
+  const anim = frog.animate([
+    { transform: `translate(${p.x}px,${p.y}px) scale(1,.92)` },
+    { transform: `translate(${(p.x + q.x) / 2}px,${peak}px) scale(.94,1.08)`, offset: 0.5 },
+    { transform: `translate(${q.x}px,${q.y}px) scale(1.08,.9)`, offset: 0.88 },
+    { transform: `translate(${q.x}px,${q.y}px) scale(1,1)` }
+  ], { duration: 320, easing: "ease-in-out" });
+  return anim.finished.catch(() => {}).then(() => placeFrog(b));
+}
+function floatNum(k, label){
+  const s = document.createElement("span"); s.className = "hopn"; s.textContent = label;
+  s.style.left = pos[k].x + "px"; s.style.top = (pos[k].y - S * 0.75) + "px";
+  pond.appendChild(s); setTimeout(() => s.remove(), 950);
+}
+async function hopTo(target){
+  const dir = target > cur ? 1 : -1, step = task.path[1] - task.path[0];
+  let i = 0;
+  while(cur !== target){
+    const nx = cur + dir; i++;
+    await hop(cur, nx, i - 1, dir < 0);
+    cur = nx; floatNum(nx, (dir > 0 ? "+" : MINUS) + i * step);
+  }
+}
+function stoneEl(k){ return stonesEl.querySelector(`[data-k="${k}"]`); }
+
+/* ---------- vaiko spaudimas ---------- */
+stonesEl.addEventListener("click", async e => {
+  const b = e.target.closest(".stone"); if(!b || busy) return;
+  MK.unlock();
+  const k = +b.dataset.k, v = task.path[k], goal = task.path.indexOf(task.ans);
+  if(v === task.ans){
+    busy = true;
+    if(tries === 0) firstOK++;
+    stonesEl.querySelectorAll(".goal,.no").forEach(x => x.classList.remove("goal", "no"));
+    if(cur !== goal) await hopTo(goal);
+    b.classList.add("yes"); MK.sfx.good();
+    const q = $("q"); q.textContent = task.ans; q.classList.add("done");
+    MK.say(guide, MK.praise());
+    dots.mark(ti, tries === 0);
+    await MK.wait(1100);
+    ti++; next();
+    return;
+  }
+  tries++; MK.sfx.bad();
+  b.classList.add("no"); b.classList.remove("mk-shake"); void b.offsetWidth; b.classList.add("mk-shake");
+  setTimeout(() => b.classList.remove("no"), 900);
+  const fw = task.op === "+";
+  if(tries === 1){
+    const n = task.tens ? task.b / 10 : task.b, word = n === 1 ? "kartą" : "kartus";
+    const many = task.tens ? `${n} ${word} po 10` : `${n} ${word}`;
+    MK.say(guide, `Varlytė ant ${task.a}. Ji šoka ${many} ${fw ? "į priekį" : "atgal"}.`, "bad");
+    stoneEl(cur).classList.add("goal"); setTimeout(() => { const s = stoneEl(cur); if(s) s.classList.remove("goal"); }, 1800);
+  } else if(cur !== goal){
+    busy = true;
+    MK.say(guide, "Žiūrėk, kaip ji šokinės!", "bad");
+    await MK.wait(500);
+    await hopTo(goal);
+    stoneEl(goal).classList.add("goal");
+    MK.say(guide, "Štai kur! Paspausk šį lapą.");
+    busy = false;
+  } else {
+    MK.say(guide, "Paspausk tą lapą, ant kurio sėdi varlytė.", "bad");
+  }
+});
+window.addEventListener("resize", () => { if(!play.hidden && task && !busy) render(); });
+
+function finish(){
+  const stars = MK.starsFor(firstOK, ROUND);
+  MK.best(GAME, LEVELS[lvl].id, stars);
+  MK.result({
+    stars, text: `Iš pirmo karto teisingai: ${firstOK} iš ${ROUND}.`,
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null,
+    again: () => start(lvl), menu: showMenu
+  });
+}
+showMenu();
+})();
+</script>
+</body>
+</html>
