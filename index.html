@@ -3,8 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="icon" type="image/png" href="/netaisyklingieji/icon-192.png">
+<link rel="icon" type="image/svg+xml" href="/logo/mk-ikona.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/logo/mk-ikona-32.png">
+<link rel="apple-touch-icon" href="/logo/mk-ikona-180.png">
 <meta name="theme-color" content="#f5f9ff">
+<meta property="og:title" content="MokomėsKartu.lt">
+<meta property="og:description" content="Mokomieji žaidimai 1–12 klasių mokiniams">
+<meta property="og:image" content="https://mokomeskartu.lt/logo/og.png">
+<meta property="og:url" content="https://mokomeskartu.lt/">
+<meta property="og:type" content="website">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 <script src="/zaidimai.js"></script>
 <title>MokomėsKartu.lt</title>
@@ -50,9 +57,8 @@ button{font:inherit;color:inherit}
 .wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 48px}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.logo{display:inline-flex;align-items:baseline;gap:1px;text-decoration:none;font:800 20px/1 var(--f-display);letter-spacing:-.02em;color:var(--ink);background:none;border:0;padding:6px 0;cursor:pointer}
-.logo b{background:var(--hl);color:#121a33;padding:2px 6px 3px;border-radius:6px;transform:rotate(-3deg);display:inline-block;margin-left:2px}
-.logo i{font:700 22px var(--f-pen);font-style:normal;color:var(--pen);margin-left:2px}
+.logo{display:inline-flex;align-items:center;text-decoration:none;padding:4px 0;border-radius:12px}
+.logo img{display:block;height:clamp(40px,7vw,52px);width:auto;max-width:100%}
 
 /* HOME */
 .hero{display:grid;gap:10px;padding:34px 0 26px}
@@ -161,7 +167,7 @@ footer .sig{font:700 22px/1 var(--f-pen);color:var(--pen)}
 
 <div class="wrap">
   <header class="top">
-    <a class="logo" href="#pradzia" id="logo" aria-label="MokomėsKartu.lt – pradžia">Mokomės<b>Kartu</b><i>.lt</i></a>
+    <a class="logo" href="#pradzia" id="logo"><img src="/logo/mokomeskartu-logo.svg" alt="MokomėsKartu.lt – pradžia" width="232" height="48"></a>
   </header>
 
   <main id="home">
