@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sostinių žemėlapis – MokomėsKartu.lt</title>
+<meta name="description" content="6–8 klasių geografijos žaidimas: atpažink sostines žemėlapyje ir rask Europos šalis.">
+<meta name="theme-color" content="#f5f9ff">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMxMmI4ODYiLz48cGF0aCBkPSJNOCAyMGg0OE04IDMyaDQ4TTggNDRoNDhNMjAgOHY0OE0zMiA4djQ4TTQ0IDh2NDgiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjQiIG9wYWNpdHk9Ii40NSIvPjxwYXRoIGQ9Ik0xNCA0MGM0LTEwIDE0LTEyIDE4LThzMTIgMCAxNi02YzIgOC0yIDE4LTEyIDIwcy0yMCAyLTIyLTZ6IiBmaWxsPSIjZjNlYWQyIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTMzIDM0YzAtNy01LTExLTUtMTVhNSA1IDAgMCAxIDEwIDBjMCA0LTUgOC01IDE1eiIgZmlsbD0iI2U1MjQzYiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjMzIiBjeT0iMTkiIHI9IjIiIGZpbGw9IiNmZmYiLz48L3N2Zz4=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="zemelapis.js"></script>
+<style>
+/* Sostinių žemėlapis: sąsiuvinio stilius 6–8 klasėms. Viršuje žemėlapis, kuris priartina šalį, apačioje klausimas ir atsakymai. */
+body{--paper:#f5f9ff;--grid:#d6e4f6;--soft:#56627f;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#12b886;--ac-ink:#fff;--ac-soft:#d6f5ea}
+.mk-lvl{border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),6px 6px 0 var(--ink)}
+.mk-lvl-art{border-radius:10px;font-size:18px}
+.mk-lvl-t b{font-size:19px;letter-spacing:-.02em}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(32px,8vw,52px)}
+.mk-btn{border-radius:12px;font-size:18px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res .mk-owl{display:none}
+.mk-res h2{font-size:26px;letter-spacing:-.03em}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 10px}
+.score{display:inline-flex;align-items:baseline;gap:6px;padding:7px 14px;border-radius:10px;background:#fff;font:800 18px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink)}
+.score small{font:800 12px/1 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.map{position:relative;width:100%;max-width:640px;margin:0 auto;aspect-ratio:var(--ar,4/3);background:#cfe6f7;border-radius:12px;overflow:hidden;
+  box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.map svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:manipulation}
+.land path{fill:#f3ead2;stroke:#fff;stroke-width:1.1;vector-effect:non-scaling-stroke;stroke-linejoin:round;transition:fill .25s}
+.land path.t{fill:var(--ac)}
+.land path.no{fill:#ff8a7a}
+.land path.hint{animation:hint .8s ease-in-out infinite alternate}
+@keyframes hint{from{fill:#f3ead2}to{fill:#ffc61a}}
+.clickable .land path{cursor:pointer}
+@media (hover:hover){.clickable .land path:hover{fill:#e7dcbc}}
+.grat{stroke:#b8d5ea;stroke-width:1;vector-effect:non-scaling-stroke;fill:none}
+.cap{fill:#e5243b;stroke:#fff;vector-effect:non-scaling-stroke;stroke-width:2.5}
+.ring{fill:none;stroke:#e5243b;vector-effect:non-scaling-stroke;stroke-width:2;animation:ring 1.4s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes ring{from{transform:scale(.6);opacity:1}to{transform:scale(2.4);opacity:0}}
+.lbl{font-family:"Unbounded","Arial Black",sans-serif;font-weight:800;fill:#121a33;stroke:#fff;stroke-width:4px;paint-order:stroke;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.q{max-width:640px;margin:14px auto 0;display:grid;gap:4px}
+.q small{font:800 13px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.q b{font:800 clamp(24px,6.6vw,34px)/1.1 var(--kid);letter-spacing:-.03em;text-wrap:balance}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:640px;margin:12px auto 0}
+.opts button{min-height:58px;padding:6px 8px;border:0;border-radius:10px;cursor:pointer;background:#fff;font:700 clamp(15px,4.3vw,19px)/1.15 var(--kid);letter-spacing:-.02em;
+  box-shadow:inset 0 0 0 2.5px var(--ink),4px 4px 0 var(--ink)}
+.opts button:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 2.5px var(--ink),2px 2px 0 var(--ink)}
+.opts button.ok{background:#7ee08a}
+.opts button.no{background:#ffb4a2;opacity:.75;pointer-events:none}
+.msg{max-width:640px;margin:12px auto 0;min-height:48px;padding:10px 14px;border-radius:10px;background:#fff;border:2px dashed #b9cfee;font:700 16px/1.35 var(--body);color:var(--ink)}
+.msg b{font-weight:800}
+.msg.ok{border-color:var(--ac);background:#effcf6}
+.msg.bad{border-color:#ff8a7a;background:#fff4f1}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1>Sostinių <em>žemėlapis</em></h1>
+      <p>Žemėlapis parodo šalį ir jos sostinę – atspėk, kaip ji vadinasi. Arba surask šalį pats.</p>
+    </div>
+    <div id="levels"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><span class="score"><small>Taškai</small><span id="pts">0</span></span></div>
+    <div class="map" id="map"></div>
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "sostines", GRADES = [6, 7, 8], DATA = window.MK_ZEMELAPIS, NS = "http://www.w3.org/2000/svg";
+const LEVELS = [
+  { id: "kaimynai", tag: "k", name: "Lietuva ir kaimynai", sub: "12 šalių · sostinės", art: "LT", n: 10 },
+  { id: "europa", tag: "e", name: "Europa", sub: "37 šalys · sostinės", art: "EU", n: 10 },
+  { id: "pasaulis", tag: "w", name: "Pasaulis", sub: "31 šalis · sostinės", art: "🌍", n: 10 },
+  { id: "rask", tag: "f", name: "Kur ši šalis?", sub: "Europa · rask šalį žemėlapyje", art: "📍", n: 10, find: true }
+];
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), mapEl = $("map"), opts = $("opts"), msg = $("msg");
+const savedGrade = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: "Sostinės", grade: GRADES.includes(savedGrade) ? savedGrade : GRADES[0] }));
+/* Genitive of a country name: "Danija" -> "Danijos", "Egiptas" -> "Egipto", "Nyderlandai" -> "Nyderlandų". */
+const GEN_X = { "Naujoji Zelandija": "Naujosios Zelandijos", "JAV": "JAV", "Peru": "Peru" };
+const gen = s => GEN_X[s] || s.split(" ").map(w => w === "ir" ? w : w.endsWith("as") ? w.slice(0, -2) + "o" : w.endsWith("ai") ? w.slice(0, -2) + "ų" : w.endsWith("a") ? w.slice(0, -1) + "os" : w.endsWith("ė") ? w.slice(0, -1) + "ės" : w).join(" ");
+const C = DATA.c, name = a3 => (C[a3] && C[a3][0]) || DATA.n[a3] || "";
+const taskai = n => n % 10 === 1 && n % 100 !== 11 ? "taškas" : n % 10 >= 2 && (n % 100 < 10 || n % 100 > 20) ? "taškai" : "taškų";
+const mY = lat => (1 - Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) / Math.PI) / 2 * 1000, mX = lon => (lon + 180) / 360 * 1000;
+
+/* ---------- map ---------- */
+let svg, land, mark, vb = { x: 0, y: 120, w: 1000, h: 750 }, anim = 0, AR = 4 / 3;
+function drawMap(){
+  let s = `<svg viewBox="0 0 1000 750" role="img" aria-label="Pasaulio žemėlapis"><g>`;
+  for(let lon = -180; lon <= 180; lon += 10) s += `<path class="grat" d="M${mX(lon)} ${mY(80)}V${mY(-70)}"/>`;
+  for(let lat = -70; lat <= 80; lat += 10) s += `<path class="grat" d="M0 ${mY(lat).toFixed(1)}H1000"/>`;
+  s += `</g><g class="land">${Object.entries(DATA.p).map(([a, d]) => `<path data-a="${a}" d="${d}"/>`).join("")}</g><g id="mark"></g></svg>`;
+  mapEl.innerHTML = s; svg = mapEl.firstElementChild; land = svg.querySelector(".land"); mark = svg.querySelector("#mark");
+}
+function setVB(v){ vb = v; svg.setAttribute("viewBox", `${v.x.toFixed(2)} ${v.y.toFixed(2)} ${v.w.toFixed(2)} ${v.h.toFixed(2)}`); sizeMarks(); }
+function flyTo(v, ms = 750){
+  cancelAnimationFrame(anim); const a = { ...vb }, t0 = performance.now();
+  const ease = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+  const step = now => { const p = Math.min(1, (now - t0) / ms), e = ease(p);
+    setVB({ x: a.x + (v.x - a.x) * e, y: a.y + (v.y - a.y) * e, w: a.w + (v.w - a.w) * e, h: a.h + (v.h - a.h) * e });
+    if(p < 1) anim = requestAnimationFrame(step); };
+  anim = requestAnimationFrame(step);
+}
+function viewFor(a3, minW){
+  const [, , , , , x0, y0, x1, y1] = C[a3], bw = x1 - x0, bh = y1 - y0;
+  const w = Math.max(bw * 1.6, bh * 1.6 * AR, minW), h = w / AR;
+  return { x: (x0 + x1) / 2 - w / 2, y: (y0 + y1) / 2 - h / 2, w, h };
+}
+function sizeMarks(){
+  const r = vb.w * 0.013;
+  mark.querySelectorAll("circle").forEach(c => c.setAttribute("r", r));
+  mark.querySelectorAll("text").forEach(t => { t.setAttribute("font-size", vb.w * 0.042); t.setAttribute("dy", -r * 1.8); });
+}
+function showCap(a3, label){
+  const [, cap, , cx, cy] = C[a3];
+  mark.innerHTML = `<circle class="ring" cx="${cx}" cy="${cy}"/><circle class="cap" cx="${cx}" cy="${cy}"/>${label ? `<text class="lbl" x="${cx}" y="${cy}" text-anchor="middle">${MK.esc(cap)}</text>` : ""}`;
+  sizeMarks();
+}
+function paint(a3, cls){ const p = land.querySelector(`[data-a="${a3}"]`); if(p) p.classList.add(cls); return p; }
+function clearPaint(){ land.querySelectorAll(".t,.no,.hint").forEach(p => p.classList.remove("t", "no", "hint")); mark.innerHTML = ""; }
+
+/* ---------- menu art: Lithuania and neighbours ---------- */
+$("heroArt").innerHTML = `<svg viewBox="535 280 70 50" aria-hidden="true" style="width:100%;border-radius:12px;background:#cfe6f7;box-shadow:inset 0 0 0 1px #121a33">
+  ${["POL", "BLR", "LVA", "EST", "RUS", "UKR", "SWE", "FIN", "DEU", "LTU"].map(a => `<path d="${DATA.p[a]}" fill="${a === "LTU" ? "#12b886" : "#f3ead2"}" stroke="#fff" stroke-width=".4"/>`).join("")}
+  <circle cx="${C.LTU[3]}" cy="${C.LTU[4]}" r="1.3" fill="#e5243b" stroke="#fff" stroke-width=".5"/>
+  <text x="${C.LTU[3] + 2}" y="${C.LTU[4] + 4.5}" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="3" fill="#121a33" stroke="#fff" stroke-width=".8" paint-order="stroke">Vilnius</text></svg>`;
+
+/* ---------- game ---------- */
+let lvl = 0, L = null, list = [], ti = 0, cur = null, tries = 0, firstOK = 0, pts = 0, busy = false, dots = null;
+function showMenu(){ cancelAnimationFrame(anim); play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); window.scrollTo(0, 0); }
+function start(i){
+  lvl = i; L = LEVELS[i]; ti = 0; firstOK = 0; pts = 0; $("pts").textContent = 0;
+  const pool = Object.keys(C).filter(a => C[a][2].includes(L.tag));
+  list = MK.shuffle(pool).slice(0, L.n);
+  menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
+  dots = MK.dots($("dots"), L.n);
+  if(L.find){ const x0 = mX(-11), x1 = mX(42), y0 = mY(71), y1 = mY(35); AR = (x1 - x0) / (y1 - y0); }
+  else AR = 4 / 3;
+  mapEl.style.setProperty("--ar", AR); mapEl.classList.toggle("clickable", !!L.find);
+  drawMap();
+  if(L.find){ const x0 = mX(-11), x1 = mX(42), y0 = mY(71), y1 = mY(35); setVB({ x: x0, y: y0, w: x1 - x0, h: y1 - y0 }); }
+  else setVB(L.tag === "w" ? { x: 0, y: 160, w: 1000, h: 750 } : viewFor("POL", 150));
+  next();
+}
+function say(html, cls){ msg.className = "msg" + (cls ? " " + cls : ""); msg.innerHTML = html; }
+function next(){
+  if(ti >= L.n) return finish();
+  cur = list[ti]; tries = 0; busy = false; dots.cur(ti); clearPaint();
+  const [lt] = C[cur];
+  if(L.find){
+    $("q").innerHTML = `<small>Spausk žemėlapyje</small><b>Kur yra ${MK.esc(lt)}?</b>`;
+    opts.innerHTML = ""; say("Surask šalį ir paspausk ją.");
+    return;
+  }
+  paint(cur, "t"); showCap(cur, false);
+  flyTo(viewFor(cur, L.tag === "w" ? 150 : L.tag === "k" ? 90 : 60));
+  $("q").innerHTML = `<small>Kokia šalies sostinė?</small><b>${MK.esc(lt)}</b>`;
+  const pool = Object.keys(C).filter(a => a !== cur && C[a][2].includes(L.tag) && C[a][1] !== C[cur][1]);
+  const set = MK.shuffle([cur, ...MK.shuffle(pool).slice(0, 3)]);
+  opts.innerHTML = set.map(a => `<button type="button" data-a="${a}">${MK.esc(C[a][1])}</button>`).join("");
+  say("Raudonas taškas – sostinė. Kaip ji vadinasi?");
+}
+async function good(btn){
+  busy = true; const gain = tries === 0 ? 10 : 5; if(tries === 0) firstOK++;
+  pts += gain; $("pts").textContent = pts; dots.mark(ti, tries === 0);
+  if(btn) btn.classList.add("ok");
+  MK.sfx.good();
+  const [lt, cap] = C[cur];
+  if(L.find){ paint(cur, "t"); flyTo(viewFor(cur, 60), 650); }
+  showCap(cur, true);
+  say(`<b>${MK.praise()}</b> ${MK.esc(lt)} – sostinė <b>${MK.esc(cap)}</b>. +${gain}`, "ok");
+  await MK.wait(L.find ? 2300 : 1700);
+  if(L.find){ const x0 = mX(-11), x1 = mX(42), y0 = mY(71), y1 = mY(35); flyTo({ x: x0, y: y0, w: x1 - x0, h: y1 - y0 }, 500); }
+  ti++; next();
+}
+async function giveUp(){
+  busy = true; dots.mark(ti, false);
+  const [lt, cap] = C[cur];
+  if(L.find){ paint(cur, "hint"); }
+  else opts.querySelectorAll("button").forEach(b => { if(b.dataset.a === cur) b.classList.add("ok"); });
+  showCap(cur, true);
+  say(`${MK.esc(lt)} – sostinė <b>${MK.esc(cap)}</b>. Įsimink!`, "bad");
+  await MK.wait(2400);
+  if(L.find){ const x0 = mX(-11), x1 = mX(42), y0 = mY(71), y1 = mY(35); flyTo({ x: x0, y: y0, w: x1 - x0, h: y1 - y0 }, 400); }
+  ti++; next();
+}
+opts.addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b || busy) return; MK.unlock();
+  if(b.dataset.a === cur) return good(b);
+  tries++; b.classList.add("no"); MK.sfx.bad();
+  if(tries >= 2) return giveUp();
+  say(`Ne. ${MK.esc(C[b.dataset.a][1])} – ${MK.esc(gen(C[b.dataset.a][0]))} sostinė. Bandyk dar!`, "bad");
+});
+mapEl.addEventListener("click", e => {
+  if(!L || !L.find || busy) return;
+  const p = e.target.closest("[data-a]"); if(!p) return; MK.unlock();
+  const a = p.dataset.a;
+  if(a === cur) return good(null);
+  tries++; MK.sfx.bad(); p.classList.add("no"); setTimeout(() => p.classList.remove("no"), 900);
+  if(tries >= 2) return giveUp();
+  say(name(a) ? `Tai – <b>${MK.esc(name(a))}</b>. Ieškok toliau!` : "Ne ta šalis. Ieškok toliau!", "bad");
+});
+function finish(){
+  busy = true;
+  const stars = MK.starsFor(firstOK, L.n);
+  MK.best(GAME, L.id, stars);
+  MK.result({ stars, title: `${pts} ${taskai(pts)}`, text: `Iš pirmo karto teisingai: ${firstOK} iš ${L.n}.`,
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+showMenu();
+})();
+</script>
+</body>
+</html>
