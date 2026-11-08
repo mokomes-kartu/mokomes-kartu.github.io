@@ -116,7 +116,7 @@ const ICONS = {
 /* ---------- viršutinė juosta ---------- */
 MK.top = function(o){
   const h = document.createElement("header"); h.className = "mk-top";
-  h.innerHTML = `<a class="mk-back" href="/#klase-${o.grade}" aria-label="Grįžti į ${o.grade} klasės puslapį"><span aria-hidden="true">←</span><span class="mk-back-t">${o.grade} klasė</span></a>
+  h.innerHTML = `<a class="mk-back" href="/#klase-${o.grade}" aria-label="Grįžti į ${o.grade} klasės puslapį"><span aria-hidden="true">←</span><img src="/logo/mk-ikona.svg" alt="" width="28" height="28"><span class="mk-back-t">${o.grade} klasė</span></a>
     <div class="mk-title">${MK.esc(o.title)}</div>
     <div class="mk-tg">${["music", "sfx"].map(k => `<button type="button" class="mk-ico${prefs[k] ? "" : " off"}" data-k="${k}" aria-pressed="${prefs[k]}" aria-label="${k === "music" ? "Muzika" : "Garsai"}">${ICONS[k]}</button>`).join("")}</div>`;
   h.addEventListener("click", e => {
@@ -229,6 +229,7 @@ button{font:inherit;color:inherit}
 .mk-back{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 14px;border-radius:999px;background:var(--card);
   border:2.5px solid var(--ink);text-decoration:none;font:800 15px/1 var(--body);box-shadow:0 4px 0 rgba(18,26,51,.2)}
 .mk-back span:first-child{font-size:20px}
+.mk-back img{width:28px;height:28px;display:block;flex:none}
 .mk-title{font:800 clamp(19px,4.6vw,26px)/1.1 var(--kid);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mk-tg{display:flex;gap:6px}
 .mk-ico{width:44px;height:44px;border-radius:50%;border:2.5px solid var(--ink);background:var(--card);display:grid;place-items:center;cursor:pointer;
