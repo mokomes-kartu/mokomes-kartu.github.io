@@ -54,5 +54,45 @@ window.MK_ZAIDIMAI = [
   "url": "/netaisyklingieji/",
   "icon": "/netaisyklingieji/icon-192.png",
   "desc": "100 netaisyklingųjų veiksmažodžių: paveikslėliai, tikras tarimas, pažymiai ir statistika."
+ },
+ {
+  "id": "zodziu-traukinys",
+  "subject": "lt",
+  "grades": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "title": "Žodžių traukinys",
+  "desc": "Raidės, i ar y, u ar ū, nosinės ir kalbos dalys – kiekvienas teisingas atsakymas prikabina vagonėlį.",
+  "url": "/zodziu-traukinys/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMxM2E4ZDYiLz48cGF0aCBkPSJNNCA1MGg1NiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjMiLz48cmVjdCB4PSI2IiB5PSIyNiIgd2lkdGg9IjIyIiBoZWlnaHQ9IjE4IiByeD0iNCIgZmlsbD0iI2ZmYzYxYSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjx0ZXh0IHg9IjE3IiB5PSI0MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTMiIGZpbGw9IiMxMjFhMzMiPkFhPC90ZXh0PjxyZWN0IHg9IjMyIiB5PSIyMiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjIyIiByeD0iNCIgZmlsbD0iI2U1MjQzYiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxyZWN0IHg9IjM2IiB5PSIyNiIgd2lkdGg9IjEwIiBoZWlnaHQ9IjgiIHJ4PSIyIiBmaWxsPSIjYmZlOWZmIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMiIvPjxyZWN0IHg9IjUwIiB5PSIzMCIgd2lkdGg9IjkiIGhlaWdodD0iMTQiIHJ4PSIzIiBmaWxsPSIjMmY2YmZmIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSI0NyIgcj0iNCIgZmlsbD0iIzEyMWEzMyIvPjxjaXJjbGUgY3g9IjIzIiBjeT0iNDciIHI9IjQiIGZpbGw9IiMxMjFhMzMiLz48Y2lyY2xlIGN4PSIzOCIgY3k9IjQ3IiByPSI0IiBmaWxsPSIjMTIxYTMzIi8+PGNpcmNsZSBjeD0iNTIiIGN5PSI0NyIgcj0iNCIgZmlsbD0iIzEyMWEzMyIvPjxwYXRoIGQ9Ik0yOCAzOGg0IiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PC9zdmc+"
+ },
+ {
+  "id": "pilies-labirintas",
+  "subject": "en",
+  "grades": [
+   2,
+   3,
+   4
+  ],
+  "title": "Pilies labirintas",
+  "desc": "Pasakyk žodį angliškai – atsidarys pilies durys. Nuvesk herojų pas princesę!",
+  "url": "/pilies-labirintas/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM2YjRkZmYiLz48cGF0aCBkPSJNMTIgNTRWMjZoNnYtNmg2djZoNnYtNmg0djZoNnYtNmg2djZoNnYyOHoiIGZpbGw9IiNlZmUzYzgiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNNDAgMjZWMTJoMTB2MTQiIGZpbGw9IiNlZmUzYzgiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNMzggMTNsNy03IDcgN3oiIGZpbGw9IiNmZjNkOWEiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjYgNTRWNDRhNiA2IDAgMCAxIDEyIDB2MTB6IiBmaWxsPSIjYTU2NDJlIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHBhdGggZD0iTTE3IDM0aDhNMzEgMzRoOE0xNyA0MGg0IiBzdHJva2U9IiM5YzhkNzUiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4="
+ },
+ {
+  "id": "sostines",
+  "subject": "geo",
+  "grades": [
+   6,
+   7,
+   8
+  ],
+  "title": "Sostinių žemėlapis",
+  "desc": "Atpažink Europos ir pasaulio sostines žemėlapyje ir surask šalis.",
+  "url": "/sostines/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMxMmI4ODYiLz48cGF0aCBkPSJNOCAyMGg0OE04IDMyaDQ4TTggNDRoNDhNMjAgOHY0OE0zMiA4djQ4TTQ0IDh2NDgiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjQiIG9wYWNpdHk9Ii40NSIvPjxwYXRoIGQ9Ik0xNCA0MGM0LTEwIDE0LTEyIDE4LThzMTIgMCAxNi02YzIgOC0yIDE4LTEyIDIwcy0yMCAyLTIyLTZ6IiBmaWxsPSIjZjNlYWQyIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTMzIDM0YzAtNy01LTExLTUtMTVhNSA1IDAgMCAxIDEwIDBjMCA0LTUgOC01IDE1eiIgZmlsbD0iI2U1MjQzYiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjMzIiBjeT0iMTkiIHI9IjIiIGZpbGw9IiNmZmYiLz48L3N2Zz4="
  }
 ];
