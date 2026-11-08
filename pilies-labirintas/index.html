@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pilies labirintas – MokomėsKartu.lt</title>
+<meta name="description" content="2–4 klasių anglų kalbos žaidimas: pasakyk žodį angliškai, atidaryk pilies duris ir nuvesk riterį pas princesę.">
+<meta name="theme-color" content="#fff9e6">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM2YjRkZmYiLz48cGF0aCBkPSJNMTIgNTRWMjZoNnYtNmg2djZoNnYtNmg0djZoNnYtNmg2djZoNnYyOHoiIGZpbGw9IiNlZmUzYzgiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNNDAgMjZWMTJoMTB2MTQiIGZpbGw9IiNlZmUzYzgiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNMzggMTNsNy03IDcgN3oiIGZpbGw9IiNmZjNkOWEiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjYgNTRWNDRhNiA2IDAgMCAxIDEyIDB2MTB6IiBmaWxsPSIjYTU2NDJlIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHBhdGggZD0iTTE3IDM0aDhNMzEgMzRoOE0xNyA0MGg0IiBzdHJva2U9IiM5YzhkNzUiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<style>
+/* Pilies labirintas: viršuje pilies planas su riteriu, apačioje žodžio kortelė su mikrofono mygtuku. */
+body{--ac:#6b4dff;--ac-ink:#fff;--ac-soft:#ebe5ff}
+.heroes{display:flex;justify-content:center;gap:12px;margin:2px 0 16px}
+.heroes button{display:grid;justify-items:center;gap:2px;width:118px;padding:8px 6px 10px;border:0;border-radius:22px;cursor:pointer;background:var(--card);
+  font:800 17px/1.1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.16)}
+.heroes button svg{width:58px;height:70px}
+.heroes button[aria-pressed="true"]{background:var(--ac-soft);box-shadow:inset 0 0 0 4px var(--ac),0 5px 0 rgba(18,26,51,.16)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 8px}
+.score{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:#fff3b0;font:800 20px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink)}
+.score svg{width:22px;height:22px}
+.castle{width:100%;max-width:520px;margin:0 auto;display:block}
+.castle svg{width:100%;height:auto;display:block}
+.hero-tok{transition:transform .75s cubic-bezier(.4,1.3,.5,1)}
+.door{transform-box:fill-box;transition:transform .45s ease}
+.door.h{transform-origin:0 50%}.door.h.open{transform:scaleX(.15)}
+.door.v{transform-origin:50% 0}.door.v.open{transform:scaleY(.15)}
+.trail{transition:stroke-dashoffset .75s ease}
+.plus{font:800 18px var(--kid);fill:#e5243b;animation:plus 1s ease-out forwards}
+@keyframes plus{to{transform:translateY(-26px);opacity:0}}
+.word{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;max-width:520px;margin:12px auto 0;padding:12px 14px;
+  background:var(--card);border-radius:24px;box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.16)}
+.word .pic{font-size:52px;line-height:1;width:64px;text-align:center}
+.word .lt{font:800 clamp(24px,6vw,32px)/1.1 var(--kid)}
+.word small{display:block;font:700 14px/1.2 var(--body);color:var(--soft);margin-top:4px}
+.mic{position:relative;width:76px;height:76px;border-radius:50%;border:0;cursor:pointer;background:var(--ac);color:#fff;display:grid;place-items:center;
+  box-shadow:0 6px 0 rgba(18,26,51,.28)}
+.mic svg{width:34px;height:34px}
+.mic:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(18,26,51,.28)}
+.mic.on::before{content:"";position:absolute;inset:-8px;border-radius:50%;border:4px solid var(--ac);animation:ring 1s infinite}
+@keyframes ring{from{transform:scale(.9);opacity:1}to{transform:scale(1.25);opacity:0}}
+.mic[hidden]{display:none}
+.opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:520px;margin:12px auto 0}
+.opts button{min-height:58px;border:0;border-radius:18px;cursor:pointer;background:var(--card);font:800 clamp(18px,5vw,24px)/1 var(--kid);
+  box-shadow:inset 0 0 0 3px var(--ink),0 5px 0 rgba(18,26,51,.2);overflow-wrap:anywhere;padding:4px}
+.opts button.ok{background:#7ee08a}
+.opts button.no{background:#ffb4a2;opacity:.75;pointer-events:none}
+.modeLink{display:block;margin:10px auto 0;border:0;background:none;color:var(--soft);font:700 15px/1.3 var(--body);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.en{font:800 1.05em/1 var(--kid);background:#ebe5ff;border-radius:10px;padding:2px 8px;white-space:nowrap}
+#guideBox{margin-top:10px}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1>Pilies <em>labirintas</em></h1>
+      <p>Pasakyk žodį angliškai – durys atsidarys. Nuvesk herojų per pilį pas princesę!</p>
+    </div>
+    <div class="heroes" id="heroes"></div>
+    <div id="levels"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><span class="score" aria-label="Taškai"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.8l3 6.5 7.1.8-5.3 4.8 1.5 7L12 17.4l-6.3 3.5 1.5-7L1.9 9.1 9 8.3z" fill="#ffc61a" stroke="#d99a00"/></svg><span id="pts">0</span></span></div>
+    <div class="castle" id="castle"></div>
+    <div class="word" id="word">
+      <div class="pic" id="pic" aria-hidden="true"></div>
+      <div><div class="lt" id="lt"></div><small id="ask">Pasakyk angliškai</small></div>
+      <button class="mic" id="mic" type="button" aria-label="Spausk ir sakyk žodį angliškai"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8.5" y="2.5" width="7" height="12" rx="3.5" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5M8.5 21.5h7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="opts" id="opts" hidden></div>
+    <button class="modeLink" id="modeLink" type="button"></button>
+    <div id="guideBox"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "pilies-labirintas", ROUND = 8, GRADES = [2, 3, 4];
+/* Words: lt – Lithuanian prompt, en – expected answer, alt – other accepted answers and common sound-alikes. */
+const W = (e, lt, en, alt) => ({ e, lt, en, alt: alt || [] });
+const LEVELS = [
+  { id: "gyvunai", name: "Gyvūnai", sub: "cat, dog, horse…", art: "🐶", words: [
+    W("🐱", "katė", "cat"), W("🐶", "šuo", "dog"), W("🐟", "žuvis", "fish"), W("🐦", "paukštis", "bird"), W("🐴", "arklys", "horse"),
+    W("🐮", "karvė", "cow"), W("🐷", "kiaulė", "pig"), W("🦆", "antis", "duck"), W("🐸", "varlė", "frog"), W("🐭", "pelė", "mouse"),
+    W("🐰", "triušis", "rabbit", ["bunny"]), W("🐻", "lokys", "bear", ["bare"]), W("🦁", "liūtas", "lion"), W("🐵", "beždžionė", "monkey"),
+    W("🐑", "avis", "sheep"), W("🐘", "dramblys", "elephant")] },
+  { id: "maistas", name: "Maistas", sub: "apple, bread, milk…", art: "🍎", words: [
+    W("🍎", "obuolys", "apple"), W("🍞", "duona", "bread"), W("🥛", "pienas", "milk"), W("🧀", "sūris", "cheese"), W("🥚", "kiaušinis", "egg"),
+    W("🎂", "tortas", "cake"), W("💧", "vanduo", "water"), W("🍊", "apelsinas", "orange"), W("🥕", "morka", "carrot"), W("🍵", "arbata", "tea", ["tee"]),
+    W("🍦", "ledai", "ice cream", ["icecream"]), W("🧃", "sultys", "juice"), W("🍐", "kriaušė", "pear", ["pair", "pare"]), W("🥔", "bulvė", "potato"),
+    W("🍲", "sriuba", "soup"), W("🍬", "saldainis", "sweet", ["sweets", "candy", "candies"])] },
+  { id: "spalvos", name: "Spalvos ir skaičiai", sub: "red, blue, one, two…", art: "🔴", words: [
+    W("🔴", "raudonas", "red", ["read"]), W("🔵", "mėlynas", "blue", ["blew"]), W("🟢", "žalias", "green"), W("🟡", "geltonas", "yellow"),
+    W("⚫", "juodas", "black"), W("⚪", "baltas", "white"), W("🟤", "rudas", "brown"), W("🟣", "violetinis", "purple"), W("🟠", "oranžinis", "orange"),
+    W("1", "vienas", "one", ["won"]), W("2", "du", "two", ["to", "too"]), W("3", "trys", "three"), W("4", "keturi", "four", ["for"]),
+    W("5", "penki", "five"), W("7", "septyni", "seven"), W("8", "aštuoni", "eight", ["ate"]), W("10", "dešimt", "ten")] },
+  { id: "namai", name: "Namai ir mokykla", sub: "book, pen, chair…", art: "🎒", words: [
+    W("📕", "knyga", "book"), W("🖊️", "rašiklis", "pen"), W("✏️", "pieštukas", "pencil"), W("🎒", "kuprinė", "bag", ["schoolbag", "school bag", "backpack"]),
+    W("🪑", "kėdė", "chair"), W("🚪", "durys", "door"), W("🛏️", "lova", "bed"), W("🏠", "namas", "house", ["home"]), W("⚽", "kamuolys", "ball"),
+    W("🚗", "automobilis", "car"), W("⏰", "laikrodis", "clock"), W("📱", "telefonas", "phone", ["telephone", "mobile"]), W("💻", "kompiuteris", "computer"),
+    W("🔑", "raktas", "key"), W("☕", "puodelis", "cup", ["mug"])] }
+];
+const taskai = n => n % 10 === 1 && n % 100 !== 11 ? "taškas" : n % 10 >= 2 && (n % 100 < 10 || n % 100 > 20) ? "taškai" : "taškų";
+const ALL_EN = new Set(LEVELS.flatMap(l => l.words.map(w => w.en)));
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), opts = $("opts"), mic = $("mic"), modeLink = $("modeLink");
+const savedGrade = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: "Pilies labirintas", grade: GRADES.includes(savedGrade) ? savedGrade : GRADES[0] }));
+$("guideBox").innerHTML = MK.guide("");
+const guide = $("guideBox").firstElementChild;
+
+/* ---------- characters ---------- */
+const HEROES = {
+  riteris: { name: "Riteris", plume: "#e5243b", hair: "#7a4b2a" },
+  ritere:  { name: "Riterė",  plume: "#ff3d9a", hair: "#e0a43a", braid: true }
+};
+const knight = h => `<g>
+  ${h.braid ? `<path d="M-13 -30 q-6 12 -2 22" stroke="${h.hair}" stroke-width="6" stroke-linecap="round" fill="none"/>` : ""}
+  <path d="M-11 -2 h22 l-3 -16 h-16z" fill="#8aa0c8" stroke="#121a33" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M-4 -16 h8 v14 h-8z" fill="${h.plume}"/>
+  <circle cx="0" cy="-27" r="11" fill="#ffd9b5" stroke="#121a33" stroke-width="2.2"/>
+  <path d="M-11 -28 a11 11 0 0 1 22 0 v-1 h-22z" fill="#c4cfe3" stroke="#121a33" stroke-width="2.2"/>
+  <path d="M0 -38 q10 -10 14 -2 q-8 -2 -14 4" fill="${h.plume}" stroke="#121a33" stroke-width="1.6"/>
+  <circle cx="-4" cy="-25" r="1.8" fill="#121a33"/><circle cx="4" cy="-25" r="1.8" fill="#121a33"/>
+  <path d="M-3 -20 q3 2.5 6 0" stroke="#121a33" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <path d="M12 -20 l9 -12" stroke="#9aa6b8" stroke-width="3.5" stroke-linecap="round"/><path d="M9 -18 l6 2" stroke="#121a33" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M-16 -16 h9 v8 q-4.5 6 -9 0z" fill="#ffc61a" stroke="#121a33" stroke-width="2"/></g>`;
+const PRINCESS = `<g>
+  <path d="M-12 0 l4 -18 h16 l4 18z" fill="#ff8ac0" stroke="#121a33" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M-11 -24 q-2 14 -6 18 q8 0 6 -8M11 -24 q2 14 6 18 q-8 0 -6 -8" fill="#ffc61a" stroke="#121a33" stroke-width="1.6"/>
+  <circle cx="0" cy="-26" r="10" fill="#ffd9b5" stroke="#121a33" stroke-width="2.2"/>
+  <path d="M-10 -28 q10 -12 20 0 q-10 -6 -20 0z" fill="#ffc61a" stroke="#121a33" stroke-width="1.6"/>
+  <path d="M-7 -36 l3 -8 l4 5 l4 -5 l3 8z" fill="#ffc61a" stroke="#121a33" stroke-width="1.8" stroke-linejoin="round"/>
+  <circle cx="-3.5" cy="-25" r="1.7" fill="#121a33"/><circle cx="3.5" cy="-25" r="1.7" fill="#121a33"/>
+  <path d="M-3 -21 q3 2.5 6 0" stroke="#121a33" stroke-width="1.5" fill="none" stroke-linecap="round"/></g>`;
+let heroId = MK.get("mk-pilis-herojus", "riteris"); if(!HEROES[heroId]) heroId = "riteris";
+function drawHeroes(){
+  $("heroes").innerHTML = Object.entries(HEROES).map(([id, h]) => `<button type="button" data-h="${id}" aria-pressed="${id === heroId}">
+    <svg viewBox="-24 -46 48 50" aria-hidden="true">${knight(h)}</svg>${h.name}</button>`).join("");
+}
+$("heroes").addEventListener("click", e => { const b = e.target.closest("[data-h]"); if(!b) return; heroId = b.dataset.h; MK.set("mk-pilis-herojus", heroId); MK.sfx.tap(); drawHeroes(); });
+$("heroArt").innerHTML = `<svg viewBox="0 0 260 150" aria-hidden="true">
+  <rect x="40" y="52" width="180" height="92" fill="#cfc3ae" stroke="#121a33" stroke-width="3"/>
+  <path d="M40 52v-12h18v12h18v-12h18v12h18v-12h18v12h18v-12h18v12h18v-12h18v12" fill="#cfc3ae" stroke="#121a33" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="176" y="10" width="44" height="134" fill="#bfb29a" stroke="#121a33" stroke-width="3"/>
+  <path d="M170 12 l28 -22 l28 22z" fill="#6b4dff" stroke="#121a33" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M198 -10v-12l16 6l-16 6" fill="#e5243b" stroke="#121a33" stroke-width="2"/>
+  <rect x="188" y="34" width="20" height="24" rx="10" fill="#ffe9a8" stroke="#121a33" stroke-width="2.5"/>
+  <path d="M110 144v-34a20 20 0 0 1 40 0v34z" fill="#a5642e" stroke="#121a33" stroke-width="3"/>
+  <g transform="translate(198 56) scale(.62)">${PRINCESS}</g>
+  <g transform="translate(78 142) scale(1.15)">${knight(HEROES.riteris)}</g></svg>`;
+
+/* ---------- castle map: 3×3 rooms walked as a snake from bottom-left to the tower room ---------- */
+const RW = 96, RH = 72, OX = 16, OY = 44, NS = "http://www.w3.org/2000/svg";
+const PATH = [[0, 2], [1, 2], [2, 2], [2, 1], [1, 1], [0, 1], [0, 0], [1, 0], [2, 0]];
+const cx = ([c]) => OX + c * RW + RW / 2, cy = ([, r]) => OY + r * RH + RH / 2 + 12;
+let svg = null;
+function drawCastle(){
+  const Wd = OX * 2 + RW * 3, Ht = OY + RH * 3 + 16;
+  let s = `<svg viewBox="0 0 ${Wd} ${Ht}" role="img" aria-label="Pilies planas: 9 kambariai, kelias į princesės bokštą">
+    <rect x="${OX - 8}" y="${OY - 8}" width="${RW * 3 + 16}" height="${RH * 3 + 16}" rx="6" fill="#9c8d75" stroke="#121a33" stroke-width="3"/>`;
+  for(let k = 0; k < 9; k++) s += `<rect x="${OX - 8 + k * (RW * 3 - 6) / 8}" y="${OY - 20}" width="22" height="14" fill="#9c8d75" stroke="#121a33" stroke-width="2.5"/>`;
+  for(let c = 0; c < 3; c++) for(let r = 0; r < 3; r++){
+    const last = c === 2 && r === 0;
+    s += `<rect x="${OX + c * RW + 3}" y="${OY + r * RH + 3}" width="${RW - 6}" height="${RH - 6}" rx="4" fill="${last ? "#ffe9f3" : "#efe3c8"}"/>`;
+    s += `<path d="M${OX + c * RW + 14} ${OY + r * RH + 20}h10M${OX + c * RW + 60} ${OY + r * RH + 52}h12" stroke="#ddcfae" stroke-width="3" stroke-linecap="round"/>`;
+  }
+  // red carpet trail
+  const d = PATH.map((p, i) => `${i ? "L" : "M"}${cx(p)} ${cy(p) - 2}`).join("");
+  s += `<path d="${d}" fill="none" stroke="#e8c9a0" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="trail" class="trail" d="${d}" fill="none" stroke="#e5243b" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>`;
+  // inner walls: thick lines with gaps where doors are
+  const doorAt = new Set(PATH.slice(1).map((p, i) => [PATH[i], p].map(q => q.join(",")).sort().join("|")));
+  for(let c = 0; c < 3; c++) for(let r = 0; r < 3; r++){
+    if(c < 2){ const key = [`${c},${r}`, `${c + 1},${r}`].sort().join("|"), x = OX + (c + 1) * RW, y0 = OY + r * RH;
+      s += doorAt.has(key) ? `<path d="M${x} ${y0}v${RH / 2 - 15}M${x} ${y0 + RH / 2 + 15}v${RH / 2 - 15}" stroke="#7d6e57" stroke-width="7"/>` : `<path d="M${x} ${y0}v${RH}" stroke="#7d6e57" stroke-width="7"/>`; }
+    if(r < 2){ const key = [`${c},${r}`, `${c},${r + 1}`].sort().join("|"), y = OY + (r + 1) * RH, x0 = OX + c * RW;
+      s += doorAt.has(key) ? `<path d="M${x0} ${y}h${RW / 2 - 17}M${x0 + RW / 2 + 17} ${y}h${RW / 2 - 17}" stroke="#7d6e57" stroke-width="7"/>` : `<path d="M${x0} ${y}h${RW}" stroke="#7d6e57" stroke-width="7"/>`; }
+  }
+  // doors between consecutive rooms of the path
+  PATH.slice(1).forEach((p, i) => {
+    const a = PATH[i], vert = a[1] === p[1];
+    const mx = vert ? OX + Math.max(a[0], p[0]) * RW : OX + a[0] * RW + RW / 2, my = vert ? OY + a[1] * RH + RH / 2 : OY + Math.max(a[1], p[1]) * RH;
+    s += vert
+      ? `<g class="door v" id="door${i}"><rect x="${mx - 5}" y="${my - 15}" width="10" height="30" rx="2" fill="#a5642e" stroke="#121a33" stroke-width="2"/><circle cx="${mx}" cy="${my + 3}" r="1.8" fill="#ffc61a"/></g>`
+      : `<g class="door h" id="door${i}"><rect x="${mx - 17}" y="${my - 5}" width="34" height="10" rx="2" fill="#a5642e" stroke="#121a33" stroke-width="2"/><circle cx="${mx + 8}" cy="${my}" r="1.8" fill="#ffc61a"/></g>`;
+  });
+  // torches and the tower flag
+  s += `<path d="M${OX + RW * 2.5} ${OY - 20}v-20l16 6l-16 6" fill="#e5243b" stroke="#121a33" stroke-width="2"/>`;
+  s += `<g transform="translate(${OX + RW * 2.5 + 26} ${OY + RH / 2 + 22})">${PRINCESS}</g><g id="hearts"></g>`;
+  s += `<g id="fx"></g><g id="hero" class="hero-tok" style="transform:translate(${cx(PATH[0])}px,${cy(PATH[0]) + 8}px)">${knight(HEROES[heroId])}</g></svg>`;
+  $("castle").innerHTML = s; svg = $("castle").firstElementChild;
+  const tr = $("trail"), len = tr.getTotalLength(); tr.style.strokeDasharray = len; tr.style.strokeDashoffset = len; tr._len = len;
+}
+function walkTo(step){
+  const p = PATH[step], h = $("hero");
+  h.style.transform = `translate(${cx(p) - (step === 8 ? 18 : 0)}px,${cy(p) + 8}px)`;
+  const tr = $("trail"), part = PATH.slice(0, step + 1).reduce((s, q, i, arr) => i ? s + Math.hypot(cx(q) - cx(arr[i - 1]), cy(q) - cy(arr[i - 1])) : 0, 0);
+  tr.style.strokeDashoffset = tr._len - part;
+}
+function floatPts(n){
+  const p = PATH[step], g = document.createElementNS(NS, "text");
+  g.setAttribute("x", cx(p) + 18); g.setAttribute("y", cy(p) - 30); g.setAttribute("class", "plus"); g.textContent = "+" + n;
+  $("fx").appendChild(g); setTimeout(() => g.remove(), 1100);
+}
+
+/* ---------- speech ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let voiceMode = !!SR && MK.get("mk-pilis-balsas", true), rec = null, listening = false;
+const NUM = { "0": "zero", "1": "one", "2": "two", "3": "three", "4": "four", "5": "five", "6": "six", "7": "seven", "8": "eight", "9": "nine", "10": "ten" };
+const norm = s => String(s).toLowerCase().replace(/\d+/g, m => " " + (NUM[m] || m) + " ").replace(/[^a-z' ]+/g, " ").replace(/\s+/g, " ").trim();
+function lev(a, b){
+  const m = a.length, n = b.length, d = Array.from({ length: m + 1 }, (_, i) => [i]);
+  for(let j = 1; j <= n; j++) d[0][j] = j;
+  for(let i = 1; i <= m; i++) for(let j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[m][n];
+}
+function matches(heard, w){
+  const goals = [w.en, ...w.alt].map(norm);
+  const h = " " + norm(heard).replace(/\b(a|an|the|it's|its|is|this|my)\b/g, " ").replace(/\s+/g, " ").trim() + " ";
+  if(goals.some(g => h.includes(" " + g + " "))) return true;
+  const words = h.trim().split(" ");
+  return goals.some(g => !g.includes(" ") && g.length >= 5 && words.some(x => !ALL_EN.has(x) && Math.abs(x.length - g.length) <= 1 && lev(x, g) <= 1));
+}
+let voices = [];
+function loadVoices(){ try{ voices = speechSynthesis.getVoices(); }catch(e){} }
+if(window.speechSynthesis){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+function sayEn(text){
+  if(!window.speechSynthesis) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang = "en-GB"; u.rate = .85;
+    const v = voices.find(v => /^en[-_]GB/i.test(v.lang)) || voices.find(v => /^en/i.test(v.lang)); if(v) u.voice = v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function listen(){
+  if(!SR || listening || busy) return;
+  MK.unlock(); MK.music.stop();
+  try{
+    rec = new SR(); rec.lang = "en-GB"; rec.interimResults = false; rec.maxAlternatives = 5; rec.continuous = false;
+  }catch(e){ return switchToChoice("Mikrofonas šioje naršyklėje neveikia – rinkis iš atsakymų."); }
+  let got = false;
+  rec.onresult = e => {
+    got = true; const alts = []; for(const r of e.results) for(let k = 0; k < r.length; k++) alts.push(r[k].transcript);
+    const ok = alts.some(a => matches(a, word));
+    answer(ok, alts[0] || "");
+  };
+  rec.onerror = e => {
+    if(["not-allowed", "service-not-allowed", "audio-capture", "network"].includes(e.error))
+      switchToChoice(e.error === "network" ? "Balso atpažinimui reikia interneto. Kol kas rinkis iš atsakymų." : "Leisk naudoti mikrofoną arba rinkis iš atsakymų.");
+  };
+  rec.onend = () => { listening = false; mic.classList.remove("on"); $("ask").textContent = "Pasakyk angliškai"; if(!got && !busy && voiceMode) MK.say(guide, "Negirdėjau. Spausk mikrofoną ir pasakyk garsiai."); MK.music.start(); };
+  try{ rec.start(); listening = true; mic.classList.add("on"); $("ask").textContent = "Klausau…"; }
+  catch(e){ listening = false; }
+}
+function switchToChoice(msg){
+  voiceMode = false; if(rec) try{ rec.abort(); }catch(e){}
+  listening = false; mic.classList.remove("on"); showMode(); if(msg) MK.say(guide, msg, "bad");
+}
+function showMode(){
+  mic.hidden = !voiceMode; opts.hidden = voiceMode;
+  $("ask").textContent = voiceMode ? "Pasakyk angliškai" : "Kaip angliškai?";
+  modeLink.hidden = !SR;
+  modeLink.textContent = voiceMode ? "Negaliu kalbėti – rinksiuosi iš atsakymų" : "Noriu sakyti balsu";
+  if(!voiceMode && word) drawOpts();
+  if(word && !busy) prompt();
+}
+function prompt(){ MK.say(guide, voiceMode ? `Durys užrakintos! Spausk mikrofoną ir pasakyk <b>${MK.esc(word.lt)}</b> angliškai.` : `Kaip angliškai <b>${MK.esc(word.lt)}</b>?`); }
+modeLink.addEventListener("click", () => { voiceMode = !voiceMode; MK.set("mk-pilis-balsas", voiceMode); MK.sfx.tap(); showMode(); });
+mic.addEventListener("click", listen);
+
+/* ---------- game flow ---------- */
+let lvl = 0, words = [], step = 0, word = null, tries = 0, firstOK = 0, pts = 0, busy = false, dots = null;
+function showMenu(){ play.hidden = true; menu.hidden = false; drawHeroes(); MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); window.scrollTo(0, 0); }
+function start(i){
+  lvl = i; step = 0; firstOK = 0; pts = 0; $("pts").textContent = 0;
+  words = MK.shuffle(LEVELS[i].words).slice(0, ROUND);
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), ROUND); window.scrollTo(0, 0);
+  drawCastle(); next();
+}
+function drawOpts(){
+  const pool = LEVELS[lvl].words.filter(w => w.en !== word.en);
+  const set = MK.shuffle([word, ...MK.shuffle(pool).slice(0, 2)]);
+  opts.innerHTML = set.map(w => `<button type="button" data-en="${MK.esc(w.en)}">${MK.esc(w.en)}</button>`).join("");
+}
+function next(){
+  if(step >= ROUND) return finish();
+  word = words[step]; tries = 0; busy = false; dots.cur(step);
+  $("pic").textContent = word.e; $("lt").textContent = word.lt;
+  showMode();
+}
+async function answer(ok, heard, btn){
+  if(busy) return;
+  if(ok){
+    busy = true; const gain = tries === 0 ? 10 : 5; if(tries === 0) firstOK++;
+    pts += gain; $("pts").textContent = pts; dots.mark(step, tries === 0);
+    if(btn) btn.classList.add("ok");
+    MK.sfx.good(); sayEn(word.en);
+    MK.say(guide, `${MK.praise()} <span class="en">${MK.esc(word.en)}</span> – ${MK.esc(word.lt)}`);
+    floatPts(gain);
+    $("door" + step).classList.add("open"); await MK.wait(450);
+    walkTo(step + 1); MK.sfx.hop(step);
+    await MK.wait(1300); step++; next();
+    return;
+  }
+  tries++;
+  if(btn) btn.classList.add("no");
+  MK.sfx.bad();
+  if(tries === 1){
+    const heardTxt = heard && voiceMode ? `Išgirdau „${MK.esc(heard)}“. ` : "";
+    MK.say(guide, `${heardTxt}Pabandyk dar! Žodis prasideda raide <span class="en">${MK.esc(word.en[0].toUpperCase())}</span>`, "bad");
+    return;
+  }
+  busy = true; dots.mark(step, false);
+  MK.say(guide, `Teisingai būtų <span class="en">${MK.esc(word.en)}</span>. Pakartok garsiai!`, "bad");
+  sayEn(word.en);
+  if(!voiceMode) opts.querySelectorAll("button").forEach(b => { if(b.dataset.en === word.en) b.classList.add("ok"); });
+  await MK.wait(1900);
+  $("door" + step).classList.add("open"); await MK.wait(400); walkTo(step + 1);
+  await MK.wait(1100); step++; next();
+}
+opts.addEventListener("click", e => { const b = e.target.closest("button"); if(!b || busy) return; MK.unlock(); answer(b.dataset.en === word.en, b.dataset.en, b); });
+async function finish(){
+  busy = true; word = null;
+  MK.say(guide, "Valio! Herojus pasiekė princesę!");
+  const hearts = $("hearts"), p = PATH[8];
+  if(hearts) hearts.innerHTML = [0, 1, 2].map(k => `<g transform="translate(${cx(p) + 4 + k * 8} ${cy(p) - 44})"><path class="plus" style="animation-delay:${k * .2}s" d="M0 3 C-6 -4 -12 2 0 10 C12 2 6 -4 0 3z" fill="#ff3d9a"/></g>`).join("");
+  MK.confetti(); MK.sfx.win();
+  await MK.wait(1400);
+  const stars = MK.starsFor(firstOK, ROUND);
+  MK.best(GAME, LEVELS[lvl].id, stars);
+  MK.result({ stars, title: `${pts} ${taskai(pts)}!`, text: `Iš pirmo karto pasakei ${firstOK} iš ${ROUND} žodžių.`,
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, nextLabel: "Kita tema →", again: () => start(lvl), menu: showMenu, menuLabel: "Visos temos" });
+}
+showMenu();
+})();
+</script>
+</body>
+</html>
