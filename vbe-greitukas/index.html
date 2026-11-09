@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>VBE greitukas – MokomėsKartu.lt</title>
+<meta name="description" content="Matematikos VBE treniruoklis 11–12 klasėms: trumpojo atsakymo užduotys su laikmačiu, sprendimais ir silpnų temų suvestine.">
+<meta name="theme-color" content="#f4f6ff">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMzYjViZGIiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjM1IiByPSIyMCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNMjcgMTBoMTBNMzIgMTB2NU00OCAxN2wzLTMiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMiAzNVYyMk0zMiAzNWw4IDYiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iMzUiIHI9IjIuNSIgZmlsbD0iI2U4NTkwYyIvPjwvc3ZnPg==">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<style>
+/* VBE greitukas: rimtas, ramus stilius gimnazistams. Kortelė su užduotimi, atsakymo laukas, po atsakymo – sprendimas. */
+body{--paper:#f4f6ff;--grid:#dde3f7;--soft:#525b78;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#3b5bdb;--ac-ink:#fff;--ac-soft:#e0e7ff}
+.mk-ico[data-k="music"]{display:none}
+.mk-lvls{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));max-width:760px}
+.mk-lvl{border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink);grid-template-columns:52px minmax(0,1fr) auto;gap:12px}
+.mk-lvl-art{border-radius:10px;font-size:15px;width:52px;height:52px}
+.mk-lvl-t b{font-size:16px;letter-spacing:-.02em}
+.mk-lvl-t small{font-size:13px}
+.mk-star svg{width:17px;height:17px}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(32px,8vw,52px)}
+.mk-btn{border-radius:12px;font-size:17px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res .mk-owl{display:none}
+.mk-res h2{font-size:26px;letter-spacing:-.03em}
+.mk-fr{font-family:var(--body);font-weight:800;font-size:.92em}
+h2.sec{font:800 14px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin:22px auto 10px;max-width:760px}
+.weak{max-width:760px;margin:0 auto;background:#fff;border-radius:12px;padding:12px 14px;box-shadow:inset 0 0 0 2px var(--ink);display:grid;gap:8px}
+.weak .r{display:grid;grid-template-columns:110px minmax(0,1fr) 48px;gap:10px;align-items:center;font:700 14px/1.2 var(--body)}
+.weak .b{height:10px;border-radius:5px;background:#e6e9f5;overflow:hidden}
+.weak .b i{display:block;height:100%;border-radius:5px;background:var(--ac)}
+.weak .r.lo .b i{background:#e8590c}
+.weak .r span:last-child{text-align:right;font-weight:800}
+.weak p{margin:0;color:var(--soft);font-size:14px}
+.note{max-width:760px;margin:14px auto 0;color:var(--soft);font-size:13px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 10px;flex-wrap:wrap}
+.chips{display:flex;gap:8px}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;background:#fff;font:800 17px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink);font-variant-numeric:tabular-nums}
+.chip small{font:800 11px/1 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.chip.warn{background:#fff0e6}
+.card{background:#fff;border-radius:14px;padding:16px 16px 18px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.card small{display:block;font:800 12px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+.task{font:700 clamp(19px,5vw,24px)/1.5 var(--body);margin-top:8px}
+.task .m{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-style:italic;font-weight:600;font-size:1.08em;white-space:nowrap}
+.task sup,.sol sup{font-size:.68em}
+.task sub,.sol sub{font-size:.68em}
+.ansrow{display:flex;gap:10px;margin-top:16px}
+.ansrow input{flex:1;min-width:0;height:56px;border-radius:10px;border:0;box-shadow:inset 0 0 0 2.5px var(--ink);padding:0 14px;font:800 22px/1 var(--kid);color:var(--ink);background:#fbfcff}
+.ansrow input:focus{outline:3px solid var(--ac);outline-offset:2px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.opts button{min-height:64px;border:0;border-radius:10px;cursor:pointer;background:#fff;font:800 24px/1 var(--body);box-shadow:inset 0 0 0 2.5px var(--ink),4px 4px 0 var(--ink)}
+.opts button:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 2.5px var(--ink),2px 2px 0 var(--ink)}
+.opts button.ok{background:#7ee08a}
+.opts button.no{background:#ffb4a2}
+.opts button.sel{background:var(--ac-soft)}
+.fb{margin-top:14px;border-radius:12px;padding:12px 14px;background:#fff;border:2px dashed #b9c4ea;font:600 16px/1.5 var(--body)}
+.fb.ok{border-color:var(--good);background:#effcf6}
+.fb.bad{border-color:#ff8a7a;background:#fff4f1}
+.fb b{font-weight:800}
+.sol{margin-top:6px}
+.go{margin-top:14px;width:100%}
+.review{display:grid;gap:10px;margin-top:4px}
+.review .it{background:#fff;border-radius:12px;padding:12px 14px;box-shadow:inset 0 0 0 2px var(--ink);font:600 15px/1.5 var(--body)}
+.review .it.ok{box-shadow:inset 0 0 0 3px var(--good)}
+.review .it.bad{box-shadow:inset 0 0 0 3px #ff8a7a}
+.review .it small{display:block;font:800 11px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.review h3{margin:0;font:800 22px/1.2 var(--kid);letter-spacing:-.03em}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app" style="max-width:820px">
+  <section id="menu">
+    <div class="mk-hero">
+      <h1>VBE <em>greitukas</em></h1>
+      <p>Trumpojo atsakymo matematikos užduotys su laikmačiu. Kiekvieną kartą – naujos užduotys ir išsamūs sprendimai.</p>
+    </div>
+    <div id="levels"></div>
+    <h2 class="sec">Tavo temos</h2>
+    <div class="weak" id="weak"></div>
+    <p class="note">Užduotys sugeneruotos pagal VBE trumpojo atsakymo užduočių pavyzdį; tai treniruoklis, ne oficialios egzamino užduotys. Rezultatai saugomi tik šiame įrenginyje.</p>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><div class="chips"><span class="chip" id="clock"><small>Laikas</small><span id="time">0:00</span></span><span class="chip"><small>Taškai</small><span id="pts">0</span></span></div></div>
+    <div id="board"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "vbe-greitukas", GRADES = [11, 12], N = 10, EXAM_SEC = 15 * 60;
+const R = MK.rnd, P = MK.pick;
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while(b){ [a, b] = [b, a % b]; } return a; };
+const fr = (a, b) => { const g = gcd(a, b); a /= g; b /= g; if(b < 0){ a = -a; b = -b; } return b === 1 ? String(a) : `${a}/${b}`; };
+const D = s => typeof s === "number" ? num(s) : String(s).includes("/") ? F(String(s).replace("-", "−")) : isFinite(val(s)) ? num(val(s)) : MK.esc(s);
+const F = s => { const [a, b] = String(s).split("/"); return b ? MK.frac(a, b) : a; };
+const m = s => `<span class="m">${s}</span>`;
+const sgn = (k, first) => k < 0 ? (first ? "−" : " − ") + Math.abs(k) : (first ? "" : " + ") + k;
+const num = v => String(Math.round(v * 100) / 100).replace(".", ",").replace("-", "−");
+const xs = v => v < 0 ? `(${num(v)})` : String(v);
+const C = (n, k) => { let r = 1; for(let i = 1; i <= k; i++) r = r * (n - k + i) / i; return r; };
+
+/* ---------- užduočių generatoriai: kiekvienas grąžina { q, ans, sol } arba { q, choices, ans, sol } ---------- */
+const TOPICS = {
+  laipsniai: { name: "Laipsniai", art: "aⁿ", gens: [
+    () => { const b = P([2, 3]), x = R(4, 9), y = R(2, 6), r = b === 2 ? R(2, 6) : R(1, 3), z = x + y - r;
+      return { q: `Apskaičiuokite: ${m(`${b}<sup>${x}</sup> · ${b}<sup>${y}</sup> : ${b}<sup>${z}</sup>`)}`, ans: Math.pow(b, r),
+        sol: `Dauginant laipsnius su tuo pačiu pagrindu rodikliai sudedami, dalijant – atimami: ${m(`${b}<sup>${x}+${y}−${z}</sup> = ${b}<sup>${r}</sup> = ${Math.pow(b, r)}`)}.` }; },
+    () => { const [a, root, p] = P([[8, 3, 2], [27, 3, 2], [16, 4, 3], [32, 5, 3], [125, 3, 2], [81, 4, 3], [64, 3, 2], [16, 2, 3]]), base = Math.round(Math.pow(a, 1 / root)), ans = Math.pow(base, p);
+      return { q: `Apskaičiuokite: ${m(`${a}<sup>${p}/${root}</sup>`)}`, ans,
+        sol: `${m(`${a}<sup>${p}/${root}</sup> = (${root === 2 ? "√" : `<sup>${root}</sup>√`}${a})<sup>${p}</sup> = ${base}<sup>${p}</sup> = ${ans}`)}.` }; },
+    () => { const b = P([2, 3, 5]), k = R(1, 3), ans = -k;
+      return { q: `Kokiam skaičiui lygus ${m("x")}, jei ${m(`${b}<sup>x</sup>`)} = ${F(`1/${Math.pow(b, k)}`)}?`, ans,
+        sol: `${F(`1/${Math.pow(b, k)}`)} = ${m(`${b}<sup>−${k}</sup>`)}, todėl ${m(`x = −${k}`)}.` }; }
+  ]},
+  logaritmai: { name: "Logaritmai", art: "log", gens: [
+    () => { const b = P([2, 3, 5, 10]), k = P([-2, -1, 2, 3, 4]), v = Math.pow(b, Math.abs(k)), arg = k < 0 ? F(`1/${v}`) : v;
+      const L = b === 10 ? "lg " : `log<sub>${b}</sub> `;
+      return { q: `Apskaičiuokite: ${m(L)}${arg}`, ans: k,
+        sol: `${arg} = ${m(`${b}<sup>${k < 0 ? "−" + Math.abs(k) : k}</sup>`)}, todėl ${m(L)}${arg} = ${num(k)}.` }; },
+    () => { const [b, x, y] = P([[6, 4, 9], [6, 2, 18], [6, 3, 12], [10, 4, 25], [10, 2, 50], [10, 5, 20], [2, 4, 8], [3, 3, 27]]), k = Math.round(Math.log(x * y) / Math.log(b));
+      const L = b === 10 ? "lg " : `log<sub>${b}</sub> `;
+      return { q: `Apskaičiuokite: ${m(`${L}${x} + ${L}${y}`)}`, ans: k,
+        sol: `Logaritmų suma lygi sandaugos logaritmui: ${m(`${L}(${x}·${y}) = ${L}${x * y}`)} = ${k}, nes ${m(`${b}<sup>${k}</sup> = ${x * y}`)}.` }; },
+    () => { const b = P([2, 3]), k = P([2, 3, 4]), c = R(1, 9), ans = Math.pow(b, k) + c;
+      return { q: `Išspręskite lygtį: ${m(`log<sub>${b}</sub>(x − ${c}) = ${k}`)}`, ans,
+        sol: `${m(`x − ${c} = ${b}<sup>${k}</sup> = ${Math.pow(b, k)}`)}, todėl ${m(`x = ${ans}`)}. Tikrinimas: ${m(`x − ${c} > 0`)} ✓.` }; }
+  ]},
+  procentai: { name: "Procentai", art: "%", gens: [
+    () => { const p0 = 20 * R(2, 20), up = P([10, 20, 25, 50]), dn = P([10, 20, 25, 40]), a1 = p0 * (1 + up / 100), ans = Math.round(a1 * (1 - dn / 100) * 100) / 100;
+      return { q: `Prekė kainavo ${p0} €. Jos kaina padidinta ${up} %, o po to sumažinta ${dn} %. Kiek eurų dabar kainuoja prekė?`, ans,
+        sol: `${m(`${p0} · ${num(1 + up / 100)} = ${num(a1)}`)} €; ${m(`${num(a1)} · ${num(1 - dn / 100)} = ${num(ans)}`)} €.` }; },
+    () => { const b = P([40, 50, 80, 120, 200, 250, 400]), pct = P([5, 10, 15, 20, 25, 30, 40, 60, 75]), a = b * pct / 100;
+      if(!Number.isInteger(a)) return TOPICS.procentai.gens[1]();
+      return { q: `Kiek procentų skaičiaus ${b} sudaro skaičius ${a}?`, ans: pct,
+        sol: `${m(`${a} : ${b} · 100 % = ${pct} %`)}.` }; },
+    () => { const base = 50 * R(4, 40), pct = P([4, 5, 8, 10]), yrs = 2, ans = Math.round(base * Math.pow(1 + pct / 100, yrs) * 100) / 100;
+      return { q: `Į banką padėta ${base} € su ${pct} % metinėmis sudėtinėmis palūkanomis. Kiek eurų bus sąskaitoje po ${yrs} metų? (Atsakymą pateikite šimtųjų tikslumu.)`, ans,
+        sol: `${m(`${base} · ${num(1 + pct / 100)}<sup>${yrs}</sup> = ${num(ans)}`)} €.` }; }
+  ]},
+  isvestine: { name: "Išvestinė", art: "f′", gens: [
+    () => { const a = P([1, 2, -1]), b = R(-3, 3), c = R(-5, 5), d = R(-5, 5), x0 = P([-2, -1, 1, 2, 3]), ans = 3 * a * x0 * x0 + 2 * b * x0 + c;
+      const f = [a === 1 ? "x³" : a === -1 ? "−x³" : `${a}x³`, b ? `${sgn(b)}x²`.replace(/ ([+−]) 1x²/, " $1 x²") : "", c ? `${sgn(c)}x`.replace(/ ([+−]) 1x$/, " $1 x") : "", d ? sgn(d) : ""].join("");
+      return { q: `Duota funkcija ${m(`f(x) = ${f}`)}. Apskaičiuokite ${m(`f′(${num(x0)})`)}.`, ans,
+        sol: `${m(`f′(x) = ${num(3 * a)}x²${b ? sgn(2 * b) + "x" : ""}${c ? sgn(c) : ""}`)}; ${m(`f′(${num(x0)}) = ${num(3 * a)}·${xs(x0)}²${b ? sgn(2 * b) + "·" + xs(x0) : ""}${c ? sgn(c) : ""} = ${num(ans)}`)}.` }; },
+    () => { const p = R(1, 4), ans = p;
+      return { q: `Raskite didesnįjį funkcijos ${m(`f(x) = x³ − ${3 * p * p}x`)} kritinį tašką.`, ans,
+        sol: `${m(`f′(x) = 3x² − ${3 * p * p} = 0`)} ⇒ ${m(`x² = ${p * p}`)} ⇒ ${m(`x = ±${p}`)}. Didesnis – ${m(`x = ${p}`)}.` }; },
+    () => { const k = R(2, 5), x0 = R(1, 3), ans = 2 * k * x0;
+      return { q: `Koks funkcijos ${m(`y = ${k}x²`)} grafiko liestinės, nubrėžtos taške, kurio abscisė ${m(`x = ${x0}`)}, krypties koeficientas?`, ans,
+        sol: `Liestinės krypties koeficientas lygus išvestinės reikšmei: ${m(`y′ = ${2 * k}x`)}, ${m(`y′(${x0}) = ${ans}`)}.` }; }
+  ]},
+  tikimybes: { name: "Tikimybės", art: "P", gens: [
+    () => { const r = R(2, 9), b = R(2, 9), g = R(1, 6), n = r + b + g, ans = fr(r, n);
+      return { q: `Dėžėje yra ${r} raudoni, ${b} mėlyni ir ${g} žali rutuliai. Atsitiktinai traukiamas vienas rutulys. Kokia tikimybė, kad jis raudonas?`, ans, choices: fracChoices(ans, [fr(b, n), fr(r, n - r), fr(1, 3), fr(r, n + 1), fr(g, n)]),
+        sol: `Palankių baigčių ${r}, visų – ${m(`${r} + ${b} + ${g} = ${n}`)}. ${m("P =")} ${F(`${r}/${n}`)}${fr(r, n) !== `${r}/${n}` ? " = " + F(ans) : ""}.` }; },
+    () => { const s = R(4, 10), k = Array.from({ length: 6 }, (_, i) => i + 1).filter(a => s - a >= 1 && s - a <= 6).length, ans = fr(k, 36);
+      return { q: `Metami du lošimo kauliukai. Kokia tikimybė, kad iškritusių akučių suma lygi ${s}?`, ans, choices: fracChoices(ans, [fr(k + 1, 36), fr(k - 1 || 2, 36), fr(1, 6), fr(k, 12), fr(1, 12)]),
+        sol: `Visų baigčių ${m("6 · 6 = 36")}. Sumą ${s} duoda ${k} poros. ${m("P =")} ${F(`${k}/36`)}${ans !== `${k}/36` ? " = " + F(ans) : ""}.` }; },
+    () => { const n = P([3, 4]), k = R(1, n - 1), c = C(n, k), ans = fr(c, Math.pow(2, n));
+      return { q: `Moneta metama ${n} kartus. Kokia tikimybė, kad herbas atsivers lygiai ${k} ${k === 1 ? "kartą" : "kartus"}?`, ans, choices: fracChoices(ans, [fr(1, 2), fr(k, n), fr(1, Math.pow(2, n)), fr(c + 1, Math.pow(2, n)), fr(k, Math.pow(2, n))]),
+        sol: `Visų baigčių ${m(`2<sup>${n}</sup> = ${Math.pow(2, n)}`)}, palankių ${m(`C<sub>${n}</sub><sup>${k}</sup> = ${c}`)}. ${m("P =")} ${F(`${c}/${Math.pow(2, n)}`)}${ans !== `${c}/${Math.pow(2, n)}` ? " = " + F(ans) : ""}.` }; }
+  ]},
+  progresijos: { name: "Progresijos", art: "aₙ", gens: [
+    () => { const a1 = R(-10, 15), d = P([-4, -3, -2, 2, 3, 4, 5, 7]), n = R(8, 25), ans = a1 + (n - 1) * d;
+      return { q: `Aritmetinės progresijos ${m(`a<sub>1</sub> = ${num(a1)}`)}, ${m(`d = ${num(d)}`)}. Raskite ${m(`a<sub>${n}</sub>`)}.`, ans,
+        sol: `${m(`a<sub>n</sub> = a<sub>1</sub> + (n − 1)d = ${num(a1)} + ${n - 1}·${d < 0 ? `(${num(d)})` : d} = ${num(ans)}`)}.` }; },
+    () => { const a1 = R(1, 12), d = R(1, 5), n = P([10, 12, 15, 20]), ans = n * (2 * a1 + (n - 1) * d) / 2;
+      return { q: `Aritmetinės progresijos ${m(`a<sub>1</sub> = ${a1}`)}, ${m(`d = ${d}`)}. Raskite pirmųjų ${n} narių sumą.`, ans,
+        sol: `${m(`S<sub>n</sub> = (2a<sub>1</sub> + (n − 1)d) · n / 2 = (${2 * a1} + ${(n - 1) * d}) · ${n} / 2 = ${ans}`)}.` }; },
+    () => { const b1 = P([1, 2, 3, 5]), q = P([2, 3, -2]), n = R(4, 6), ans = b1 * Math.pow(q, n - 1);
+      return { q: `Geometrinės progresijos ${m(`b<sub>1</sub> = ${b1}`)}, ${m(`q = ${num(q)}`)}. Raskite ${m(`b<sub>${n}</sub>`)}.`, ans,
+        sol: `${m(`b<sub>n</sub> = b<sub>1</sub> · q<sup>n−1</sup> = ${b1} · ${q < 0 ? `(${num(q)})` : q}<sup>${n - 1}</sup> = ${num(ans)}`)}.` }; }
+  ]},
+  lygtys: { name: "Lygtys", art: "x=?", gens: [
+    () => { const b = P([2, 3, 5]), a = P([1, 2]), x = R(-1, 3), c = R(-2, 2), k = a * x + c;
+      if(k < 1 || Math.pow(b, k) > 3200) return TOPICS.lygtys.gens[0]();
+      const ex = `${a === 1 ? "x" : a + "x"}${c ? sgn(c) : ""}`;
+      return { q: `Išspręskite lygtį: ${m(`${b}<sup>${ex}</sup> = ${Math.pow(b, k)}`)}`, ans: x,
+        sol: `${m(`${Math.pow(b, k)} = ${b}<sup>${k}</sup>`)}, todėl ${m(`${ex} = ${k}`)}, ${m(`x = ${num(x)}`)}.` }; },
+    () => { let r1 = R(-6, 6), r2 = R(-6, 9); if(r1 === r2) r2++; const s = r1 + r2, p = r1 * r2, ans = Math.max(r1, r2);
+      return { q: `Raskite didesnįjį lygties ${m(`x²${s ? (sgn(-s) + "x").replace(/ ([+−]) 1x$/, " $1 x") : ""}${p ? sgn(p) : ""} = 0`)} sprendinį.`, ans,
+        sol: `Pagal Vieto teoremą ${m(`x<sub>1</sub> + x<sub>2</sub> = ${num(s)}`)}, ${m(`x<sub>1</sub> · x<sub>2</sub> = ${num(p)}`)}, todėl sprendiniai ${num(Math.min(r1, r2))} ir ${num(ans)}. Didesnis – ${num(ans)}.` }; },
+    () => { const a = R(2, 5), x = R(-4, 6), b = R(-9, 9), c = R(1, a - 1 || 1), rhs = a * x + b - c * x;
+      return { q: `Išspręskite lygtį: ${m(`${a}x${b ? sgn(b) : ""} = ${c === 1 ? "" : c}x${rhs ? sgn(rhs) : ""}`)}`, ans: x,
+        sol: `${m(`${a}x − ${c === 1 ? "" : c}x = ${num(rhs)}${b ? sgn(-b) : ""}`)} ⇒ ${m(`${a - c === 1 ? "" : a - c}x = ${num(rhs - b)}`)} ⇒ ${m(`x = ${num(x)}`)}.` }; }
+  ]}
+};
+function fracChoices(ans, wrong){
+  const set = new Set([ans]);
+  for(const w of MK.shuffle(wrong)){ if(set.size >= 4) break; const v = val(w); if(v > 0 && v < 1 && !set.has(w)) set.add(w); }
+  let k = 2; while(set.size < 4){ const w = fr(1, k++); if(!set.has(w)) set.add(w); }
+  return MK.shuffle([...set]);
+}
+function val(s){ s = String(s).trim().replace(/\s+/g, "").replace(",", ".").replace("−", "-"); if(!s) return NaN;
+  if(s.includes("/")){ const [a, b] = s.split("/"); return +a / +b; } return +s; }
+const TK = Object.keys(TOPICS);
+const LEVELS = [
+  { id: "misrus", name: "Mišrus", sub: "10 užduočių iš visų temų", art: "Σ", topics: TK },
+  { id: "egzaminas", name: "Egzamino režimas", sub: "10 užduočių · 15 min · sprendimai pabaigoje", art: "⏱", topics: TK, exam: true },
+  ...TK.map(k => ({ id: k, name: TOPICS[k].name, sub: "Temos treniruotė", art: TOPICS[k].art, topics: [k] }))
+];
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), board = $("board");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: "VBE greitukas", grade: GRADES.includes(saved) ? saved : GRADES[1] }));
+const taskai = n => n % 10 === 1 && n % 100 !== 11 ? "taškas" : n % 10 >= 2 && (n % 100 < 10 || n % 100 > 20) ? "taškai" : "taškų";
+const mmss = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+
+/* ---------- temų statistika (tik šiame įrenginyje) ---------- */
+const stat = () => MK.get("mk-vbe-stat", {});
+function addStat(t, ok){ const s = stat(); s[t] = s[t] || [0, 0]; s[t][1]++; if(ok) s[t][0]++; MK.set("mk-vbe-stat", s); }
+function drawWeak(){
+  const s = stat(), rows = TK.filter(k => s[k]).map(k => ({ k, p: s[k][0] / s[k][1], n: s[k][1] })).sort((a, b) => a.p - b.p);
+  $("weak").innerHTML = rows.length
+    ? rows.map(r => `<div class="r${r.p < .6 ? " lo" : ""}"><span>${TOPICS[r.k].name}</span><span class="b"><i style="width:${Math.round(r.p * 100)}%"></i></span><span>${Math.round(r.p * 100)}%</span></div>`).join("")
+      + (rows[0].p < .8 ? `<p>Daugiausia klaidų: <b>${TOPICS[rows[0].k].name.toLowerCase()}</b>. Verta patreniruoti šią temą.</p>` : `<p>Puikiai sekasi visose išbandytose temose!</p>`)
+    : `<p>Išspręsk pirmąsias užduotis – čia matysi, kurios temos sekasi geriausiai, o kurias verta pakartoti.</p>`;
+}
+
+/* ---------- žaidimas ---------- */
+let lvl = 0, L = null, tasks = [], ti = 0, cur = null, pts = 0, okN = 0, dots = null, timer = 0, t0 = 0, qT0 = 0, answered = false, log = [];
+function showMenu(){ clearInterval(timer); play.hidden = true; menu.hidden = false; drawWeak(); MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); MK.music.stop(); window.scrollTo(0, 0); }
+function start(i){
+  MK.music.stop(); lvl = i; L = LEVELS[i]; ti = 0; pts = 0; okN = 0; log = [];
+  const order = []; while(order.length < N) order.push(...MK.shuffle(L.topics));
+  tasks = order.slice(0, N).map(t => Object.assign({ t }, P(TOPICS[t].gens)()));
+  menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
+  dots = MK.dots($("dots"), N); $("pts").textContent = 0;
+  t0 = Date.now(); clearInterval(timer); timer = setInterval(tick, 500); tick();
+  next();
+}
+function tick(){
+  const el = Math.floor((Date.now() - t0) / 1000);
+  if(L.exam){ const left = Math.max(0, EXAM_SEC - el); $("time").textContent = mmss(left); $("clock").classList.toggle("warn", left < 120); if(left <= 0) return finish(); }
+  else $("time").textContent = mmss(el);
+}
+function next(){
+  if(ti >= N) return finish();
+  cur = tasks[ti]; answered = false; dots.cur(ti); qT0 = Date.now();
+  const ans = cur.choices
+    ? `<div class="opts">${cur.choices.map(c => `<button type="button" data-v="${c}">${F(c)}</button>`).join("")}</div>`
+    : `<form class="ansrow" id="f" autocomplete="off"><input id="inp" inputmode="decimal" enterkeyhint="done" placeholder="Atsakymas" aria-label="Atsakymas"><button class="mk-btn" type="submit">Tikrinti</button></form>`;
+  board.innerHTML = `<div class="card"><small>${ti + 1} / ${N} · ${TOPICS[cur.t].name}</small><div class="task">${cur.q}</div>${ans}<div id="fbBox"></div></div>`;
+  const inp = $("inp"); if(inp && matchMedia("(hover:hover)").matches) inp.focus();
+}
+function submit(raw, btn){
+  if(answered) return; const v = val(raw); if(raw !== undefined && String(raw).trim() === "") return;
+  answered = true; MK.unlock(); MK.music.stop();
+  const ok = Math.abs(v - val(cur.ans)) < 1e-6, sec = Math.round((Date.now() - qT0) / 1000);
+  const gain = ok ? 10 + (sec < 30 ? 5 : sec < 60 ? 2 : 0) : 0;
+  if(ok){ okN++; pts += gain; } $("pts").textContent = pts;
+  addStat(cur.t, ok); dots.mark(ti, ok); log.push({ task: cur, given: raw, ok });
+  if(L.exam){
+    if(btn) btn.classList.add("sel");
+    MK.sfx.tap(); setTimeout(() => { ti++; next(); }, 350); return;
+  }
+  ok ? MK.sfx.good() : MK.sfx.bad();
+  if(cur.choices) board.querySelectorAll(".opts button").forEach(b => { b.disabled = true; if(b.dataset.v === String(cur.ans)) b.classList.add("ok"); else if(b === btn) b.classList.add("no"); });
+  else { $("inp").readOnly = true; $("f").querySelector("button").disabled = true; }
+  $("fbBox").innerHTML = `<div class="fb ${ok ? "ok" : "bad"}">${ok ? `<b>Teisingai!</b> +${gain} (${sec} s)` : `<b>Neteisingai.</b> Teisingas atsakymas: <b>${D(cur.ans)}</b>`}<div class="sol">${cur.sol}</div></div>
+    <button type="button" class="mk-btn go" id="go">${ti < N - 1 ? "Kita užduotis →" : "Rezultatai"}</button>`;
+  $("go").focus({ preventScroll: true });
+  $("go").scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+board.addEventListener("submit", e => { e.preventDefault(); submit($("inp").value); });
+board.addEventListener("click", e => {
+  const b = e.target.closest(".opts button"); if(b) return submit(b.dataset.v, b);
+  if(e.target.closest("#go")){ ti++; next(); window.scrollTo(0, 0); }
+});
+function finish(){
+  clearInterval(timer);
+  if(L.exam) while(log.length < N){ const t = tasks[log.length]; log.push({ task: t, given: "", ok: false }); addStat(t.t, false); }
+  const stars = MK.starsFor(okN, N); MK.best(GAME, L.id, stars);
+  const sec = Math.floor((Date.now() - t0) / 1000);
+  const bad = {}; log.forEach(x => { if(!x.ok) bad[x.task.t] = (bad[x.task.t] || 0) + 1; });
+  const worst = Object.keys(bad).sort((a, b) => bad[b] - bad[a])[0];
+  if(L.exam) drawReview(sec);
+  MK.result({ stars, title: `${okN} iš ${N}`,
+    text: `${pts} ${taskai(pts)} · ${mmss(sec)}.${worst ? ` Pakartok: ${TOPICS[worst].name.toLowerCase()}.` : " Be klaidų!"}`,
+    next: L.exam ? () => {} : null, nextLabel: "Peržiūrėti sprendimus",
+    again: () => start(lvl), menu: showMenu, menuLabel: "Į meniu" });
+}
+function drawReview(sec){
+  board.innerHTML = `<div class="review"><h3>Egzamino režimas: ${okN} iš ${N} · ${mmss(sec)}</h3>${log.map((x, i) => `<div class="it ${x.ok ? "ok" : "bad"}">
+    <small>${i + 1}. ${TOPICS[x.task.t].name} · ${x.ok ? "teisingai" : "neteisingai"}</small>
+    <div>${x.task.q}</div>
+    <div>Tavo atsakymas: <b>${x.given === "" ? "—" : D(x.given)}</b>${x.ok ? "" : ` · teisingas: <b>${D(x.task.ans)}</b>`}</div>
+    <div class="sol">${x.task.sol}</div></div>`).join("")}
+    <button type="button" class="mk-btn" id="toMenu">Į meniu</button></div>`;
+  $("toMenu").onclick = showMenu;
+}
+showMenu();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Miško namai – MokomėsKartu.lt</title>
+<meta name="description" content="1–2 klasių gamtos žaidimas: kur gyvena gyvūnai, ką jie ėda ir ką veikia žiemą.">
+<meta name="theme-color" content="#fff9e6">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMyZmE4NGYiLz48cGF0aCBkPSJNMTggOCA2IDMwaDdMNCA0NmgyOGwtOS0xNmg3eiIgZmlsbD0iI2JmZjBhOCIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xNSA0NnY4aDZ2LTgiIGZpbGw9IiM3YTRiMmEiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNMzQgNTRWMzZsMTMtMTAgMTMgMTB2MTh6IiBmaWxsPSIjZmZlMWNjIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iNDciIGN5PSI0MiIgcj0iNSIgZmlsbD0iI2ZmOGExZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSI0NS4zIiBjeT0iNDEiIHI9IjEiIGZpbGw9IiMxMjFhMzMiLz48Y2lyY2xlIGN4PSI0OC43IiBjeT0iNDEiIHI9IjEiIGZpbGw9IiMxMjFhMzMiLz48L3N2Zz4=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<style>
+/* Miško namai: viršuje gyvūnas, po juo namelių (arba maisto) kortelės, apačioje pelėdžiukas. */
+body{--ac:#2fa84f;--ac-ink:#fff;--ac-soft:#dcf5d9}
+.emo{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;line-height:1}
+.la{font-size:36px}
+#dots{margin:2px 0 10px}
+.who{display:grid;justify-items:center;gap:2px;background:#fff;border-radius:28px;padding:12px 10px 10px;box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.15)}
+.who .emo{font-size:clamp(84px,24vw,120px);animation:mkIn .45s cubic-bezier(.2,1.4,.4,1)}
+.who b{font:800 clamp(28px,7.5vw,38px)/1.05 var(--kid)}
+.who small{font:800 17px/1.2 var(--kid);color:var(--soft);text-align:center}
+.who.fly .emo{animation:fly .55s ease-in forwards}
+@keyframes fly{to{transform:translateY(120px) scale(.3);opacity:0}}
+.opts{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:10px;margin-top:14px}
+.opt{position:relative;display:grid;justify-items:center;align-content:start;gap:4px;min-height:118px;padding:10px 6px 8px;border:0;border-radius:24px;cursor:pointer;
+  background:var(--bg,#fff);box-shadow:inset 0 0 0 2.5px var(--ink),0 6px 0 rgba(18,26,51,.18);transition:transform .1s}
+.opt:active{transform:translateY(3px)}
+.opt .emo{font-size:46px}
+.opt b{font:800 clamp(17px,4.6vw,21px)/1.1 var(--kid);text-align:center}
+.opt .res{display:flex;flex-wrap:wrap;justify-content:center;gap:1px;min-height:22px;font-size:20px}
+.opt .res span{animation:mkPop .45s cubic-bezier(.2,1.6,.4,1)}
+.opt.ok{box-shadow:inset 0 0 0 4px var(--good),0 6px 0 rgba(18,26,51,.18);animation:mkPulse .6s}
+.opt.no{opacity:.45;pointer-events:none}
+.h-miskas{--bg:#d6f0cf}.h-vanduo{--bg:#cdeeff}.h-pieva{--bg:#fff3b8}.h-ukis{--bg:#ffe1cc}
+.w-isskrenda{--bg:#ffe9b8}.w-miega{--bg:#e6e0ff}.w-budrauja{--bg:#e2f4ff}
+.mk-guide{margin-top:14px}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art emo" id="heroArt" aria-hidden="true" style="font-size:64px;letter-spacing:4px">🌲🦊🐿️🦔</div>
+      <h1>Miško <em>namai</em></h1>
+      <p>Padėk gyvūnams surasti namus, maisto ir pasiruošti žiemai!</p>
+    </div>
+    <div id="levels"></div>
+  </section>
+  <section id="play" hidden>
+    <div id="dots"></div>
+    <div class="who" id="who"></div>
+    <div class="opts" id="opts"></div>
+    <div id="guideBox"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "misko-namai", GRADES = [1, 2], ROUND = 8;
+const HOMES = {
+  miskas: { e: "🌲", t: "Miškas", loc: "miške" },
+  vanduo: { e: "💧", t: "Vanduo", loc: "vandenyje ar prie vandens" },
+  pieva:  { e: "🌼", t: "Pieva",  loc: "pievoje" },
+  ukis:   { e: "🏡", t: "Ūkis",   loc: "ūkyje, pas žmones" }
+};
+const FOOD = {
+  riesutai: ["🌰", "Riešutai", "riešutus"], morka: ["🥕", "Morka", "morkas"], zole: ["🌿", "Žolė", "žolę"], medus: ["🍯", "Medus", "medų"],
+  zuvis: ["🐟", "Žuvis", "žuvį"], grudai: ["🌾", "Grūdai", "grūdus"], nektaras: ["🌸", "Žiedų nektaras", "žiedų nektarą"],
+  vabzdziai: ["🐛", "Vabzdžiai", "vabzdžius"], peles: ["🐭", "Pelės", "peles"], kaulas: ["🦴", "Kaulas", "kaulą"], mesa: ["🍖", "Mėsa", "mėsą"]
+};
+const WINTER = {
+  isskrenda: { e: "☀️", t: "Išskrenda į šiltus kraštus" },
+  miega:     { e: "💤", t: "Žiemą miega" },
+  budrauja:  { e: "❄️", t: "Žiemą būdrauja" }
+};
+/* h – kur gyvena (gali būti keli), f – ką ėda (rodomas pirmasis), no – tikrai ne jo maistas, w – ką veikia žiemą */
+const A = [
+  { n: "Lapė", e: "🦊", h: ["miskas"], f: ["peles"], no: ["zole", "nektaras", "morka"], w: "budrauja" },
+  { n: "Meška", e: "🐻", h: ["miskas"], w: "miega" },
+  { n: "Voverė", e: "🐿️", h: ["miskas"], f: ["riesutai"], no: ["zuvis", "kaulas", "zole"], w: "budrauja" },
+  { n: "Ežys", e: "🦔", h: ["miskas", "pieva"], f: ["vabzdziai"], no: ["zole", "grudai", "nektaras"], w: "miega" },
+  { n: "Pelėda", e: "🦉", h: ["miskas"], f: ["peles"], no: ["zole", "morka", "nektaras"] },
+  { n: "Šernas", e: "🐗", h: ["miskas"], w: "budrauja" },
+  { n: "Elnias", e: "🦌", h: ["miskas"], w: "budrauja" },
+  { n: "Vilkas", e: "🐺", h: ["miskas"], f: ["mesa"], no: ["zole", "nektaras", "morka"], w: "budrauja" },
+  { n: "Kiškis", e: "🐇", h: ["miskas", "pieva"], f: ["morka"], no: ["zuvis", "peles", "kaulas"], w: "budrauja" },
+  { n: "Žuvis", e: "🐟", h: ["vanduo"] },
+  { n: "Antis", e: "🦆", h: ["vanduo", "ukis"] },
+  { n: "Varlė", e: "🐸", h: ["vanduo", "pieva"], f: ["vabzdziai"], no: ["grudai", "morka", "medus"], w: "miega" },
+  { n: "Gulbė", e: "🦢", h: ["vanduo"] },
+  { n: "Bebras", e: "🦫", h: ["vanduo"] },
+  { n: "Ūdra", e: "🦦", h: ["vanduo"] },
+  { n: "Bitė", e: "🐝", h: ["pieva", "ukis"], f: ["nektaras"], no: ["peles", "zuvis", "kaulas"] },
+  { n: "Drugelis", e: "🦋", h: ["pieva"], f: ["nektaras"], no: ["peles", "zuvis", "grudai"] },
+  { n: "Boružė", e: "🐞", h: ["pieva"] },
+  { n: "Žiogas", e: "🦗", h: ["pieva"] },
+  { n: "Karvė", e: "🐄", h: ["ukis"], f: ["zole"], no: ["zuvis", "peles", "kaulas"] },
+  { n: "Kiaulė", e: "🐖", h: ["ukis"] },
+  { n: "Gaidys", e: "🐓", h: ["ukis"], f: ["grudai"], no: ["kaulas", "medus", "nektaras"] },
+  { n: "Avis", e: "🐑", h: ["ukis"], f: ["zole"], no: ["zuvis", "peles", "kaulas"] },
+  { n: "Ožka", e: "🐐", h: ["ukis"], f: ["zole"], no: ["zuvis", "peles", "medus"] },
+  { n: "Arklys", e: "🐴", h: ["ukis"], f: ["zole"], no: ["zuvis", "peles", "kaulas"] },
+  { n: "Šuo", e: "🐕", h: ["ukis"], f: ["mesa"], no: ["zole", "nektaras"] },
+  { n: "Katė", e: "🐈", h: ["ukis"], f: ["peles"], no: ["nektaras", "grudai", "morka"] },
+  { n: "Kregždė", e: "🐦", w: "isskrenda" },
+  { n: "Gandras", e: "🐦", w: "isskrenda" },
+  { n: "Gegutė", e: "🐦", w: "isskrenda" },
+  { n: "Šikšnosparnis", e: "🦇", w: "miega" },
+  { n: "Barsukas", e: "🦡", w: "miega" }
+];
+const LEVELS = [
+  { id: "namai", name: "Kur gyvena?", sub: "Miškas, vanduo, pieva, ūkis", art: '<span class="emo la">🌲</span>', kinds: ["h"] },
+  { id: "maistas", name: "Ką ėda?", sub: "Pamaitink gyvūną", art: '<span class="emo la">🥕</span>', kinds: ["f"] },
+  { id: "ziema", name: "Žiema", sub: "Išskrenda, miega ar būdrauja?", art: '<span class="emo la">❄️</span>', kinds: ["w"] },
+  { id: "visko", name: "Visko po truputį", sub: "Didysis miško iššūkis", art: '<span class="emo la">⭐</span>', kinds: ["h", "f", "w"] }
+];
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), who = $("who"), opts = $("opts");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: "Miško namai", grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("guideBox").innerHTML = MK.guide("Padėk gyvūnui!");
+const guide = $("guideBox").firstElementChild;
+
+let lvl = 0, L = null, list = [], ti = 0, cur = null, tries = 0, firstOK = 0, busy = false, dots = null, residents = {};
+function showMenu(){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); window.scrollTo(0, 0); }
+function makeList(){
+  const out = [], used = new Set();
+  for(let i = 0; i < ROUND; i++){
+    const kind = MK.pick(L.kinds);
+    const pool = A.filter(a => (kind === "h" ? a.h : kind === "f" ? a.f : a.w) && !used.has(a.n));
+    const a = MK.pick(pool); used.add(a.n); out.push({ a, kind });
+  }
+  return out;
+}
+function start(i){
+  lvl = i; L = LEVELS[i]; list = makeList(); ti = 0; firstOK = 0; residents = {};
+  menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
+  dots = MK.dots($("dots"), ROUND); next();
+}
+function next(){
+  if(ti >= ROUND) return finish();
+  cur = list[ti]; tries = 0; busy = false; dots.cur(ti);
+  const a = cur.a, k = cur.kind;
+  const q = k === "h" ? "Kur aš gyvenu?" : k === "f" ? "Ką aš mėgstu ėsti?" : "Ką aš veikiu žiemą?";
+  who.classList.remove("fly");
+  who.innerHTML = `<span class="emo" aria-hidden="true">${a.e}</span><b>${MK.esc(a.n)}</b><small>${q}</small>`;
+  let items;
+  if(k === "h") items = Object.keys(HOMES).map(id => ({ id, cls: "h-" + id, e: HOMES[id].e, t: HOMES[id].t, res: residents[id] || "" }));
+  else if(k === "w") items = Object.keys(WINTER).map(id => ({ id, cls: "w-" + id, e: WINTER[id].e, t: WINTER[id].t }));
+  else items = MK.shuffle([a.f[0], ...MK.shuffle(a.no).slice(0, 2)]).map(id => ({ id, cls: "", e: FOOD[id][0], t: FOOD[id][1] }));
+  opts.style.setProperty("--n", items.length === 4 ? 2 : 3);
+  opts.innerHTML = items.map(o => `<button type="button" class="opt ${o.cls}" data-id="${o.id}"><span class="emo" aria-hidden="true">${o.e}</span><b>${MK.esc(o.t)}</b>${k === "h" ? `<span class="res emo" aria-hidden="true">${o.res}</span>` : ""}</button>`).join("");
+  MK.say(guide, k === "h" ? `Kur gyvena <b>${MK.esc(a.n.toLowerCase())}</b>? Paspausk jo namus!` : k === "f" ? "Paspausk tinkamą maistą." : "Pagalvok, kaip gyvūnas leidžia žiemą.");
+}
+function isRight(id){ const a = cur.a; return cur.kind === "h" ? a.h.includes(id) : cur.kind === "f" ? a.f.includes(id) : a.w === id; }
+function fact(){
+  const a = cur.a;
+  if(cur.kind === "h") return `${a.n} gyvena ${a.h.map(h => HOMES[h].loc).join(", o kartais ir ")}.`;
+  if(cur.kind === "f") return `${a.n} mėgsta ${FOOD[a.f[0]][2]}.`;
+  return a.w === "isskrenda" ? `${a.n} rudenį išskrenda į šiltus kraštus, o pavasarį grįžta.` : a.w === "miega" ? `${a.n} žiemą miega.` : `${a.n} žiemą nemiega – ieško maisto sniege.`;
+}
+async function right(btn){
+  busy = true; if(tries === 0) firstOK++; dots.mark(ti, tries === 0);
+  btn.classList.add("ok"); MK.sfx.good();
+  if(cur.kind === "h"){
+    const id = btn.dataset.id; residents[id] = (residents[id] || "") + `<span>${cur.a.e}</span>`;
+    btn.querySelector(".res").innerHTML = residents[id]; who.classList.add("fly");
+  }
+  MK.say(guide, `${MK.praise()} ${MK.esc(fact())}`);
+  await MK.wait(1900); ti++; next();
+}
+async function reveal(){
+  busy = true; dots.mark(ti, false);
+  opts.querySelectorAll(".opt").forEach(b => { if(isRight(b.dataset.id)) b.classList.add("ok"); });
+  MK.say(guide, `Žiūrėk: ${MK.esc(fact())}`, "bad");
+  await MK.wait(2600); ti++; next();
+}
+opts.addEventListener("click", e => {
+  const b = e.target.closest(".opt"); if(!b || busy) return; MK.unlock();
+  if(isRight(b.dataset.id)) return right(b);
+  tries++; b.classList.add("no"); MK.sfx.bad();
+  if(tries >= 2) return reveal();
+  MK.say(guide, "Ne čia. Pabandyk dar kartą!", "bad");
+});
+function finish(){
+  busy = true;
+  const stars = MK.starsFor(firstOK, ROUND); MK.best(GAME, L.id, stars);
+  MK.result({ stars, text: `Iš pirmo karto teisingai: ${firstOK} iš ${ROUND}.`,
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+showMenu();
+})();
+</script>
+</body>
+</html>

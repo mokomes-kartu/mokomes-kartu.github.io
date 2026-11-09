@@ -94,5 +94,58 @@ window.MK_ZAIDIMAI = [
   "desc": "Atpažink Europos ir pasaulio sostines žemėlapyje ir surask šalis.",
   "url": "/sostines/",
   "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMxMmI4ODYiLz48cGF0aCBkPSJNOCAyMGg0OE04IDMyaDQ4TTggNDRoNDhNMjAgOHY0OE0zMiA4djQ4TTQ0IDh2NDgiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjQiIG9wYWNpdHk9Ii40NSIvPjxwYXRoIGQ9Ik0xNCA0MGM0LTEwIDE0LTEyIDE4LThzMTIgMCAxNi02YzIgOC0yIDE4LTEyIDIwcy0yMCAyLTIyLTZ6IiBmaWxsPSIjZjNlYWQyIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTMzIDM0YzAtNy01LTExLTUtMTVhNSA1IDAgMCAxIDEwIDBjMCA0LTUgOC01IDE1eiIgZmlsbD0iI2U1MjQzYiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjMzIiBjeT0iMTkiIHI9IjIiIGZpbGw9IiNmZmYiLz48L3N2Zz4="
- }
+ },
+{
+ "id": "natu-laiptai",
+ "subject": "muz",
+ "grades": [
+  2,
+  3,
+  4,
+  5,
+  6
+ ],
+ "title": "Natų laiptai",
+ "desc": "Skaityk natas smuiko ir boso raktuose, klausyk, kuris garsas aukštesnis, ir lipk laiptais aukštyn.",
+ "url": "/natu-laiptai/",
+ "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM2YjRkZmYiLz48cGF0aCBkPSJNOCA1MmgxMnYtOGgxMnYtOGgxMnYtOGgxMnYyNEg4eiIgZmlsbD0iI2ZmZDY2YiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yNyAzMFYxMGwxNC0zdjE4IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMy4yIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGVsbGlwc2UgY3g9IjIzIiBjeT0iMzAiIHJ4PSI1LjUiIHJ5PSI0LjIiIGZpbGw9IiNmZmYiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAyMyAzMCkiLz48ZWxsaXBzZSBjeD0iMzciIGN5PSIyNSIgcng9IjUuNSIgcnk9IjQuMiIgZmlsbD0iI2ZmZiIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDM3IDI1KSIvPjwvc3ZnPg=="
+},
+{
+ "id": "misko-namai",
+ "subject": "gam",
+ "grades": [
+  1,
+  2
+ ],
+ "title": "Miško namai",
+ "desc": "Kur gyvena gyvūnai, ką jie ėda ir ką veikia žiemą? Padėk jiems surasti namus.",
+ "url": "/misko-namai/",
+ "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMyZmE4NGYiLz48cGF0aCBkPSJNMTggOCA2IDMwaDdMNCA0NmgyOGwtOS0xNmg3eiIgZmlsbD0iI2JmZjBhOCIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xNSA0NnY4aDZ2LTgiIGZpbGw9IiM3YTRiMmEiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNMzQgNTRWMzZsMTMtMTAgMTMgMTB2MTh6IiBmaWxsPSIjZmZlMWNjIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iNDciIGN5PSI0MiIgcj0iNSIgZmlsbD0iI2ZmOGExZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSI0NS4zIiBjeT0iNDEiIHI9IjEiIGZpbGw9IiMxMjFhMzMiLz48Y2lyY2xlIGN4PSI0OC43IiBjeT0iNDEiIHI9IjEiIGZpbGw9IiMxMjFhMzMiLz48L3N2Zz4="
+},
+{
+ "id": "laiko-juosta",
+ "subject": "ist",
+ "grades": [
+  5,
+  6,
+  7,
+  8
+ ],
+ "title": "Laiko juosta",
+ "desc": "Sudėliok Lietuvos ir pasaulio istorijos įvykius teisinga tvarka. Trys klaidos – ir žaidimas baigtas.",
+ "url": "/laiko-juosta/",
+ "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiNkOTQ4MGYiLz48cGF0aCBkPSJNOCAzMmg0OCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjE0IiBjeT0iMzIiIHI9IjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSI1IiBmaWxsPSIjZmZjNjFhIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PGNpcmNsZSBjeD0iNTAiIGN5PSIzMiIgcj0iNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxyZWN0IHg9IjIyIiB5PSI5IiB3aWR0aD0iMjAiIGhlaWdodD0iMTMiIHJ4PSIzIiBmaWxsPSIjZmZmIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHBhdGggZD0iTTMyIDIydjUiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cmVjdCB4PSI1IiB5PSI0MiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjExIiByeD0iMyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxyZWN0IHg9IjQxIiB5PSI0MiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjExIiByeD0iMyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjwvc3ZnPg=="
+},
+{
+ "id": "vbe-greitukas",
+ "subject": "mat",
+ "grades": [
+  11,
+  12
+ ],
+ "title": "VBE greitukas",
+ "desc": "Matematikos VBE treniruoklis: trumpojo atsakymo užduotys su laikmačiu, sprendimais ir silpnų temų suvestine.",
+ "url": "/vbe-greitukas/",
+ "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMzYjViZGIiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjM1IiByPSIyMCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNMjcgMTBoMTBNMzIgMTB2NU00OCAxN2wzLTMiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMiAzNVYyMk0zMiAzNWw4IDYiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iMzUiIHI9IjIuNSIgZmlsbD0iI2U4NTkwYyIvPjwvc3ZnPg=="
+}
 ];

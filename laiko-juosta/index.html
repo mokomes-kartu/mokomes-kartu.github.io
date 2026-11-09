@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Laiko juosta – MokomėsKartu.lt</title>
+<meta name="description" content="Istorijos žaidimas: sudėliok Lietuvos ir pasaulio istorijos įvykius teisinga tvarka laiko juostoje.">
+<meta name="theme-color" content="#fbf7ef">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiNkOTQ4MGYiLz48cGF0aCBkPSJNOCAzMmg0OCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjE0IiBjeT0iMzIiIHI9IjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSI1IiBmaWxsPSIjZmZjNjFhIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PGNpcmNsZSBjeD0iNTAiIGN5PSIzMiIgcj0iNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxyZWN0IHg9IjIyIiB5PSI5IiB3aWR0aD0iMjAiIGhlaWdodD0iMTMiIHJ4PSIzIiBmaWxsPSIjZmZmIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHBhdGggZD0iTTMyIDIydjUiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cmVjdCB4PSI1IiB5PSI0MiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjExIiByeD0iMyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxyZWN0IHg9IjQxIiB5PSI0MiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjExIiByeD0iMyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjwvc3ZnPg==">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<style>
+/* Laiko juosta: sąsiuvinio stilius 5–8 klasėms. Viršuje nauja įvykio kortelė, žemiau – laiko juosta su tarpais, į kuriuos ją galima įstatyti. */
+body{--paper:#fbf7ef;--grid:#ece2cf;--soft:#6b5f4b;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#d9480f;--ac-ink:#fff;--ac-soft:#ffe3d3}
+.mk-lvl{border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),6px 6px 0 var(--ink)}
+.mk-lvl-art{border-radius:10px;font-size:15px}
+.mk-lvl-t b{font-size:19px;letter-spacing:-.02em}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(32px,8vw,52px)}
+.mk-btn{border-radius:12px;font-size:18px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res .mk-owl{display:none}
+.mk-res h2{font-size:26px;letter-spacing:-.03em}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 10px}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;background:#fff;font:800 18px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink)}
+.chip small{font:800 11px/1 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.hearts{font-size:20px;letter-spacing:2px}
+.hearts .off{filter:grayscale(1);opacity:.3}
+.new{position:sticky;top:6px;z-index:5;background:#fff;border-radius:12px;padding:12px 14px;box-shadow:inset 0 0 0 3px var(--ac),5px 5px 0 var(--ink);margin-bottom:14px}
+.new small,.q small{display:block;font:800 12px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+.new b{display:block;font:800 clamp(17px,4.6vw,21px)/1.25 var(--kid);letter-spacing:-.02em;margin-top:4px;text-wrap:balance}
+.new.pop{animation:mkIn .4s cubic-bezier(.2,1.4,.4,1)}
+.line{position:relative;display:grid;gap:0;padding-left:26px}
+.line::before{content:"";position:absolute;left:9px;top:8px;bottom:8px;width:4px;border-radius:2px;background:var(--ink)}
+.ev{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;background:#fff;border-radius:10px;padding:10px 12px;margin:4px 0;
+  box-shadow:inset 0 0 0 2px var(--ink);font:700 15.5px/1.3 var(--body)}
+.ev::before{content:"";position:absolute;left:-23px;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 3px var(--ink)}
+.ev .y{font:800 18px/1 var(--kid);letter-spacing:-.03em;min-width:3.2em}
+.ev.w{background:#eef5ff}
+.ev.w .y::after{content:" 🌍";font-size:13px}
+.ev.just{animation:mkIn .45s cubic-bezier(.2,1.4,.4,1);box-shadow:inset 0 0 0 3px var(--good)}
+.ev.just::before{background:var(--good)}
+.ev.wrong{box-shadow:inset 0 0 0 3px var(--bad)}
+.ev.wrong::before{background:var(--bad)}
+.slot{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;margin:2px 0;padding:0 12px;border:2.5px dashed #c8b996;border-radius:10px;background:transparent;cursor:pointer;
+  font:800 14px/1 var(--kid);color:var(--soft);letter-spacing:-.01em}
+.slot::before{content:"+";font-size:20px;color:var(--ac)}
+@media (hover:hover){.slot:hover{border-color:var(--ac);background:var(--ac-soft);color:var(--ink)}}
+.slot:active{background:var(--ac-soft)}
+.busy .slot{display:none}
+.q{margin:6px 0 0}
+.q b{display:block;font:800 clamp(20px,5.4vw,28px)/1.2 var(--kid);letter-spacing:-.03em;text-wrap:balance;margin-top:6px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.opts button{min-height:64px;border:0;border-radius:10px;cursor:pointer;background:#fff;font:800 clamp(22px,6vw,28px)/1 var(--kid);letter-spacing:-.03em;
+  box-shadow:inset 0 0 0 2.5px var(--ink),4px 4px 0 var(--ink)}
+.opts button:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 2.5px var(--ink),2px 2px 0 var(--ink)}
+.opts button.ok{background:#7ee08a}
+.opts button.no{background:#ffb4a2;opacity:.75;pointer-events:none}
+.msg{margin:12px 0;min-height:48px;padding:10px 14px;border-radius:10px;background:#fff;border:2px dashed #d7c9a8;font:700 16px/1.35 var(--body)}
+.msg.ok{border-color:var(--good);background:#effcf6}
+.msg.bad{border-color:#ff8a7a;background:#fff4f1}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1>Laiko <em>juosta</em></h1>
+      <p>Įstatyk įvykį į laiko juostą tinkamoje vietoje. Trys klaidos – ir žaidimas baigtas.</p>
+    </div>
+    <div id="levels"></div>
+    <p class="note">Ženklas 🌍 rodo pasaulio istorijos įvykį.</p>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><span class="chip hearts" id="hearts" aria-label="Gyvybės"></span><span class="chip"><small>Taškai</small><span id="pts">0</span></span></div>
+    <div id="board"></div>
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "laiko-juosta", GRADES = [5, 6, 7, 8];
+/* [metai, įvykis, "lt" – Lietuvos / "w" – pasaulio] */
+const EV = [
+  [1009, "Lietuvos vardas pirmą kartą paminėtas Kvedlinburgo analuose", "lt"],
+  [1236, "Saulės mūšis", "lt"],
+  [1253, "Mindaugo karūnavimas", "lt"],
+  [1260, "Durbės mūšis", "lt"],
+  [1323, "Gedimino laiškai – Vilnius pirmą kartą paminėtas kaip sostinė", "lt"],
+  [1385, "Krėvos sutartis", "lt"],
+  [1387, "Lietuvos (Aukštaitijos) krikštas", "lt"],
+  [1410, "Žalgirio mūšis", "lt"],
+  [1413, "Žemaitijos krikštas", "lt"],
+  [1529, "Pirmasis Lietuvos Statutas", "lt"],
+  [1547, "Martyno Mažvydo „Katekizmas“ – pirmoji lietuviška knyga", "lt"],
+  [1569, "Liublino unija – įkurta Abiejų Tautų Respublika", "lt"],
+  [1579, "Įkurtas Vilniaus universitetas", "lt"],
+  [1791, "Gegužės 3-iosios konstitucija", "lt"],
+  [1795, "Trečiasis padalijimas – Lietuva prijungta prie Rusijos imperijos", "lt"],
+  [1863, "Prasidėjo Sausio sukilimas prieš carinę Rusiją", "lt"],
+  [1883, "Pradėta leisti „Aušra“", "lt"],
+  [1904, "Panaikintas lietuviškos spaudos draudimas", "lt"],
+  [1918, "Vasario 16-osios Nepriklausomybės Aktas", "lt"],
+  [1923, "Klaipėdos kraštas prijungtas prie Lietuvos", "lt"],
+  [1933, "Dariaus ir Girėno skrydis per Atlantą", "lt"],
+  [1937, "Lietuva laimėjo Europos krepšinio čempionatą", "lt"],
+  [1940, "Sovietų Sąjunga okupavo Lietuvą", "lt"],
+  [1988, "Įkurtas Sąjūdis", "lt"],
+  [1990, "Kovo 11-oji – atkurta Lietuvos nepriklausomybė", "lt"],
+  [1991, "Sausio 13-osios įvykiai prie Vilniaus televizijos bokšto", "lt"],
+  [2004, "Lietuva įstojo į NATO ir Europos Sąjungą", "lt"],
+  [2015, "Lietuva įsivedė eurą", "lt"],
+  [476, "Žlugo Vakarų Romos imperija", "w"],
+  [1096, "Prasidėjo pirmasis kryžiaus žygis", "w"],
+  [1453, "Osmanai užėmė Konstantinopolį", "w"],
+  [1492, "Kristupas Kolumbas pasiekė Ameriką", "w"],
+  [1517, "Martynas Liuteris paskelbė 95 tezes – Reformacijos pradžia", "w"],
+  [1776, "JAV Nepriklausomybės deklaracija", "w"],
+  [1789, "Prasidėjo Prancūzijos revoliucija", "w"],
+  [1903, "Broliai Raitai pakilo lėktuvu", "w"],
+  [1914, "Prasidėjo Pirmasis pasaulinis karas", "w"],
+  [1939, "Prasidėjo Antrasis pasaulinis karas", "w"],
+  [1945, "Baigėsi Antrasis pasaulinis karas", "w"],
+  [1961, "Jurijus Gagarinas – pirmasis žmogus kosmose", "w"],
+  [1969, "Žmogus pirmą kartą išlipo Mėnulyje", "w"],
+  [1989, "Griuvo Berlyno siena", "w"]
+].map(([y, t, k]) => ({ y, t, k }));
+const LEVELS = [
+  { id: "simtmeciai", name: "Šimtmečiai", sub: "Lietuva · įvykiai toli vienas nuo kito", art: "XIII", mode: "line", pool: e => e.k === "lt", spread: true },
+  { id: "lietuva", name: "Lietuvos istorija", sub: "Visi įvykiai · artimi metai", art: "1410", mode: "line", pool: e => e.k === "lt" },
+  { id: "metai", name: "Kurie metai?", sub: "Pasirink tikslius metus", art: "?", mode: "year", pool: e => e.k === "lt" },
+  { id: "pasaulis", name: "Lietuva ir pasaulis", sub: "Visi įvykiai kartu", art: "🌍", mode: "line", pool: () => true }
+];
+const PLACE = 8, START = 2, YEARQ = 10;
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), board = $("board"), msg = $("msg");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: "Laiko juosta", grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroArt").innerHTML = `<svg viewBox="0 0 260 90" aria-hidden="true" style="width:100%">
+  <line x1="10" y1="50" x2="250" y2="50" stroke="#121a33" stroke-width="4" stroke-linecap="round"/>
+  ${[[30, "1253"], [100, "1410"], [170, "1918"], [235, "1990"]].map(([x, y], i) => `<circle cx="${x}" cy="50" r="7" fill="${i === 2 ? "#d9480f" : "#fff"}" stroke="#121a33" stroke-width="3"/>
+  <text x="${x}" y="${i % 2 ? 84 : 30}" text-anchor="middle" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="15" fill="#121a33">${y}</text>`).join("")}</svg>`;
+const taskai = n => n % 10 === 1 && n % 100 !== 11 ? "taškas" : n % 10 >= 2 && (n % 100 < 10 || n % 100 > 20) ? "taškai" : "taškų";
+
+let lvl = 0, L = null, deck = [], placed = [], cur = null, lives = 3, pts = 0, streak = 0, okCount = 0, total = 0, busy = false, tries = 0;
+function showMenu(){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); window.scrollTo(0, 0); }
+function pickDeck(n){
+  let pool = MK.shuffle(EV.filter(L.pool));
+  const out = [], years = new Set(), cents = new Set();
+  for(const e of pool){
+    if(out.length >= n) break;
+    const c = Math.floor((e.y - 1) / 100);
+    if(years.has(e.y) || (L.spread && cents.has(c))) continue;
+    out.push(e); years.add(e.y); cents.add(c);
+  }
+  return out;
+}
+function start(i){
+  lvl = i; L = LEVELS[i]; lives = 3; pts = 0; streak = 0; okCount = 0; busy = false;
+  menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
+  if(L.mode === "year"){ deck = pickDeck(YEARQ); total = YEARQ; }
+  else { deck = pickDeck(START + PLACE); placed = deck.splice(0, START).sort((a, b) => a.y - b.y); total = deck.length; }
+  hud(); next();
+}
+function hud(){
+  $("hearts").innerHTML = [0, 1, 2].map(i => `<span class="${i < lives ? "" : "off"}">❤️</span>`).join("");
+  $("pts").textContent = pts;
+}
+function say(html, cls){ msg.className = "msg" + (cls ? " " + cls : ""); msg.innerHTML = html; }
+function next(){
+  busy = false; tries = 0;
+  if(lives <= 0 || !deck.length) return finish();
+  cur = deck.shift();
+  if(L.mode === "year") return drawYear();
+  drawLine();
+  say(`Kur šis įvykis? Paspausk tarpą <b>+</b> laiko juostoje.`);
+}
+function drawLine(mark){
+  const rows = [];
+  rows.push(`<div class="new pop"><small>Naujas įvykis${cur.k === "w" ? " · 🌍 pasaulis" : ""}</small><b>${MK.esc(cur.t)}</b></div><div class="line" id="line">`);
+  placed.forEach((e, i) => {
+    rows.push(`<button type="button" class="slot" data-i="${i}">${i === 0 ? "Anksčiau už viską" : "Čia"}</button>`);
+    rows.push(`<div class="ev${e.k === "w" ? " w" : ""}${mark && mark.e === e ? " " + mark.cls : ""}"><span class="y">${e.y}</span><span>${MK.esc(e.t)}</span></div>`);
+  });
+  rows.push(`<button type="button" class="slot" data-i="${placed.length}">Vėliau už viską</button></div>`);
+  board.innerHTML = rows.join("");
+}
+async function placeAt(i){
+  busy = true; board.classList.add("busy");
+  const before = placed[i - 1], after = placed[i];
+  const ok = (!before || before.y < cur.y) && (!after || cur.y < after.y);
+  const e = cur;
+  placed.push(e); placed.sort((a, b) => a.y - b.y);
+  if(ok){
+    streak++; okCount++; const gain = 10 + Math.min(streak - 1, 5) * 2; pts += gain;
+    MK.sfx.good(); say(`<b>${MK.praise()}</b> ${e.y} m. +${gain}${streak > 1 ? ` (serija ${streak})` : ""}`, "ok");
+  } else {
+    streak = 0; lives--; MK.sfx.bad();
+    say(`Ne ten. Šis įvykis – <b>${e.y} m.</b> Žiūrėk, kur jo vieta.`, "bad");
+  }
+  hud(); drawLine({ e, cls: ok ? "just" : "wrong" });
+  board.querySelector(".new").hidden = true;
+  const el = board.querySelector(".ev.just,.ev.wrong"); if(el) el.scrollIntoView({ block: "center", behavior: "smooth" });
+  await MK.wait(ok ? 1500 : 2600);
+  board.classList.remove("busy"); window.scrollTo({ top: 0, behavior: "smooth" });
+  next();
+}
+board.addEventListener("click", e => {
+  const s = e.target.closest(".slot"); if(s && !busy){ MK.unlock(); return placeAt(+s.dataset.i); }
+  const b = e.target.closest(".opts button"); if(b && !busy){ MK.unlock(); return pickYear(b); }
+});
+/* ---------- „Kurie metai?“ ---------- */
+function drawYear(){
+  const ys = new Set([cur.y]);
+  while(ys.size < 4){ const d = MK.pick([1, 2, 3, 5, 7, 10, 13, 20, 25, 30]) * (Math.random() < .5 ? -1 : 1); const y = cur.y + d; if(y > 0 && y <= 2025) ys.add(y); }
+  board.innerHTML = `<div class="q"><small>Kuriais metais?</small><b>${MK.esc(cur.t)}</b></div>
+    <div class="opts">${MK.shuffle([...ys]).map(y => `<button type="button" data-y="${y}">${y}</button>`).join("")}</div>`;
+  say("Pasirink teisingus metus. Dvi klaidos tame pačiame klausime – minus gyvybė.");
+}
+async function pickYear(b){
+  const y = +b.dataset.y;
+  if(y === cur.y){
+    busy = true; b.classList.add("ok"); streak = tries === 0 ? streak + 1 : 0; if(tries === 0) okCount++;
+    const gain = tries === 0 ? 10 + Math.min(streak - 1, 5) * 2 : 4; pts += gain; hud(); MK.sfx.good();
+    say(`<b>${MK.praise()}</b> ${cur.y} m. +${gain}`, "ok");
+    await MK.wait(1300); return next();
+  }
+  tries++; b.classList.add("no"); MK.sfx.bad(); streak = 0;
+  say(`Ne ${y}-ieji. ${y < cur.y ? "Vėliau!" : "Anksčiau!"}`, "bad");
+  if(tries >= 2){
+    busy = true; lives--; hud();
+    board.querySelectorAll(".opts button").forEach(x => { if(+x.dataset.y === cur.y) x.classList.add("ok"); });
+    say(`Teisingai – <b>${cur.y} m.</b> Įsimink!`, "bad");
+    await MK.wait(2200); next();
+  }
+}
+function finish(){
+  busy = true;
+  const stars = lives <= 0 ? 1 : MK.starsFor(okCount, total);
+  MK.best(GAME, L.id, stars);
+  MK.result({ stars, title: `${pts} ${taskai(pts)}`,
+    text: lives <= 0 ? `Gyvybės baigėsi. Teisingai: ${okCount}. Pabandyk dar kartą!` : `Teisingai iš pirmo karto: ${okCount} iš ${total}.`,
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+showMenu();
+})();
+</script>
+</body>
+</html>

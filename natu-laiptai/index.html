@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Natų laiptai – MokomėsKartu.lt</title>
+<meta name="description" content="Muzikos žaidimas: skaityk natas smuiko ir boso raktuose, klausyk, kuris garsas aukštesnis, ir lipk laiptais į viršų.">
+<meta name="theme-color" content="#fff9e6">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM2YjRkZmYiLz48cGF0aCBkPSJNOCA1MmgxMnYtOGgxMnYtOGgxMnYtOGgxMnYyNEg4eiIgZmlsbD0iI2ZmZDY2YiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yNyAzMFYxMGwxNC0zdjE4IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMy4yIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGVsbGlwc2UgY3g9IjIzIiBjeT0iMzAiIHJ4PSI1LjUiIHJ5PSI0LjIiIGZpbGw9IiNmZmYiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAyMyAzMCkiLz48ZWxsaXBzZSBjeD0iMzciIGN5PSIyNSIgcng9IjUuNSIgcnk9IjQuMiIgZmlsbD0iI2ZmZiIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDM3IDI1KSIvPjwvc3ZnPg==">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<style>
+/* Natų laiptai: viršuje penklinė su nata, po ja laiptai su pelėdžiuku, apačioje natų mygtukai. */
+body{--ac:#6b4dff;--ac-ink:#fff;--ac-soft:#e8e2ff}
+.mk-ico[data-k="music"]{display:none}
+.la{font:800 20px/1 var(--kid)}
+.names{display:flex;justify-content:center;gap:0;margin:0 auto 14px;background:#fff;border-radius:999px;padding:4px;width:max-content;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.names button{border:0;background:transparent;border-radius:999px;padding:9px 16px;font:800 16px/1 var(--kid);cursor:pointer;min-height:40px}
+.names button[aria-pressed="true"]{background:var(--ac);color:#fff}
+.names-l{text-align:center;font-weight:800;color:var(--soft);font-size:14px;margin:0 0 6px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}
+.score{font:800 18px/1 var(--kid);background:#fff;border-radius:999px;padding:8px 14px;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.staff{position:relative;background:#fff;border-radius:26px;box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.15);padding:6px 8px}
+.staff svg{display:block;width:100%;max-width:560px;height:auto;margin:0 auto}
+.staff .ln{stroke:#121a33;stroke-width:2}
+.staff .clef{fill:#121a33}
+.staff .nh{fill:#121a33}
+.staff .nh.ok{fill:var(--good)}
+.staff .nh.two{fill:#ff8a1f}
+.staff .nh.pop{animation:nhPop .4s cubic-bezier(.2,1.6,.4,1);transform-box:fill-box;transform-origin:center}
+@keyframes nhPop{from{transform:scale(.3)}}
+.staff .nm{font:800 26px/1 var(--kid);fill:var(--good)}
+.replay{position:absolute;right:10px;top:10px;width:48px;height:48px;border-radius:50%;border:0;background:var(--ac);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 0 rgba(18,26,51,.28)}
+.replay svg{width:24px;height:24px}
+.replay:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(18,26,51,.28)}
+.stairs{position:relative;height:96px;margin:12px 0 10px}
+.stairs svg.st{position:absolute;inset:0;width:100%;height:100%}
+.climber{position:absolute;width:44px;height:46px;left:0;bottom:0;transition:transform .45s cubic-bezier(.3,1.5,.5,1);z-index:2}
+.climber .mk-owl{width:44px;height:46px;display:block}
+.flag{position:absolute;right:2px;top:-4px;font-size:26px}
+.keys{display:grid;grid-template-columns:repeat(var(--n,7),minmax(0,1fr));gap:8px}
+@media (max-width:520px){.keys{grid-template-columns:repeat(var(--m,4),minmax(0,1fr))}}
+.keys button{min-height:62px;border:0;border-radius:18px;background:#fff;cursor:pointer;font:800 clamp(20px,5.4vw,26px)/1 var(--kid);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.18);transition:transform .1s}
+.keys button:active{transform:translateY(3px);box-shadow:inset 0 0 0 2.5px var(--ink),0 2px 0 rgba(18,26,51,.18)}
+.keys button.ok{background:#b6f0c3}
+.keys button.no{background:#ffc9bd;opacity:.7;pointer-events:none}
+.keys.ear{grid-template-columns:1fr 1fr!important}
+.keys.ear button{min-height:74px}
+.mk-guide{margin-top:14px}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1>Natų <em>laiptai</em></h1>
+      <p>Nata suskamba – pasakyk, kaip ji vadinasi. Teisingai atsakei? Pelėdžiukas lipa laiptais aukštyn!</p>
+    </div>
+    <p class="names-l">Natų pavadinimai</p>
+    <div class="names" id="names" role="group" aria-label="Natų pavadinimai">
+      <button type="button" data-v="do">do re mi</button><button type="button" data-v="abc">C D E</button>
+    </div>
+    <div id="levels"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><span class="score" id="pts">0</span></div>
+    <div class="staff" id="staff"><div id="staffSvg"></div>
+      <button type="button" class="replay" id="replay" aria-label="Groti dar kartą"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="stairs" id="stairs"></div>
+    <div class="keys" id="keys"></div>
+    <div id="guideBox"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "natu-laiptai", GRADES = [2, 3, 4, 5, 6], ROUND = 10;
+const SOLF = ["do", "re", "mi", "fa", "sol", "la", "si"], ABC = ["C", "D", "E", "F", "G", "A", "H"];
+/* Diatoninis indeksas d = oktava·7 + raidė (C=0 … H=6). C4 (pirmosios oktavos do) = 28. */
+const SEMI = [0, 2, 4, 5, 7, 9, 11];
+const midi = d => 12 * (Math.floor(d / 7) + 1) + SEMI[d % 7];
+const BOTTOM = { g: 30, f: 18 };            // apatinė linija: smuiko rakte E4, boso rakte G2
+const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+const LEVELS = [
+  { id: "dosol",  name: "Do – sol",           sub: "Pirmieji penki garsai",       art: '<span class="la">do</span>',  clef: "g", notes: range(28, 32), keys: 5 },
+  { id: "oktava", name: "Visa oktava",        sub: "Nuo do iki do",               art: '<span class="la">♪♫</span>',  clef: "g", notes: range(28, 35), keys: 7 },
+  { id: "papild", name: "Papildomos linijos", sub: "Žemai ir aukštai",            art: '<span class="la">♪̲</span>',   clef: "g", notes: range(25, 42), keys: 7 },
+  { id: "bosas",  name: "Boso raktas",        sub: "Žemieji garsai",              art: '<span class="la">F</span>',   clef: "f", notes: range(16, 28), keys: 7 },
+  { id: "klausa", name: "Kuris aukštesnis?",  sub: "Klausyk dviejų garsų",        art: '<span class="la">?</span>',   ear: true }
+];
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), keysEl = $("keys");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: "Natų laiptai", grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+let names = MK.get("mk-natu-vardai", "do");
+const nm = d => (names === "abc" ? ABC : SOLF)[d % 7];
+
+/* ---------- garsas: į pianiną panašus tonas (Web Audio) ---------- */
+let ctx = null;
+function ac(){ if(!ctx){ const C = window.AudioContext || window.webkitAudioContext; if(!C) return null; ctx = new C(); } if(ctx.state === "suspended") ctx.resume(); return ctx; }
+function pluck(m, when, dur){
+  const c = ac(); if(!c) return; const t = c.currentTime + 0.03 + (when || 0), f = 440 * Math.pow(2, (m - 69) / 12), d = dur || 1.3;
+  const g = c.createGain(); g.connect(c.destination);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.32, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  [[1, "triangle", 1], [2, "sine", .35], [3, "sine", .12]].forEach(([k, type, v]) => {
+    const o = c.createOscillator(), og = c.createGain(); o.type = type; o.frequency.value = f * k; og.gain.value = v;
+    o.connect(og); og.connect(g); o.start(t); o.stop(t + d + 0.05);
+  });
+}
+document.addEventListener("visibilitychange", () => { if(ctx){ document.hidden ? ctx.suspend() : ctx.resume(); } });
+
+/* ---------- penklinė ---------- */
+/* Raktų kontūrai iš šrifto FreeSerif (GNU FreeFont), kad nereikėtų muzikinio šrifto. */
+const CLEF_G = "M434 2Q464 -103 464 -170Q464 -223 427.0 -257.0Q390 -291 337 -291Q287 -291 250.0 -261.5Q213 -232 213 -190Q213 -160 233.5 -133.5Q254 -107 283.5 -107.0Q313 -107 331.5 -128.5Q350 -150 350 -178Q350 -240 280 -240Q298 -268 338 -268Q353 -268 368.5 -263.5Q384 -259 401.0 -248.0Q418 -237 428.5 -213.5Q439 -190 439 -157Q439 -136 411 -6Q389 -12 356 -12Q259 -12 189.5 60.0Q120 132 120 232Q120 267 131.5 303.0Q143 339 157.5 366.5Q172 394 200.5 428.5Q229 463 248.5 483.5Q268 504 303 539Q280 621 280 689Q280 779 313.0 839.5Q346 900 379 900Q389 900 401.5 887.0Q414 874 426.0 851.0Q438 828 446.5 790.5Q455 753 455 710Q455 551 342 447L368 329Q384 332 397 332Q458 332 500.0 282.5Q542 233 542 162Q542 44 434 2ZM426 746Q426 801 394 801Q358 801 333.0 748.0Q308 695 308 630Q308 588 321 557Q359 580 392.5 639.5Q426 699 426 746ZM498 128Q498 183 466.0 216.0Q434 249 383 249L428 23Q498 52 498 128ZM407 17 361 247Q334 241 311.5 214.0Q289 187 289 158Q289 143 295.0 128.5Q301 114 309.5 104.0Q318 94 327.0 86.0Q336 78 342.0 74.5Q348 71 348 71L340 66Q307 75 277.5 106.0Q248 137 248 184Q248 231 277.5 270.5Q307 310 343 323L325 430Q168 299 168 177Q168 104 223.0 55.0Q278 6 348 6Q365 6 407 17Z";
+const CLEF_F = "M564 704Q582 704 594.5 691.0Q607 678 607.0 661.0Q607 644 593.0 631.0Q579 618 563 618Q521 618 521 663Q521 681 534.0 692.5Q547 704 564 704ZM607 469Q607 450 594.0 437.0Q581 424 564 424Q521 424 521 469Q521 485 533.5 498.0Q546 511 564.0 511.0Q582 511 594.5 497.0Q607 483 607 469ZM285 757Q366 757 421.0 701.5Q476 646 476 569Q476 531 465.5 495.0Q455 459 432.0 426.5Q409 394 386.0 367.0Q363 340 326.0 313.0Q289 286 264.0 267.5Q239 249 196.5 226.0Q154 203 135.5 193.5Q117 184 80 166L75 182Q76 183 102.0 200.0Q128 217 144.0 227.5Q160 238 191.5 263.0Q223 288 244.0 309.5Q265 331 291.5 363.5Q318 396 334.0 427.0Q350 458 361.5 498.0Q373 538 373 578Q373 735 262 735Q225 735 199.0 725.5Q173 716 161.5 702.0Q150 688 145.0 677.5Q140 667 140 659Q140 644 160 644Q168 644 179.0 647.5Q190 651 194 651Q221 651 239.0 634.0Q257 617 257 592Q257 563 235.0 544.0Q213 525 183 525Q144 525 119.0 548.0Q94 571 94 607Q94 673 150.5 715.0Q207 757 285 757Z";
+const H = 9, TOP = 44, W = 340;  // H – pusė tarpo tarp linijų
+const yOf = (d, clef) => TOP + 8 * H - (d - BOTTOM[clef]) * H;
+function staffSVG(clef, heads, label){
+  const pos = d => d - BOTTOM[clef];
+  let s = `<svg viewBox="0 0 ${W} 196" role="img" aria-label="Penklinė su nata">`;
+  for(let i = 0; i < 5; i++) s += `<line class="ln" x1="8" x2="${W - 8}" y1="${TOP + i * 2 * H}" y2="${TOP + i * 2 * H}"/>`;
+  s += clef === "g"
+    ? `<path class="clef" d="${CLEF_G}" transform="translate(4 ${TOP + 6 * H + 19.8}) scale(.11 -.11)"/>`
+    : `<path class="clef" d="${CLEF_F}" transform="translate(4 ${TOP + 2 * H + 59.4}) scale(.11 -.11)"/>`;
+  (heads || []).forEach(h => {
+    const p = pos(h.d), y = yOf(h.d, clef), x = h.x;
+    for(let q = -2; q >= p; q -= 2) s += `<line class="ln" x1="${x - 19}" x2="${x + 19}" y1="${TOP + 8 * H - q * H}" y2="${TOP + 8 * H - q * H}"/>`;
+    for(let q = 10; q <= p; q += 2) s += `<line class="ln" x1="${x - 19}" x2="${x + 19}" y1="${TOP + 8 * H - q * H}" y2="${TOP + 8 * H - q * H}"/>`;
+    s += `<ellipse class="nh ${h.cls || ""}" cx="${x}" cy="${y}" rx="${H * 1.3}" ry="${H * .92}" transform="rotate(-20 ${x} ${y})"/>`;
+    const up = p < 4, sx = up ? x + H * 1.18 : x - H * 1.18;
+    s += `<line class="ln" style="stroke-width:2.4" x1="${sx}" x2="${sx}" y1="${y + (up ? -2 : 2)}" y2="${y + (up ? -7 * H : 7 * H)}"/>`;
+    if(h.label) s += `<text class="nm" x="${x + (up ? -34 : 30)}" y="${y + 9}" text-anchor="middle">${MK.esc(h.label)}</text>`;
+  });
+  return s + `</svg>`;
+}
+const drawStaff = (clef, heads) => { $("staffSvg").innerHTML = staffSVG(clef, heads); };
+
+/* ---------- laiptai ---------- */
+function drawStairs(){
+  const n = ROUND, w = 100 / (n + 1);
+  let p = "M0 96";
+  for(let i = 0; i <= n; i++){ const x = i * w, y = 96 - (i + 1) * (80 / (n + 1)); p += `V${y.toFixed(1)}H${(x + w).toFixed(1)}`; }
+  p += "V96Z";
+  $("stairs").innerHTML = `<svg class="st" viewBox="0 0 100 96" preserveAspectRatio="none" aria-hidden="true"><path d="${p}" fill="#ffd66b" stroke="#121a33" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg>
+    <span class="flag" aria-hidden="true">🏁</span><div class="climber" id="climber">${MK.owl()}</div>`;
+}
+function climb(step){
+  const box = $("stairs"), c = $("climber"); if(!c) return;
+  const w = box.clientWidth / (ROUND + 1), h = 96 * (80 / (ROUND + 1)) / 96;
+  const x = step * w + w / 2 - 22, y = (step + 1) * h;
+  c.style.transform = `translate(${x}px,${-y}px)`;
+}
+window.addEventListener("resize", () => climb(steps));
+
+/* ---------- meniu ---------- */
+$("heroArt").innerHTML = `<div class="staff" style="background:#fff;border-radius:22px;box-shadow:inset 0 0 0 3px #121a33;padding:4px 6px">${staffSVG("g", [{ d: 28, x: 120 }, { d: 30, x: 175 }, { d: 32, x: 230, cls: "ok" }, { d: 35, x: 285 }])}</div>`;
+function paintNames(){ $("names").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === names)); }
+$("names").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; names = b.dataset.v; MK.set("mk-natu-vardai", names); paintNames(); MK.sfx.tap(); });
+paintNames();
+
+/* ---------- žaidimas ---------- */
+$("guideBox").innerHTML = MK.guide("Klausyk ir žiūrėk!");
+const guide = $("guideBox").firstElementChild;
+let lvl = 0, L = null, list = [], ti = 0, cur = null, tries = 0, firstOK = 0, pts = 0, steps = 0, busy = false, dots = null;
+function showMenu(){ play.hidden = true; menu.hidden = false; MK.music.stop(); MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); MK.music.stop(); window.scrollTo(0, 0); }
+function makeList(){
+  if(L.ear){
+    /* poros: pradžioje dideli tarpai, pabaigoje – maži (sekundos) */
+    return Array.from({ length: ROUND }, (_, i) => {
+      const gap = i < 3 ? MK.rnd(4, 6) : i < 7 ? MK.rnd(2, 3) : 1;
+      const a = MK.rnd(28, 35 - gap), b = a + gap;
+      return Math.random() < .5 ? [a, b] : [b, a];
+    });
+  }
+  const out = []; let prev = -1;
+  while(out.length < ROUND){ const d = MK.pick(L.notes); if(d !== prev){ out.push(d); prev = d; } }
+  return out;
+}
+function start(i){
+  MK.music.stop(); ac(); lvl = i; L = LEVELS[i]; list = makeList(); ti = 0; firstOK = 0; pts = 0; steps = 0; $("pts").textContent = "0";
+  menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
+  dots = MK.dots($("dots"), ROUND); drawStairs(); requestAnimationFrame(() => climb(0));
+  keysEl.classList.toggle("ear", !!L.ear);
+  if(L.ear){ keysEl.innerHTML = `<button type="button" data-k="0">Pirmas</button><button type="button" data-k="1">Antras</button>`; }
+  else {
+    const first = L.keys === 5 ? [0, 1, 2, 3, 4] : [0, 1, 2, 3, 4, 5, 6];
+    keysEl.style.setProperty("--n", first.length); keysEl.style.setProperty("--m", first.length === 5 ? 5 : 4);
+    keysEl.innerHTML = first.map(k => `<button type="button" data-k="${k}">${nm(k)}</button>`).join("");
+  }
+  next();
+}
+function sound(){
+  if(L.ear){ pluck(midi(cur[0]), 0, 1); pluck(midi(cur[1]), 0.9, 1.2); }
+  else pluck(midi(cur), 0, 1.4);
+}
+function next(){
+  if(ti >= ROUND) return finish();
+  cur = list[ti]; tries = 0; busy = false; dots.cur(ti);
+  keysEl.querySelectorAll("button").forEach(b => b.classList.remove("ok", "no"));
+  if(L.ear){ drawStaff("g", []); MK.say(guide, "Klausyk: <b>kuris</b> garsas aukštesnis?"); }
+  else { drawStaff(L.clef, [{ d: cur, x: W * .6, cls: "pop" }]); MK.say(guide, ti === 0 ? "Kaip vadinasi ši nata?" : MK.pick(["O ši?", "Kokia čia nata?", "Pažink natą!"])); }
+  setTimeout(sound, 250);
+}
+async function right(btn){
+  busy = true; const gain = tries === 0 ? 10 : 5; if(tries === 0) firstOK++;
+  pts += gain; $("pts").textContent = pts; dots.mark(ti, tries === 0); btn.classList.add("ok");
+  if(L.ear){
+    const [a, b] = cur;
+    drawStaff("g", [{ d: a, x: W * .45, cls: a > b ? "ok" : "two" }, { d: b, x: W * .72, cls: b > a ? "ok" : "two" }]);
+    MK.say(guide, `${MK.praise()} ${a > b ? "Pirmas" : "Antras"} garsas aukštesnis: <b>${nm(Math.max(a, b))}</b>.`);
+  } else {
+    $("staffSvg").innerHTML = staffSVG(L.clef, [{ d: cur, x: W * .6, cls: "ok", label: nm(cur) }]);
+    MK.say(guide, `${MK.praise()} Tai <b>${nm(cur)}</b>.`);
+  }
+  steps++; climb(steps); MK.sfx.hop(steps);
+  await MK.wait(L.ear ? 1700 : 1200);
+  ti++; next();
+}
+async function reveal(){
+  busy = true; dots.mark(ti, false);
+  if(L.ear){
+    const [a, b] = cur, k = a > b ? 0 : 1;
+    keysEl.children[k].classList.add("ok");
+    drawStaff("g", [{ d: a, x: W * .45, cls: a > b ? "ok" : "two" }, { d: b, x: W * .72, cls: b > a ? "ok" : "two" }]);
+    MK.say(guide, `Aukštesnis buvo <b>${k ? "antras" : "pirmas"}</b> garsas. Paklausyk dar.`, "bad");
+  } else {
+    const b = keysEl.querySelector(`[data-k="${cur % 7}"]`); if(b) b.classList.add("ok");
+    $("staffSvg").innerHTML = staffSVG(L.clef, [{ d: cur, x: W * .6, cls: "ok", label: nm(cur) }]);
+    MK.say(guide, `Tai buvo <b>${nm(cur)}</b>. Įsimink!`, "bad");
+  }
+  sound(); await MK.wait(2300);
+  ti++; next();
+}
+keysEl.addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b || busy) return; ac();
+  const k = +b.dataset.k;
+  const ok = L.ear ? (k === 0) === (cur[0] > cur[1]) : k === cur % 7;
+  if(ok) return right(b);
+  tries++; b.classList.add("no"); MK.sfx.bad();
+  if(tries >= 2 || L.ear) return reveal();
+  MK.say(guide, "Ne visai. Paklausyk dar kartą!", "bad"); setTimeout(sound, 400);
+});
+$("replay").addEventListener("click", () => { if(cur != null) sound(); });
+function finish(){
+  busy = true;
+  const stars = MK.starsFor(firstOK, ROUND);
+  MK.best(GAME, L.id, stars);
+  MK.result({ stars, text: `Iš pirmo karto teisingai: ${firstOK} iš ${ROUND}. Taškai: ${pts}.`,
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+showMenu();
+})();
+</script>
+</body>
+</html>
