@@ -127,6 +127,9 @@ h1 .u path{fill:none;stroke:var(--pen);stroke-width:5;stroke-linecap:round}
 .game .subj{font:800 12px/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--tcText)}
 .game h3{margin:2px 0 4px;font:800 21px/1.15 var(--f-display);letter-spacing:-.02em}
 .game p{margin:0;color:var(--ink-soft);font-size:14.5px;line-height:1.4}
+.mystat{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin:14px 0 0;padding:12px 16px;background:var(--card);border:2.5px solid var(--line);font-weight:700;font-size:15px}
+.mystat b{font:800 20px/1 var(--f-display)}
+.game .won{grid-column:1/-1;font-weight:800;font-size:14px;color:var(--ink-soft);margin-top:-4px}
 .game .play{grid-column:1/-1;justify-self:start;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:var(--tc);color:var(--tink);font-weight:800}
 .soon{display:flex;flex-wrap:wrap;gap:10px;list-style:none;margin:0;padding:0}
 .soon li{display:inline-flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;background:var(--card);border:1.5px dashed var(--grid-strong);font-weight:700;font-size:15px;color:var(--ink-soft)}
@@ -199,6 +202,7 @@ footer .sig{font:700 22px/1 var(--f-pen);color:var(--pen)}
         <button class="back" id="changeBtn" type="button">← Keisti klasę</button>
       </div>
     </section>
+    <div class="mystat" id="myStat" hidden></div>
     <h2 class="sec-title" id="gamesTitle">Jau galima žaisti</h2>
     <div class="games" id="games"></div>
     <h2 class="sec-title">Netrukus</h2>
@@ -281,6 +285,13 @@ footer .sig{font:700 22px/1 var(--f-pen);color:var(--pen)}
       </div>`).join("");
   }
 
+  // Bendra statistika: žvaigždutės, kurias žaidimai saugo šiame įrenginyje (raktas "mk-<žaidimas>").
+  const starsOf = id => { try { const o = JSON.parse(localStorage.getItem("mk-" + id) || "{}"); return Object.values(o).filter(v => typeof v === "number").reduce((a, b) => a + b, 0); } catch(e){ return 0; } };
+  function renderStat(){
+    const per = GAMES.map(g => starsOf(g.id)), total = per.reduce((a, b) => a + b, 0), played = per.filter(Boolean).length;
+    $("myStat").hidden = !total;
+    $("myStat").innerHTML = `<span>⭐ Iš viso surinkta: <b>${total}</b></span><span>Išbandyta žaidimų: <b>${played}</b> iš ${GAMES.length}</span>`;
+  }
   function renderClass(n){
     const t = tierOf(n);
     document.body.dataset.tier = t.id;
@@ -299,8 +310,9 @@ footer .sig{font:700 22px/1 var(--f-pen);color:var(--pen)}
       return `<a class="game" href="${esc(g.url)}">
         <img src="${esc(g.icon)}" alt="" width="76" height="76">
         <div><span class="subj">${esc(s ? s.name : "")}</span><h3>${esc(g.title)}</h3><p>${esc(g.desc)}</p></div>
-        <span class="play">Žaisti →</span></a>`;
+        ${starsOf(g.id) ? `<span class="won">⭐ ${starsOf(g.id)} surinkta</span>` : ""}<span class="play">Žaisti →</span></a>`;
     }).join("") : `<p class="empty-note">Šiai klasei žaidimai dar kuriami. Užsuk netrukus!</p>`;
+    renderStat();
     const withGames = new Set(games.map(g => g.subject));
     $("soon").innerHTML = subs.filter(s => !withGames.has(s.id)).map(s =>
       `<li><span class="sym">${esc(s.sym)}</span>${esc(s.name)}</li>`).join("");

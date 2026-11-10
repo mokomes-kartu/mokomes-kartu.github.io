@@ -147,5 +147,40 @@ window.MK_ZAIDIMAI = [
  "desc": "Matematikos VBE treniruoklis: trumpojo atsakymo užduotys su laikmačiu, sprendimais ir silpnų temų suvestine.",
  "url": "/vbe-greitukas/",
  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMzYjViZGIiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjM1IiByPSIyMCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNMjcgMTBoMTBNMzIgMTB2NU00OCAxN2wzLTMiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMiAzNVYyMk0zMiAzNWw4IDYiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iMzUiIHI9IjIuNSIgZmlsbD0iI2U4NTkwYyIvPjwvc3ZnPg=="
+},
+{
+ "id": "saugi-kelione",
+ "subject": "vis",
+ "grades": [
+  1,
+  2
+ ],
+ "title": "Saugi kelionė į mokyklą",
+ "desc": "Šviesoforas, perėja, kelio ženklai ir atšvaitas – padėk vaikui saugiai nueiti į mokyklą.",
+ "url": "/saugi-kelione/",
+ "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMxYzdlZDYiLz48cmVjdCB4PSIyNCIgeT0iOCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjQwIiByeD0iNSIgZmlsbD0iIzJiMmYzYSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iMTkiIHI9IjYiIGZpbGw9IiNmZjNiM2IiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjM3IiByPSI2IiBmaWxsPSIjM2VlMDZhIi8+PHJlY3QgeD0iMjkuNSIgeT0iNDgiIHdpZHRoPSI1IiBoZWlnaHQ9IjEwIiBmaWxsPSIjZTllY2VmIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMiIvPjxwYXRoIGQ9Ik04IDU4aDQ4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+"
+},
+{
+ "id": "grandines-dirbtuves",
+ "subject": "fiz",
+ "grades": [
+  8
+ ],
+ "title": "Grandinės dirbtuvės",
+ "desc": "Jungikliai ir lemputės, nuoseklusis ir lygiagretusis jungimas, Omo dėsnis ir gedimų paieška.",
+ "url": "/grandines-dirbtuves/",
+ "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMyYjhhM2UiLz48cGF0aCBkPSJNMTIgMjBoNDB2MjhIMTJaIiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMy41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMzIiIGN5PSIyMCIgcj0iOSIgZmlsbD0iI2ZmZTA2NiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwYXRoIGQ9Ik0yNiAxNGwxMiAxMk0zOCAxNCAyNiAyNiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwYXRoIGQ9Ik02IDQwaDEyTTkgNDZoNiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHBhdGggZD0iTTEyIDQwdi04TTEyIDQ2djIiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzLjUiLz48L3N2Zz4="
+},
+{
+ "id": "vbe-anglu",
+ "subject": "en",
+ "grades": [
+  11,
+  12
+ ],
+ "title": "VBE anglų: Use of English",
+ "desc": "Žodžių daryba, laikai, prielinksniai, jungiamieji žodžiai ir kolokacijos su paaiškinimais lietuviškai.",
+ "url": "/vbe-anglu/",
+ "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM3MDQ4ZTgiLz48cmVjdCB4PSI5IiB5PSIxNCIgd2lkdGg9IjQ2IiBoZWlnaHQ9IjM0IiByeD0iNiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjx0ZXh0IHg9IjMyIiB5PSIzOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTciIGZpbGw9IiMxMjFhMzMiPkVOPC90ZXh0PjxwYXRoIGQ9Ik0xOCA1NGgyOCIgc3Ryb2tlPSIjZmZkNDNiIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg=="
 }
 ];

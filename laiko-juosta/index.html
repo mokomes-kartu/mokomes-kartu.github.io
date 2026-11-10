@@ -60,6 +60,7 @@ body{--paper:#fbf7ef;--grid:#ece2cf;--soft:#6b5f4b;--kid:"Unbounded","Arial Blac
 .msg{margin:12px 0;min-height:48px;padding:10px 14px;border-radius:10px;background:#fff;border:2px dashed #d7c9a8;font:700 16px/1.35 var(--body)}
 .msg.ok{border-color:var(--good);background:#effcf6}
 .msg.bad{border-color:#ff8a7a;background:#fff4f1}
+#why .mk-btn{width:100%;margin-top:2px}
 .note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
 </style>
 </head>
@@ -69,15 +70,17 @@ body{--paper:#fbf7ef;--grid:#ece2cf;--soft:#6b5f4b;--kid:"Unbounded","Arial Blac
     <div class="mk-hero">
       <div class="mk-hero-art" id="heroArt"></div>
       <h1>Laiko <em>juosta</em></h1>
-      <p>Įstatyk įvykį į laiko juostą tinkamoje vietoje. Trys klaidos – ir žaidimas baigtas.</p>
+      <p>Įstatyk įvykį į laiko juostą tinkamoje vietoje. Po kiekvieno atsakymo pelėdžiukas papasakos daugiau. Trys klaidos – ir žaidimas baigtas.</p>
     </div>
     <div id="levels"></div>
+    <div id="learn"></div>
     <p class="note">Ženklas 🌍 rodo pasaulio istorijos įvykį.</p>
   </section>
   <section id="play" hidden>
     <div class="bar"><span class="chip hearts" id="hearts" aria-label="Gyvybės"></span><span class="chip"><small>Taškai</small><span id="pts">0</span></span></div>
     <div id="board"></div>
     <div class="msg" id="msg" role="status" aria-live="polite"></div>
+    <div id="why"></div>
   </section>
 </div>
 <script>
@@ -86,49 +89,49 @@ body{--paper:#fbf7ef;--grid:#ece2cf;--soft:#6b5f4b;--kid:"Unbounded","Arial Blac
 const GAME = "laiko-juosta", GRADES = [5, 6, 7, 8];
 /* [metai, įvykis, "lt" – Lietuvos / "w" – pasaulio] */
 const EV = [
-  [1009, "Lietuvos vardas pirmą kartą paminėtas Kvedlinburgo analuose", "lt"],
-  [1236, "Saulės mūšis", "lt"],
-  [1253, "Mindaugo karūnavimas", "lt"],
-  [1260, "Durbės mūšis", "lt"],
-  [1323, "Gedimino laiškai – Vilnius pirmą kartą paminėtas kaip sostinė", "lt"],
-  [1385, "Krėvos sutartis", "lt"],
-  [1387, "Lietuvos (Aukštaitijos) krikštas", "lt"],
-  [1410, "Žalgirio mūšis", "lt"],
-  [1413, "Žemaitijos krikštas", "lt"],
-  [1529, "Pirmasis Lietuvos Statutas", "lt"],
-  [1547, "Martyno Mažvydo „Katekizmas“ – pirmoji lietuviška knyga", "lt"],
-  [1569, "Liublino unija – įkurta Abiejų Tautų Respublika", "lt"],
-  [1579, "Įkurtas Vilniaus universitetas", "lt"],
-  [1791, "Gegužės 3-iosios konstitucija", "lt"],
-  [1795, "Trečiasis padalijimas – Lietuva prijungta prie Rusijos imperijos", "lt"],
-  [1863, "Prasidėjo Sausio sukilimas prieš carinę Rusiją", "lt"],
-  [1883, "Pradėta leisti „Aušra“", "lt"],
-  [1904, "Panaikintas lietuviškos spaudos draudimas", "lt"],
-  [1918, "Vasario 16-osios Nepriklausomybės Aktas", "lt"],
-  [1923, "Klaipėdos kraštas prijungtas prie Lietuvos", "lt"],
-  [1933, "Dariaus ir Girėno skrydis per Atlantą", "lt"],
-  [1937, "Lietuva laimėjo Europos krepšinio čempionatą", "lt"],
-  [1940, "Sovietų Sąjunga okupavo Lietuvą", "lt"],
-  [1988, "Įkurtas Sąjūdis", "lt"],
-  [1990, "Kovo 11-oji – atkurta Lietuvos nepriklausomybė", "lt"],
-  [1991, "Sausio 13-osios įvykiai prie Vilniaus televizijos bokšto", "lt"],
-  [2004, "Lietuva įstojo į NATO ir Europos Sąjungą", "lt"],
-  [2015, "Lietuva įsivedė eurą", "lt"],
-  [476, "Žlugo Vakarų Romos imperija", "w"],
-  [1096, "Prasidėjo pirmasis kryžiaus žygis", "w"],
-  [1453, "Osmanai užėmė Konstantinopolį", "w"],
-  [1492, "Kristupas Kolumbas pasiekė Ameriką", "w"],
-  [1517, "Martynas Liuteris paskelbė 95 tezes – Reformacijos pradžia", "w"],
-  [1776, "JAV Nepriklausomybės deklaracija", "w"],
-  [1789, "Prasidėjo Prancūzijos revoliucija", "w"],
-  [1903, "Broliai Raitai pakilo lėktuvu", "w"],
-  [1914, "Prasidėjo Pirmasis pasaulinis karas", "w"],
-  [1939, "Prasidėjo Antrasis pasaulinis karas", "w"],
-  [1945, "Baigėsi Antrasis pasaulinis karas", "w"],
-  [1961, "Jurijus Gagarinas – pirmasis žmogus kosmose", "w"],
-  [1969, "Žmogus pirmą kartą išlipo Mėnulyje", "w"],
-  [1989, "Griuvo Berlyno siena", "w"]
-].map(([y, t, k]) => ({ y, t, k }));
+  [1009, "Lietuvos vardas pirmą kartą paminėtas Kvedlinburgo analuose", "lt", "Kvedlinburgo analuose rašoma apie misionieriaus šv. Brunono žūtį „Rusios ir Lietuvos pasienyje“. Tai seniausias žinomas rašytinis Lietuvos vardo paminėjimas."],
+  [1236, "Saulės mūšis", "lt", "Žemaičiai ir žiemgaliai sumušė Kalavijuočių ordiną. Po šio pralaimėjimo ordino likučiai prisijungė prie Kryžiuočių ordino ir tapo Livonijos ordinu."],
+  [1253, "Mindaugo karūnavimas", "lt", "Mindaugas buvo karūnuotas Lietuvos karaliumi. Tai vienintelis karūnuotas Lietuvos karalius; karūnacija reiškė, kad Lietuvą kaip valstybę pripažino Europa."],
+  [1260, "Durbės mūšis", "lt", "Prie Durbės ežero žemaičiai sumušė Livonijos ir Kryžiuočių ordinų kariuomenę. Po mūšio prieš ordinus sukilo prūsai, kuršiai ir kitos baltų gentys."],
+  [1323, "Gedimino laiškai – Vilnius pirmą kartą paminėtas kaip sostinė", "lt", "Didysis kunigaikštis Gediminas laiškuose Vakarų Europos miestams kvietė į Lietuvą pirklius ir amatininkus. Šiuose laiškuose Vilnius minimas kaip jo sostinė."],
+  [1385, "Krėvos sutartis", "lt", "Jogaila susitarė vesti Lenkijos karalaitę Jadvygą, tapti Lenkijos karaliumi ir pakrikštyti Lietuvą. Taip prasidėjo ilgi Lietuvos ir Lenkijos ryšiai."],
+  [1387, "Lietuvos (Aukštaitijos) krikštas", "lt", "Po Krėvos sutarties Jogaila Vilniuje pradėjo krikštyti aukštaičius, įkurta Vilniaus vyskupija. Lietuva tapo katalikiška valstybe."],
+  [1410, "Žalgirio mūšis", "lt", "Jungtinė Lietuvos ir Lenkijos kariuomenė, vadovaujama Vytauto ir Jogailos, sumušė Kryžiuočių ordiną. Po šio mūšio ordino galia ėmė silpti."],
+  [1413, "Žemaitijos krikštas", "lt", "Vytautas ir Jogaila pradėjo krikštyti žemaičius. Žemaitija buvo paskutinė apkrikštyta Lietuvos žemė."],
+  [1529, "Pirmasis Lietuvos Statutas", "lt", "Pirmasis Lietuvos Statutas – LDK įstatymų rinkinys. Vėliau buvo priimti dar du – 1566 ir 1588 m."],
+  [1547, "Martyno Mažvydo „Katekizmas“ – pirmoji lietuviška knyga", "lt", "Karaliaučiuje išspausdintas Martyno Mažvydo „Katekizmas“ – pirmoji spausdinta lietuviška knyga. Joje yra ir elementorius skaityti mokytis."],
+  [1569, "Liublino unija – įkurta Abiejų Tautų Respublika", "lt", "Liublino unija sujungė Lietuvos Didžiąją Kunigaikštystę ir Lenkijos Karalystę į Abiejų Tautų Respubliką su bendru valdovu ir seimu."],
+  [1579, "Įkurtas Vilniaus universitetas", "lt", "Valdovas Steponas Batoras jėzuitų kolegiją Vilniuje pavertė universitetu. Vilniaus universitetas – vienas seniausių Vidurio ir Rytų Europoje."],
+  [1791, "Gegužės 3-iosios konstitucija", "lt", "Abiejų Tautų Respublikos Seimas priėmė Gegužės 3-iosios konstituciją – pirmąją rašytinę konstituciją Europoje. Ja bandyta sustiprinti silpstančią valstybę."],
+  [1795, "Trečiasis padalijimas – Lietuva prijungta prie Rusijos imperijos", "lt", "Rusija, Prūsija ir Austrija trečią kartą pasidalijo Abiejų Tautų Respubliką, ir ji išnyko iš žemėlapio. Didžioji Lietuvos dalis atiteko Rusijos imperijai."],
+  [1863, "Prasidėjo Sausio sukilimas prieš carinę Rusiją", "lt", "Sukilimas prieš Rusijos valdžią Lenkijoje ir Lietuvoje. Jį numalšinus, nuo 1864 m. buvo uždrausta lietuviška spauda lotyniškais rašmenimis."],
+  [1883, "Pradėta leisti „Aušra“", "lt", "„Aušra“ – pirmasis lietuviškas tautinio atgimimo laikraštis. Jis buvo leidžiamas Mažojoje Lietuvoje, nes Rusijos imperijoje spauda buvo uždrausta; susijęs su Jonu Basanavičiumi."],
+  [1904, "Panaikintas lietuviškos spaudos draudimas", "lt", "Po 40 metų draudimo (1864–1904) vėl leista leisti lietuviškas knygas lotyniškais rašmenimis. Daug prie to prisidėjo knygnešiai, slapta gabenę knygas."],
+  [1918, "Vasario 16-osios Nepriklausomybės Aktas", "lt", "Lietuvos Taryba Vilniuje paskelbė atkurianti nepriklausomą Lietuvos valstybę. Aktą pasirašė 20 Tarybos narių; vasario 16-oji – Valstybės atkūrimo diena."],
+  [1923, "Klaipėdos kraštas prijungtas prie Lietuvos", "lt", "Po Klaipėdos sukilimo Klaipėdos kraštas prijungtas prie Lietuvos. Lietuva gavo uostą ir išėjimą į jūrą."],
+  [1933, "Dariaus ir Girėno skrydis per Atlantą", "lt", "Steponas Darius ir Stasys Girėnas lėktuvu „Lituanica“ perskrido Atlanto vandenyną, bet žuvo netoli Soldino (dabar Lenkija), nepasiekę Kauno."],
+  [1937, "Lietuva laimėjo Europos krepšinio čempionatą", "lt", "Rygoje vykusiame Europos krepšinio čempionate laimėjo Lietuvos rinktinė. 1939 m. Kaune ji čempionatą laimėjo dar kartą."],
+  [1940, "Sovietų Sąjunga okupavo Lietuvą", "lt", "Birželio 15 d. Sovietų Sąjungos kariuomenė įžengė į Lietuvą. Prasidėjo okupacija, Lietuva neteko nepriklausomybės, prasidėjo represijos."],
+  [1988, "Įkurtas Sąjūdis", "lt", "Įkurtas Lietuvos persitvarkymo sąjūdis. Jis vadovavo taikiam tautos judėjimui už laisvę ir nepriklausomybę."],
+  [1990, "Kovo 11-oji – atkurta Lietuvos nepriklausomybė", "lt", "Aukščiausioji Taryba, vadovaujama Vytauto Landsbergio, priėmė Aktą dėl Lietuvos nepriklausomos valstybės atstatymo. Lietuva pirmoji iš sovietinių respublikų paskelbė nepriklausomybę."],
+  [1991, "Sausio 13-osios įvykiai prie Vilniaus televizijos bokšto", "lt", "Sovietų kariuomenė puolė Vilniaus televizijos bokštą ir Radijo ir televizijos komitetą. Žuvo 14 beginklių žmonių, bet žmonės apgynė Aukščiausiąją Tarybą."],
+  [2004, "Lietuva įstojo į NATO ir Europos Sąjungą", "lt", "Kovą Lietuva tapo NATO nare, o gegužės 1 d. – Europos Sąjungos nare."],
+  [2015, "Lietuva įsivedė eurą", "lt", "Sausio 1 d. euras pakeitė litą. Lietuva tapo 19-ąja euro zonos šalimi."],
+  [476, "Žlugo Vakarų Romos imperija", "w", "Germanų vadas Odoakras nuvertė paskutinį Vakarų Romos imperatorių. Šie metai dažnai laikomi Antikos pabaiga ir viduramžių pradžia."],
+  [1096, "Prasidėjo pirmasis kryžiaus žygis", "w", "Popiežiui Urbonui II paraginus, Europos riteriai išsiruošė atsikovoti Jeruzalės. 1099 m. kryžiuočiai Jeruzalę užėmė."],
+  [1453, "Osmanai užėmė Konstantinopolį", "w", "Osmanų turkai užėmė Bizantijos sostinę Konstantinopolį. Bizantijos imperija žlugo; miestas vėliau pavadintas Stambulu."],
+  [1492, "Kristupas Kolumbas pasiekė Ameriką", "w", "Ispanijos remiamas Kolumbas plaukė į vakarus ieškoti kelio į Indiją, o pasiekė Amerikos salas. Tai vienas svarbiausių Didžiųjų geografinių atradimų."],
+  [1517, "Martynas Liuteris paskelbė 95 tezes – Reformacijos pradžia", "w", "Martynas Liuteris kritikavo atlaidų pardavinėjimą. Prasidėjo Reformacija, atsirado protestantų bažnyčios."],
+  [1776, "JAV Nepriklausomybės deklaracija", "w", "Liepos 4 d. trylika Amerikos kolonijų paskelbė nepriklausomybę nuo Didžiosios Britanijos. Taip susikūrė Jungtinės Amerikos Valstijos."],
+  [1789, "Prasidėjo Prancūzijos revoliucija", "w", "Paryžiečiai užėmė Bastilijos tvirtovę. Revoliucijos šūkis „Laisvė, lygybė, brolybė“ paveikė visą Europą."],
+  [1903, "Broliai Raitai pakilo lėktuvu", "w", "Orvilis ir Vilburas Raitai atliko pirmąjį valdomą skrydį lėktuvu su varikliu. Pirmasis skrydis truko vos 12 sekundžių."],
+  [1914, "Prasidėjo Pirmasis pasaulinis karas", "w", "Karas prasidėjo po Austrijos-Vengrijos sosto įpėdinio nužudymo Sarajeve. Jis truko iki 1918 m.; po jo atsikūrė Lietuvos valstybė."],
+  [1939, "Prasidėjo Antrasis pasaulinis karas", "w", "Rugsėjo 1 d. nacistinė Vokietija užpuolė Lenkiją. Tai didžiausias karas žmonijos istorijoje."],
+  [1945, "Baigėsi Antrasis pasaulinis karas", "w", "Gegužę kapituliavo Vokietija, o rugsėjį – Japonija. Lietuva po karo liko okupuota Sovietų Sąjungos."],
+  [1961, "Jurijus Gagarinas – pirmasis žmogus kosmose", "w", "Balandžio 12 d. Jurijus Gagarinas erdvėlaiviu „Vostok 1“ apskriejo Žemę. Skrydis truko apie 108 minutes."],
+  [1969, "Žmogus pirmą kartą išlipo Mėnulyje", "w", "Erdvėlaivio „Apollo 11“ astronautai Neilas Armstrongas ir Buzzas Aldrinas pirmieji žengė Mėnulio paviršiumi."],
+  [1989, "Griuvo Berlyno siena", "w", "Lapkričio 9 d. atverta Berlyno siena, skyrusi Rytų ir Vakarų Berlyną. Netrukus, 1990 m., Vokietija susivienijo."]
+].map(([y, t, k, x]) => ({ y, t, k, x }));
 const LEVELS = [
   { id: "simtmeciai", name: "Šimtmečiai", sub: "Lietuva · įvykiai toli vienas nuo kito", art: "XIII", mode: "line", pool: e => e.k === "lt", spread: true },
   { id: "lietuva", name: "Lietuvos istorija", sub: "Visi įvykiai · artimi metai", art: "1410", mode: "line", pool: e => e.k === "lt" },
@@ -147,7 +150,11 @@ $("heroArt").innerHTML = `<svg viewBox="0 0 260 90" aria-hidden="true" style="wi
 const taskai = n => n % 10 === 1 && n % 100 !== 11 ? "taškas" : n % 10 >= 2 && (n % 100 < 10 || n % 100 > 20) ? "taškai" : "taškų";
 
 let lvl = 0, L = null, deck = [], placed = [], cur = null, lives = 3, pts = 0, streak = 0, okCount = 0, total = 0, busy = false, tries = 0;
-function showMenu(){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); window.scrollTo(0, 0); }
+const ERAS = [["Viduramžiai (iki 1500 m.)", 0, 1500], ["1500–1800 m.", 1500, 1800], ["XIX a. ir XX a. pradžia", 1800, 1918], ["1918–1945 m.", 1918, 1946], ["1946 m. – dabartis", 1946, 3000]];
+function showMenu(){ play.hidden = true; menu.hidden = false; $("why").innerHTML = ""; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: ERAS.map(([name, a, b]) => ({ name, level: 3,
+    html: EV.filter(e => e.y >= a && e.y < b).sort((x, y) => x.y - y.y).map(e => `<p><b>${e.y} m. ${e.k === "w" ? "🌍 " : ""}${MK.esc(e.t)}.</b> ${MK.esc(e.x)}</p>`).join("") })), onPlay: start });
+  window.scrollTo(0, 0); }
 function pickDeck(n){
   let pool = MK.shuffle(EV.filter(L.pool));
   const out = [], years = new Set(), cents = new Set();
@@ -172,7 +179,7 @@ function hud(){
 }
 function say(html, cls){ msg.className = "msg" + (cls ? " " + cls : ""); msg.innerHTML = html; }
 function next(){
-  busy = false; tries = 0;
+  busy = false; tries = 0; $("why").innerHTML = "";
   if(lives <= 0 || !deck.length) return finish();
   cur = deck.shift();
   if(L.mode === "year") return drawYear();
@@ -189,31 +196,37 @@ function drawLine(mark){
   rows.push(`<button type="button" class="slot" data-i="${placed.length}">Vėliau už viską</button></div>`);
   board.innerHTML = rows.join("");
 }
-async function placeAt(i){
+function why(e, ok, extra){
+  $("why").innerHTML = MK.why({ ok, head: `${e.y} m. – ${MK.esc(e.t)}`, body: extra || "", more: MK.esc(e.x), sum: "Daugiau apie įvykį", open: !ok })
+    + `<button type="button" class="mk-btn" id="go">${lives > 0 && deck.length ? "Toliau →" : "Rezultatai"}</button>`;
+  $("go").scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+function placeAt(i){
   busy = true; board.classList.add("busy");
   const before = placed[i - 1], after = placed[i];
   const ok = (!before || before.y < cur.y) && (!after || cur.y < after.y);
   const e = cur;
   placed.push(e); placed.sort((a, b) => a.y - b.y);
+  let extra = "";
   if(ok){
     streak++; okCount++; const gain = 10 + Math.min(streak - 1, 5) * 2; pts += gain;
-    MK.sfx.good(); say(`<b>${MK.praise()}</b> ${e.y} m. +${gain}${streak > 1 ? ` (serija ${streak})` : ""}`, "ok");
+    MK.sfx.good(); say(`<b>${MK.praise()}</b> +${gain}${streak > 1 ? ` (serija ${streak})` : ""}`, "ok");
   } else {
     streak = 0; lives--; MK.sfx.bad();
+    const k = placed.indexOf(e), pb = placed[k - 1], pa = placed[k + 1];
+    extra = pb && pa ? `Jo vieta – tarp ${pb.y} m. ir ${pa.y} m.` : pb ? `Jis įvyko vėliau už visus kitus – po ${pb.y} m.` : `Jis įvyko anksčiau už visus kitus – prieš ${pa.y} m.`;
     say(`Ne ten. Šis įvykis – <b>${e.y} m.</b> Žiūrėk, kur jo vieta.`, "bad");
   }
   hud(); drawLine({ e, cls: ok ? "just" : "wrong" });
   board.querySelector(".new").hidden = true;
-  const el = board.querySelector(".ev.just,.ev.wrong"); if(el) el.scrollIntoView({ block: "center", behavior: "smooth" });
-  await MK.wait(ok ? 1500 : 2600);
-  board.classList.remove("busy"); window.scrollTo({ top: 0, behavior: "smooth" });
-  next();
+  why(e, ok, extra);
 }
 board.addEventListener("click", e => {
   const s = e.target.closest(".slot"); if(s && !busy){ MK.unlock(); return placeAt(+s.dataset.i); }
   const b = e.target.closest(".opts button"); if(b && !busy){ MK.unlock(); return pickYear(b); }
 });
 /* ---------- „Kurie metai?“ ---------- */
+$("why").addEventListener("click", e => { if(e.target.closest("#go")){ board.classList.remove("busy"); window.scrollTo({ top: 0, behavior: "smooth" }); next(); } });
 function drawYear(){
   const ys = new Set([cur.y]);
   while(ys.size < 4){ const d = MK.pick([1, 2, 3, 5, 7, 10, 13, 20, 25, 30]) * (Math.random() < .5 ? -1 : 1); const y = cur.y + d; if(y > 0 && y <= 2025) ys.add(y); }
@@ -221,13 +234,13 @@ function drawYear(){
     <div class="opts">${MK.shuffle([...ys]).map(y => `<button type="button" data-y="${y}">${y}</button>`).join("")}</div>`;
   say("Pasirink teisingus metus. Dvi klaidos tame pačiame klausime – minus gyvybė.");
 }
-async function pickYear(b){
+function pickYear(b){
   const y = +b.dataset.y;
   if(y === cur.y){
     busy = true; b.classList.add("ok"); streak = tries === 0 ? streak + 1 : 0; if(tries === 0) okCount++;
     const gain = tries === 0 ? 10 + Math.min(streak - 1, 5) * 2 : 4; pts += gain; hud(); MK.sfx.good();
-    say(`<b>${MK.praise()}</b> ${cur.y} m. +${gain}`, "ok");
-    await MK.wait(1300); return next();
+    say(`<b>${MK.praise()}</b> +${gain}`, "ok");
+    return why(cur, true);
   }
   tries++; b.classList.add("no"); MK.sfx.bad(); streak = 0;
   say(`Ne ${y}-ieji. ${y < cur.y ? "Vėliau!" : "Anksčiau!"}`, "bad");
@@ -235,7 +248,7 @@ async function pickYear(b){
     busy = true; lives--; hud();
     board.querySelectorAll(".opts button").forEach(x => { if(+x.dataset.y === cur.y) x.classList.add("ok"); });
     say(`Teisingai – <b>${cur.y} m.</b> Įsimink!`, "bad");
-    await MK.wait(2200); next();
+    why(cur, false);
   }
 }
 function finish(){

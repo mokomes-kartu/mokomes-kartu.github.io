@@ -169,6 +169,28 @@ MK.levels = function(el, o){
   el.onclick = e => { const b = e.target.closest(".mk-lvl"); if(!b) return; MK.unlock(); MK.sfx.tap(); o.onPick(+b.dataset.i); };
 };
 
+/* ---------- pelėdžiuko paaiškinimas (ypač 5–12 kl.) ----------
+   o: { ok, head, body, more, sum, open } – more rodomas išskleidžiamame bloke; suklydus jis atveriamas. */
+MK.why = o => `<div class="mk-why ${o.ok ? "ok" : "bad"}">${MK.owl(o.ok ? "hop" : "shake")}<div class="mk-why-t">
+  <b>${o.head}</b>${o.body ? `<p>${o.body}</p>` : ""}
+  ${o.more ? `<details${o.open ? " open" : ""}><summary>${o.sum || "Paaiškinimas"}</summary><div class="mk-why-m">${o.more}</div></details>` : ""}</div></div>`;
+
+/* ---------- „Noriu pasimokyti“: trumpa teorija prieš žaidžiant ----------
+   o: { topics: [{ name, html, level }], onPlay(levelIndex) } */
+MK.learn = function(el, o){
+  el.innerHTML = `<h2 class="mk-sec">📖 Noriu pasimokyti</h2><p class="mk-sec-p">Pasirink temą, perskaityk ir tada išbandyk žaidime.</p>
+    <div class="mk-learn">${o.topics.map(t => `<details class="mk-lt"><summary>${t.name}</summary><div class="mk-lt-b">${t.html}
+      ${t.level != null ? `<button type="button" class="mk-btn alt" data-lv="${t.level}">Žaisti šią temą →</button>` : ""}</div></details>`).join("")}</div>`;
+  el.onclick = e => { const b = e.target.closest("[data-lv]"); if(!b) return; MK.unlock(); MK.sfx.tap(); o.onPlay(+b.dataset.lv); };
+};
+
+/* ---------- bendra statistika: visų žaidimų žvaigždutės (tik šiame įrenginyje) ---------- */
+MK.totalStars = function(ids){
+  let stars = 0, played = 0;
+  (ids || []).forEach(id => { const v = Object.values(MK.get("mk-" + id, {})).filter(x => typeof x === "number"); if(v.length){ played++; stars += v.reduce((a, b) => a + b, 0); } });
+  return { stars, played };
+};
+
 /* ---------- konfeti ---------- */
 MK.confetti = function(n){
   const box = document.createElement("div"); box.className = "mk-confetti"; box.setAttribute("aria-hidden", "true");
@@ -292,6 +314,28 @@ button{font:inherit;color:inherit}
 .mk-res h2{margin:4px 0 0;font:800 30px/1.1 var(--kid)}
 .mk-res p{margin:0;color:var(--soft);font-weight:700;font-size:17px}
 .mk-res-b{display:grid;gap:10px;width:100%;margin-top:10px}
+.mk-why{display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;align-items:start;margin:12px 0;padding:10px 12px;border-radius:12px;background:#fff;border:2px dashed #d7c9a8;font:600 15.5px/1.45 var(--body);text-align:left}
+.mk-why.ok{border-color:var(--good);background:#effcf6}
+.mk-why.bad{border-color:#ff8a7a;background:#fff4f1}
+.mk-why .mk-owl{width:56px;height:58px}
+.mk-why-t>b{display:block;font-weight:800;font-size:16.5px}
+.mk-why-t p{margin:4px 0 0}
+.mk-why details{margin-top:6px}
+.mk-why summary,.mk-lt summary{cursor:pointer;font-weight:800;color:var(--ac);list-style:none;display:flex;align-items:center;gap:6px;min-height:32px}
+.mk-why summary::-webkit-details-marker,.mk-lt summary::-webkit-details-marker{display:none}
+.mk-why summary::before,.mk-lt summary::before{content:"▸";transition:transform .15s}
+.mk-why details[open] summary::before,.mk-lt[open] summary::before{transform:rotate(90deg)}
+.mk-why-m{padding:4px 0 2px;color:var(--ink)}
+.mk-sec{margin:24px auto 4px;max-width:520px;font:800 18px/1.2 var(--kid)}
+.mk-sec-p{margin:0 auto 10px;max-width:520px;color:var(--soft);font-weight:600;font-size:14.5px}
+.mk-learn{display:grid;gap:8px;max-width:520px;margin:0 auto}
+.mk-lt{background:var(--card);border-radius:12px;padding:6px 14px;box-shadow:inset 0 0 0 2px var(--ink)}
+.mk-lt summary{color:var(--ink);font-size:16px;min-height:44px}
+.mk-lt-b{padding:2px 0 12px;font:600 15.5px/1.5 var(--body)}
+.mk-lt-b p{margin:6px 0}
+.mk-lt-b ul{margin:6px 0;padding-left:20px}
+.mk-lt-b .mk-btn{margin-top:8px;width:100%}
+.mk-ex{display:block;margin:6px 0;padding:8px 10px;border-radius:8px;background:var(--ac-soft);font-weight:700}
 .mk-confetti{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
 .mk-confetti i{position:absolute;top:-16px;width:10px;height:14px;border-radius:2px;animation:mkFall linear forwards}
 .mk-shake{animation:mkShake .45s}

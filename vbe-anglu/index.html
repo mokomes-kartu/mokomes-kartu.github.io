@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>VBE anglų – MokomėsKartu.lt</title>
+<meta name="description" content="Anglų kalbos VBE treniruoklis 11–12 klasėms: žodžių daryba, laikai, prielinksniai, jungiamieji žodžiai ir kolokacijos su paaiškinimais lietuviškai.">
+<meta name="theme-color" content="#f4f6ff">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<style>
+/* VBE anglų: tas pats rimtas stilius kaip VBE greituko, tik kita spalva. Po atsakymo – pelėdžiuko paaiškinimas lietuviškai. */
+body{--paper:#f7f4fb;--grid:#e6dff0;--soft:#5b5170;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#7048e8;--ac-ink:#fff;--ac-soft:#ebe4ff}
+.mk-ico[data-k="music"]{display:none}
+.mk-lvls{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));max-width:760px}
+.mk-lvl{border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink);grid-template-columns:52px minmax(0,1fr) auto;gap:12px}
+.mk-lvl-art{border-radius:10px;font-size:15px;width:52px;height:52px}
+.mk-lvl-t b{font-size:16px;letter-spacing:-.02em}
+.mk-lvl-t small{font-size:13px}
+.mk-star svg{width:17px;height:17px}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(32px,8vw,52px)}
+.mk-btn{border-radius:12px;font-size:17px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res .mk-owl{display:none}
+.mk-res h2{font-size:26px;letter-spacing:-.03em}
+.mk-fr{font-family:var(--body);font-weight:800;font-size:.92em}
+h2.sec{font:800 14px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin:22px auto 10px;max-width:760px}
+.weak{max-width:760px;margin:0 auto;background:#fff;border-radius:12px;padding:12px 14px;box-shadow:inset 0 0 0 2px var(--ink);display:grid;gap:8px}
+.weak .r{display:grid;grid-template-columns:110px minmax(0,1fr) 48px;gap:10px;align-items:center;font:700 14px/1.2 var(--body)}
+.weak .b{height:10px;border-radius:5px;background:#e6e9f5;overflow:hidden}
+.weak .b i{display:block;height:100%;border-radius:5px;background:var(--ac)}
+.weak .r.lo .b i{background:#e8590c}
+.weak .r span:last-child{text-align:right;font-weight:800}
+.weak p{margin:0;color:var(--soft);font-size:14px}
+.note{max-width:760px;margin:14px auto 0;color:var(--soft);font-size:13px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 10px;flex-wrap:wrap}
+.chips{display:flex;gap:8px}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;background:#fff;font:800 17px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink);font-variant-numeric:tabular-nums}
+.chip small{font:800 11px/1 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.chip.warn{background:#fff0e6}
+.card{background:#fff;border-radius:14px;padding:16px 16px 18px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.card small{display:block;font:800 12px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+.task{font:700 clamp(19px,5vw,24px)/1.5 var(--body);margin-top:8px}
+.task .m{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-style:italic;font-weight:600;font-size:1.08em;white-space:nowrap}
+.task sup,.sol sup{font-size:.68em}
+.task sub,.sol sub{font-size:.68em}
+.ansrow{display:flex;gap:10px;margin-top:16px}
+.ansrow input{flex:1;min-width:0;height:56px;border-radius:10px;border:0;box-shadow:inset 0 0 0 2.5px var(--ink);padding:0 14px;font:800 22px/1 var(--kid);color:var(--ink);background:#fbfcff}
+.ansrow input:focus{outline:3px solid var(--ac);outline-offset:2px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.opts button{min-height:64px;border:0;border-radius:10px;cursor:pointer;background:#fff;font:800 24px/1 var(--body);box-shadow:inset 0 0 0 2.5px var(--ink),4px 4px 0 var(--ink)}
+.opts button:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 2.5px var(--ink),2px 2px 0 var(--ink)}
+.opts button.ok{background:#7ee08a}
+.opts button.no{background:#ffb4a2}
+.opts button.sel{background:var(--ac-soft)}
+.fb{margin-top:14px;border-radius:12px;padding:12px 14px;background:#fff;border:2px dashed #b9c4ea;font:600 16px/1.5 var(--body)}
+.fb.ok{border-color:var(--good);background:#effcf6}
+.fb.bad{border-color:#ff8a7a;background:#fff4f1}
+.fb b{font-weight:800}
+.sol{margin-top:6px}
+.go{margin-top:14px;width:100%}
+.review{display:grid;gap:10px;margin-top:4px}
+.review .it{background:#fff;border-radius:12px;padding:12px 14px;box-shadow:inset 0 0 0 2px var(--ink);font:600 15px/1.5 var(--body)}
+.review .it.ok{box-shadow:inset 0 0 0 3px var(--good)}
+.review .it.bad{box-shadow:inset 0 0 0 3px #ff8a7a}
+.review .it small{display:block;font:800 11px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.task .gap{color:var(--ac);font-weight:800;letter-spacing:.05em}
+.task .kw{font-family:var(--kid);font-size:.85em;color:var(--ac)}
+.hint{color:var(--soft);font-size:14px;font-weight:700;margin-top:6px}
+.opts button{font-size:19px}
+.mk-why-t p{font-style:normal}
+.review h3{margin:0;font:800 22px/1.2 var(--kid);letter-spacing:-.03em}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app" style="max-width:820px">
+  <section id="menu">
+    <div class="mk-hero">
+      <h1>VBE <em>anglų</em></h1>
+      <p>Use of English: žodžių daryba, laikai, prielinksniai, jungiamieji žodžiai ir kolokacijos. Po kiekvieno atsakymo – paaiškinimas lietuviškai.</p>
+    </div>
+    <div id="levels"></div>
+    <h2 class="sec">Tavo temos</h2>
+    <div class="weak" id="weak"></div>
+    <div id="learn"></div>
+    <p class="note">Tai VBE tipo treniruoklis su originaliomis užduotimis, ne oficialios egzamino užduotys. Tikslų egzamino formatą pasitikrinkite NŠA svetainėje. Rezultatai saugomi tik šiame įrenginyje.</p>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><div class="chips"><span class="chip" id="clock"><small>Laikas</small><span id="time">0:00</span></span><span class="chip"><small>Taškai</small><span id="pts">0</span></span></div></div>
+    <div id="board"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "vbe-anglu", GRADES = [11, 12], N = 10, EXAM_SEC = 12 * 60;
+const E = MK.esc;
+/* ---------- užduotys ----------
+   Žodžių daryba: [sakinys su ___, ŽODIS, [priimami atsakymai], paaiškinimas]
+   Kitos temos: [sakinys su ___, [teisingas, klaidingas, klaidingas, klaidingas], paaiškinimas] */
+const ZD = [
+  ["The ___ of the new bridge took almost three years.", "CONSTRUCT", ["construction"], "Po <i>the</i> ir prieš <i>of</i> reikia daiktavardžio: construct → <b>construction</b> (priesaga -ion)."],
+  ["She gave a very ___ answer, so nobody had any more questions.", "CONVINCE", ["convincing"], "Prieš daiktavardį <i>answer</i> reikia būdvardžio: <b>convincing</b> – įtikinamas."],
+  ["It is ___ to swim in this river because of the strong current.", "DANGER", ["dangerous"], "Po <i>is</i> reikia būdvardžio: danger → <b>dangerous</b> (priesaga -ous)."],
+  ["Thousands of ___ took part in the city marathon.", "RUN", ["runners"], "Reikia daiktavardžio, reiškiančio asmenį, ir daugiskaitos po <i>thousands of</i>: <b>runners</b> (raidė n dvigubėja)."],
+  ["The museum is closed for ___ until next spring.", "RENOVATE", ["renovation"], "Po prielinksnio <i>for</i> reikia daiktavardžio: renovate → <b>renovation</b>."],
+  ["Her ___ to help others made her very popular at school.", "WILLING", ["willingness"], "Po <i>her</i> reikia daiktavardžio: būdvardis willing + -ness → <b>willingness</b> – noras, pasirengimas."],
+  ["The instructions were so ___ that nobody understood what to do.", "CLEAR", ["unclear"], "Prasmė – niekas nesuprato, todėl reikia neigiamo būdvardžio: <b>unclear</b> (priešdėlis un-)."],
+  ["I'm afraid your answer is ___. Please try again.", "CORRECT", ["incorrect"], "„Bandyk dar kartą“ rodo, kad atsakymas klaidingas: <b>incorrect</b> (priešdėlis in-)."],
+  ["Many young people are ___ because they cannot find a job.", "EMPLOY", ["unemployed"], "Neturi darbo – bedarbiai: <b>unemployed</b> (un- + employ + -ed)."],
+  ["The ___ of the film was so surprising that the audience gasped.", "END", ["ending"], "Filmo pabaiga – daiktavardis <b>ending</b> (ne <i>end</i>, nes kalbama apie siužeto pabaigą)."],
+  ["The city plans to ___ the road because the traffic is getting heavier.", "WIDE", ["widen"], "Po <i>to</i> reikia veiksmažodžio: wide → <b>widen</b> (priesaga -en reiškia „padaryti tokį“)."],
+  ["Our team played ___ and won the final 3:0.", "BRILLIANT", ["brilliantly"], "Žodis apibūdina veiksmažodį <i>played</i>, todėl reikia prieveiksmio: <b>brilliantly</b>."],
+  ["Lithuania is famous for the ___ of its forests and lakes.", "BEAUTIFUL", ["beauty"], "Po <i>the</i> reikia daiktavardžio: beautiful → <b>beauty</b>."],
+  ["The ___ of our flight was delayed because of the fog.", "DEPART", ["departure"], "Reikia daiktavardžio: depart → <b>departure</b> – išvykimas, išskridimas."],
+  ["My grandmother has a ___ collection of old coins.", "VALUE", ["valuable"], "Prieš daiktavardį <i>collection</i> reikia būdvardžio: <b>valuable</b> – vertingas."],
+  ["There is a big ___ between being confident and being arrogant.", "DIFFER", ["difference"], "Po <i>a big</i> reikia daiktavardžio: differ → <b>difference</b>."],
+  ["He apologised for his ___ behaviour at the party.", "POLITE", ["impolite"], "Atsiprašė – vadinasi, elgesys buvo nemandagus: <b>impolite</b> (priešdėlis im-)."],
+  ["The scientist made an important ___ in medicine.", "DISCOVER", ["discovery"], "Po <i>an important</i> reikia daiktavardžio: discover → <b>discovery</b>."],
+  ["___, the weather was perfect for our trip.", "LUCK", ["luckily"], "Sakinio pradžioje su kableliu reikia prieveiksmio: <b>Luckily</b> – laimei."],
+  ["The teacher praised the students for their ___ work.", "CREATE", ["creative"], "Prieš daiktavardį <i>work</i> reikia būdvardžio: create → <b>creative</b>."]
+];
+const LK = [
+  ["I ___ in Kaunas since 2019.", ["have lived", "live", "lived", "am living"], "<i>since</i> + laiko pradžia, veiksmas tęsiasi iki dabar → <b>Present Perfect</b>: have lived."],
+  ["When I came home, my brother ___ a film.", ["was watching", "watched", "has watched", "watches"], "Veiksmas vyko tuo metu, kai įvyko kitas trumpas veiksmas → <b>Past Continuous</b>."],
+  ["By the time we arrived at the station, the train ___.", ["had already left", "already left", "has already left", "leaves"], "Veiksmas įvyko anksčiau už kitą praeities veiksmą → <b>Past Perfect</b>."],
+  ["Look at those dark clouds! It ___ rain.", ["is going to", "will", "rains", "is raining"], "Spėjame iš to, ką matome dabar → <b>be going to</b>."],
+  ["If it ___ tomorrow, we will stay at home.", ["rains", "will rain", "rained", "would rain"], "Pirmasis sąlygos tipas: <b>if + Present Simple</b>, kitoje dalyje – will. Po <i>if</i> <i>will</i> nerašome."],
+  ["If I ___ more free time, I would learn to play the guitar.", ["had", "have", "will have", "would have"], "Antrasis sąlygos tipas (neįtikėtina dabartyje): <b>if + Past Simple</b>, kitoje dalyje – would."],
+  ["She ___ to London three times so far.", ["has been", "was", "went", "had gone"], "<i>so far</i> ir patirtis iki dabar → <b>Present Perfect</b>. <i>has been to</i> – buvo nuvykusi ir grįžo."],
+  ["Water ___ at 100 degrees Celsius.", ["boils", "is boiling", "boiled", "has boiled"], "Bendra tiesa, gamtos dėsnis → <b>Present Simple</b>."],
+  ["I ___ my homework yesterday evening.", ["did", "have done", "had done", "do"], "Konkretus praeities laikas (<i>yesterday</i>) → <b>Past Simple</b>, ne Present Perfect."],
+  ["This time next week we ___ on a beach in Spain.", ["will be lying", "lie", "lay", "have lain"], "Veiksmas vyks tam tikru ateities momentu → <b>Future Continuous</b>."],
+  ["The new sports hall ___ next year.", ["will be built", "will build", "builds", "is building"], "Salė pati nestato – ją pastatys, todėl reikia <b>neveikiamosios rūšies</b> (Passive): will be built."],
+  ["The parcel ___ yesterday, so it should arrive soon.", ["was sent", "sent", "has sent", "is sending"], "Siuntinys pats nesiunčia, laikas – <i>yesterday</i> → <b>Past Simple Passive</b>: was sent."],
+  ["How long ___ for the bus? – For twenty minutes.", ["have you been waiting", "are you waiting", "do you wait", "you wait"], "Klausiama, kiek laiko veiksmas tęsiasi iki dabar → <b>Present Perfect Continuous</b>."],
+  ["I wish I ___ the answer to this question.", ["knew", "know", "will know", "am knowing"], "<i>wish</i> + noras apie dabartį → <b>Past Simple</b> (I wish I knew)."],
+  ["He told me that he ___ the film the day before.", ["had seen", "has seen", "sees", "will see"], "Netiesioginė kalba ir <i>the day before</i> – laikas „pasislenka“ atgal → <b>Past Perfect</b>."],
+  ["I ___ to the cinema tonight – I've already bought the tickets.", ["am going", "go", "went", "have gone"], "Iš anksto suplanuotas ateities veiksmas → <b>Present Continuous</b>."],
+  ["When I was a child, I ___ climb trees every summer.", ["used to", "use to", "am used to", "was used to"], "Praeities įprotis, kurio dabar nebėra → <b>used to + veiksmažodis</b>."],
+  ["She ___ English for six years before she moved to Ireland.", ["had been learning", "has been learning", "is learning", "learns"], "Veiksmas tęsėsi iki kito praeities veiksmo → <b>Past Perfect Continuous</b>."]
+];
+const PR = [
+  ["My sister is very good ___ maths.", ["at", "in", "on", "for"], "Pastovi frazė: <b>good at</b> something – gerai sekasi."],
+  ["Are you interested ___ joining our team?", ["in", "on", "at", "about"], "Pastovi frazė: <b>interested in</b>."],
+  ["Whether we go or not depends ___ the weather.", ["on", "of", "from", "at"], "Pastovi frazė: <b>depend on</b> – priklausyti nuo."],
+  ["We arrived ___ Vilnius late at night.", ["in", "to", "at", "on"], "<b>arrive in</b> + miestas ar šalis, <b>arrive at</b> + pastatas, stotis. <i>arrive to</i> nesakoma."],
+  ["I'm looking forward ___ seeing you.", ["to", "for", "on", "at"], "<b>look forward to</b> + -ing: čia <i>to</i> yra prielinksnis, todėl po jo – seeing."],
+  ["She was afraid ___ spiders when she was little.", ["of", "from", "about", "with"], "Pastovi frazė: <b>afraid of</b>."],
+  ["The concert starts ___ 7 p.m.", ["at", "in", "on", "by"], "Su laikrodžio laiku vartojamas <b>at</b>."],
+  ["My birthday is ___ 5 May.", ["on", "in", "at", "by"], "Su datomis ir savaitės dienomis vartojamas <b>on</b>."],
+  ["I've lived here ___ ten years.", ["for", "since", "during", "from"], "<b>for</b> + trukmė (ten years), <b>since</b> + pradžios taškas (since 2015)."],
+  ["He apologised ___ being late.", ["for", "about", "of", "on"], "Pastovi frazė: <b>apologise for</b> something."],
+  ["This novel was written ___ a famous Lithuanian author.", ["by", "from", "of", "with"], "Neveikiamojoje rūšyje veikėjas nurodomas su <b>by</b>."],
+  ["Thank you ___ your help.", ["for", "about", "of", "to"], "Pastovi frazė: <b>thank someone for</b> something."],
+  ["She is married ___ a doctor.", ["to", "with", "on", "by"], "Pastovi frazė: <b>married to</b> someone."],
+  ["He insisted ___ paying for dinner.", ["on", "in", "at", "for"], "Pastovi frazė: <b>insist on</b> + -ing."],
+  ["The town is famous ___ its old castle.", ["for", "of", "with", "by"], "Pastovi frazė: <b>famous for</b>."],
+  ["Is there anything wrong ___ your phone?", ["with", "of", "at", "on"], "Pastovi frazė: <b>something is wrong with</b> – kažkas negerai su."]
+];
+const JG = [
+  ["___ it was raining, we went for a walk.", ["Although", "Despite", "However", "Because of"], "Po tarpo eina visas sakinys (it was raining) → <b>Although</b>. <i>Despite</i> vartojamas su daiktavardžiu."],
+  ["___ the rain, we went for a walk.", ["Despite", "Although", "Even though", "However"], "Po tarpo eina daiktavardis (the rain) → <b>Despite</b>. <i>Although</i> reikalautų sakinio."],
+  ["I was very tired. ___, I finished my project.", ["However", "Although", "Despite", "Unless"], "Jungia du atskirus sakinius ir rašomas su kableliu → <b>However</b>."],
+  ["You won't pass the exam ___ you study harder.", ["unless", "if", "although", "because"], "<b>unless</b> = if not: neišlaikysi, jei nesimokysi daugiau."],
+  ["She stayed at home ___ she was ill.", ["because", "because of", "so", "despite"], "Po tarpo eina sakinys (she was ill) → <b>because</b>. <i>because of</i> vartojamas su daiktavardžiu."],
+  ["The match was cancelled ___ the storm.", ["because of", "because", "although", "so that"], "Po tarpo eina daiktavardis (the storm) → <b>because of</b>."],
+  ["He saved money ___ he could buy a new bike.", ["so that", "because", "unless", "although"], "Nurodomas tikslas → <b>so that</b> (kad galėtų)."],
+  ["Take an umbrella ___ it rains later.", ["in case", "unless", "so", "despite"], "Atsargumo dėlei, jei kartais nutiktų → <b>in case</b>."],
+  ["___ I like coffee, my brother prefers tea.", ["While", "Because", "So", "Unless"], "Priešpriešinami du dalykai → <b>While</b> (arba Whereas)."],
+  ["I'll call you ___ I get home.", ["as soon as", "until", "unless", "despite"], "Iš karto, kai tik → <b>as soon as</b>. Po jo – Present Simple, ne will."],
+  ["We waited outside ___ the shop opened.", ["until", "unless", "while", "since"], "Laukėme iki to momento, kol atsidarė → <b>until</b>."],
+  ["The film was very long. ___, it was really interesting.", ["Nevertheless", "Although", "Because", "Unless"], "Prieštaravimas ankstesniam sakiniui, su kableliu → <b>Nevertheless</b> (vis dėlto)."],
+  ["She is not only clever ___ also very kind.", ["but", "and", "so", "or"], "Pastovi konstrukcija: <b>not only ... but also</b>."],
+  ["I'd rather stay at home ___ go out tonight.", ["than", "then", "that", "as"], "Pastovi konstrukcija: <b>would rather ... than</b>. Nepainiok <i>than</i> (nei) su <i>then</i> (tada)."]
+];
+const KL = [
+  ["Could you ___ me a favour?", ["do", "make", "give", "take"], "Pastovi frazė: <b>do someone a favour</b> – padaryti paslaugą."],
+  ["I need to ___ a decision quickly.", ["make", "do", "get", "put"], "Pastovi frazė: <b>make a decision</b> – priimti sprendimą."],
+  ["Please don't ___ a noise – the baby is sleeping.", ["make", "do", "take", "give"], "Pastovi frazė: <b>make a noise</b>."],
+  ["I have to ___ my homework before dinner.", ["do", "make", "take", "put"], "Pastovi frazė: <b>do homework</b>. Su darbais ir pareigomis dažniausiai vartojamas <i>do</i>."],
+  ["Let's ___ a break – we've been working for two hours.", ["take", "make", "do", "put"], "Pastovi frazė: <b>take a break</b> (taip pat sakoma <i>have a break</i>)."],
+  ["Can I ___ a photo of you?", ["take", "make", "do", "get"], "Pastovi frazė: <b>take a photo</b>."],
+  ["She ___ a mistake in the last exercise.", ["made", "did", "took", "got"], "Pastovi frazė: <b>make a mistake</b>."],
+  ["Our neighbours ___ a party every summer.", ["have", "make", "do", "take"], "Pastovi frazė: <b>have a party</b> (taip pat <i>throw / hold a party</i>), bet ne <i>make a party</i>."],
+  ["It ___ me an hour to get to school.", ["takes", "makes", "does", "gets"], "Pastovi konstrukcija: <b>it takes (me) + laikas + to do</b> – užtrunka."],
+  ["You should ___ attention to what the teacher says.", ["pay", "give", "make", "take"], "Pastovi frazė: <b>pay attention to</b>."],
+  ["Don't forget to ___ your bed in the morning.", ["make", "do", "take", "put"], "Pastovi frazė: <b>make the bed</b> – pasikloti lovą."],
+  ["I usually ___ the shopping on Saturdays.", ["do", "make", "take", "have"], "Pastovi frazė: <b>do the shopping</b>."],
+  ["Our school ___ part in an international project last year.", ["took", "made", "did", "had"], "Pastovi frazė: <b>take part in</b> – dalyvauti."],
+  ["Can you ___ me the way to the station?", ["tell", "say", "speak", "talk"], "<b>tell someone something</b> – pasakyti kam nors. <i>say</i> nevartojamas su asmeniu be <i>to</i>."],
+  ["He ___ his promise and came to help us.", ["kept", "held", "made", "did"], "Pastovi frazė: <b>keep a promise</b> – ištesėti pažadą."],
+  ["Who ___ the dishes after dinner in your family?", ["does", "makes", "takes", "puts"], "Pastovi frazė: <b>do the dishes</b> – išplauti indus."]
+];
+const TOPICS = {
+  zd: { name: "Žodžių daryba", art: "-ion", items: ZD.map(([q, w, ans, ex]) => ({ q, w, ans, ex })) },
+  lk: { name: "Veiksmažodžių laikai", art: "⏱", items: LK.map(([q, o, ex]) => ({ q, o, ex })) },
+  pr: { name: "Prielinksniai", art: "at", items: PR.map(([q, o, ex]) => ({ q, o, ex })) },
+  jg: { name: "Jungiamieji žodžiai", art: "&", items: JG.map(([q, o, ex]) => ({ q, o, ex })) },
+  kl: { name: "Kolokacijos", art: "do", items: KL.map(([q, o, ex]) => ({ q, o, ex })) }
+};
+const TK = Object.keys(TOPICS);
+const LEVELS = [
+  { id: "misrus", name: "Mišrus", sub: "10 užduočių iš visų temų", art: "Σ", topics: TK },
+  { id: "egzaminas", name: "Egzamino režimas", sub: "10 užduočių · 12 min · paaiškinimai pabaigoje", art: "⏱", topics: TK, exam: true },
+  ...TK.map(k => ({ id: k, name: TOPICS[k].name, sub: `Temos treniruotė · ${TOPICS[k].items.length} užduočių`, art: TOPICS[k].art, topics: [k] }))
+];
+const LEARN = [
+  { name: "Žodžių daryba", level: 2, html: `<p>Pirmiausia nustatyk, <b>kokios kalbos dalies</b> reikia: po <i>the / a / his</i> – daiktavardžio, prieš daiktavardį – būdvardžio, prie veiksmažodžio – prieveiksmio.</p><ul><li>Daiktavardžiai: -ion, -ment, -ness, -ity, -ance/-ence, -er/-or (asmuo)</li><li>Būdvardžiai: -ful, -less, -ous, -able/-ible, -ive, -al</li><li>Prieveiksmiai: -ly</li><li>Veiksmažodžiai: -en, -ise/-ize, -ify</li><li>Neiginys: un-, in-, im-, ir-, il-, dis-</li></ul><span class="mk-ex">Patikrink prasmę: ar reikia neiginio, ar daugiskaitos?</span>` },
+  { name: "Veiksmažodžių laikai", level: 3, html: `<ul><li><b>Present Simple</b> – įpročiai, tiesos (every day, usually)</li><li><b>Present Continuous</b> – vyksta dabar arba suplanuota ateitis</li><li><b>Present Perfect</b> – patirtis ar rezultatas iki dabar (since, for, already, so far)</li><li><b>Past Simple</b> – konkretus praeities laikas (yesterday, in 2010, ago)</li><li><b>Past Continuous</b> – vyko tam tikru praeities momentu</li><li><b>Past Perfect</b> – įvyko anksčiau už kitą praeities veiksmą</li><li><b>will / be going to</b> – ateitis; going to – kai matome ženklus</li></ul><span class="mk-ex">Po if, when, as soon as apie ateitį rašome Present Simple, ne will.</span>` },
+  { name: "Prielinksniai", level: 4, html: `<p>Laikas: <b>at</b> 7 o'clock, <b>on</b> Monday / 5 May, <b>in</b> May / 2024 / the morning.</p><p>Dažnos frazės: good <b>at</b>, interested <b>in</b>, depend <b>on</b>, afraid <b>of</b>, famous <b>for</b>, married <b>to</b>, look forward <b>to</b> + -ing, apologise <b>for</b>, insist <b>on</b>.</p><span class="mk-ex">Frazes geriausia mokytis kartu su prielinksniu, kaip vieną žodį.</span>` },
+  { name: "Jungiamieji žodžiai", level: 5, html: `<ul><li><b>although / even though</b> + sakinys; <b>despite / in spite of</b> + daiktavardis ar -ing</li><li><b>because</b> + sakinys; <b>because of</b> + daiktavardis</li><li><b>however, nevertheless</b> – naujo sakinio pradžioje su kableliu</li><li><b>unless</b> = if not; <b>in case</b> – dėl visa ko</li><li><b>so that</b> – tikslas; <b>while / whereas</b> – priešprieša</li></ul>` },
+  { name: "Kolokacijos: make ir do", level: 6, html: `<p><b>make</b> – kai kažkas sukuriama: make a decision, a mistake, a noise, a plan, an effort, the bed.</p><p><b>do</b> – darbai ir pareigos: do homework, the shopping, the dishes, someone a favour, your best.</p><p>Kitos: <b>take</b> a photo / a break / part in, <b>pay</b> attention, <b>keep</b> a promise, <b>have</b> a party.</p>` }
+];
+
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), board = $("board");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: "VBE anglų", grade: GRADES.includes(saved) ? saved : GRADES[1] }));
+const taskai = n => n % 10 === 1 && n % 100 !== 11 ? "taškas" : n % 10 >= 2 && (n % 100 < 10 || n % 100 > 20) ? "taškai" : "taškų";
+const mmss = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+const norm = s => String(s).trim().toLowerCase().replace(/\s+/g, " ").replace(/[.!]$/, "");
+const gap = (q, fill) => E(q).replace("___", fill);
+
+/* ---------- temų statistika (tik šiame įrenginyje) ---------- */
+const stat = () => MK.get("mk-vbe-anglu-stat", {});
+function addStat(t, ok){ const s = stat(); s[t] = s[t] || [0, 0]; s[t][1]++; if(ok) s[t][0]++; MK.set("mk-vbe-anglu-stat", s); }
+function drawWeak(){
+  const s = stat(), rows = TK.filter(k => s[k]).map(k => ({ k, p: s[k][0] / s[k][1] })).sort((a, b) => a.p - b.p);
+  $("weak").innerHTML = rows.length
+    ? rows.map(r => `<div class="r${r.p < .6 ? " lo" : ""}"><span>${TOPICS[r.k].name}</span><span class="b"><i style="width:${Math.round(r.p * 100)}%"></i></span><span>${Math.round(r.p * 100)}%</span></div>`).join("")
+      + (rows[0].p < .8 ? `<p>Daugiausia klaidų: <b>${TOPICS[rows[0].k].name.toLowerCase()}</b>. Pasiskaityk temą skiltyje „Noriu pasimokyti“ ir patreniruok.</p>` : `<p>Puikiai sekasi visose išbandytose temose!</p>`)
+    : `<p>Atlik pirmąsias užduotis – čia matysi, kurios temos sekasi geriausiai, o kurias verta pakartoti.</p>`;
+}
+/* Užduotys nesikartoja, kol neišnaudotos visos temos užduotys. */
+const bag = {};
+function draw1(t){
+  if(!bag[t] || !bag[t].length) bag[t] = MK.shuffle(TOPICS[t].items);
+  const it = bag[t].pop();
+  return it.o ? Object.assign({ t, choices: MK.shuffle(it.o), right: it.o[0] }, it) : Object.assign({ t }, it);
+}
+
+let lvl = 0, L = null, tasks = [], ti = 0, cur = null, pts = 0, okN = 0, dots = null, timer = 0, t0 = 0, answered = false, log = [];
+function showMenu(){ clearInterval(timer); play.hidden = true; menu.hidden = false; drawWeak(); MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); MK.learn($("learn"), { topics: LEARN, onPlay: start }); MK.music.stop(); window.scrollTo(0, 0); }
+function start(i){
+  MK.music.stop(); lvl = i; L = LEVELS[i]; ti = 0; pts = 0; okN = 0; log = [];
+  const order = []; while(order.length < N) order.push(...MK.shuffle(L.topics));
+  tasks = order.slice(0, N).map(draw1);
+  menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
+  dots = MK.dots($("dots"), N); $("pts").textContent = 0;
+  t0 = Date.now(); clearInterval(timer); timer = setInterval(tick, 500); tick();
+  next();
+}
+function tick(){
+  const el = Math.floor((Date.now() - t0) / 1000);
+  if(L.exam){ const left = Math.max(0, EXAM_SEC - el); $("time").textContent = mmss(left); $("clock").classList.toggle("warn", left < 120); if(left <= 0) return finish(); }
+  else $("time").textContent = mmss(el);
+}
+function next(){
+  if(ti >= N) return finish();
+  cur = tasks[ti]; answered = false; dots.cur(ti);
+  const ans = cur.choices
+    ? `<div class="opts">${cur.choices.map(c => `<button type="button" data-v="${E(c)}">${E(c)}</button>`).join("")}</div>`
+    : `<form class="ansrow" id="f" autocomplete="off"><input id="inp" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="Įrašyk žodį" aria-label="Atsakymas"><button class="mk-btn" type="submit">Tikrinti</button></form>`;
+  board.innerHTML = `<div class="card"><small>${ti + 1} / ${N} · ${TOPICS[cur.t].name}</small>
+    <div class="task" lang="en">${gap(cur.q, '<span class="gap">_____</span>')}${cur.w ? ` <b class="kw">(${cur.w})</b>` : ""}</div>
+    ${cur.w ? `<div class="hint">Pakeisk skliaustuose esantį žodį, kad tiktų sakinyje.</div>` : ""}${ans}<div id="fbBox"></div></div>`;
+  const inp = $("inp"); if(inp && matchMedia("(hover:hover)").matches) inp.focus();
+}
+const rightOf = c => c.ans ? c.ans[0] : c.right;
+function submit(raw, btn){
+  if(answered || String(raw).trim() === "") return;
+  answered = true; MK.unlock(); MK.music.stop();
+  const ok = cur.ans ? cur.ans.includes(norm(raw)) : raw === cur.right;
+  if(ok){ okN++; pts += 10; } $("pts").textContent = pts;
+  addStat(cur.t, ok); dots.mark(ti, ok); log.push({ task: cur, given: raw, ok });
+  if(L.exam){ if(btn) btn.classList.add("sel"); MK.sfx.tap(); setTimeout(() => { ti++; next(); }, 350); return; }
+  ok ? MK.sfx.good() : MK.sfx.bad();
+  if(cur.choices) board.querySelectorAll(".opts button").forEach(b => { b.disabled = true; if(b.dataset.v === cur.right) b.classList.add("ok"); else if(b === btn) b.classList.add("no"); });
+  else { $("inp").readOnly = true; $("f").querySelector("button").disabled = true; }
+  const full = gap(cur.q, `<b>${E(cur.ans ? (cur.q.startsWith("___") ? rightOf(cur)[0].toUpperCase() + rightOf(cur).slice(1) : rightOf(cur)) : cur.right)}</b>`);
+  $("fbBox").innerHTML = MK.why({ ok, head: ok ? `Teisingai! +10` : `Neteisingai. Teisingas atsakymas: ${E(rightOf(cur))}`, body: `<span lang="en">${full}</span>`, more: cur.ex, sum: "Kodėl taip?", open: !ok })
+    + `<button type="button" class="mk-btn go" id="go">${ti < N - 1 ? "Kita užduotis →" : "Rezultatai"}</button>`;
+  $("go").focus({ preventScroll: true });
+  $("go").scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+board.addEventListener("submit", e => { e.preventDefault(); submit($("inp").value); });
+board.addEventListener("click", e => {
+  const b = e.target.closest(".opts button"); if(b) return submit(b.dataset.v, b);
+  if(e.target.closest("#go")){ ti++; next(); window.scrollTo(0, 0); }
+});
+function finish(){
+  clearInterval(timer);
+  if(L.exam) while(log.length < N){ const t = tasks[log.length]; log.push({ task: t, given: "", ok: false }); addStat(t.t, false); }
+  const stars = MK.starsFor(okN, N); MK.best(GAME, L.id, stars);
+  const sec = Math.floor((Date.now() - t0) / 1000);
+  const bad = {}; log.forEach(x => { if(!x.ok) bad[x.task.t] = (bad[x.task.t] || 0) + 1; });
+  const worst = Object.keys(bad).sort((a, b) => bad[b] - bad[a])[0];
+  if(L.exam) drawReview(sec);
+  MK.result({ stars, title: `${okN} iš ${N}`,
+    text: `${pts} ${taskai(pts)} · ${mmss(sec)}.${worst ? ` Pakartok: ${TOPICS[worst].name.toLowerCase()}.` : " Be klaidų!"}`,
+    next: L.exam ? () => {} : null, nextLabel: "Peržiūrėti paaiškinimus",
+    again: () => start(lvl), menu: showMenu, menuLabel: "Į meniu" });
+}
+function drawReview(sec){
+  board.innerHTML = `<div class="review"><h3>Egzamino režimas: ${okN} iš ${N} · ${mmss(sec)}</h3>${log.map((x, i) => `<div class="it ${x.ok ? "ok" : "bad"}">
+    <small>${i + 1}. ${TOPICS[x.task.t].name} · ${x.ok ? "teisingai" : "neteisingai"}</small>
+    <div lang="en">${gap(x.task.q, `<b>${E(rightOf(x.task))}</b>`)}${x.task.w ? ` (${x.task.w})` : ""}</div>
+    <div>Tavo atsakymas: <b>${x.given === "" ? "—" : E(x.given)}</b></div>
+    <div class="sol">${x.task.ex}</div></div>`).join("")}
+    <button type="button" class="mk-btn" id="toMenu">Į meniu</button></div>`;
+  $("toMenu").onclick = showMenu;
+}
+showMenu();
+})();
+</script>
+</body>
+</html>
