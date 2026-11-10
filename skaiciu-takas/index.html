@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Skaičių takas – MokomėsKartu.lt</title>
-<meta name="description" content="1 klasės matematikos žaidimas: varlytė šokinėja skaičių taku, o vaikas sudeda ir atima.">
+<meta name="description" content="1 klasės matematikos žaidimas: varlytė šokinėja lelijų lapais ir gaudo muses varliukams, o vaikas sudeda ir atima.">
 <meta name="theme-color" content="#fff9e6">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiNmZjRmNWUiLz48ZWxsaXBzZSBjeD0iMzIiIGN5PSI1MCIgcng9IjIzIiByeT0iOCIgZmlsbD0iIzVjYzY1YSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSIyMyIgY3k9IjIyIiByPSI3LjUiIGZpbGw9IiM0M2I4NWEiLz48Y2lyY2xlIGN4PSI0MSIgY3k9IjIyIiByPSI3LjUiIGZpbGw9IiM0M2I4NWEiLz48ZWxsaXBzZSBjeD0iMzIiIGN5PSIzNyIgcng9IjE5IiByeT0iMTMiIGZpbGw9IiM0M2I4NWEiLz48ZWxsaXBzZSBjeD0iMzIiIGN5PSI0MiIgcng9IjExIiByeT0iNyIgZmlsbD0iI2I5ZWU4ZiIvPjxjaXJjbGUgY3g9IjIzIiBjeT0iMjEiIHI9IjUiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSI0MSIgY3k9IjIxIiByPSI1IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMjQiIGN5PSIyMiIgcj0iMi42IiBmaWxsPSIjMTIxYTMzIi8+PGNpcmNsZSBjeD0iNDAiIGN5PSIyMiIgcj0iMi42IiBmaWxsPSIjMTIxYTMzIi8+PHBhdGggZD0iTTI1IDMzcTcgNSAxNCAwIiBmaWxsPSJub25lIiBzdHJva2U9IiMxYjVlMmEiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4=">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,34 +12,101 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
 <script src="/bendra/mk.js"></script>
 <style>
-/* Žaidimo ekranas: lygtis viršuje, tvenkinys su vingiuotu lelijų lapų taku, apačioje pelėdžiukas. */
-body{--ac:#ff4f5e;--ac-ink:#fff;--ac-soft:#ffe1e4}
+/* Meniu: didelis tvenkinys su varlyte, varliukais ir surinktais draugais, po juo – tikslas ir lygiai.
+   Žaidimas: lygtis ir musių eilė viršuje, tvenkinys per visą ekraną, apačioje pelėdžiukas. */
+body{--ac:#ff4f5e;--ac-ink:#fff;--ac-soft:#ffe1e4;--water:#a6dffb;--water2:#b9e8ff;--pad:#58c45a;--pad-d:#2f8f42}
 .la{font:800 22px/1 var(--kid)}
-.eq{display:flex;justify-content:center;align-items:center;gap:.28em;font:800 clamp(40px,11vw,64px)/1 var(--kid);padding:2px 0 6px}
+.m-open,.m-sad{display:none}
+.fr .eyes{transform-box:fill-box;transform-origin:center;animation:mkBlink 4.5s infinite}
+
+/* ---------- meniu ---------- */
+.mk-hero{padding-top:0}
+.mk-hero-art{width:min(560px,100%)}
+.mk-hero-art svg{display:block;width:auto;max-width:100%;height:auto;max-height:42vh;margin:0 auto}
+.mk-hero h1{margin-top:6px}
+.mk-hero p{max-width:32ch;font-size:17px}
+.fname{font:800 11px/1 var(--kid);fill:#0f4a6b;text-anchor:middle}
+.baby{transform-box:fill-box;transform-origin:50% 100%;animation:babyHop 2.4s infinite}
+.baby.b2{animation-delay:.5s}.baby.b3{animation-delay:1s}
+@keyframes babyHop{0%,70%,100%{transform:translateY(0)}80%{transform:translateY(-9px) scaleY(1.06)}90%{transform:translateY(0) scaleY(.94)}}
+.goal{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14);
+  display:grid;grid-template-columns:54px minmax(0,1fr);gap:12px;align-items:center}
+.goal-who{width:54px;height:54px;border-radius:50%;background:var(--water2);box-shadow:inset 0 0 0 2.5px var(--ink);display:grid;place-items:center;font:800 28px/1 var(--kid);color:#0f4a6b}
+.goal-who svg{width:44px;height:36px}
+.goal p{margin:0 0 6px;font:800 16.5px/1.25 var(--kid)}
+.goal-bar{height:14px;border-radius:999px;background:#eadfba;overflow:hidden;box-shadow:inset 0 0 0 2px var(--ink)}
+.goal-bar i{display:block;height:100%;background:#ffc61a;border-radius:999px 0 0 999px}
+
+/* ---------- žaidimas ---------- */
+.eq{display:flex;justify-content:center;align-items:center;gap:.26em;font:800 clamp(40px,11vw,62px)/1 var(--kid);padding:0 0 6px}
+.eq.long{font-size:clamp(32px,8.8vw,56px);gap:.2em}
 .eq i{font-style:normal;color:var(--ac)}
 .eq .q{display:inline-grid;place-items:center;min-width:1.3em;height:1.2em;padding:0 .12em;border-radius:.3em;background:var(--card);box-shadow:inset 0 0 0 .06em var(--ink)}
 .eq .q.done{background:#c9f5c0;animation:mkPop .4s cubic-bezier(.2,1.6,.4,1)}
-#dots{margin-bottom:10px}
-.pond{position:relative;border-radius:30px;margin:0 0 12px;
-  background:radial-gradient(circle at 18% 28%,rgba(255,255,255,.55) 0 6px,transparent 7px),radial-gradient(circle at 82% 70%,rgba(255,255,255,.45) 0 5px,transparent 6px),
-    repeating-radial-gradient(circle at 50% 120%,#a9e2ff 0 18px,#b8e8ff 18px 36px);
+.flies{display:flex;justify-content:center;gap:5px;margin:0 0 10px}
+.flies i{width:34px;height:30px;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 2px #d8c99a;display:grid;place-items:center;transition:transform .2s}
+.flies svg{width:26px;height:20px;opacity:.22;filter:grayscale(1)}
+.flies i.cur{box-shadow:inset 0 0 0 3px var(--ink);transform:translateY(-3px)}
+.flies i.got{background:#ffe27a;box-shadow:inset 0 0 0 2.5px var(--ink);animation:mkPop .4s cubic-bezier(.2,1.6,.4,1)}
+.flies i.got svg{opacity:1;filter:none}
+.flies i.miss{background:#f1ead3;box-shadow:inset 0 0 0 2px #d8c99a}
+.flies i.miss svg{opacity:.12}
+@media (max-width:360px){.flies i{width:30px}}
+
+.pond{position:relative;border-radius:30px;margin:0 0 12px;overflow:hidden;
+  background:radial-gradient(circle at 16% 22%,rgba(255,255,255,.6) 0 5px,transparent 6px),radial-gradient(circle at 84% 64%,rgba(255,255,255,.5) 0 4px,transparent 5px),
+    radial-gradient(circle at 62% 12%,rgba(255,255,255,.45) 0 3px,transparent 4px),
+    repeating-radial-gradient(circle at 50% 118%,var(--water) 0 22px,var(--water2) 22px 44px);
   box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.15)}
-.trail{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.stone{position:absolute;display:grid;justify-items:center;align-items:end;border:0;padding:0 0 6%;cursor:pointer;border-radius:50%;
-  background:conic-gradient(from -14deg,transparent 0 28deg,var(--pad,#5cc65a) 28deg 360deg);filter:drop-shadow(0 4px 0 rgba(18,60,30,.35));transition:transform .15s}
-.stone b{position:absolute;left:21%;bottom:7%;display:grid;place-items:center;width:58%;aspect-ratio:1;border-radius:50%;background:#fffdf2;color:#173b22;font:800 var(--fs,20px)/1 var(--kid);box-shadow:0 2px 0 rgba(0,0,0,.18)}
-.stone:active{transform:scale(.92)}
-.stone.start{--pad:#ffc61a}
-.stone.yes{--pad:#ffc61a}
+.deco,.trail,.over{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.deco svg{display:block;width:100%;height:auto}
+.over{z-index:5}
+.stone{position:absolute;border:0;padding:0;cursor:pointer;border-radius:50%;background:none;transition:transform .15s;filter:drop-shadow(0 5px 0 rgba(18,60,30,.32))}
+.stone::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 36% 30%,rgba(255,255,255,.34) 0 16%,transparent 44%),radial-gradient(circle,var(--pad) 0 80%,var(--pad-d) 81% 100%);
+  -webkit-mask:conic-gradient(from -14deg,transparent 0 28deg,#000 28deg 360deg);mask:conic-gradient(from -14deg,transparent 0 28deg,#000 28deg 360deg)}
+.stone b{position:absolute;left:23%;bottom:6%;display:grid;place-items:center;width:54%;aspect-ratio:1;border-radius:50%;background:#fffdf2;color:#173b22;font:800 var(--fs,20px)/1 var(--kid);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.stone:active{transform:scale(.93)}
+.stone.start,.stone.yes{--pad:#ffc61a;--pad-d:#e09a00}
 .stone.yes b{background:#fff3b0}
-.stone.no{--pad:#ff8a7a}
+.stone.no{--pad:#ff8a7a;--pad-d:#e0604e}
 .stone.goal{animation:mkPulse .9s infinite}
+.stone.target b{box-shadow:0 0 0 4px #ffc61a,0 2px 0 rgba(0,0,0,.2)}
 .frog{position:absolute;left:0;top:0;pointer-events:none;will-change:transform;z-index:3}
-.frog svg{width:100%;height:100%;display:block;filter:drop-shadow(0 4px 0 rgba(18,60,30,.25))}
+.frog svg{width:100%;height:100%;display:block;filter:drop-shadow(0 5px 0 rgba(18,60,30,.25))}
+.frog.open .m-smile,.frog.sad .m-smile{display:none}
+.frog.open .m-open{display:block}
+.frog.sad .m-sad{display:block}
+.frog.happy svg{animation:froggy .6s cubic-bezier(.3,1.5,.5,1)}
+.frog.sad svg{animation:mkShake .45s}
+@keyframes froggy{30%{transform:translateY(-16%) scale(.96,1.06)}60%{transform:translateY(0) scale(1.06,.92)}}
+.fly{position:absolute;left:0;top:0;width:44px;height:34px;margin:-17px 0 0 -22px;z-index:6;pointer-events:none;transition:transform 1.5s ease-in-out}
+.fly svg{width:100%;height:100%;display:block;animation:bob 1.1s ease-in-out infinite}
+.fly .wings{transform-box:fill-box;transform-origin:50% 100%;animation:flap .12s linear infinite alternate}
+.fly.gold .body{fill:#ffb400}
+.fly.gold svg{filter:drop-shadow(0 0 5px #ffd95a)}
+@keyframes flap{to{transform:scaleY(.35)}}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.tongue{stroke:#ff5d8a;stroke-width:6;stroke-linecap:round}
 .hopn{position:absolute;z-index:4;transform:translate(-50%,-50%);font:800 18px/1 var(--kid);color:var(--ink);background:#fff;border-radius:999px;padding:4px 8px;
   box-shadow:inset 0 0 0 2px var(--ink);pointer-events:none;animation:hopn .9s ease-out forwards}
 @keyframes hopn{0%{opacity:0;margin-top:0}20%{opacity:1}100%{opacity:0;margin-top:-34px}}
+.fish{position:absolute;left:0;top:0;width:66px;height:52px;z-index:5;pointer-events:none}
+.home{position:absolute;inset:0;z-index:7;display:grid;place-items:center;border-radius:inherit;background:inherit;box-shadow:inherit;animation:mkFade .35s}
+.home svg{width:min(100%,460px);height:auto;max-height:100%;display:block}
+.fed{transform-box:fill-box;transform-origin:center;animation:fed .7s backwards cubic-bezier(.2,1.5,.4,1);animation-delay:var(--d)}
+@keyframes fed{from{opacity:0;transform:translateY(-40px) scale(.4)}}
+
+.chips{display:flex;justify-content:center;align-items:center;gap:12px;margin:0 0 12px}
+.chips-l{font:800 19px/1 var(--kid);color:var(--soft)}
+.chip{min-width:66px;height:62px;padding:0 14px;border:0;border-radius:22px;cursor:pointer;background:var(--card);font:800 30px/1 var(--kid);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 6px 0 rgba(18,26,51,.2);transition:transform .1s}
+.chip:active{transform:translateY(4px)}
+.chip.ok{background:#c9f5c0}
+.chip.no{opacity:.4;pointer-events:none}
 .mk-guide{margin-top:auto}
+.nf-art{width:150px;height:120px;border-radius:28px;background:var(--water2);box-shadow:inset 0 0 0 3px var(--ink);display:grid;place-items:center}
+.nf-art svg{width:120px;height:96px;animation:mkPop .6s cubic-bezier(.2,1.6,.4,1)}
 </style>
 </head>
 <body>
@@ -48,200 +115,483 @@ body{--ac:#ff4f5e;--ac-ink:#fff;--ac-soft:#ffe1e4}
     <div class="mk-hero">
       <div class="mk-hero-art" id="heroArt"></div>
       <h1>Skaičių <em>takas</em></h1>
-      <p>Varlytė šokinėja lelijų lapais. Paspausk, kur ji nušoks!</p>
+      <p id="heroP"></p>
     </div>
+    <div class="goal" id="goal"></div>
     <div id="levels"></div>
   </section>
   <section id="play" hidden>
     <div class="eq" id="eq" aria-live="polite"></div>
-    <div id="dots"></div>
+    <div class="flies" id="flies" role="img"></div>
     <div class="pond" id="pond">
+      <div class="deco" id="deco" aria-hidden="true"></div>
       <svg class="trail" id="trail" aria-hidden="true"></svg>
       <div id="stones"></div>
       <div class="frog" id="frog" aria-hidden="true"></div>
+      <svg class="over" id="over" aria-hidden="true"></svg>
+      <div class="fly" id="fly" aria-hidden="true" hidden></div>
+      <div class="home" id="home" aria-hidden="true" hidden></div>
     </div>
+    <div class="chips" id="chips" hidden></div>
     <div id="guideBox"></div>
   </section>
 </div>
 <script>
 (function(){
 "use strict";
-const GAME = "skaiciu-takas", ROUND = 8;
-const FROG = `<svg viewBox="0 0 100 94"><circle cx="30" cy="30" r="15" fill="#43b85a"/><circle cx="70" cy="30" r="15" fill="#43b85a"/>
-  <ellipse cx="50" cy="62" rx="40" ry="28" fill="#43b85a"/><ellipse cx="50" cy="71" rx="24" ry="15" fill="#b9ee8f"/>
-  <circle cx="30" cy="29" r="10" fill="#fff"/><circle cx="70" cy="29" r="10" fill="#fff"/>
-  <circle cx="32" cy="31" r="5.5" fill="#121a33"/><circle cx="68" cy="31" r="5.5" fill="#121a33"/>
-  <circle cx="34" cy="28.5" r="1.9" fill="#fff"/><circle cx="70" cy="28.5" r="1.9" fill="#fff"/>
-  <path d="M35 53q15 11 30 0" fill="none" stroke="#1b5e2a" stroke-width="3.5" stroke-linecap="round"/>
-  <circle cx="24" cy="54" r="5" fill="#ff8aa0" opacity=".6"/><circle cx="76" cy="54" r="5" fill="#ff8aa0" opacity=".6"/>
-  <ellipse cx="25" cy="87" rx="13" ry="5.5" fill="#2f9a47"/><ellipse cx="75" cy="87" rx="13" ry="5.5" fill="#2f9a47"/></svg>`;
-const MINUS = "−";
+const GAME = "skaiciu-takas", ROUND = 8, MINUS = "−";
+const STORE = "mk-" + GAME + "-tvenkinys"; // surinktos musės (atskirai nuo žvaigždučių)
+
+/* ---------- tekstai (atskirai nuo kodo, kad būtų lengva taisyti ar versti) ---------- */
+const many = (n, one, few, lots) => { const d = n % 10, h = n % 100; return d === 1 && h !== 11 ? one : d >= 2 && (h < 10 || h >= 20) ? few : lots; };
+const T = {
+  hero: "Pagauk muses varliukams ir surink visus tvenkinio draugus!",
+  levels: [["Iki 10", "Sudėk ir atimk"], ["Iki 20", "Peršok dešimtį"], ["Iki 100", "Dideli šuoliai"]],
+  ask: ["Kur nušoks varlytė?", "O dabar kur?", "Kur ji nusileis?", "Musė jau laukia. Kur šoksim?"],
+  askHops: "Musė tupi ant lapo. Kiek šuolių iki jos?",
+  askHopsStep: fw => `Musė tupi ant lapo. Kiek reikia ${fw ? "pridėti" : "atimti"}?`,
+  askChain: "Auksinė musė! Varlytė šoks pirmyn, o paskui atgal.",
+  stepIntro: s => `Čia kiekvienas šuolis – ${s}. Kur nušoks varlytė?`,
+  hint: (a, n, word, fw) => `Varlytė ant ${a}. Ji šoka ${n} ${word} ${fw ? "į priekį" : "atgal"}.`,
+  hintStep: (a, n, word, s, fw) => `Varlytė ant ${a}. Ji šoka ${n} ${word} po ${s} ${fw ? "į priekį" : "atgal"}.`,
+  hintChain: (b, c) => `Pirma ${b} į priekį, o tada ${c} atgal.`,
+  hintHops: "Suskaičiuok šuolius nuo varlytės iki musės.",
+  hintHopsStep: s => `Kiekvienas šuolis – ${s}. Suskaičiuok, kiek susidaro iš viso.`,
+  watch: "Žiūrėk, kaip ji šokinės!",
+  here: "Štai kur! Paspausk šį lapą.",
+  hereHops: "Suskaičiavai? Paspausk tą skaičių.",
+  onFrog: "Paspausk tą lapą, ant kurio sėdi varlytė.",
+  useChips: "Musė jau matyti. Pasirink skaičių apačioje!",
+  chips: "Kiek?",
+  caught: ["Am! Musė pagauta!", "Pagavai musę!", "Skanu! Dar viena musė.", "Am! Varliukai džiaugsis."],
+  gone: "Teisingai! Musė spėjo nuskristi, kitą pagausim.",
+  streak: "Trys iš eilės! Net žuvytė iššoko pasižiūrėti.",
+  flies: n => n === 0 ? "nė vienos musės" : `${n} ${many(n, "musę", "muses", "musių")}`,
+  home: n => n === 0 ? "Varlytė grįžo namo. Kitą kartą pagausim!" : `Varlytė parnešė ${T.flies(n)}. Varliukai sotūs!`,
+  result: n => `Varliukams parnešei ${T.flies(n)} iš ${ROUND}.`,
+  toNext: (n, name) => `Dar <b>${n}</b> ${many(n, "musė", "musės", "musių")} – ir tvenkinyje apsigyvens <b>${name}</b>.`,
+  allFriends: "Visi draugai jau gyvena tavo tvenkinyje. Šaunu!",
+  newFriend: "Naujas draugas!",
+  moved: name => `<b>${name}</b> apsigyveno tavo tvenkinyje.`,
+  hooray: "Valio!",
+  fliesLabel: (n, t) => `Pagauta musių: ${n} iš ${t}`
+};
+
+/* ---------- piešiniai ---------- */
+const FROG_IN = `<path d="M24 76q-20 2-16 24h30q8-14-2-24z" fill="#2f9a47"/><path d="M96 76q20 2 16 24H82q-8-14 2-24z" fill="#2f9a47"/>
+  <ellipse cx="22" cy="101" rx="18" ry="6.5" fill="#43b85a"/><ellipse cx="98" cy="101" rx="18" ry="6.5" fill="#43b85a"/>
+  <ellipse cx="60" cy="68" rx="41" ry="33" fill="#43b85a"/><ellipse cx="60" cy="80" rx="25" ry="19" fill="#c8f2a0"/>
+  <path d="M39 78q-5 12 1 22M81 78q5 12-1 22" fill="none" stroke="#2f9a47" stroke-width="8" stroke-linecap="round"/>
+  <ellipse cx="41" cy="102" rx="10" ry="4.5" fill="#43b85a"/><ellipse cx="79" cy="102" rx="10" ry="4.5" fill="#43b85a"/>
+  <circle cx="37" cy="29" r="18" fill="#43b85a"/><circle cx="83" cy="29" r="18" fill="#43b85a"/>
+  <g class="eyes"><circle cx="37" cy="28" r="12.5" fill="#fff"/><circle cx="83" cy="28" r="12.5" fill="#fff"/>
+  <circle cx="39.5" cy="30" r="6.6" fill="#121a33"/><circle cx="80.5" cy="30" r="6.6" fill="#121a33"/><circle cx="42" cy="27" r="2.3" fill="#fff"/><circle cx="83" cy="27" r="2.3" fill="#fff"/></g>
+  <circle cx="27" cy="58" r="6" fill="#ff8aa0" opacity=".6"/><circle cx="93" cy="58" r="6" fill="#ff8aa0" opacity=".6"/>
+  <path class="m-smile" d="M41 56q19 14 38 0" fill="none" stroke="#1b5e2a" stroke-width="3.6" stroke-linecap="round"/>
+  <g class="m-open"><path d="M41 54q19 26 38 0z" fill="#a8243a" stroke="#1b5e2a" stroke-width="3" stroke-linejoin="round"/><ellipse cx="60" cy="65" rx="9" ry="5" fill="#ff7f9d"/></g>
+  <path class="m-sad" d="M45 62q15-9 30 0" fill="none" stroke="#1b5e2a" stroke-width="3.6" stroke-linecap="round"/>`;
+const frogSvg = (attrs, cls) => { const s = `<svg class="fr" viewBox="0 0 120 110" ${attrs || ""}>${FROG_IN}</svg>`; return cls ? `<g class="${cls}">${s}</g>` : s; };
+const FLY = `<svg viewBox="0 0 40 30"><g class="wings"><ellipse cx="12" cy="10" rx="10" ry="6" transform="rotate(-24 12 10)" fill="#e6f6ff" stroke="#7fb8d8" stroke-width="1.5"/>
+  <ellipse cx="28" cy="10" rx="10" ry="6" transform="rotate(24 28 10)" fill="#e6f6ff" stroke="#7fb8d8" stroke-width="1.5"/></g>
+  <ellipse class="body" cx="20" cy="19" rx="9" ry="8" fill="#3a3f52"/><circle cx="15.6" cy="15" r="3.4" fill="#e5243b"/><circle cx="24.4" cy="15" r="3.4" fill="#e5243b"/></svg>`;
+const REEDS = `<svg viewBox="0 0 60 100"><path d="M14 100q-4-50 4-78M30 100q2-56-2-90M46 100q4-44-2-66" fill="none" stroke="#3f9a4a" stroke-width="4" stroke-linecap="round"/>
+  <rect x="13" y="18" width="10" height="26" rx="5" fill="#8a5a36"/><rect x="23" y="6" width="10" height="28" rx="5" fill="#8a5a36"/><rect x="39" y="30" width="10" height="24" rx="5" fill="#8a5a36"/>
+  <path d="M8 100q-10-24-4-40q8 14 8 40zM52 100q10-20 6-34q-8 12-10 34z" fill="#58c45a"/></svg>`;
+const LOTUS = `<svg viewBox="0 0 80 60"><ellipse cx="40" cy="44" rx="36" ry="13" fill="#58c45a"/><path d="M40 44q-22-6-20-26q14 4 20 26zM40 44q22-6 20-26q-14 4-20 26z" fill="#ff9fc0"/>
+  <path d="M40 46q-12-14 0-34q12 20 0 34z" fill="#ffc2d8"/><circle cx="40" cy="40" r="5" fill="#ffc61a"/></svg>`;
+/* Tvenkinio draugai: piešiami langelyje nuo −40 iki 40 (plotis) ir nuo −32 iki 32 (aukštis). */
+const FRIENDS = [
+  { id: "buozgalvis", name: "Buožgalvis", need: 6, art: `<path d="M6 2q14-16 26-4q-12 2-8 12q-10 4-18-8z" fill="#3a4a5e"/><ellipse cx="-8" cy="2" rx="20" ry="15" fill="#46586e"/>
+    <circle cx="-16" cy="-3" r="6" fill="#fff"/><circle cx="-17.5" cy="-3" r="3" fill="#121a33"/><path d="M-22 8q6 5 12 0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>` },
+  { id: "zuvyte", name: "Žuvytė", need: 15, art: `<path d="M14 0l20-15v30z" fill="#ff8a1f"/><path d="M-8-13q10-13 20-2z" fill="#ff8a1f"/><ellipse cx="-6" cy="0" rx="26" ry="16" fill="#ffa63a"/>
+    <path d="M0-2q7 6 0 13" fill="none" stroke="#e06d00" stroke-width="2.4" stroke-linecap="round"/><circle cx="-19" cy="-4" r="6" fill="#fff"/><circle cx="-20.5" cy="-4" r="3" fill="#121a33"/>
+    <path d="M-26 6q5 4 9 0" fill="none" stroke="#c75a00" stroke-width="2" stroke-linecap="round"/>` },
+  { id: "sraige", name: "Sraigė", need: 26, art: `<path d="M-26 6l-5-22M-18 6l-1-22" stroke="#f2c98a" stroke-width="4" stroke-linecap="round"/><circle cx="-31" cy="-17" r="3.4" fill="#121a33"/><circle cx="-19" cy="-17" r="3.4" fill="#121a33"/>
+    <path d="M-34 22q0-16 16-14h44q10 2 10 14z" fill="#f2c98a"/><circle cx="10" cy="0" r="21" fill="#c9793a"/>
+    <path d="M10 13a13 13 0 1 1 13-13a8 8 0 1 1-8-8" fill="none" stroke="#8a4a1c" stroke-width="3.4" stroke-linecap="round"/><path d="M-30 15q4 4 8 0" fill="none" stroke="#a8693a" stroke-width="2" stroke-linecap="round"/>` },
+  { id: "laumzirgis", name: "Laumžirgis", need: 38, art: `<g fill="#d8f1ff" stroke="#4aa3d6" stroke-width="1.6" opacity=".92"><ellipse cx="-2" cy="-15" rx="20" ry="7" transform="rotate(-16 -2 -15)"/><ellipse cx="14" cy="-14" rx="16" ry="6" transform="rotate(20 14 -14)"/>
+    <ellipse cx="-2" cy="13" rx="20" ry="7" transform="rotate(16 -2 13)"/><ellipse cx="14" cy="12" rx="16" ry="6" transform="rotate(-20 14 12)"/></g>
+    <rect x="-34" y="-4" width="50" height="7" rx="3.5" fill="#2f9fd0"/><path d="M-22-4v7M-10-4v7M2-4v7" stroke="#1f7fb0" stroke-width="2"/><circle cx="22" cy="-1" r="9" fill="#1f7fb0"/><circle cx="25" cy="-5" r="3.2" fill="#fff"/><circle cx="25" cy="4" r="3.2" fill="#fff"/>` },
+  { id: "antis", name: "Antis", need: 52, art: `<path d="M-34 8q-6-12 4-12q4 8 12 10z" fill="#8a5a36"/><ellipse cx="-4" cy="10" rx="28" ry="16" fill="#d2a468"/><path d="M-16 8q14-12 26 2q-14 10-26-2z" fill="#a8693a"/>
+    <rect x="12" y="-8" width="12" height="14" fill="#fff"/><circle cx="20" cy="-14" r="13" fill="#2f8f5a"/><path d="M31-16l13 4l-13 6z" fill="#ffb21a"/><circle cx="23" cy="-18" r="2.8" fill="#121a33"/>` },
+  { id: "vezlys", name: "Vėžlys", need: 68, art: `<circle cx="-22" cy="16" r="7" fill="#8fd06a"/><circle cx="14" cy="16" r="7" fill="#8fd06a"/><path d="M-36 12l8-2" stroke="#8fd06a" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="32" cy="4" r="10" fill="#8fd06a"/><circle cx="36" cy="1" r="2.6" fill="#121a33"/><path d="M33 9q3 2 6 0" fill="none" stroke="#3f8f4a" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M-30 14a28 26 0 0 1 56 0z" fill="#3f8f4a"/><path d="M-16 14l6-18h16l8 18M-10-4h16M-2-12v8" fill="none" stroke="#2c6b36" stroke-width="2.4" stroke-linejoin="round"/>` },
+  { id: "gulbe", name: "Gulbė", need: 86, art: `<path d="M14 6q-6-30 10-34q12 0 8 12" fill="none" stroke="#b8c4d6" stroke-width="12" stroke-linecap="round"/><path d="M14 6q-6-30 10-34q12 0 8 12" fill="none" stroke="#fff" stroke-width="8.5" stroke-linecap="round"/>
+    <path d="M-34 20q-2-26 26-24q24 2 30 24z" fill="#fff" stroke="#b8c4d6" stroke-width="2"/><path d="M-24 10q12-12 28 0" fill="none" stroke="#b8c4d6" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M30-20l12 5l-11 3z" fill="#ff8a1f"/><circle cx="29" cy="-22" r="2.2" fill="#121a33"/>` },
+  { id: "bebras", name: "Bebras", need: 106, art: `<ellipse cx="-28" cy="16" rx="15" ry="7" fill="#5a3a22" transform="rotate(-14 -28 16)"/><ellipse cx="-2" cy="10" rx="24" ry="17" fill="#8a5a36"/>
+    <circle cx="6" cy="-22" r="5" fill="#6e4426"/><circle cx="28" cy="-22" r="5" fill="#6e4426"/><circle cx="17" cy="-8" r="16" fill="#9a683e"/><ellipse cx="20" cy="-2" rx="9" ry="6.5" fill="#e3c08a"/>
+    <ellipse cx="20" cy="-6" rx="3.6" ry="2.6" fill="#121a33"/><circle cx="11" cy="-12" r="2.6" fill="#121a33"/><circle cx="26" cy="-12" r="2.6" fill="#121a33"/><rect x="17" y="1" width="6.5" height="6.5" rx="1.2" fill="#fff" stroke="#c9b48a" stroke-width="1"/>` }
+];
+const friendSvg = (f, attrs) => `<svg viewBox="-42 -34 84 68" ${attrs || ""} aria-hidden="true">${f.art}</svg>`;
+const friendsGot = n => FRIENDS.filter(f => n >= f.need).length;
+/* Draugų vietos meniu tvenkinyje (x, y – centras). */
+const SPOTS = [[58, 228], [300, 226], [316, 132], [292, 52], [50, 130], [146, 236], [72, 54], [224, 238]];
+
+/* Meniu scena: varlytė ant didelio lapo, varliukai ir jau surinkti draugai. */
+function sceneSvg(got){
+  const friends = FRIENDS.map((f, k) => {
+    const [x, y] = SPOTS[k];
+    if(k < got) return `<g>${k === 2 ? `<ellipse cx="${x}" cy="${y + 20}" rx="34" ry="10" fill="#58c45a"/>` : ""}${friendSvg(f, `x="${x - 34}" y="${y - 28}" width="68" height="55"`)}<text class="fname" x="${x}" y="${y + 38}">${f.name}</text></g>`;
+    return `<g opacity=".8"><circle cx="${x}" cy="${y}" r="20" fill="#fff" opacity=".45"/><circle cx="${x}" cy="${y}" r="20" fill="none" stroke="#5aaad0" stroke-width="2.5" stroke-dasharray="5 6"/>
+      <text x="${x}" y="${y + 8}" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="22" fill="#5aaad0">?</text></g>`;
+  }).join("");
+  return `<svg viewBox="0 0 360 286" role="img" aria-label="Tvenkinys: varlytė, varliukai ir ${got} iš ${FRIENDS.length} draugų">
+    <defs><clipPath id="pc"><rect x="3" y="3" width="354" height="280" rx="34"/></clipPath></defs>
+    <g clip-path="url(#pc)"><rect width="360" height="286" fill="#b9e8ff"/>
+      ${[70, 110, 150, 190, 230].map(r => `<ellipse cx="180" cy="182" rx="${r * 1.25}" ry="${r * 0.62}" fill="none" stroke="#a0dcfa" stroke-width="9"/>`).join("")}
+      <svg x="-6" y="150" width="56" height="94" viewBox="0 0 60 100">${REEDS.replace(/<\/?svg[^>]*>/g, "")}</svg>
+      <svg x="312" y="16" width="52" height="88" viewBox="0 0 60 100">${REEDS.replace(/<\/?svg[^>]*>/g, "")}</svg>
+      <ellipse cx="180" cy="190" rx="112" ry="34" fill="#2f8f42"/><ellipse cx="180" cy="186" rx="112" ry="34" fill="#58c45a"/>
+      <path d="M180 186l-34-34h68z" fill="#b9e8ff"/><ellipse cx="150" cy="176" rx="34" ry="9" fill="#fff" opacity=".2"/>
+      ${frogSvg('x="222" y="150" width="44" height="40"', "baby b2")}${frogSvg('x="92" y="152" width="40" height="37"', "baby")}${frogSvg('x="252" y="166" width="34" height="31"', "baby b3")}
+      ${frogSvg('x="118" y="62" width="124" height="114"')}
+      ${friends}</g>
+    <rect x="3" y="3" width="354" height="280" rx="34" fill="none" stroke="#121a33" stroke-width="4"/></svg>`;
+}
+/* Raundo pabaiga: varlytė namie, varliukai gauna muses. */
+function homeSvg(n){
+  const babies = [[52, 150, 66], [248, 146, 70], [150, 196, 60]];
+  let flies = "";
+  for(let k = 0; k < n; k++){ const [bx, by, bw] = babies[k % 3], row = Math.floor(k / 3); flies += `<g class="fed" style="--d:${(0.5 + k * 0.14).toFixed(2)}s"><svg x="${bx + bw / 2 - 13 + (row - 1) * 24}" y="${by - 26 - (row % 2) * 6}" width="26" height="20" viewBox="0 0 40 30">${FLY.replace(/<\/?svg[^>]*>/g, "")}</svg></g>`; }
+  return `<svg viewBox="0 0 360 290"><ellipse cx="180" cy="214" rx="170" ry="52" fill="#2f8f42"/><ellipse cx="180" cy="208" rx="170" ry="52" fill="#58c45a"/><ellipse cx="130" cy="190" rx="50" ry="13" fill="#fff" opacity=".2"/>
+    ${frogSvg('x="112" y="48" width="136" height="125"')}
+    ${babies.map(([x, y, w], k) => frogSvg(`x="${x}" y="${y}" width="${w}" height="${w * 0.92}"`, "baby b" + (k + 1))).join("")}${flies}</svg>`;
+}
 
 /* ---------- užduočių generatoriai ---------- */
 const R = MK.rnd;
 function line(from, to, step){ const p = []; for(let v = from; v <= to; v += step) p.push(v); return p; }
-function genTo10(){
-  if(Math.random() < 0.5){ const a = R(0, 8), b = R(1, Math.min(5, 10 - a)); return { a, b, op: "+", ans: a + b, path: line(0, 10, 1) }; }
-  const a = R(2, 10), b = R(1, Math.min(5, a)); return { a, b, op: MINUS, ans: a - b, path: line(0, 10, 1) };
+/* 12 lapų atkarpa, kurioje telpa visi užduoties skaičiai; pradžia parenkama atsitiktinai, kad atsakymas nebūtų vis krašte. */
+function win(vals, min, max){
+  const lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals), span = 11;
+  const s = R(Math.max(min, hi - span), Math.min(lo, max - span));
+  return line(s, s + span, 1);
 }
-function genTo20(){
-  if(Math.random() < 0.5){ const a = R(5, 9), b = R(11 - a, 9); return { a, b, op: "+", ans: a + b, path: line(0, 20, 1) }; }
-  const a = R(11, 18), b = R(a - 9, 9); return { a, b, op: MINUS, ans: a - b, path: line(0, 20, 1) };
+function simple(kind, a, b, op, path){ return { kind, a, b, op, target: op === "+" ? a + b : a - b, path, step: path[1] - path[0] }; }
+function chain(a, b, c, path){ return { kind: "chain", a, b, c, op: "+", mid: a + b, target: a + b - c, path, step: path[1] - path[0] }; }
+function other(b, lo, hi){ let c; do { c = R(lo, hi); } while(c === b); return c; }
+function gen10(kind){
+  const path = line(0, 10, 1);
+  if(kind === "chain"){ const a = R(1, 6), b = R(2, Math.min(5, 10 - a)); return chain(a, b, other(b, 1, Math.min(5, a + b)), path); }
+  if(Math.random() < 0.5){ const a = R(0, 8), b = R(1, Math.min(5, 10 - a)); return simple(kind, a, b, "+", path); }
+  const a = R(2, 10), b = R(1, Math.min(5, a)); return simple(kind, a, b, MINUS, path);
 }
-function genTo100(){
-  if(Math.random() < 0.45){
-    if(Math.random() < 0.5){ const a = 10 * R(0, 7), b = 10 * R(1, Math.min(5, (100 - a) / 10)); return { a, b, op: "+", ans: a + b, path: line(0, 100, 10), tens: true }; }
-    const a = 10 * R(2, 10), b = 10 * R(1, Math.min(5, a / 10)); return { a, b, op: MINUS, ans: a - b, path: line(0, 100, 10), tens: true };
+function gen20(kind){
+  if(kind === "twos"){
+    const path = line(0, 20, 2);
+    if(Math.random() < 0.5){ const a = 2 * R(0, 8), b = 2 * R(1, Math.min(4, (20 - a) / 2)); return simple("land", a, b, "+", path); }
+    const a = 2 * R(2, 10), b = 2 * R(1, Math.min(4, a / 2)); return simple("land", a, b, MINUS, path);
   }
-  if(Math.random() < 0.5){ const d = R(1, 8), u = R(5, 9), a = d * 10 + u, b = R(10 - u, 9); return { a, b, op: "+", ans: a + b, path: line(d * 10, d * 10 + 20, 1) }; }
-  const d = R(2, 9), u = R(0, 4), a = d * 10 + u, b = R(u + 1, 9); return { a, b, op: MINUS, ans: a - b, path: line(d * 10 - 10, d * 10 + 10, 1) };
+  if(kind === "chain"){ const a = R(5, 9), b = R(11 - a, 9), c = other(b, 2, 6); return chain(a, b, c, win([a, a + b, a + b - c], 0, 20)); }
+  if(Math.random() < 0.5){ const a = R(5, 9), b = R(11 - a, 9); return simple(kind, a, b, "+", win([a, a + b], 0, 20)); }
+  const a = R(11, 18), b = R(a - 9, 9); return simple(kind, a, b, MINUS, win([a, a - b], 0, 20));
 }
+function gen100(kind){
+  if(Math.random() < 0.45){
+    const path = line(0, 100, 10);
+    if(kind === "chain"){ const a = 10 * R(1, 6), b = 10 * R(2, Math.min(4, (100 - a) / 10)); return chain(a, b, 10 * other(b / 10, 1, Math.min(4, (a + b) / 10)), path); }
+    if(Math.random() < 0.5){ const a = 10 * R(0, 7), b = 10 * R(1, Math.min(5, (100 - a) / 10)); return simple(kind, a, b, "+", path); }
+    const a = 10 * R(2, 10), b = 10 * R(1, Math.min(5, a / 10)); return simple(kind, a, b, MINUS, path);
+  }
+  if(kind === "chain"){ const d = R(1, 8), u = R(5, 9), a = d * 10 + u, b = R(10 - u, 9), c = other(b, 2, 6); return chain(a, b, c, win([a, a + b, a + b - c], 0, 100)); }
+  if(Math.random() < 0.5){ const d = R(1, 8), u = R(5, 9), a = d * 10 + u, b = R(10 - u, 9); return simple(kind, a, b, "+", win([a, a + b], 0, 100)); }
+  const d = R(2, 9), u = R(0, 4), a = d * 10 + u, b = R(u + 1, 9); return simple(kind, a, b, MINUS, win([a, a - b], 0, 100));
+}
+/* Raundo planas: „land“ – kur nušoks, „hops“ – trūkstamas skaičius, „twos“ – šuoliai po 2, „chain“ – auksinė musė (du veiksmai). */
+const PLAN = ["land", "land", "hops", "land", "land", "hops", "land", "chain"];
 const LEVELS = [
-  { id: "10",  name: "Iki 10",  sub: "Sudėk ir atimk",   art: '<span class="la">3+2</span>', gen: genTo10 },
-  { id: "20",  name: "Iki 20",  sub: "Peršok dešimtį",   art: '<span class="la">8+5</span>', gen: genTo20 },
-  { id: "100", name: "Iki 100", sub: "Dideli šuoliai",   art: '<span class="la">47+5</span>', gen: genTo100 }
-];
+  { id: "10",  art: '<span class="la">3+2</span>',  gen: gen10,  plan: PLAN },
+  { id: "20",  art: '<span class="la">8+5</span>',  gen: gen20,  plan: ["land", "land", "hops", "twos", "land", "hops", "land", "chain"] },
+  { id: "100", art: '<span class="la">47+5</span>', gen: gen100, plan: PLAN }
+].map((l, i) => Object.assign(l, { name: T.levels[i][0], sub: T.levels[i][1] }));
+const keyOf = t => [t.kind, t.a, t.op, t.b, t.c || ""].join("|");
+function makeRound(i){
+  const L = LEVELS[i], seen = new Set(), out = [];
+  L.plan.forEach(kind => { let t, n = 0; do { t = L.gen(kind); } while(seen.has(keyOf(t)) && ++n < 60); seen.add(keyOf(t)); out.push(t); });
+  return out;
+}
 
 /* ---------- elementai ---------- */
 const $ = id => document.getElementById(id);
-const app = $("app"), menu = $("menu"), play = $("play"), pond = $("pond"), stonesEl = $("stones"), trail = $("trail"), frog = $("frog"), eq = $("eq");
+const app = $("app"), menu = $("menu"), play = $("play"), pond = $("pond"), stonesEl = $("stones"), trail = $("trail"), frog = $("frog"), eq = $("eq"),
+  fly = $("fly"), over = $("over"), deco = $("deco"), chips = $("chips"), fliesEl = $("flies"), home = $("home");
 app.prepend(MK.top({ title: "Skaičių takas", grade: 1 }));
-$("heroArt").innerHTML = `<svg viewBox="0 0 260 150" aria-hidden="true">
-  <ellipse cx="130" cy="122" rx="120" ry="24" fill="#b8e8ff"/><ellipse cx="130" cy="122" rx="120" ry="24" fill="none" stroke="#121a33" stroke-width="3"/>
-  <ellipse cx="58" cy="122" rx="30" ry="11" fill="#5cc65a"/><ellipse cx="130" cy="124" rx="34" ry="12" fill="#ffc61a"/><ellipse cx="204" cy="122" rx="30" ry="11" fill="#5cc65a"/>
-  <path d="M58 112q36-60 72-6" fill="none" stroke="#121a33" stroke-width="2.5" stroke-dasharray="3 7" stroke-linecap="round"/>
-  <g transform="translate(92 22) scale(.78)">${FROG.replace(/<\/?svg[^>]*>/g, "")}</g></svg>`;
-frog.innerHTML = FROG;
-$("guideBox").innerHTML = MK.guide("Kur nušoks varlytė?");
+$("heroP").textContent = T.hero;
+frog.innerHTML = frogSvg();
+fly.innerHTML = FLY;
+$("guideBox").innerHTML = MK.guide(T.ask[0]);
 const guide = $("guideBox").firstElementChild;
-const dotsEl = $("dots");
+const save = Object.assign({ flies: 0 }, MK.get(STORE, {}));
 
-/* ---------- būsena ---------- */
-let lvl = 0, tasks = [], ti = 0, task = null, cur = 0, firstOK = 0, tries = 0, busy = false, dots = null, pos = [], S = 50, tensSeen = false;
-
+/* ---------- meniu ---------- */
+function drawMenu(){
+  const got = friendsGot(save.flies), nx = FRIENDS[got];
+  $("heroArt").innerHTML = sceneSvg(got);
+  if(!nx){ $("goal").innerHTML = `<span class="goal-who">★</span><div><p style="margin:0">${T.allFriends}</p></div>`; return; }
+  const from = got ? FRIENDS[got - 1].need : 0, pct = Math.max(4, Math.round((save.flies - from) / (nx.need - from) * 100));
+  $("goal").innerHTML = `<span class="goal-who" aria-hidden="true">?</span><div><p>${T.toNext(nx.need - save.flies, nx.name)}</p><div class="goal-bar" aria-hidden="true"><i style="width:${pct}%"></i></div></div>`;
+}
 function showMenu(){
-  play.hidden = true; menu.hidden = false;
+  stopWander(); play.hidden = true; menu.hidden = false;
+  drawMenu();
   MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
   window.scrollTo(0, 0);
 }
+
+/* ---------- būsena ---------- */
+let lvl = 0, tasks = [], ti = 0, task = null, cur = 0, firstOK = 0, tries = 0, streak = 0, busy = false, pos = [], S = 60, FW = 70, FH = 64, PW = 300, PH = 300,
+  marks = [], stepSeen = {}, wanderT = null, flyAt = { x: 0, y: 0 };
+
 function start(i){
-  lvl = i; ti = 0; firstOK = 0; tensSeen = false;
-  const seen = new Set(); tasks = [];
-  while(tasks.length < ROUND){ const t = LEVELS[i].gen(), k = t.a + t.op + t.b; if(!seen.has(k)){ seen.add(k); tasks.push(t); } }
-  menu.hidden = true; play.hidden = false;
-  dots = MK.dots(dotsEl, ROUND);
+  lvl = i; ti = 0; firstOK = 0; streak = 0; marks = []; stepSeen = {};
+  tasks = makeRound(i);
+  menu.hidden = true; play.hidden = false; home.hidden = true; home.innerHTML = "";
   window.scrollTo(0, 0);
   next();
 }
+function drawFlies(){
+  fliesEl.setAttribute("aria-label", T.fliesLabel(firstOK, ROUND));
+  fliesEl.innerHTML = Array.from({ length: ROUND }, (_, k) => `<i class="${marks[k] || (k === ti ? "cur" : "")}">${FLY}</i>`).join("");
+}
+function eqHtml(){
+  const q = '<span class="q" id="q">?</span>', t = task;
+  if(t.kind === "hops") return `<b>${t.a}</b><i>${t.op}</i>${q}<i>=</i><b>${t.target}</b>`;
+  if(t.kind === "chain") return `<b>${t.a}</b><i>+</i><b>${t.b}</b><i>${MINUS}</i><b>${t.c}</b><i>=</i>${q}`;
+  return `<b>${t.a}</b><i>${t.op}</i><b>${t.b}</b><i>=</i>${q}`;
+}
 function next(){
-  if(ti >= ROUND) return finish();
+  if(ti >= ROUND) return finale();
   task = tasks[ti]; tries = 0; busy = false;
-  dots.cur(ti);
-  eq.innerHTML = `<b>${task.a}</b><i>${task.op}</i><b>${task.b}</b><i>=</i><span class="q" id="q">?</span>`;
+  eq.className = "eq" + (task.kind === "chain" ? " long" : "");
+  eq.innerHTML = eqHtml();
   cur = task.path.indexOf(task.a);
+  frog.className = "frog";
+  drawFlies();
   render();
-  if(task.tens && !tensSeen){ tensSeen = true; MK.say(guide, "Čia kiekvienas šuolis – 10. Kur nušoks varlytė?"); }
-  else MK.say(guide, ti === 0 ? "Kur nušoks varlytė?" : MK.pick(["Kur nušoks varlytė?", "O dabar kur?", "Kur ji nusileis?"]));
+  if(task.kind === "hops"){
+    const s = task.step, set = [task.b];
+    MK.shuffle([task.b - 2 * s, task.b - s, task.b + s, task.b + 2 * s].filter(v => v > 0)).slice(0, 2).forEach(v => set.push(v));
+    chips.innerHTML = `<span class="chips-l">${T.chips}</span>` + set.sort((x, y) => x - y).map(v => `<button type="button" class="chip" data-v="${v}">${v}</button>`).join("");
+    chips.hidden = false;
+    MK.say(guide, task.step > 1 ? T.askHopsStep(task.op === "+") : T.askHops);
+    const r = chips.getBoundingClientRect(); if(r.bottom > window.innerHeight) chips.scrollIntoView({ block: "end", behavior: "smooth" });
+  } else {
+    chips.hidden = true; chips.innerHTML = "";
+    if(task.kind === "chain") MK.say(guide, T.askChain);
+    else if(task.step > 1 && !stepSeen[task.step]){ stepSeen[task.step] = true; MK.say(guide, T.stepIntro(task.step)); }
+    else MK.say(guide, ti === 0 ? T.ask[0] : MK.pick(T.ask));
+  }
 }
 
 /* ---------- tvenkinio išdėstymas ---------- */
 function render(){
-  const n = task.path.length, PAD = 12;
-  const W = pond.clientWidth - PAD * 2;
-  const C = n <= 11 ? (W > 560 ? 6 : 4) : (W > 560 ? 7 : 5);
-  const rows = Math.ceil(n / C), cw = W / C;
-  S = Math.min(cw * 0.8, 78);
-  const rh = S * 1.42, top = PAD + S * 0.6;
-  pond.style.height = Math.round(top + rows * rh + PAD - S * 0.2) + "px";
-  pos = task.path.map((v, k) => {
-    const r = Math.floor(k / C), c0 = k % C, c = r % 2 ? C - 1 - c0 : c0;
-    return { x: PAD + (c + 0.5) * cw, y: top + (r + 0.5) * rh - S * 0.2 };
-  });
-  trail.setAttribute("viewBox", `0 0 ${pond.clientWidth} ${pond.clientHeight}`);
-  trail.innerHTML = `<polyline points="${pos.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ")}" fill="none" stroke="#fff" stroke-width="${(S * 0.12).toFixed(1)}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 ${(S * 0.3).toFixed(1)}" opacity=".9"/>`;
-  stonesEl.innerHTML = task.path.map((v, k) => `<button type="button" class="stone${k === cur ? " start" : ""}" data-k="${k}" aria-label="${v}"
-     style="left:${(pos[k].x - S / 2).toFixed(1)}px;top:${(pos[k].y - S / 2).toFixed(1)}px;width:${S.toFixed(1)}px;height:${S.toFixed(1)}px;--fs:${Math.round(S * (v >= 100 ? 0.3 : 0.38))}px"><b>${v}</b></button>`).join("");
-  const F = S * 0.9; frog.style.width = F + "px"; frog.style.height = F * 0.94 + "px";
+  const n = task.path.length, PAD = 14;
+  if(pond.clientWidth < 150) return; // langas dar neišdėstytas (pvz., uždaromas) – nėra ką piešti
+  PW = pond.clientWidth;
+  const W = PW - PAD * 2;
+  /* Stulpelių skaičius parenkamas taip, kad lapai ir varlytė būtų kuo didesni, bet tvenkinys tilptų ekrane
+     (vieta skaičių mygtukams ir pelėdžiukui paliekama visada, kad vaizdas tarp užduočių nešokinėtų). */
+  const avail = window.innerHeight - (pond.getBoundingClientRect().top + window.scrollY) - 190;
+  const fit = c => { const cw = W / c, s = Math.min(cw * 0.9, 120), fh = s * 1.32 * 110 / 120, rows = Math.ceil(n / c);
+    return { c, cw, s, rows, y0: fh + s * 0.1 + 12, h: Math.round(fh + s * 0.1 + 12 + (rows - 1) * s * 1.86 + s * 0.5 + PAD + 4) }; };
+  const all = [3, 4, 5, 6].map(fit).filter(o => o.s >= 52), ok = all.filter(o => o.h <= avail);
+  const L = ok.length ? ok.sort((a, b) => b.s - a.s || a.h - b.h)[0] : (all.sort((a, b) => a.h - b.h)[0] || fit(4));
+  const C = L.c, rows = L.rows, cw = L.cw, y0 = L.y0;
+  S = L.s; FW = S * 1.32; FH = FW * 110 / 120; PH = L.h;
+  const rh = S * 1.86;
+  pond.style.height = PH + "px";
+  const cell = k => { const r = Math.floor(k / C), c0 = k % C, c = r % 2 ? C - 1 - c0 : c0; return { x: PAD + (c + 0.5) * cw, y: y0 + r * rh }; };
+  pos = task.path.map((v, k) => cell(k));
+  trail.setAttribute("viewBox", `0 0 ${PW} ${PH}`); over.setAttribute("viewBox", `0 0 ${PW} ${PH}`); over.innerHTML = "";
+  trail.innerHTML = `<polyline points="${pos.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ")}" fill="none" stroke="#fff" stroke-width="${(S * 0.11).toFixed(1)}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 ${(S * 0.3).toFixed(1)}" opacity=".9"/>`;
+  const goal = task.path.indexOf(task.target);
+  stonesEl.innerHTML = task.path.map((v, k) => `<button type="button" class="stone${k === cur ? " start" : ""}${task.kind === "hops" && k === goal ? " target" : ""}" data-k="${k}" aria-label="${v}"
+     style="left:${(pos[k].x - S / 2).toFixed(1)}px;top:${(pos[k].y - S / 2).toFixed(1)}px;width:${S.toFixed(1)}px;height:${S.toFixed(1)}px;--fs:${Math.round(S * (v >= 100 ? 0.26 : 0.34))}px"><b>${v}</b></button>`).join("");
+  /* puošmenos: nendrės viršutiniuose kampuose, o laisvame langelyje – lelijos žiedas */
+  const rw = S * 0.62;
+  let d = `<span style="position:absolute;left:${-rw * 0.2}px;top:${-rw * 0.25}px;width:${rw}px;opacity:.9">${REEDS}</span><span style="position:absolute;right:${-rw * 0.2}px;top:${-rw * 0.3}px;width:${rw}px;opacity:.9;transform:scaleX(-1)">${REEDS}</span>`;
+  for(let k = n; k < rows * C; k++){ const p = cell(k); d += `<span style="position:absolute;left:${p.x - S * 0.5}px;top:${p.y - S * 0.42}px;width:${S}px">${LOTUS}</span>`; }
+  deco.innerHTML = d;
+  frog.style.width = FW + "px"; frog.style.height = FH + "px";
   placeFrog(cur);
+  /* musė: ieškant atsakymo ji skraido po tvenkinį, o „kiek šuolių“ užduotyje tupi virš tikslo lapo */
+  const fw = Math.round(S * 0.6), fh = Math.round(fw * 0.77);
+  fly.style.width = fw + "px"; fly.style.height = fh + "px"; fly.style.margin = `${-fh / 2}px 0 0 ${-fw / 2}px`;
+  fly.hidden = false; fly.classList.toggle("gold", task.kind === "chain");
+  stopWander();
+  if(task.kind === "hops") moveFly(pos[goal].x, pos[goal].y - S * 0.72, 0);
+  else { moveFly(PW * (0.25 + Math.random() * 0.5), FH * 0.4, 0); wanderT = setInterval(wander, 1600); setTimeout(wander, 60); }
 }
-function frogXY(k){ const F = S * 0.9; return { x: pos[k].x - F / 2, y: pos[k].y - F * 0.94 - S * 0.2 }; }
+function frogXY(k){ return { x: pos[k].x - FW / 2, y: pos[k].y - S * 0.1 - FH }; }
+function mouthXY(k){ const p = frogXY(k); return { x: p.x + FW * 0.5, y: p.y + FH * 0.52 }; }
 function placeFrog(k){ const p = frogXY(k); frog.style.transform = `translate(${p.x}px,${p.y}px)`; }
+function moveFly(x, y, ms){
+  flyAt = { x, y };
+  fly.style.transitionDuration = ms + "ms";
+  fly.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+}
+function wander(){ if(busy) return; moveFly(24 + Math.random() * (PW - 48), 18 + Math.random() * (PH - 50), 1500); }
+function stopWander(){ clearInterval(wanderT); wanderT = null; }
 function hop(a, b, i, down){
   MK.sfx.hop(i, down);
-  const p = frogXY(a), q = frogXY(b), peak = Math.min(p.y, q.y) - S * 0.6;
+  const p = frogXY(a), q = frogXY(b), peak = Math.min(p.y, q.y) - S * 0.55;
   const anim = frog.animate([
     { transform: `translate(${p.x}px,${p.y}px) scale(1,.92)` },
     { transform: `translate(${(p.x + q.x) / 2}px,${peak}px) scale(.94,1.08)`, offset: 0.5 },
     { transform: `translate(${q.x}px,${q.y}px) scale(1.08,.9)`, offset: 0.88 },
     { transform: `translate(${q.x}px,${q.y}px) scale(1,1)` }
-  ], { duration: 320, easing: "ease-in-out" });
+  ], { duration: 330, easing: "ease-in-out" });
   return anim.finished.catch(() => {}).then(() => placeFrog(b));
 }
 function floatNum(k, label){
   const s = document.createElement("span"); s.className = "hopn"; s.textContent = label;
-  s.style.left = pos[k].x + "px"; s.style.top = (pos[k].y - S * 0.75) + "px";
+  s.style.left = pos[k].x + "px"; s.style.top = Math.max(14, pos[k].y - S * 0.1 - FH - 4) + "px";
   pond.appendChild(s); setTimeout(() => s.remove(), 950);
 }
 async function hopTo(target){
-  const dir = target > cur ? 1 : -1, step = task.path[1] - task.path[0];
+  const dir = target > cur ? 1 : -1;
   let i = 0;
   while(cur !== target){
     const nx = cur + dir; i++;
     await hop(cur, nx, i - 1, dir < 0);
-    cur = nx; floatNum(nx, (dir > 0 ? "+" : MINUS) + i * step);
+    cur = nx; floatNum(nx, (dir > 0 ? "+" : MINUS) + i * task.step);
   }
+}
+/* Varlytė nušoka iki atsakymo; auksinės musės užduotyje – pirma pirmyn, tada atgal. */
+async function travel(){
+  const goal = task.path.indexOf(task.target);
+  if(task.kind === "chain" && cur === task.path.indexOf(task.a)){ await hopTo(task.path.indexOf(task.mid)); await MK.wait(260); }
+  if(cur !== goal) await hopTo(goal);
 }
 function stoneEl(k){ return stonesEl.querySelector(`[data-k="${k}"]`); }
 
-/* ---------- vaiko spaudimas ---------- */
+/* ---------- musė: pagauta arba nuskrido ---------- */
+async function catchFly(){
+  const m = mouthXY(cur), side = m.x > PW / 2 ? -1 : 1;
+  const fx = m.x + side * S * 0.85, fy = Math.max(16, m.y - S * 0.75);
+  moveFly(fx, fy, 260); await MK.wait(290);
+  frog.classList.add("open"); MK.sfx.tap();
+  over.innerHTML = `<line class="tongue" x1="${m.x.toFixed(1)}" y1="${m.y.toFixed(1)}" x2="${fx.toFixed(1)}" y2="${fy.toFixed(1)}"/>`;
+  await MK.wait(130);
+  over.innerHTML = ""; moveFly(m.x, m.y, 120); await MK.wait(130);
+  fly.hidden = true; frog.classList.remove("open"); frog.classList.add("happy");
+}
+function flyAway(){ if(fly.hidden) return; MK.sfx.whoosh(); moveFly(flyAt.x + (flyAt.x > PW / 2 ? -60 : 60), -70, 520); setTimeout(() => { fly.hidden = true; }, 540); }
+function fishJump(){
+  const f = document.createElement("div"); f.className = "fish"; f.innerHTML = friendSvg(FRIENDS[1], 'width="66" height="52"');
+  pond.appendChild(f);
+  const x = S + Math.random() * Math.max(10, PW - S * 2 - 120), y = PH * 0.55;
+  f.animate([
+    { transform: `translate(${x}px,${y + 50}px) rotate(-50deg) scale(.6)`, opacity: 0 },
+    { transform: `translate(${x + 20}px,${y}px) rotate(-30deg)`, opacity: 1, offset: 0.2 },
+    { transform: `translate(${x + 60}px,${y - 70}px) rotate(0deg)`, opacity: 1, offset: 0.5 },
+    { transform: `translate(${x + 100}px,${y}px) rotate(30deg)`, opacity: 1, offset: 0.8 },
+    { transform: `translate(${x + 120}px,${y + 50}px) rotate(50deg) scale(.6)`, opacity: 0 }
+  ], { duration: 1000, easing: "ease-in-out" }).finished.catch(() => {}).then(() => f.remove());
+}
+
+/* ---------- teisingas atsakymas ---------- */
+async function solved(el){
+  busy = true; stopWander();
+  const first = tries === 0, goal = task.path.indexOf(task.target);
+  stonesEl.querySelectorAll(".goal,.no").forEach(x => x.classList.remove("goal", "no"));
+  if(el && el.classList.contains("chip")) el.classList.add("ok");
+  if(!first) flyAway();
+  await travel();
+  stoneEl(goal).classList.add("yes"); MK.sfx.good();
+  const q = $("q"); q.textContent = task.kind === "hops" ? task.b : task.target; q.classList.add("done");
+  if(first){
+    firstOK++; streak++;
+    await catchFly();
+    marks[ti] = "got";
+    if(streak % 3 === 0){ fishJump(); MK.sfx.coins(); MK.say(guide, T.streak); }
+    else MK.say(guide, MK.pick(T.caught));
+  } else {
+    streak = 0; marks[ti] = "miss"; frog.classList.add("happy");
+    MK.say(guide, T.gone);
+  }
+  drawFlies();
+  await MK.wait(first ? 1250 : 1500);
+  ti++; next();
+}
+
+/* ---------- vaiko spaudimas: lapai ---------- */
 stonesEl.addEventListener("click", async e => {
   const b = e.target.closest(".stone"); if(!b || busy) return;
   MK.unlock();
-  const k = +b.dataset.k, v = task.path[k], goal = task.path.indexOf(task.ans);
-  if(v === task.ans){
-    busy = true;
-    if(tries === 0) firstOK++;
-    stonesEl.querySelectorAll(".goal,.no").forEach(x => x.classList.remove("goal", "no"));
-    if(cur !== goal) await hopTo(goal);
-    b.classList.add("yes"); MK.sfx.good();
-    const q = $("q"); q.textContent = task.ans; q.classList.add("done");
-    MK.say(guide, MK.praise());
-    dots.mark(ti, tries === 0);
-    await MK.wait(1100);
-    ti++; next();
-    return;
-  }
+  if(task.kind === "hops"){ MK.say(guide, T.useChips); chips.classList.remove("mk-shake"); void chips.offsetWidth; chips.classList.add("mk-shake"); return; }
+  const k = +b.dataset.k, v = task.path[k], goal = task.path.indexOf(task.target);
+  if(v === task.target) return solved(b);
   tries++; MK.sfx.bad();
+  frog.classList.remove("sad"); void frog.offsetWidth; frog.classList.add("sad"); setTimeout(() => frog.classList.remove("sad"), 700);
   b.classList.add("no"); b.classList.remove("mk-shake"); void b.offsetWidth; b.classList.add("mk-shake");
   setTimeout(() => b.classList.remove("no"), 900);
   const fw = task.op === "+";
   if(tries === 1){
-    const n = task.tens ? task.b / 10 : task.b, word = n === 1 ? "kartą" : "kartus";
-    const many = task.tens ? `${n} ${word} po 10` : `${n} ${word}`;
-    MK.say(guide, `Varlytė ant ${task.a}. Ji šoka ${many} ${fw ? "į priekį" : "atgal"}.`, "bad");
+    const n = task.b / task.step, word = n === 1 ? "kartą" : "kartus";
+    MK.say(guide, task.kind === "chain" ? T.hintChain(task.b, task.c) : task.step > 1 ? T.hintStep(task.a, n, word, task.step, fw) : T.hint(task.a, n, word, fw), "bad");
     stoneEl(cur).classList.add("goal"); setTimeout(() => { const s = stoneEl(cur); if(s) s.classList.remove("goal"); }, 1800);
   } else if(cur !== goal){
-    busy = true;
-    MK.say(guide, "Žiūrėk, kaip ji šokinės!", "bad");
+    busy = true; stopWander();
+    MK.say(guide, T.watch, "bad");
     await MK.wait(500);
-    await hopTo(goal);
+    await travel();
     stoneEl(goal).classList.add("goal");
-    MK.say(guide, "Štai kur! Paspausk šį lapą.");
+    MK.say(guide, T.here);
     busy = false;
   } else {
-    MK.say(guide, "Paspausk tą lapą, ant kurio sėdi varlytė.", "bad");
+    MK.say(guide, T.onFrog, "bad");
   }
 });
-window.addEventListener("resize", () => { if(!play.hidden && task && !busy) render(); });
+/* ---------- vaiko spaudimas: skaičiai („kiek šuolių?“) ---------- */
+chips.addEventListener("click", async e => {
+  const b = e.target.closest(".chip"); if(!b || busy || !task || task.kind !== "hops") return;
+  MK.unlock();
+  if(+b.dataset.v === task.b) return solved(b);
+  tries++; MK.sfx.bad(); b.classList.add("no");
+  frog.classList.remove("sad"); void frog.offsetWidth; frog.classList.add("sad"); setTimeout(() => frog.classList.remove("sad"), 700);
+  const goal = task.path.indexOf(task.target);
+  if(tries === 1 || cur === goal){ MK.say(guide, task.step > 1 ? T.hintHopsStep(task.step) : T.hintHops, "bad"); return; }
+  busy = true;
+  MK.say(guide, T.watch, "bad");
+  flyAway();
+  await MK.wait(500);
+  await hopTo(goal);
+  MK.say(guide, T.hereHops);
+  busy = false;
+});
+window.addEventListener("resize", () => { if(!play.hidden && task && !busy && home.hidden) render(); });
 
-function finish(){
+/* ---------- raundo pabaiga ---------- */
+function newFriend(f, done){
+  const ov = document.createElement("div"); ov.className = "mk-ov";
+  ov.innerHTML = `<div class="mk-res" role="dialog" aria-modal="true" aria-labelledby="nfT"><div class="nf-art">${friendSvg(f)}</div>
+    <h2 id="nfT">${T.newFriend}</h2><p>${T.moved(f.name)}</p><div class="mk-res-b"><button type="button" class="mk-btn">${T.hooray}</button></div></div>`;
+  document.body.appendChild(ov);
+  MK.sfx.coins(); MK.confetti(34);
+  const btn = ov.querySelector("button");
+  btn.addEventListener("click", () => { MK.sfx.tap(); ov.remove(); done(); });
+  setTimeout(() => btn.focus({ preventScroll: true }), 60);
+}
+async function finale(){
+  busy = true; stopWander(); fly.hidden = true; chips.hidden = true;
+  home.innerHTML = homeSvg(firstOK); home.hidden = false;
+  MK.say(guide, T.home(firstOK));
+  if(firstOK) setTimeout(() => MK.sfx.coins(), 500);
+  await MK.wait(2600);
+  const before = friendsGot(save.flies);
+  save.flies += firstOK; MK.set(STORE, save);
+  const got = friendsGot(save.flies), nx = FRIENDS[got];
   const stars = MK.starsFor(firstOK, ROUND);
   MK.best(GAME, LEVELS[lvl].id, stars);
-  MK.result({
-    stars, text: `Iš pirmo karto teisingai: ${firstOK} iš ${ROUND}.`,
+  const result = () => MK.result({
+    stars, text: T.result(firstOK) + (nx ? "<br>" + T.toNext(nx.need - save.flies, nx.name) : ""),
     next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null,
     again: () => start(lvl), menu: showMenu
   });
+  if(got > before) newFriend(FRIENDS[got - 1], result); else result();
 }
 showMenu();
 })();
