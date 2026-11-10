@@ -178,7 +178,7 @@ MK.why = o => `<div class="mk-why ${o.ok ? "ok" : "bad"}">${MK.owl(o.ok ? "hop" 
 /* ---------- „Noriu pasimokyti“: trumpa teorija prieš žaidžiant ----------
    o: { topics: [{ name, html, level }], onPlay(levelIndex) } */
 MK.learn = function(el, o){
-  el.innerHTML = `<h2 class="mk-sec">📖 Noriu pasimokyti</h2><p class="mk-sec-p">Pasirink temą, perskaityk ir tada išbandyk žaidime.</p>
+  el.innerHTML = `<h2 class="mk-sec"><svg class="mk-book" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 7q6-3 13 1v19q-7-4-13-1Z" fill="#fff" stroke="#121a33" stroke-width="2.4" stroke-linejoin="round"/><path d="M29 7q-6-3-13 1v19q7-4 13-1Z" fill="var(--ac-soft)" stroke="#121a33" stroke-width="2.4" stroke-linejoin="round"/><path d="M7 12q3-1 6 1M7 17q3-1 6 1M19 13q3-2 6-1M19 18q3-2 6-1" stroke="#121a33" stroke-width="1.6" stroke-linecap="round" opacity=".5"/></svg>Noriu pasimokyti</h2><p class="mk-sec-p">Pasirink temą, perskaityk ir tada išbandyk žaidime.</p>
     <div class="mk-learn">${o.topics.map(t => `<details class="mk-lt"><summary>${t.name}</summary><div class="mk-lt-b">${t.html}
       ${t.level != null ? `<button type="button" class="mk-btn alt" data-lv="${t.level}">Žaisti šią temą →</button>` : ""}</div></details>`).join("")}</div>`;
   el.onclick = e => { const b = e.target.closest("[data-lv]"); if(!b) return; MK.unlock(); MK.sfx.tap(); o.onPlay(+b.dataset.lv); };
@@ -326,7 +326,8 @@ button{font:inherit;color:inherit}
 .mk-why summary::before,.mk-lt summary::before{content:"▸";transition:transform .15s}
 .mk-why details[open] summary::before,.mk-lt[open] summary::before{transform:rotate(90deg)}
 .mk-why-m{padding:4px 0 2px;color:var(--ink)}
-.mk-sec{margin:24px auto 4px;max-width:520px;font:800 18px/1.2 var(--kid)}
+.mk-sec{display:flex;align-items:center;gap:8px;margin:24px auto 4px;max-width:520px;font:800 18px/1.2 var(--kid)}
+.mk-book{width:30px;height:30px;flex:none}
 .mk-sec-p{margin:0 auto 10px;max-width:520px;color:var(--soft);font-weight:600;font-size:14.5px}
 .mk-learn{display:grid;gap:8px;max-width:520px;margin:0 auto}
 .mk-lt{background:var(--card);border-radius:12px;padding:6px 14px;box-shadow:inset 0 0 0 2px var(--ink)}

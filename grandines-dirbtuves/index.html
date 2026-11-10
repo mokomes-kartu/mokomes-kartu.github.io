@@ -30,6 +30,14 @@ body{--paper:#f6f8ee;--grid:#e1e7cf;--soft:#5a6147;--kid:"Unbounded","Arial Blac
 .card{background:#fff;border-radius:14px;padding:14px 14px 16px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
 .card>small{display:block;font:800 12px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
 .sch{display:block;width:100%;max-height:300px;margin:8px 0 4px}
+.sch .glow{animation:glow 1.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes glow{50%{opacity:.6}}
+.mk-hero-art{width:min(420px,100%)}
+.hero-card{background:#fff;border-radius:18px;padding:10px 14px 4px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink);
+  background-image:linear-gradient(#eef3e2 1px,transparent 1px),linear-gradient(90deg,#eef3e2 1px,transparent 1px);background-size:16px 16px}
+.mk-lvl-art svg{width:44px;height:44px}
+.lt-ic{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--ac-soft);flex:none}
+.lt-ic svg{width:22px;height:22px}
 .sch text{font:800 13px var(--body);fill:var(--ink)}
 .sch .sw{cursor:pointer}
 .sch .sw:hover .hit{fill:#d3f9d8}
@@ -106,7 +114,7 @@ function comp(it, x, y, st){
   if(it.t === "L"){
     const on = st.lit.has(it.id), br = st.show && st.broken === it.id;
     g += W(x, y, cx - 14, y) + W(cx + 14, y, x + CW, y);
-    if(on) g += `<circle cx="${cx}" cy="${y}" r="24" fill="#ffe066" opacity=".55"/>`;
+    if(on) g += `<g class="glow"><circle cx="${cx}" cy="${y}" r="25" fill="#ffe066" opacity=".5"/>${[0, 45, 90, 135, 180, 225, 270, 315].map(a => { const c = Math.cos(a * Math.PI / 180), s = Math.sin(a * Math.PI / 180); return `<path d="M${cx + c * 19} ${y + s * 19}L${cx + c * 26} ${y + s * 26}" stroke="#f59f00" stroke-width="2.5" stroke-linecap="round"/>`; }).join("")}</g>`;
     g += `<circle cx="${cx}" cy="${y}" r="14" fill="${on ? "#fff3a8" : br ? "#e9ecef" : "#fff"}" stroke="${INK}" stroke-width="3"/>
       <path d="M${cx - 10} ${y - 10}L${cx + 10} ${y + 10}M${cx + 10} ${y - 10}L${cx - 10} ${y + 10}" stroke="${INK}" stroke-width="2.5"/>`;
     if(br) g += `<path d="M${cx - 6} ${y - 28}l5 7-4 3 6 8" fill="none" stroke="#e03131" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
@@ -131,6 +139,7 @@ function series(items, x, y, st){
       const bw = Math.max(...it.par.map(b => b.length)) * CW + 40, xl = x + 20, xr = x + bw - 20, yl = y + (it.par.length - 1) * BR;
       g += W(x, y, xl, y) + W(xr, y, x + bw, y) + W(xl, y, xl, yl) + W(xr, y, xr, yl);
       it.par.forEach((b, k) => { const yy = y + k * BR; g += series(b, xl, yy, st) + W(xl + b.length * CW, yy, xr, yy); });
+      for(let k = 0; k < it.par.length - 1; k++) g += `<circle cx="${xl}" cy="${y + k * BR}" r="4.5" fill="${INK}"/><circle cx="${xr}" cy="${y + k * BR}" r="4.5" fill="${INK}"/>`;
       x += bw;
     } else { g += comp(it, x, y, st); x += CW; }
   }
@@ -142,7 +151,7 @@ function schema(main, st){
   let g = W(bx, TOP, x0, TOP) + series(main, x0, TOP, st) + W(xe, TOP, wd - 4, TOP) + W(wd - 4, TOP, wd - 4, yb) + W(wd - 4, yb, bx, yb)
     + W(bx, TOP, bx, mid - 6) + W(bx, mid + 6, bx, yb)
     + `<path d="M${bx - 14} ${mid - 6}h28" stroke="${INK}" stroke-width="3.5"/><path d="M${bx - 7} ${mid + 6}h14" stroke="${INK}" stroke-width="6"/>
-       <text x="${bx + 16}" y="${mid - 8}" font-size="12">+</text>`;
+       <text x="${bx + 13}" y="${mid - 9}" font-size="14">+</text><text x="${bx + 13}" y="${mid + 20}" font-size="14">−</text>`;
   if(st.U != null) g += `<text x="${(bx + wd) / 2}" y="${yb + 22}" text-anchor="middle">U = ${num(st.U)} V${st.I != null ? ` · I = ${num(st.I)} A` : ""}</text>`;
   return `<svg class="sch" viewBox="0 0 ${wd + 4} ${yb + (st.U != null ? 32 : 12)}" role="img" aria-label="Elektros grandinės schema">${g}</svg>`;
 }
@@ -251,26 +260,35 @@ function genFault(){
         + ` Jei būtų perdegusi kita lemputė, degtų kitos, todėl atsakymas vienas: <b>${b}</b>.` };
   }
 }
+const I = {
+  bulb: `<svg viewBox="0 0 44 44"><circle cx="22" cy="18" r="11" fill="#ffe066" stroke="${INK}" stroke-width="2.5"/><path d="M16 12l12 12M28 12 16 24" stroke="${INK}" stroke-width="2"/><rect x="17" y="29" width="10" height="7" rx="2" fill="#adb5bd" stroke="${INK}" stroke-width="2"/><g stroke="#f59f00" stroke-width="2.5" stroke-linecap="round"><path d="M22 2v3M6 18H3M41 18h-3M10 6l2 2M34 6l-2 2"/></g></svg>`,
+  series: `<svg viewBox="0 0 44 44"><path d="M2 22h4M16 22h4M30 22h6" stroke="${INK}" stroke-width="2.5"/><circle cx="11" cy="22" r="5.5" fill="#fff" stroke="${INK}" stroke-width="2.5"/><circle cx="25" cy="22" r="5.5" fill="#fff" stroke="${INK}" stroke-width="2.5"/><path d="M7 18l8 8M15 18l-8 8M21 18l8 8M29 18l-8 8" stroke="${INK}" stroke-width="1.6"/><path d="M35 17l6 5-6 5" fill="none" stroke="#2b8a3e" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  ohm: `<svg viewBox="0 0 44 44"><rect x="5" y="10" width="34" height="24" rx="6" fill="#fff" stroke="${INK}" stroke-width="2.5"/><text x="22" y="29" text-anchor="middle" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="16" fill="${INK}">Ω</text></svg>`,
+  par: `<svg viewBox="0 0 44 44"><path d="M4 22h6M34 22h6M10 12v20M34 12v20M10 12h6M28 12h6M10 32h6M28 32h6" fill="none" stroke="${INK}" stroke-width="2.5"/><rect x="16" y="8" width="12" height="8" fill="#fff" stroke="${INK}" stroke-width="2.5"/><rect x="16" y="28" width="12" height="8" fill="#fff" stroke="${INK}" stroke-width="2.5"/><circle cx="10" cy="22" r="3" fill="${INK}"/><circle cx="34" cy="22" r="3" fill="${INK}"/></svg>`,
+  fault: `<svg viewBox="0 0 44 44"><circle cx="18" cy="18" r="11" fill="#e9ecef" stroke="${INK}" stroke-width="2.5"/><path d="M12 12l12 12M24 12 12 24" stroke="${INK}" stroke-width="2"/><circle cx="31" cy="31" r="8" fill="#fff" stroke="${INK}" stroke-width="2.5"/><path d="M37 37l5 5" stroke="${INK}" stroke-width="3.5" stroke-linecap="round"/><path d="M15 2l3 5-3 2 4 5" fill="none" stroke="#e03131" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+  bat: `<svg viewBox="0 0 44 44"><rect x="8" y="12" width="26" height="20" rx="4" fill="#fff" stroke="${INK}" stroke-width="2.5"/><rect x="34" y="18" width="4" height="8" fill="${INK}"/><path d="M13 22h6M16 19v6M24 22h5" stroke="${INK}" stroke-width="2.5"/></svg>`
+};
+const lt = (ic, t) => `<span class="lt-ic">${I[ic]}</span>${t}`;
 const LEVELS = [
-  { id: "jungikliai", name: "Uždek lemputę", sub: "Įjunk tik reikiamus jungiklius", art: "💡", gen: genSwitch },
-  { id: "jungimas", name: "Nuoseklusis ar lygiagretusis", sub: "Kas nutinka perdegus lemputei?", art: "⫴", gen: genSeries },
-  { id: "omas", name: "Omo dėsnis", sub: "I = U / R · nuoseklusis jungimas", art: "Ω", gen: genOhm },
-  { id: "lygiagretus", name: "Lygiagretusis jungimas", sub: "Bendra varža ir šakų srovės", art: "R∥", gen: genPar },
-  { id: "gedimas", name: "Rask gedimą", sub: "Kuri lemputė perdegė?", art: "🔧", gen: genFault }
+  { id: "jungikliai", name: "Uždek lemputę", sub: "Įjunk tik reikiamus jungiklius", art: I.bulb, gen: genSwitch },
+  { id: "jungimas", name: "Nuoseklusis ar lygiagretusis", sub: "Kas nutinka perdegus lemputei?", art: I.series, gen: genSeries },
+  { id: "omas", name: "Omo dėsnis", sub: "I = U / R · nuoseklusis jungimas", art: I.ohm, gen: genOhm },
+  { id: "lygiagretus", name: "Lygiagretusis jungimas", sub: "Bendra varža ir šakų srovės", art: I.par, gen: genPar },
+  { id: "gedimas", name: "Rask gedimą", sub: "Kuri lemputė perdegė?", art: I.fault, gen: genFault }
 ];
 const LEARN = [
-  { name: "⚡ Elektros grandinė", level: 0, html: `<p>Srovė teka tik <b>uždara</b> grandine: nuo šaltinio per laidus ir prietaisus atgal į šaltinį.</p><p><b>Jungiklis</b> uždaro arba nutraukia grandinę. Išjungtas jungiklis – tai tarsi nutrūkęs laidas.</p><span class="mk-ex">Schemoje: ⊗ – lemputė, ▭ – rezistorius, ilgas ir trumpas brūkšniai – šaltinis.</span>` },
-  { name: "➡️ Nuoseklusis jungimas", level: 1, html: `<p>Prietaisai sujungti <b>viena paskui kitą</b>, srovė teka vienu keliu.</p><ul><li>Srovė visur ta pati: I = I1 = I2</li><li>Įtampos sudedamos: U = U1 + U2</li><li>Varžos sudedamos: R = R1 + R2</li></ul><p>Nutrūkus vienai vietai, nedega visos lemputės.</p>` },
-  { name: "🔀 Lygiagretusis jungimas", level: 3, html: `<p>Prietaisai sujungti <b>atskiromis šakomis</b> tarp tų pačių dviejų taškų.</p><ul><li>Įtampa visose šakose ta pati: U = U1 = U2</li><li>Srovės sudedamos: I = I1 + I2</li><li>1/R = 1/R1 + 1/R2, dviem rezistoriams R = R1·R2 / (R1 + R2)</li></ul><p>Nutrūkus vienai šakai, kitos veikia. Taip sujungti prietaisai namuose.</p>` },
-  { name: "Ω Omo dėsnis", level: 2, html: `<p>Srovės stipris tiesiogiai proporcingas įtampai ir atvirkščiai proporcingas varžai:</p><span class="mk-ex">I = U / R</span><p>Iš jo: U = I · R ir R = U / I. Vienetai: srovė – amperai (A), įtampa – voltai (V), varža – omai (Ω).</p><span class="mk-ex">Pvz.: U = 12 V, R = 4 Ω → I = 12 / 4 = 3 A</span>` },
-  { name: "🔧 Kaip ieškoti gedimo", level: 4, html: `<p>Pažiūrėk, kurios lemputės <b>dega</b>. Jei nedega niekas – nutrūko vieta, per kurią teka visa srovė (nuoseklioji dalis).</p><p>Jei nedega tik vienos šakos lemputės – gedimas toje šakoje.</p>` }
+  { name: lt("bat", "Elektros grandinė"), level: 0, html: `<p>Srovė teka tik <b>uždara</b> grandine: nuo šaltinio per laidus ir prietaisus atgal į šaltinį.</p><p><b>Jungiklis</b> uždaro arba nutraukia grandinę. Išjungtas jungiklis – tai tarsi nutrūkęs laidas.</p><span class="mk-ex">Schemoje: ⊗ – lemputė, ▭ – rezistorius, ilgas ir trumpas brūkšniai – šaltinis.</span>` },
+  { name: lt("series", "Nuoseklusis jungimas"), level: 1, html: `<p>Prietaisai sujungti <b>viena paskui kitą</b>, srovė teka vienu keliu.</p><ul><li>Srovė visur ta pati: I = I1 = I2</li><li>Įtampos sudedamos: U = U1 + U2</li><li>Varžos sudedamos: R = R1 + R2</li></ul><p>Nutrūkus vienai vietai, nedega visos lemputės.</p>` },
+  { name: lt("par", "Lygiagretusis jungimas"), level: 3, html: `<p>Prietaisai sujungti <b>atskiromis šakomis</b> tarp tų pačių dviejų taškų.</p><ul><li>Įtampa visose šakose ta pati: U = U1 = U2</li><li>Srovės sudedamos: I = I1 + I2</li><li>1/R = 1/R1 + 1/R2, dviem rezistoriams R = R1·R2 / (R1 + R2)</li></ul><p>Nutrūkus vienai šakai, kitos veikia. Taip sujungti prietaisai namuose.</p>` },
+  { name: lt("ohm", "Omo dėsnis"), level: 2, html: `<p>Srovės stipris tiesiogiai proporcingas įtampai ir atvirkščiai proporcingas varžai:</p><span class="mk-ex">I = U / R</span><p>Iš jo: U = I · R ir R = U / I. Vienetai: srovė – amperai (A), įtampa – voltai (V), varža – omai (Ω).</p><span class="mk-ex">Pvz.: U = 12 V, R = 4 Ω → I = 12 / 4 = 3 A</span>` },
+  { name: lt("fault", "Kaip ieškoti gedimo"), level: 4, html: `<p>Pažiūrėk, kurios lemputės <b>dega</b>. Jei nedega niekas – nutrūko vieta, per kurią teka visa srovė (nuoseklioji dalis).</p><p>Jei nedega tik vienos šakos lemputės – gedimas toje šakoje.</p>` }
 ];
 
 const $ = id => document.getElementById(id);
 const app = $("app"), menu = $("menu"), play = $("play"), board = $("board");
 const saved = MK.get("mokomeskartu-klase", 0);
 app.prepend(MK.top({ title: "Grandinės dirbtuvės", grade: GRADES.includes(saved) ? saved : GRADES[0] }));
-$("heroArt").innerHTML = schema([S(1), Pr([L(1)], [L(2)])], { sw: { J1: true } });
+$("heroArt").innerHTML = `<div class="hero-card">${schema([S(1), L(1), Pr([L(2)], [Rz(1, 6)])], { sw: { J1: true }, U: 12 })}</div>`;
 const taskai = n => n % 10 === 1 && n % 100 !== 11 ? "taškas" : n % 10 >= 2 && (n % 100 < 10 || n % 100 > 20) ? "taškai" : "taškų";
 
 let lvl = 0, Lv = null, ti = 0, cur = null, pts = 0, okN = 0, dots = null, answered = false;
