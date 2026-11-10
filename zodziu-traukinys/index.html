@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Žodžių traukinys – MokomėsKartu.lt</title>
-<meta name="description" content="1–4 klasių lietuvių kalbos žaidimas: raidės, i ar y, u ar ū, nosinės raidės ir kalbos dalys. Kiekvienas teisingas atsakymas prikabina vagonėlį.">
+<meta name="description" content="1–4 klasių lietuvių kalbos žaidimas: raidės, i ar y, u ar ū, nosinės raidės ir kalbos dalys. Teisingas atsakymas prikabina vagoną su kroviniu, o traukinys keliauja per Lietuvos stotis.">
 <meta name="theme-color" content="#fff9e6">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMxM2E4ZDYiLz48cGF0aCBkPSJNNCA1MGg1NiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjMiLz48cmVjdCB4PSI2IiB5PSIyNiIgd2lkdGg9IjIyIiBoZWlnaHQ9IjE4IiByeD0iNCIgZmlsbD0iI2ZmYzYxYSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjx0ZXh0IHg9IjE3IiB5PSI0MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTMiIGZpbGw9IiMxMjFhMzMiPkFhPC90ZXh0PjxyZWN0IHg9IjMyIiB5PSIyMiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjIyIiByeD0iNCIgZmlsbD0iI2U1MjQzYiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxyZWN0IHg9IjM2IiB5PSIyNiIgd2lkdGg9IjEwIiBoZWlnaHQ9IjgiIHJ4PSIyIiBmaWxsPSIjYmZlOWZmIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMiIvPjxyZWN0IHg9IjUwIiB5PSIzMCIgd2lkdGg9IjkiIGhlaWdodD0iMTQiIHJ4PSIzIiBmaWxsPSIjMmY2YmZmIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSI0NyIgcj0iNCIgZmlsbD0iIzEyMWEzMyIvPjxjaXJjbGUgY3g9IjIzIiBjeT0iNDciIHI9IjQiIGZpbGw9IiMxMjFhMzMiLz48Y2lyY2xlIGN4PSIzOCIgY3k9IjQ3IiByPSI0IiBmaWxsPSIjMTIxYTMzIi8+PGNpcmNsZSBjeD0iNTIiIGN5PSI0NyIgcj0iNCIgZmlsbD0iIzEyMWEzMyIvPjxwYXRoIGQ9Ik0yOCAzOGg0IiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PC9zdmc+">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,34 +12,84 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
 <script src="/bendra/mk.js"></script>
 <style>
-/* Žodžių traukinys: viršuje bėgiai su 8 tuščiomis vagonų vietomis, žemiau užduoties kortelė ir atsakymų mygtukai. */
+/* Meniu: stočių maršrutas su traukinuku, po juo – tikslas ir lygiai.
+   Žaidimas: viršuje mažas viso traukinio vaizdas, po juo didelė scena su traukinio galu (kamera slenka kartu su traukiniu),
+   užduoties kortelė ir atsakymai – vagonai, kuriuos vaikas prikabina. */
 body{--ac:#13a8d6;--ac-ink:#fff;--ac-soft:#d8f2fb}
-.track{width:100%;max-width:560px;margin:4px auto 0;display:block;overflow:hidden}
-.track svg{width:100%;height:auto;display:block}
-.train{transition:transform 2.2s cubic-bezier(.5,0,.8,.6)}
-.wagon{transform-box:fill-box;transform-origin:50% 100%;animation:wIn .5s cubic-bezier(.2,1.6,.4,1)}
-@keyframes wIn{from{transform:translateX(-30px) scale(.4);opacity:0}}
+.emo{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+
+/* ---------- meniu ---------- */
+.mk-hero{padding-top:0}
+.mk-hero-art{width:min(560px,100%)}
+.mk-hero-art svg{display:block;width:auto;max-width:100%;height:auto;max-height:42vh;margin:0 auto}
+.mk-hero h1{margin-top:6px}
+.mk-hero p{max-width:32ch;font-size:17px}
+.st-name{font:800 11.5px/1 var(--kid);text-anchor:middle;paint-order:stroke;stroke:#dff3cf;stroke-width:3.5px;stroke-linejoin:round}
+.goal{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14);
+  display:grid;grid-template-columns:54px minmax(0,1fr);gap:12px;align-items:center}
+.goal-who{width:54px;height:54px;border-radius:50%;background:#ffe27a;box-shadow:inset 0 0 0 2.5px var(--ink);display:grid;place-items:center;font:800 26px/1 var(--kid)}
+.goal p{margin:0 0 6px;font:800 16.5px/1.25 var(--kid)}
+.goal-bar{height:14px;border-radius:999px;background:#eadfba;overflow:hidden;box-shadow:inset 0 0 0 2px var(--ink)}
+.goal-bar i{display:block;height:100%;background:var(--ac);border-radius:999px 0 0 999px}
+
+/* ---------- žaidimas ---------- */
+.cars{display:flex;justify-content:center;align-items:flex-end;gap:5px;margin:0 0 10px;padding-bottom:5px}
+.cars i{position:relative;width:30px;height:20px;border-radius:6px;background:#fff;box-shadow:inset 0 0 0 2px #d8c99a;transition:transform .2s}
+.cars i::before,.cars i::after{content:"";position:absolute;bottom:-5px;width:8px;height:8px;border-radius:50%;background:#d8c99a}
+.cars i::before{left:4px}.cars i::after{right:4px}
+.cars i.cur{box-shadow:inset 0 0 0 3px var(--ink);transform:translateY(-3px)}
+.cars i.got{background:var(--c,#ffc61a);box-shadow:inset 0 0 0 2.5px var(--ink);animation:mkPop .4s cubic-bezier(.2,1.6,.4,1)}
+.cars i.miss{background:#d9dde6;box-shadow:inset 0 0 0 2.5px #9aa3b5}
+.cars i.got::before,.cars i.got::after,.cars i.cur::before,.cars i.cur::after{background:var(--ink)}
+.cars i.miss::before,.cars i.miss::after{background:#9aa3b5}
+.cars svg{width:44px;height:32px;margin-left:1px;margin-bottom:-5px}
+@media (max-width:360px){.cars i{width:25px}}
+
+.stage{position:relative;height:clamp(170px,31vh,300px);border-radius:30px;overflow:hidden;background:#bfe9ff;box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.15)}
+.stage svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stage::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+#world,#mid,#far{transition:transform .9s cubic-bezier(.45,0,.3,1)}
+.snap #world,.snap #mid,.snap #far,.snap #train{transition:none}
+#train{transition:transform 3s cubic-bezier(.55,0,.75,.5)}
+.wheel{transform-box:fill-box;transform-origin:center}
+.go .wheel{animation:spin .55s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .puff{animation:puff 1.2s ease-out infinite}
 .puff:nth-child(2){animation-delay:.4s}.puff:nth-child(3){animation-delay:.8s}
-@keyframes puff{from{transform:translate(0,0) scale(.5);opacity:.9}to{transform:translate(-14px,-26px) scale(1.4);opacity:0}}
-.task{display:grid;justify-items:center;gap:8px;max-width:560px;margin:12px auto 0;padding:16px 14px 18px;background:var(--card);border-radius:26px;
+@keyframes puff{from{transform:translate(0,0) scale(.5);opacity:.9}to{transform:translate(-16px,-30px) scale(1.5);opacity:0}}
+.roll{animation:roll .6s cubic-bezier(.2,.9,.3,1) backwards}
+@keyframes roll{from{transform:translateX(var(--from))}}
+.cargo{transform-box:fill-box;transform-origin:50% 100%;animation:drop .5s .5s cubic-bezier(.2,1.5,.4,1) backwards}
+@keyframes drop{from{transform:translateY(-70px) scale(.7);opacity:0}}
+.balloon{transform-box:fill-box;transform-origin:50% 100%;animation:sway 2.2s ease-in-out infinite}
+@keyframes sway{50%{transform:rotate(7deg)}}
+#slot{transition:opacity .3s}
+
+.task{display:grid;justify-items:center;gap:6px;max-width:560px;margin:12px auto 0;padding:12px 14px 14px;background:var(--card);border-radius:26px;
   box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.16);text-align:center}
-.task .pic{font-size:64px;line-height:1}
-.task .q{font:800 15px/1.2 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.task .pic{font-size:58px;line-height:1.05}
+.task .q{font:800 16px/1.2 var(--kid);color:var(--soft)}
 .task .txt{font:800 clamp(28px,8vw,44px)/1.2 var(--kid);text-wrap:balance}
 .task .txt.sent{font-size:clamp(22px,6vw,32px)}
 .gap{display:inline-grid;place-items:center;min-width:1.1em;height:1.15em;margin:0 .04em;padding:0 .08em;border-radius:.22em;background:#fff3b0;
   box-shadow:inset 0 0 0 .06em var(--ink);vertical-align:-.12em;color:var(--ac)}
 .gap.ok{background:#c9f5c0;color:#127a3c}
-.opts{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:10px;max-width:560px;margin:14px auto 0}
-.opts.words{grid-template-columns:1fr 1fr}
-.opts button{min-height:68px;border:0;border-radius:20px;cursor:pointer;background:var(--card);font:800 clamp(28px,8vw,40px)/1 var(--kid);
-  box-shadow:inset 0 0 0 3px var(--ink),0 5px 0 rgba(18,26,51,.2)}
-.opts.words button{font-size:clamp(18px,5vw,24px);min-height:60px}
-.opts button.ok{background:#7ee08a}
-.opts button.no{background:#ffb4a2;opacity:.75;pointer-events:none}
 .why{font:700 16px/1.3 var(--body);color:var(--soft)}
-#guideBox{margin-top:12px}
+/* atsakymai – vagonai */
+.opts{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:12px;max-width:560px;margin:14px auto 0;padding-bottom:12px}
+.opts.words{grid-template-columns:1fr 1fr;row-gap:22px}
+.opts button{position:relative;min-height:64px;border:0;border-radius:16px;cursor:pointer;background:var(--wc,#fff);font:800 clamp(28px,8vw,40px)/1 var(--kid);
+  box-shadow:inset 0 0 0 3px var(--ink),inset 0 9px 0 rgba(255,255,255,.45);transition:transform .1s}
+.opts button::before,.opts button::after{content:"";position:absolute;bottom:-11px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,#c9cfdb 0 32%,var(--ink) 34%)}
+.opts button::before{left:15%}.opts button::after{right:15%}
+.opts button:active{transform:translateY(3px)}
+.opts.words button{font-size:clamp(17px,4.8vw,23px);min-height:58px}
+.opts button.ok{animation:optGo .45s forwards}
+@keyframes optGo{40%{transform:translateY(-8px) scale(1.06)}to{transform:translate(-40px,-70px) scale(.5);opacity:0}}
+.opts button.no{filter:grayscale(1);opacity:.5;pointer-events:none}
+#guideBox{margin-top:10px}
+.ns-art{width:200px;height:150px}
+.ns-art svg{width:100%;height:100%;animation:mkPop .6s cubic-bezier(.2,1.6,.4,1)}
 </style>
 </head>
 <body>
@@ -48,12 +98,14 @@ body{--ac:#13a8d6;--ac-ink:#fff;--ac-soft:#d8f2fb}
     <div class="mk-hero">
       <div class="mk-hero-art" id="heroArt"></div>
       <h1>Žodžių <em>traukinys</em></h1>
-      <p>Kiekvienas teisingas atsakymas prikabina vagonėlį. Surink visą traukinį!</p>
+      <p id="heroP"></p>
     </div>
+    <div class="goal" id="goal"></div>
     <div id="levels"></div>
   </section>
   <section id="play" hidden>
-    <div class="track" id="track"></div>
+    <div class="cars" id="cars" role="img"></div>
+    <div class="stage snap" id="stage"><svg id="sv" preserveAspectRatio="xMinYMid slice" aria-hidden="true"></svg></div>
     <div class="task" id="task"></div>
     <div class="opts" id="opts"></div>
     <div id="guideBox"></div>
@@ -63,6 +115,7 @@ body{--ac:#13a8d6;--ac-ink:#fff;--ac-soft:#d8f2fb}
 (function(){
 "use strict";
 const GAME = "zodziu-traukinys", ROUND = 8, GRADES = [1, 2, 3, 4];
+const STORE = "mk-" + GAME + "-kelias"; // pakrauti kroviniai (atskirai nuo žvaigždučių)
 /* 1 klasė: first letter of a picture word. */
 const FIRST = ["🍎 obuolys", "🐟 žuvis", "🏠 namas", "🌞 saulė", "🐱 katė", "🐶 šuo", "🌳 medis", "🐸 varlė", "🦊 lapė", "🐻 meška", "🍐 kriaušė",
   "🥕 morka", "🐝 bitė", "🌙 mėnulis", "⭐ žvaigždė", "🐭 pelė", "🦆 antis", "🐮 karvė", "🍋 citrina", "🎈 balionas", "🦔 ežys", "🐘 dramblys",
@@ -101,113 +154,271 @@ const WORDS4 = {
   "veiksmažodis": ["bėga", "rašo", "skaito", "dainuoja", "šoka", "žaidžia", "miega", "valgo", "piešia", "plaukia", "skrenda", "juokiasi"],
   skaitvardis: ["penki", "dešimt", "trečias", "pirmas", "du", "septyni", "šimtas", "antras"]
 };
-const LEVELS = [
-  { id: "raide", name: "Pirmoji raidė", sub: "1 klasė · paveikslėlis ir raidė", art: "Aa" },
-  { id: "balsiai", name: "i ar y? u ar ū?", sub: "2 klasė · trumpieji ir ilgieji balsiai", art: "y/ū" },
-  { id: "nosines", name: "Nosinės raidės", sub: "3 klasė · ą, ę, į, ų galūnėse", art: "ą ę" },
-  { id: "kalbos", name: "Kalbos dalys", sub: "4 klasė · kas? koks? ką veikia?", art: "kas?" }
+/* ---------- tekstai (atskirai nuo kodo, kad būtų lengva taisyti ar versti) ---------- */
+const many = (n, one, few, lots) => { const d = n % 10, h = n % 100; return d === 1 && h !== 11 ? one : d >= 2 && (h < 10 || h >= 20) ? few : lots; };
+const T = {
+  hero: "Pakrauk vagonus ir nuvežk krovinius per visą Lietuvą – nuo Vilniaus iki Klaipėdos!",
+  levels: [["Raidės", "1 klasė · pirmoji ir paskutinė raidė"], ["i ar y? u ar ū?", "2 klasė · trumpieji ir ilgieji balsiai"],
+    ["Nosinės raidės", "3 klasė · ą, ę, į, ų galūnėse"], ["Kalbos dalys", "4 klasė · kas? koks? ką veikia?"]],
+  qFirst: "Kokia raide prasideda žodis?", qLast: "Kokia raide baigiasi žodis?", qIY: "i ar y?", qUU: "u ar ū?", qNasal: "Kurios raidės trūksta?", qPos: "Kokia tai kalbos dalis?",
+  start: "Pasirink teisingą vagoną – jis prisikabins prie traukinio!",
+  left: n => `Dar ${n} ${many(n, "vagonas", "vagonai", "vagonų")} iki pilno traukinio.`,
+  empty: full => `Teisingai – <b>${full}</b>. Šis vagonas važiuos tuščias.`,
+  streak: "Trys iš eilės! Vagonas gauna balioną.",
+  wrong: "Pabandyk dar kartą! Ištark žodį garsiai.",
+  wrongNasal: "Paklausk savęs: <b>kas?</b> ar <b>ką? / ko daug?</b>",
+  wrongPos: w => `Paklausk: <b>kas? koks? ką veikia? kiek?</b> Kuris klausimas tinka žodžiui „${w}“?`,
+  posWhy: (name, q) => `${name} atsako į klausimą <b>${q}</b>`,
+  loads: n => n === 0 ? "nė vieno krovinio" : `${n} ${many(n, "krovinį", "krovinius", "krovinių")}`,
+  depart: n => n === 0 ? "Tu-tū! Traukinys išvažiuoja tuščias. Kitą kartą pakrausim!" : `Tu-tū! Traukinys išvažiuoja ir veža ${T.loads(n)}.`,
+  result: n => `Pakrovei ${T.loads(n)} iš ${ROUND}.`,
+  toNext: (n, name) => `Dar <b>${n}</b> ${many(n, "krovinys", "kroviniai", "krovinių")} iki stoties <b>${name}</b>.`,
+  allStations: "Apvažiavai visas stotis nuo Vilniaus iki Klaipėdos. Šaunu!",
+  newStation: "Nauja stotis!",
+  arrived: name => `Traukinys atvažiavo į stotį <b>${name}</b>.`,
+  hooray: "Valio!",
+  carsLabel: (n, t) => `Pakrauta vagonų: ${n} iš ${t}`,
+  mapLabel: name => `Maršrutas per Lietuvos miestus. Traukinys dabar stotyje ${name}.`
+};
+/* Stotys: need – kiek krovinių iš viso reikia pakrauti, kad traukinys jas pasiektų; x, y – vieta meniu maršrute. */
+const STATIONS = [
+  { name: "Vilnius", need: 0, x: 318, y: 208 }, { name: "Kaišiadorys", need: 6, x: 226, y: 200 }, { name: "Kaunas", need: 14, x: 138, y: 208 },
+  { name: "Jonava", need: 24, x: 52, y: 192 }, { name: "Kėdainiai", need: 34, x: 64, y: 128, lx: 92 }, { name: "Radviliškis", need: 46, x: 160, y: 122 },
+  { name: "Šiauliai", need: 58, x: 262, y: 130, lx: 250 }, { name: "Telšiai", need: 72, x: 298, y: 70, lx: 272 }, { name: "Plungė", need: 86, x: 196, y: 64 },
+  { name: "Klaipėda", need: 100, x: 86, y: 72, lx: 96 }
 ];
+const stationAt = n => { let k = 0; STATIONS.forEach((s, i) => { if(n >= s.need) k = i; }); return k; };
+const POS_SHORT = { daiktavardis: "dktv.", "būdvardis": "bdv.", "veiksmažodis": "vksm.", skaitvardis: "sktv." };
+const POS_COL = { daiktavardis: "#ff6b78", "būdvardis": "#ffc61a", "veiksmažodis": "#7bd13a", skaitvardis: "#13a8d6" };
+const LEVELS = [
+  { id: "raide", art: "Aa" }, { id: "balsiai", art: "y/ū" }, { id: "nosines", art: "ą ę" }, { id: "kalbos", art: "kas?" }
+].map((l, i) => Object.assign(l, { name: T.levels[i][0], sub: T.levels[i][1] }));
+
+/* ---------- piešiniai (matmenys – scenos vienetais; scenos aukštis visada 220) ---------- */
+const INK = "#121a33", RAIL = 196, SW = 104, X0 = 8 * SW + 60, LW = 162;
+const WCOL = ["#ff6b78", "#ff8a1f", "#ffc61a", "#7bd13a", "#12b886", "#13a8d6", "#8a6dff", "#ff5fae"];
+const PASTEL = ["#ffd9dc", "#ffe7b8", "#d9f3cd", "#cfeeff"];
+const wheel = (cx, r) => `<g class="wheel"><circle cx="${cx}" cy="${-r}" r="${r}" fill="${INK}"/><circle cx="${cx}" cy="${-r}" r="${(r * 0.46).toFixed(1)}" fill="#c9cfdb"/>
+  <path d="M${cx - r * 0.8} ${-r}H${cx + r * 0.8}M${cx} ${-r * 1.8}V${-r * 0.2}" stroke="#c9cfdb" stroke-width="2.2" stroke-linecap="round"/></g>`;
+/* Garvežys: pradžios taškas – kairysis apatinis kampas ant bėgių, važiuoja į dešinę. */
+const LOCO = `<g fill="#fff" opacity=".92"><circle class="puff" cx="112" cy="-110" r="8"/><circle class="puff" cx="112" cy="-110" r="8"/><circle class="puff" cx="112" cy="-110" r="8"/></g>
+  <path d="M104-72v-22h-5l3-10h20l3 10h-5v22z" fill="${INK}"/>
+  <rect x="48" y="-76" width="96" height="56" rx="16" fill="#2f6bff" stroke="${INK}" stroke-width="3"/>
+  <path d="M68-76a13 13 0 0 1 26 0z" fill="#ffc61a" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+  <rect x="4" y="-106" width="54" height="86" rx="8" fill="#e5243b" stroke="${INK}" stroke-width="3"/><rect x="-3" y="-114" width="68" height="12" rx="6" fill="${INK}"/>
+  <rect x="14" y="-94" width="34" height="30" rx="6" fill="#bfe9ff" stroke="${INK}" stroke-width="2.5"/>
+  <circle cx="122" cy="-56" r="11" fill="#fff" stroke="${INK}" stroke-width="2.2"/><circle cx="125" cy="-55" r="5" fill="${INK}"/><circle cx="126.8" cy="-57" r="1.8" fill="#fff"/>
+  <path d="M108-36q12 9 26 1" fill="none" stroke="${INK}" stroke-width="2.8" stroke-linecap="round"/><circle cx="104" cy="-44" r="5" fill="#ff8aa0" opacity=".75"/>
+  <circle cx="145" cy="-64" r="6.5" fill="#ffc61a" stroke="${INK}" stroke-width="2.5"/>
+  <path d="M140-26h10l13 26h-28z" fill="#ffc61a" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="-2" y="-26" width="148" height="11" rx="4" fill="${INK}"/>
+  ${wheel(26, 18)}${wheel(78, 13)}${wheel(116, 13)}<path d="M26-18L116-13" stroke="#aeb6c6" stroke-width="4.5" stroke-linecap="round"/>`;
+const emoText = (e, x, y, size) => `<text class="emo" x="${x}" y="${y}" font-size="${size}" text-anchor="middle">${e}</text>`;
+const crate = word => { const w = MK.esc(word), fs = w.length > 9 ? 12 : w.length > 7 ? 14 : 16;
+  return `<rect x="6" y="-94" width="80" height="42" rx="6" fill="#e9b872" stroke="${INK}" stroke-width="2.5"/><path d="M6-80h80M6-66h80" stroke="#c9914a" stroke-width="2"/>
+    <rect x="12" y="-86" width="68" height="24" rx="5" fill="#fffdf2"/><text x="46" y="-${fs > 14 ? 68 : 69}" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="${fs}" fill="${INK}">${w}</text>`; };
+/* Vagonas: w.label – užrašas ant šono, w.cargo – krovinys (paveikslėlis arba dėžė su žodžiu); be krovinio – pilkas. */
+function wagonIn(w){
+  const c = w.full ? w.color : "#c9cfdb", long = w.label.length > 2;
+  return `${w.balloon ? `<g class="balloon"><path d="M70-56q6-24-2-44" fill="none" stroke="${INK}" stroke-width="1.6"/><ellipse cx="66" cy="-116" rx="13" ry="16" fill="#ff5fae" stroke="${INK}" stroke-width="2.2"/><path d="M61-122q3-5 8-5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></g>` : ""}
+    ${w.full ? `<g class="cargo">${w.emoji ? emoText(w.emoji, 46, -50, 46) : crate(w.word)}</g>` : ""}
+    <rect x="90" y="-27" width="16" height="6" rx="3" fill="${INK}"/>
+    <rect x="0" y="-58" width="92" height="44" rx="10" fill="${c}" stroke="${INK}" stroke-width="3"/><rect x="4" y="-55" width="84" height="8" rx="4" fill="#fff" opacity=".35"/>
+    ${long ? `<rect x="12" y="-44" width="68" height="24" rx="12" fill="#fffdf2" stroke="${INK}" stroke-width="2.2"/>` : `<circle cx="46" cy="-33" r="15.5" fill="#fffdf2" stroke="${INK}" stroke-width="2.2"/>`}
+    <text x="46" y="${long ? -26.5 : -25}" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="${long ? 15 : 23}" fill="${INK}">${MK.esc(w.label)}</text>
+    ${wheel(20, 11)}${wheel(72, 11)}`;
+}
+const tree = (x, fir) => fir ? `<rect x="${x - 4}" y="150" width="8" height="24" fill="#8a5a36"/><path d="M${x} 92l19 34h-38zM${x} 112l24 42h-48z" fill="#3f9a4a"/>`
+  : `<rect x="${x - 4}" y="138" width="8" height="36" fill="#8a5a36"/><circle cx="${x}" cy="124" r="24" fill="#58c45a"/><circle cx="${x - 8}" cy="116" r="8" fill="#7ad977" opacity=".7"/>`;
+const bush = x => `<ellipse cx="${x}" cy="172" rx="24" ry="12" fill="#58c45a"/><circle cx="${x - 8}" cy="168" r="3" fill="#ff8aa0"/><circle cx="${x + 9}" cy="171" r="3" fill="#ffc61a"/>`;
+function stageSvg(){
+  let deco = "", hills = "", clouds = "";
+  for(let x = -420, i = 0; x < 1500; x += 150, i++) deco += i % 3 === 1 ? bush(x + 40) : tree(x, i % 2);
+  for(let x = -160, i = 0; x < 1500; x += 230, i++) hills += `<ellipse cx="${x}" cy="186" rx="190" ry="${i % 2 ? 62 : 46}" fill="${i % 2 ? "#bfe8a8" : "#a9df90"}"/>`;
+  for(let x = 20, i = 0; x < 1000; x += 190, i++){ const y = 30 + (i % 3) * 16; clouds += `<g fill="#fff" opacity=".95"><ellipse cx="${x}" cy="${y}" rx="30" ry="12"/><circle cx="${x - 10}" cy="${y - 8}" r="12"/><circle cx="${x + 10}" cy="${y - 11}" r="14"/></g>`; }
+  return `<rect x="-20" y="-20" width="4000" height="260" fill="#c9edff"/><rect x="-20" y="110" width="4000" height="130" fill="#e6f7ff"/>
+    <circle cx="56" cy="50" r="24" fill="#ffd84a"/>
+    <g id="far">${clouds}</g><g id="mid">${hills}</g>
+    <g id="world"><rect x="-900" y="168" width="3600" height="70" fill="#9bdc7a"/>${deco}
+      <rect x="-900" y="${RAIL + 2}" width="3600" height="26" fill="#d8b98a"/><path d="M-900 ${RAIL + 8}H2700" stroke="#8a5a36" stroke-width="8" stroke-dasharray="10 13"/>
+      <path d="M-900 ${RAIL}H2700" stroke="${INK}" stroke-width="4"/>
+      <g id="slot"><rect x="0" y="-58" width="92" height="44" rx="10" fill="#fff" fill-opacity=".55" stroke="${INK}" stroke-width="2.5" stroke-dasharray="7 6"/>
+        <text x="46" y="-26" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="28" fill="${INK}" opacity=".6">?</text></g>
+      <g id="train"><g id="wagons"></g><g transform="translate(${X0} ${RAIL})">${LOCO}</g></g></g>`;
+}
+/* Meniu: maršrutas per stotis; traukinukas stovi paskutinėje pasiektoje stotyje. */
+function mapSvg(cur){
+  const pts = STATIONS, at = pts[cur];
+  const line = `M${pts[0].x} ${pts[0].y}L${pts[1].x} ${pts[1].y}L${pts[2].x} ${pts[2].y}L${pts[3].x} ${pts[3].y}Q14 160 ${pts[4].x} ${pts[4].y}L${pts[5].x} ${pts[5].y}L${pts[6].x} ${pts[6].y}Q346 96 ${pts[7].x} ${pts[7].y}L${pts[8].x} ${pts[8].y}L${pts[9].x} ${pts[9].y}`;
+  const st = pts.map((s, i) => `<circle cx="${s.x}" cy="${s.y}" r="${i === cur ? 9 : 7}" fill="${i <= cur ? "#ffc61a" : "#fff"}" stroke="${INK}" stroke-width="${i <= cur ? 3 : 2.2}"/>
+`).join("");
+  const names = pts.map((s, i) => `<text class="st-name" x="${s.lx || s.x}" y="${s.y + 23}" fill="${i <= cur ? INK : "#5f7a58"}">${s.name}</text>`).join("");
+  return `<svg viewBox="0 0 360 250" role="img" aria-label="${T.mapLabel(at.name)}">
+    <defs><clipPath id="mc"><rect x="3" y="3" width="354" height="244" rx="34"/></clipPath></defs>
+    <g clip-path="url(#mc)"><rect width="360" height="250" fill="#dff3cf"/>
+      <path d="M0 0h78q-30 34-26 72q-4 30-22 44q-16 8-30 4z" fill="#a6dffb"/><path d="M8 30q10-8 20 0t20 0M4 62q10-8 20 0t18 0" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+      <ellipse cx="250" cy="20" rx="90" ry="26" fill="#cdecb8"/><ellipse cx="110" cy="246" rx="120" ry="22" fill="#cdecb8"/>
+      <path d="${line}" fill="none" stroke="#8a5a36" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="${line}" fill="none" stroke="#f3dfb4" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round"/>
+      ${st}
+      <g transform="translate(${at.x - 24} ${at.y - 12}) scale(.31)">${LOCO}</g>${names}</g>
+    <rect x="3" y="3" width="354" height="244" rx="34" fill="none" stroke="${INK}" stroke-width="4"/></svg>`;
+}
+/* Naujos stoties langas: stoties pastatas su pavadinimu. */
+function stationSvg(name){
+  const fs = name.length > 9 ? 15 : 18;
+  return `<svg viewBox="0 0 200 150" aria-hidden="true"><rect x="0" y="124" width="200" height="14" rx="4" fill="#c9cfdb" stroke="${INK}" stroke-width="2.5"/>
+    <rect x="34" y="58" width="132" height="68" fill="#fff3d6" stroke="${INK}" stroke-width="3"/><path d="M22 60l78-40l78 40z" fill="#e5243b" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="100" cy="44" r="10" fill="#fff" stroke="${INK}" stroke-width="2.5"/><path d="M100 38v6l4 3" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>
+    <rect x="88" y="94" width="24" height="32" rx="4" fill="#8a5a36" stroke="${INK}" stroke-width="2.5"/><rect x="46" y="96" width="26" height="20" rx="3" fill="#bfe9ff" stroke="${INK}" stroke-width="2.5"/><rect x="128" y="96" width="26" height="20" rx="3" fill="#bfe9ff" stroke="${INK}" stroke-width="2.5"/>
+    <rect x="40" y="64" width="120" height="24" rx="6" fill="#13a8d6" stroke="${INK}" stroke-width="2.5"/>
+    <text x="100" y="${fs > 15 ? 82.5 : 81.5}" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="${fs}" fill="#fff">${name}</text></svg>`;
+}
+
+/* ---------- elementai ---------- */
 const $ = id => document.getElementById(id);
-const app = $("app"), menu = $("menu"), play = $("play"), opts = $("opts"), task = $("task");
+const app = $("app"), menu = $("menu"), play = $("play"), opts = $("opts"), task = $("task"), stage = $("stage"), sv = $("sv"), carsEl = $("cars");
 const savedGrade = MK.get("mokomeskartu-klase", 0);
 app.prepend(MK.top({ title: "Žodžių traukinys", grade: GRADES.includes(savedGrade) ? savedGrade : GRADES[0] }));
+$("heroP").textContent = T.hero;
 $("guideBox").innerHTML = MK.guide("");
 const guide = $("guideBox").firstElementChild;
+const save = Object.assign({ cargo: 0 }, MK.get(STORE, {}));
 const gapHtml = (w, fill, ok) => MK.esc(w).replace("_", `<span class="gap${ok ? " ok" : ""}">${fill || "?"}</span>`);
 
-/* ---------- train ---------- */
-const WCOL = ["#ff4f5e", "#ff8a1f", "#ffc61a", "#7bd13a", "#12b886", "#13a8d6", "#6b4dff", "#ff3d9a"];
-const LOCO = `<g><rect x="34" y="16" width="44" height="36" rx="6" fill="#e5243b" stroke="#121a33" stroke-width="3"/>
-  <rect x="44" y="22" width="22" height="16" rx="3" fill="#bfe9ff" stroke="#121a33" stroke-width="2.5"/>
-  <rect x="0" y="30" width="40" height="22" rx="5" fill="#2f6bff" stroke="#121a33" stroke-width="3"/>
-  <rect x="8" y="12" width="12" height="20" rx="2" fill="#121a33"/><path d="M-4 52l6 -12h4" fill="#ffc61a" stroke="#121a33" stroke-width="2.5" stroke-linejoin="round"/>
-  <circle cx="14" cy="56" r="9" fill="#121a33"/><circle cx="14" cy="56" r="3.5" fill="#c9cfdb"/><circle cx="60" cy="56" r="9" fill="#121a33"/><circle cx="60" cy="56" r="3.5" fill="#c9cfdb"/>
-  <g fill="#fff" opacity=".9"><circle class="puff" cx="14" cy="8" r="6"/><circle class="puff" cx="14" cy="8" r="6"/><circle class="puff" cx="14" cy="8" r="6"/></g></g>`;
-const SLOT = 62, TW = 96 + ROUND * SLOT + 12;
-function drawTrack(){
-  let s = `<svg viewBox="0 0 ${TW} 84" role="img" aria-label="Traukinys: ${ROUND} vagonėlių vietos">
-    <path d="M0 76H${TW}" stroke="#8a5a36" stroke-width="5"/>`;
-  for(let x = 6; x < TW; x += 18) s += `<rect x="${x}" y="72" width="10" height="8" rx="1.5" fill="#a5642e"/>`;
-  for(let k = 0; k < ROUND; k++){ const x = 8 + (ROUND - 1 - k) * SLOT; s += `<rect x="${x}" y="28" width="${SLOT - 10}" height="34" rx="6" fill="none" stroke="#c9b98f" stroke-width="2.5" stroke-dasharray="6 5"/>`; }
-  s += `<g class="train" id="train"><g transform="translate(${8 + ROUND * SLOT} 8)">${LOCO}</g><g id="wagons"></g></g></svg>`;
-  $("track").innerHTML = s;
+/* ---------- meniu ---------- */
+function drawMenu(){
+  const cur = stationAt(save.cargo), nx = STATIONS[cur + 1];
+  $("heroArt").innerHTML = mapSvg(cur);
+  if(!nx){ $("goal").innerHTML = `<span class="goal-who" aria-hidden="true">★</span><div><p style="margin:0">${T.allStations}</p></div>`; return; }
+  const from = STATIONS[cur].need, pct = Math.max(4, Math.round((save.cargo - from) / (nx.need - from) * 100));
+  $("goal").innerHTML = `<span class="goal-who emo" aria-hidden="true">📦</span><div><p>${T.toNext(nx.need - save.cargo, nx.name)}</p><div class="goal-bar" aria-hidden="true"><i style="width:${pct}%"></i></div></div>`;
 }
-function addWagon(k, label, first){
-  const x = 8 + (ROUND - 1 - k) * SLOT, c = first ? WCOL[k % WCOL.length] : "#c9cfdb";
-  const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); g.setAttribute("class", "wagon");
-  g.innerHTML = `<rect x="${x + SLOT - 12}" y="50" width="14" height="4" fill="#121a33"/>
-    <rect x="${x}" y="28" width="${SLOT - 10}" height="30" rx="6" fill="${c}" stroke="#121a33" stroke-width="3"/>
-    <text x="${x + (SLOT - 10) / 2}" y="49" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="${label.length > 3 ? 13 : 20}" fill="#121a33">${MK.esc(label)}</text>
-    <circle cx="${x + 12}" cy="62" r="7" fill="#121a33"/><circle cx="${x + SLOT - 22}" cy="62" r="7" fill="#121a33"/>`;
-  $("wagons").appendChild(g);
-}
-$("heroArt").innerHTML = `<svg viewBox="0 0 260 110" aria-hidden="true"><path d="M0 100H260" stroke="#8a5a36" stroke-width="5"/>
-  <g transform="translate(176 32)">${LOCO}</g>
-  ${["a", "ą", "y"].map((l, k) => `<g transform="translate(${116 - k * 58} 0)"><rect x="0" y="54" width="52" height="34" rx="6" fill="${WCOL[k * 2]}" stroke="#121a33" stroke-width="3"/>
-    <text x="26" y="80" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="24" fill="#121a33">${l}</text>
-    <circle cx="12" cy="90" r="7" fill="#121a33"/><circle cx="40" cy="90" r="7" fill="#121a33"/><rect x="50" y="76" width="10" height="4" fill="#121a33"/></g>`).join("")}</svg>`;
+function showMenu(){ play.hidden = true; menu.hidden = false; drawMenu(); MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); window.scrollTo(0, 0); }
 
-/* ---------- questions ---------- */
+/* ---------- užduotys ---------- */
+const ENDS = ["s", "a", "ė", "o", "i", "y"];
+function letterTask(it, last){
+  const a = last ? it.w[it.w.length - 1] : it.w[0], pool = (last ? ENDS : LETTERS).filter(l => l !== a && l !== PAIRS[a]);
+  const set = [a];
+  if(!last && PAIRS[a] && LETTERS.includes(PAIRS[a])) set.push(PAIRS[a]);
+  while(set.length < 3){ const l = MK.pick(pool); if(!set.includes(l)) set.push(l); }
+  return { e: it.e, w: last ? it.w.slice(0, -1) + "_" : "_" + it.w.slice(1), a, opts: MK.shuffle(set), q: last ? T.qLast : T.qFirst, label: a, full: it.w };
+}
 function makeTasks(i){
-  if(i === 0) return MK.shuffle(FIRST).slice(0, ROUND).map(it => {
-    const a = it.w[0], pool = LETTERS.filter(l => l !== a && l !== PAIRS[a]);
-    const set = [a, PAIRS[a] && LETTERS.includes(PAIRS[a]) ? PAIRS[a] : MK.pick(pool)];
-    while(set.length < 3){ const l = MK.pick(pool); if(!set.includes(l)) set.push(l); }
-    return { e: it.e, w: "_" + it.w.slice(1), a, opts: MK.shuffle(set), q: "Kokia raide prasideda žodis?", label: a, full: it.w };
-  });
-  if(i === 1) return MK.shuffle(VOWELS).slice(0, ROUND).map(it => ({ ...it, q: it.opts[0] === "i" ? "i ar y?" : "u ar ū?", label: it.a, full: it.w.replace("_", it.a) }));
-  if(i === 2) return MK.shuffle(NASAL).slice(0, ROUND).map(it => ({ ...it, e: "", sent: true, q: "Kurios raidės trūksta?", label: it.a, full: it.w.replace("_", it.a) }));
+  if(i === 0) return MK.shuffle(FIRST).slice(0, ROUND).map((it, k) => letterTask(it, k === 2 || k === 5 || k === 7));
+  if(i === 1) return MK.shuffle(VOWELS).slice(0, ROUND).map(it => ({ ...it, q: it.opts[0] === "i" ? T.qIY : T.qUU, label: it.a, full: it.w.replace("_", it.a) }));
+  if(i === 2) return MK.shuffle(NASAL).slice(0, ROUND).map(it => { const full = it.w.replace("_", it.a);
+    return { ...it, e: "", sent: true, q: T.qNasal, label: it.a, full, cargo: (full.split(" ").find((x, k) => it.w.split(" ")[k].includes("_")) || "").replace(/[.,!?]/g, "") }; });
   const kinds = Object.keys(WORDS4), list = [];
-  kinds.forEach(k => MK.shuffle(WORDS4[k]).slice(0, 2).forEach(w => list.push({ e: "", w, a: k, opts: kinds, words: true, q: "Kokia tai kalbos dalis?", label: k.slice(0, 4) + ".", full: w })));
+  kinds.forEach(k => MK.shuffle(WORDS4[k]).slice(0, 2).forEach(w => list.push({ e: "", w, a: k, opts: kinds, words: true, q: T.qPos, label: POS_SHORT[k], full: w, color: POS_COL[k] })));
   return MK.shuffle(list);
 }
 
-/* ---------- game flow ---------- */
-let lvl = 0, tasks = [], ti = 0, t = null, tries = 0, firstOK = 0, busy = false;
-function showMenu(){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); window.scrollTo(0, 0); }
+/* ---------- scena ir kamera ---------- */
+let VW = 360, cam = 0, world, mid, far, train, slot, wagons;
+function measure(){ const r = stage.getBoundingClientRect(); VW = r.height > 0 ? 220 * r.width / r.height : 360; sv.setAttribute("viewBox", `0 0 ${VW.toFixed(1)} 220`); }
+/* Kamera rodo laisvą vietą kitam vagonui ir, kol telpa, garvežį. */
+const camFor = k => Math.min(X0 - (k + 1) * SW - 26, X0 + LW + 12 - VW);
+function setCam(c){ cam = c; world.style.transform = `translateX(${-c}px)`; mid.style.transform = `translateX(${(-c * 0.35).toFixed(1)}px)`; far.style.transform = `translateX(${(-c * 0.1).toFixed(1)}px)`; }
+function buildStage(){
+  stage.classList.add("snap");
+  sv.innerHTML = stageSvg();
+  world = $("world"); mid = $("mid"); far = $("far"); train = $("train"); slot = $("slot"); wagons = $("wagons");
+  measure(); placeSlot(0); setCam(camFor(0));
+  void stage.offsetWidth; stage.classList.remove("snap");
+}
+function placeSlot(k){ slot.setAttribute("transform", `translate(${X0 - (k + 1) * SW} ${RAIL})`); slot.style.opacity = 1; }
+function addWagon(k, w){
+  const x = X0 - (k + 1) * SW;
+  const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  g.setAttribute("transform", `translate(${x} ${RAIL})`);
+  g.innerHTML = `<g class="roll" style="--from:${-(x - cam + 130).toFixed(0)}px">${wagonIn(w)}</g>`;
+  wagons.appendChild(g);
+}
+function roll(ms){ train.classList.add("go"); setTimeout(() => train.classList.remove("go"), ms); }
+
+/* ---------- žaidimo eiga ---------- */
+let lvl = 0, tasks = [], ti = 0, t = null, tries = 0, firstOK = 0, streak = 0, busy = false, marks = [];
+function drawCars(){
+  carsEl.setAttribute("aria-label", T.carsLabel(firstOK, ROUND));
+  /* mažasis traukinys: garvežys dešinėje, pirmas vagonas – šalia jo */
+  let h = "";
+  for(let k = ROUND - 1; k >= 0; k--) h += `<i class="${marks[k] ? marks[k].cls : k === ti ? "cur" : ""}"${marks[k] && marks[k].c ? ` style="--c:${marks[k].c}"` : ""}></i>`;
+  carsEl.innerHTML = h + `<svg viewBox="-6 -126 176 130" aria-hidden="true">${LOCO}</svg>`;
+}
 function start(i){
-  lvl = i; ti = 0; firstOK = 0; tasks = makeTasks(i);
+  lvl = i; ti = 0; firstOK = 0; streak = 0; marks = []; tasks = makeTasks(i);
   menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
-  drawTrack(); next();
+  buildStage(); next();
 }
 function draw(fill, ok){
-  task.innerHTML = `${t.e ? `<div class="pic" aria-hidden="true">${t.e}</div>` : ""}<div class="q">${t.q}</div>
+  task.innerHTML = `${t.e ? `<div class="pic emo" aria-hidden="true">${t.e}</div>` : ""}<div class="q">${t.q}</div>
     <div class="txt${t.sent ? " sent" : ""}">${t.words ? `<span class="gap${ok ? " ok" : ""}" style="padding:0 .3em">${MK.esc(t.w)}</span>` : gapHtml(t.w, fill, ok)}</div>
-    ${ok && t.why ? `<div class="why">${t.why}</div>` : ""}${ok && t.words ? `<div class="why">${t.a[0].toUpperCase() + t.a.slice(1)} atsako į klausimą <b>${POS[t.a]}</b></div>` : ""}`;
+    ${ok && t.why ? `<div class="why">${t.why}</div>` : ""}${ok && t.words ? `<div class="why">${T.posWhy(t.a[0].toUpperCase() + t.a.slice(1), POS[t.a])}</div>` : ""}`;
 }
 function next(){
   if(ti >= ROUND) return finish();
   t = tasks[ti]; tries = 0; busy = false;
-  draw();
+  drawCars(); draw(); placeSlot(ti);
   opts.className = "opts" + (t.words ? " words" : ""); opts.style.setProperty("--n", t.opts.length);
-  opts.innerHTML = t.opts.map(o => `<button type="button" data-o="${MK.esc(o)}">${MK.esc(o)}</button>`).join("");
-  MK.say(guide, ti === 0 ? "Rinkis teisingą atsakymą – prikabinsi vagonėlį!" : `Dar ${ROUND - ti} ${ROUND - ti === 1 ? "vagonėlis" : "vagonėliai"} iki pilno traukinio.`);
+  opts.innerHTML = t.opts.map((o, k) => `<button type="button" data-o="${MK.esc(o)}" style="--wc:${t.words ? POS_COL[o] + "55" : PASTEL[k % PASTEL.length]}">${MK.esc(o)}</button>`).join("");
+  MK.say(guide, ti === 0 ? T.start : T.left(ROUND - ti));
 }
 opts.addEventListener("click", async e => {
   const b = e.target.closest("button"); if(!b || busy) return;
   MK.unlock();
   if(b.dataset.o === t.a){
-    busy = true; b.classList.add("ok"); if(tries === 0) firstOK++;
+    busy = true; b.classList.add("ok");
+    const first = tries === 0, color = t.color || WCOL[ti % WCOL.length];
+    if(first){ firstOK++; streak++; } else streak = 0;
+    const balloon = first && streak % 3 === 0;
     MK.sfx.good(); draw(t.a, true);
-    MK.say(guide, `${MK.praise()} <b>${MK.esc(t.full)}</b>`);
-    addWagon(ti, t.label, tries === 0); setTimeout(() => MK.sfx.beep(), 200);
-    await MK.wait(t.why || t.words ? 1900 : 1300); ti++; next();
+    slot.style.opacity = 0;
+    addWagon(ti, { full: first, color, label: t.label, emoji: t.e, word: t.cargo || t.full, balloon });
+    marks[ti] = { cls: first ? "got" : "miss", c: color };
+    setTimeout(() => MK.sfx.tap(), 520);
+    MK.say(guide, balloon ? T.streak : first ? `${MK.praise()} <b>${MK.esc(t.full)}</b>` : T.empty(MK.esc(t.full)));
+    if(balloon) setTimeout(() => MK.sfx.coins(), 700);
+    await MK.wait(1050);
+    drawCars();
+    if(ti < ROUND - 1){ setCam(camFor(ti + 1)); roll(900); MK.sfx.beep(); }
+    await MK.wait(t.why || t.words ? 1500 : 950);
+    ti++; next();
     return;
   }
   tries++; b.classList.add("no"); MK.sfx.bad();
-  if(lvl === 3) MK.say(guide, `Paklausk: <b>kas? koks? ką veikia? kiek?</b> Kuris klausimas tinka žodžiui „${MK.esc(t.w)}“?`, "bad");
-  else if(lvl === 2) MK.say(guide, "Paklausk savęs: <b>kas?</b> ar <b>ką? / ko daug?</b>", "bad");
-  else MK.say(guide, "Pabandyk dar kartą! Ištark žodį garsiai.", "bad");
+  MK.say(guide, lvl === 3 ? T.wrongPos(MK.esc(t.w)) : lvl === 2 ? T.wrongNasal : T.wrong, "bad");
 });
+window.addEventListener("resize", () => { if(play.hidden || !world) return; stage.classList.add("snap"); measure(); if(!busy) setCam(camFor(Math.min(ti, ROUND - 1))); void stage.offsetWidth; stage.classList.remove("snap"); });
+
+/* ---------- raundo pabaiga ---------- */
+function newStation(s, done){
+  const ov = document.createElement("div"); ov.className = "mk-ov";
+  ov.innerHTML = `<div class="mk-res" role="dialog" aria-modal="true" aria-labelledby="nsT"><div class="ns-art">${stationSvg(s.name)}</div>
+    <h2 id="nsT">${T.newStation}</h2><p>${T.arrived(s.name)}</p><div class="mk-res-b"><button type="button" class="mk-btn">${T.hooray}</button></div></div>`;
+  document.body.appendChild(ov);
+  MK.sfx.coins(); MK.confetti(34);
+  const btn = ov.querySelector("button");
+  btn.addEventListener("click", () => { MK.sfx.tap(); ov.remove(); done(); });
+  setTimeout(() => btn.focus({ preventScroll: true }), 60);
+}
 async function finish(){
-  busy = true; MK.say(guide, "Traukinys pilnas! Tu-tū!");
+  busy = true; opts.innerHTML = ""; slot.style.opacity = 0; drawCars();
+  MK.say(guide, T.depart(firstOK));
+  /* kamera grįžta prie garvežio, tada visas traukinys pravažiuoja pro ekraną */
+  setCam(X0 + LW + 12 - VW); await MK.wait(1000);
   MK.sfx.beep(true); setTimeout(() => MK.sfx.vroom(), 300);
-  $("train").style.transform = `translateX(${TW + 40}px)`;
-  await MK.wait(2000);
+  train.classList.add("go"); train.style.transform = `translateX(${Math.round(VW + ROUND * SW + 60)}px)`;
+  await MK.wait(3100);
+  const before = stationAt(save.cargo);
+  save.cargo += firstOK; MK.set(STORE, save);
+  const cur = stationAt(save.cargo), nx = STATIONS[cur + 1];
   const stars = MK.starsFor(firstOK, ROUND);
   MK.best(GAME, LEVELS[lvl].id, stars);
-  MK.result({ stars, text: `Iš pirmo karto teisingai: ${firstOK} iš ${ROUND}.`,
+  const result = () => MK.result({ stars, text: T.result(firstOK) + (nx ? "<br>" + T.toNext(nx.need - save.cargo, nx.name) : ""),
     next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+  if(cur > before) newStation(STATIONS[cur], result); else result();
 }
 showMenu();
 })();
