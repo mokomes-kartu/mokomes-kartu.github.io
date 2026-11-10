@@ -14,23 +14,30 @@
 <style>
 /* Saugi kelionė: vaikas eina į mokyklą, kiekviena situacija – vienas žingsnis. */
 body{--ac:#1c7ed6;--ac-soft:#dbeeff}
-.road{display:flex;align-items:center;gap:6px;margin:0 0 10px;font-size:26px}
-.road .path{position:relative;flex:1;height:12px;border-radius:6px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink)}
-.road .path i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--good);transition:width .5s}
-.road .kid{position:absolute;top:50%;transform:translate(-50%,-62%);font-size:28px;transition:left .5s cubic-bezier(.3,1.4,.5,1)}
-.scene{display:block;width:100%;height:auto;border-radius:22px;box-shadow:inset 0 0 0 3px var(--ink);background:#bfe6ff;margin:10px 0}
-.scene-w{border-radius:22px;overflow:hidden;box-shadow:0 6px 0 rgba(18,26,51,.16),0 0 0 3px var(--ink);margin:10px 0}
-.scene-w .scene{margin:0;border-radius:0;box-shadow:none}
-.blink{animation:bl 0.9s steps(2) infinite}
-@keyframes bl{50%{opacity:.15}}
-.q{font:800 clamp(20px,5.4vw,26px)/1.25 var(--kid);text-align:center;margin:6px 0 12px;text-wrap:balance}
+.road{display:flex;align-items:flex-end;gap:8px;margin:2px 0 8px;padding:30px 12px 10px;background:#fff;border-radius:18px;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.14)}
+.road .ic{width:34px;height:34px;flex:none}
+.road .ic svg{width:100%;height:100%;display:block}
+.road .path{position:relative;flex:1;height:12px;margin-bottom:6px;border-radius:6px;background:#e9e1cc;box-shadow:inset 0 0 0 2px var(--ink);background-image:repeating-linear-gradient(90deg,transparent 0 10px,#fff 10px 18px);background-size:100% 3px;background-repeat:no-repeat;background-position:0 50%}
+.road .path i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--good);box-shadow:inset 0 0 0 2px var(--ink);transition:width .5s}
+.road .kid{position:absolute;bottom:2px;width:26px;height:44px;transform:translateX(-50%);transition:left .6s cubic-bezier(.3,1.4,.5,1)}
+.road .kid svg{width:100%;height:100%;display:block;overflow:visible}
+.mk-dots{margin:2px 0 4px}
+.scene-w{border-radius:22px;overflow:hidden;box-shadow:0 0 0 3px var(--ink),0 7px 0 rgba(18,26,51,.18);margin:10px 0 14px;background:#bfe6ff}
+.scene{display:block;width:100%;height:auto}
+.blink{animation:bl .9s steps(2) infinite}
+@keyframes bl{50%{opacity:.12}}
+.q{font:800 clamp(20px,5.4vw,26px)/1.25 var(--kid);text-align:center;margin:4px 0 14px;text-wrap:balance}
 .opts{display:grid;gap:10px}
-.opts button{display:flex;align-items:center;gap:12px;min-height:62px;padding:10px 16px;border:0;border-radius:20px;cursor:pointer;background:#fff;text-align:left;
-  font:800 clamp(17px,4.6vw,20px)/1.2 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.2)}
-.opts button span{font-size:30px;line-height:1;flex:none}
+.opts button{display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 16px 8px 8px;border:0;border-radius:20px;cursor:pointer;background:#fff;text-align:left;
+  font:800 clamp(17px,4.6vw,20px)/1.2 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.2);transition:transform .1s}
+.opts button .e{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--ac-soft);font-size:28px;line-height:1;flex:none}
+@media (hover:hover){.opts button:hover{transform:translateY(-2px)}}
 .opts button:active{transform:translateY(3px);box-shadow:inset 0 0 0 2.5px var(--ink),0 2px 0 rgba(18,26,51,.2)}
 .opts button.ok{background:#b8f0c4}
-.opts button.no{background:#ffd3c7;opacity:.6;pointer-events:none}
+.opts button.ok .e{background:#fff}
+.opts button.no{background:#ffd3c7;opacity:.55;pointer-events:none}
+.mk-hero-art{width:min(440px,100%)}
+.mk-hero-art .scene-w{margin:0 0 4px}
 .mk-guide{margin-top:12px}
 .go{width:100%;margin-top:12px}
 .note{max-width:520px;margin:16px auto 0;color:var(--soft);font-size:13px;text-align:center}
@@ -49,7 +56,7 @@ body{--ac:#1c7ed6;--ac-soft:#dbeeff}
     <p class="note">Žaidimas moko saugaus elgesio gatvėje, bet nepakeičia suaugusiojo pamokų prie tikros gatvės.</p>
   </section>
   <section id="play" hidden>
-    <div class="road" aria-hidden="true">🏠<div class="path"><i id="pathFill"></i><span class="kid" id="kid">🧒</span></div>🏫</div>
+    <div class="road" aria-hidden="true"><span class="ic" id="icHome"></span><div class="path"><i id="pathFill"></i><span class="kid" id="kid"></span></div><span class="ic" id="icSchool"></span></div>
     <div id="dots"></div>
     <div id="board"></div>
   </section>
@@ -60,63 +67,130 @@ body{--ac:#1c7ed6;--ac-soft:#dbeeff}
 const GAME = "saugi-kelione", GRADES = [1, 2];
 const INK = "#121a33";
 
-/* ---------- piešiniai ---------- */
-const walker = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})" fill="none" stroke="${c}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="0" cy="-16" r="4" fill="${c}" stroke="none"/><path d="M0-10 1 4M1 4-5 15M1 4 7 14M0-6-7 0M0-6 7-1"/></g>`;
-const car = (x, y, col, flip) => `<g transform="translate(${x} ${y})${flip ? " scale(-1 1)" : ""}">
-  <path d="M-36 0v-12q0-6 6-7l10-1 8-10q3-3 8-3h18q5 0 8 4l8 9 8 1q6 1 6 7V0Z" fill="${col}" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M-10-20l6-8h12v8Zm22 0v-8h6q2 0 4 2l5 6Z" fill="#dff3ff" stroke="${INK}" stroke-width="2"/>
-  <circle cx="-20" cy="0" r="7" fill="${INK}"/><circle cx="20" cy="0" r="7" fill="${INK}"/><circle cx="-20" cy="0" r="2.5" fill="#bbb"/><circle cx="20" cy="0" r="2.5" fill="#bbb"/>
-  <circle cx="35" cy="-11" r="3.5" fill="#ffe066" stroke="${INK}" stroke-width="1.5"/></g>`;
-function sign(k){
-  const P = `<rect x="157" y="40" width="6" height="58" fill="#8a8f99" stroke="${INK}" stroke-width="2"/>`;
-  if(k === "pereja") return P + `<rect x="128" y="2" width="64" height="64" rx="6" fill="#1c64c8" stroke="${INK}" stroke-width="2.5"/>
-    <path d="M160 10 186 58H134Z" fill="#fff"/>${[0, 1, 2].map(i => `<rect x="${145 + i * 11}" y="49" width="7" height="5" fill="${INK}"/>`).join("")}${walker(161, 42, .95, INK)}`;
-  if(k === "vaikai") return P + `<path d="M160 4 196 66H124Z" fill="#fff" stroke="#e03131" stroke-width="7" stroke-linejoin="round"/>${walker(152, 56, .8, INK)}${walker(168, 58, .65, INK)}`;
-  if(k === "draud") return P + `<circle cx="160" cy="34" r="31" fill="#fff" stroke="#e03131" stroke-width="7"/>${walker(160, 44, 1, INK)}`;
-  if(k === "dvir") return P + `<circle cx="160" cy="34" r="31" fill="#1c64c8" stroke="${INK}" stroke-width="2.5"/>
-    <g fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="146" cy="42" r="9"/><circle cx="174" cy="42" r="9"/><path d="M146 42l9-14h14l5 14M155 28l5 14 9-14M152 24h7M166 22l3 6"/></g>`;
-  return "";
+/* ---------- piešiniai ----------
+   Visi piešiniai – SVG. Piktogramos (žmogeliukai) piešiamos 100×100 dėžutėje, kurios centras (50; 50),
+   todėl ped(cx, cy, h) visada tiksliai centruoja figūrą ženkle ar šviesoforo lempoje. */
+const PED = {
+  walk: `<circle cx="53" cy="13" r="10"/><g fill="none" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M51 30 46 58"/><path d="M50 34 36 50 32 60"/><path d="M51 34 63 46 72 50"/><path d="M46 58 36 76 28 92"/><path d="M46 58 58 74 64 92"/></g>`,
+  stand: `<circle cx="50" cy="13" r="10"/><g fill="none" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M50 30v30"/><path d="M50 34 40 58"/><path d="M50 34 60 58"/><path d="M50 60 44 92"/><path d="M50 60 56 92"/></g>`
+};
+const ped = (cx, cy, h, col, pose) => `<g transform="translate(${cx - h / 2} ${cy - h / 2}) scale(${h / 100})" fill="${col}" stroke="${col}">${PED[pose || "walk"]}</g>`;
+
+/* Vaikas – pagrindinis veikėjas. x – centras, y – pėdų linija; aukštis ~82 vienetai. */
+function kid(x, y, o){
+  o = o || {};
+  const s = o.s || 1, jk = o.jacket || "#ff6b6b", pn = o.pants || "#3b5bdb", skin = "#f8cfaa", hair = o.hair || "#7a4a24", st = `stroke="${INK}" stroke-width="2"`;
+  let g = `<g transform="translate(${x} ${y}) scale(${s})"${o.op ? ` opacity="${o.op}"` : ""}>
+    <ellipse cx="0" cy="0" rx="17" ry="3.5" fill="#000" opacity=".18"/>
+    <rect x="-14" y="-58" width="28" height="24" rx="7" fill="${o.bag || "#ffc61a"}" ${st}/>
+    <rect x="-9.5" y="-29" width="8" height="26" rx="3.5" fill="${pn}" ${st}/><rect x="1.5" y="-29" width="8" height="26" rx="3.5" fill="${pn}" ${st}/>
+    <path d="M-12.5-4h10a2 2 0 0 1 2 2v1h-14a2 2 0 0 1 2-3Z" fill="${INK}"/><path d="M1.5-4h10a3 3 0 0 1 3 3h-15v-1a2 2 0 0 1 2-2Z" fill="${INK}"/>
+    <rect x="-12.5" y="-55" width="25" height="30" rx="9" fill="${jk}" ${st}/>
+    <path d="M0-53v26" stroke="${INK}" stroke-width="1.3" opacity=".35"/>
+    <path d="M-8-54v20M8-54v20" stroke="${INK}" stroke-width="2.4" opacity=".55"/>`;
+  g += `<rect x="-18.5" y="-53" width="7" height="22" rx="3.5" fill="${jk}" ${st}/><circle cx="-15" cy="-30" r="3.6" fill="${skin}" ${st}/>`;
+  if(o.wave) g += `<g transform="rotate(-155 15 -50)"><rect x="11.5" y="-53" width="7" height="22" rx="3.5" fill="${jk}" ${st}/><circle cx="15" cy="-30" r="3.6" fill="${skin}" ${st}/></g>`;
+  else if(o.phone) g += `<path d="M15-50 21-38 13-33" fill="none" stroke="${INK}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M15-50 21-38 13-33" fill="none" stroke="${jk}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="6" y="-44" width="8" height="13" rx="2" fill="${INK}"/><rect x="7.5" y="-42.5" width="5" height="9" rx="1" fill="#8ce99a"/>`;
+  else g += `<rect x="11.5" y="-53" width="7" height="22" rx="3.5" fill="${jk}" ${st}/><circle cx="15" cy="-30" r="3.6" fill="${skin}" ${st}/>`;
+  g += `<circle cx="0" cy="-68" r="13" fill="${skin}" ${st}/>
+    <path d="M-13-69q-1-14 13-14t13 14q-5-7-13-7t-13 7Z" fill="${hair}" ${st} stroke-linejoin="round"/>
+    <circle cx="-4.5" cy="-67" r="1.8" fill="${INK}"/><circle cx="4.5" cy="-67" r="1.8" fill="${INK}"/>
+    <circle cx="-8" cy="-62.5" r="2.4" fill="#ff8aa0" opacity=".5"/><circle cx="8" cy="-62.5" r="2.4" fill="#ff8aa0" opacity=".5"/>
+    <path d="M-4-61.5q4 3.5 8 0" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`;
+  if(o.refl) g += `<g transform="translate(-6 -38)"><circle r="5.5" fill="#d8f5a2" stroke="${INK}" stroke-width="1.6"/><circle r="2.5" fill="#fff"/>
+      ${o.glow ? `<g stroke="#fff3a0" stroke-width="2" stroke-linecap="round"><path d="M-10 0h-4M10 0h4M0-10v-4M7-7l3-3M-7-7l-3-3"/></g>` : ""}</g>`;
+  return g + `</g>`;
 }
-function pedLight(st){
-  const red = st === "red", grn = st === "green" || st === "blink";
-  return `<rect x="252" y="40" width="7" height="58" fill="#8a8f99" stroke="${INK}" stroke-width="2"/>
-  <rect x="236" y="2" width="40" height="72" rx="8" fill="#2b2f3a" stroke="${INK}" stroke-width="2.5"/>
-  <circle cx="256" cy="20" r="13" fill="${red ? "#ff3b3b" : "#4a2222"}"/><g opacity="${red ? 1 : .35}">${walker(256, 27, .55, red ? "#fff" : "#7a4444")}</g>
-  <g class="${st === "blink" ? "blink" : ""}"><circle cx="256" cy="54" r="13" fill="${grn ? "#3ee06a" : "#1f3d27"}"/>${walker(256, 61, .55, grn ? "#fff" : "#2f5a3a")}</g>`;
+const car = (x, y, col, o) => { o = o || {}; return `<g transform="translate(${x} ${y})${o.flip ? " scale(-1 1)" : ""}">
+  ${o.beam ? `<path d="M40-14 120-34v34Z" fill="#fff3a0" opacity=".35"/>` : ""}
+  <ellipse cx="0" cy="1" rx="40" ry="4" fill="#000" opacity=".2"/>
+  <path d="M-40-4v-13q0-7 7-8l11-1 9-11q3-4 9-4h20q6 0 9 4l9 11 9 1q7 1 7 8v13Z" fill="${col}" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M-11-26l7-9h13v9Zm24 0v-9h7q2 0 4 2l6 7Z" fill="#dff3ff" stroke="${INK}" stroke-width="2"/>
+  <path d="M-36-14h76" stroke="${INK}" stroke-width="1.5" opacity=".35"/>
+  <circle cx="-23" cy="-3" r="8.5" fill="${INK}"/><circle cx="23" cy="-3" r="8.5" fill="${INK}"/><circle cx="-23" cy="-3" r="3.5" fill="#ced4da"/><circle cx="23" cy="-3" r="3.5" fill="#ced4da"/>
+  <rect x="36" y="-17" width="6" height="6" rx="2" fill="#ffe066" stroke="${INK}" stroke-width="1.5"/><rect x="-42" y="-17" width="5" height="6" rx="2" fill="#ff6b6b" stroke="${INK}" stroke-width="1.5"/></g>`; };
+
+/* Kelio ženklai: cx, cy – ženklo centras, d – dydis. */
+function sign(k, cx, cy){
+  const d = 66, x = cx - d / 2, y = cy - d / 2;
+  let g = `<rect x="${cx - 3.5}" y="${cy}" width="7" height="${214 - cy}" fill="#adb5bd" stroke="${INK}" stroke-width="2"/>`;
+  if(k === "pereja") g += `<rect x="${x}" y="${y}" width="${d}" height="${d}" rx="7" fill="#1864ab" stroke="${INK}" stroke-width="2.5"/>
+      <rect x="${x + 3}" y="${y + 3}" width="${d - 6}" height="${d - 6}" rx="5" fill="none" stroke="#fff" stroke-width="2"/>
+      <path d="M${cx} ${y + 8}L${x + d - 7} ${y + d - 8}H${x + 7}Z" fill="#fff" stroke-linejoin="round"/>
+      ${[0, 1, 2, 3].map(i => `<rect x="${cx - 17 + i * 9.5}" y="${y + d - 15}" width="5.5" height="5" fill="${INK}"/>`).join("")}
+      ${ped(cx + 1, y + 36, 27, INK)}`;
+  if(k === "vaikai") g += `<path d="M${cx} ${y + 3}L${x + d - 1} ${y + d - 6}H${x + 1}Z" fill="#fff" stroke="#e03131" stroke-width="7" stroke-linejoin="round"/>
+      ${ped(cx - 7, y + 43, 25, INK)}${ped(cx + 8, y + 46, 19, INK)}`;
+  if(k === "draud") g += `<circle cx="${cx}" cy="${cy}" r="${d / 2}" fill="#fff" stroke="#e03131" stroke-width="7"/>${ped(cx, cy, 36, INK)}`;
+  if(k === "dvir") g += `<circle cx="${cx}" cy="${cy}" r="${d / 2}" fill="#1864ab" stroke="${INK}" stroke-width="2.5"/>
+      <g transform="translate(${cx} ${cy + 3})" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="-14" cy="5" r="9"/><circle cx="14" cy="5" r="9"/><path d="M-14 5-5-9h14l5 14M-5-9 0 5 9-9M-9-13h7M7-15l2 6"/></g>`;
+  return g;
+}
+/* Pėsčiųjų šviesoforas ant stulpo: raudonas (stovintis) ir žalias (einantis) žmogeliukas, abu centruoti lempose. */
+function pedLight(st, cx){
+  const red = st === "red", grn = st === "green" || st === "blink", top = 20;
+  const lamp = (cy, on, col, dim, pose, cls) => `<g class="${cls || ""}"><circle cx="${cx}" cy="${cy}" r="15.5" fill="${on ? col : dim}" stroke="#0b0f1c" stroke-width="2"/>
+      ${on ? `<circle cx="${cx}" cy="${cy}" r="21" fill="${col}" opacity=".22"/>` : ""}${ped(cx, cy, 25, on ? "#fff" : "#0006", pose)}</g>
+      <path d="M${cx - 19} ${cy - 14}q19-12 38 0" fill="none" stroke="#1b1f2a" stroke-width="4" stroke-linecap="round"/>`;
+  return `<rect x="${cx - 3.5}" y="${top + 80}" width="7" height="${214 - top - 80}" fill="#adb5bd" stroke="${INK}" stroke-width="2"/>
+    <rect x="${cx - 21}" y="${top}" width="42" height="84" rx="9" fill="#2b2f3a" stroke="${INK}" stroke-width="2.5"/>
+    ${lamp(top + 22, red, "#ff3b3b", "#4a2626", "stand")}${lamp(top + 62, grn, "#2fe06a", "#1d3d27", "walk", st === "blink" ? "blink" : "")}`;
+}
+function backdrop(night){
+  const wall = night ? ["#4c5578", "#5a4a6e"] : ["#ffd8a8", "#d0ebff"], roof = night ? "#2b3150" : "#e8590c", win = night ? "#ffe066" : "#a5d8ff";
+  const house = (x, w, h, c) => `<rect x="${x}" y="${112 - h}" width="${w}" height="${h}" fill="${c}" stroke="${INK}" stroke-width="2"/>
+    <path d="M${x - 5} ${112 - h}l${w / 2 + 5}-22 ${w / 2 + 5} 22Z" fill="${roof}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+    ${[0, 1].map(i => `<rect x="${x + 9 + i * (w - 30)}" y="${120 - h}" width="12" height="12" rx="2" fill="${win}" stroke="${INK}" stroke-width="1.5"/>`).join("")}`;
+  const tree = (x, r) => `<rect x="${x - 3}" y="${112 - r - 6}" width="6" height="${r + 6}" fill="#8d5a2b"/><circle cx="${x}" cy="${112 - r - 14}" r="${r}" fill="${night ? "#2f5d46" : "#69db7c"}" stroke="${INK}" stroke-width="2"/>`;
+  return house(14, 58, 44, wall[0]) + tree(98, 16) + house(300, 54, 52, wall[1]) + tree(272, 13);
 }
 function scene(sc){
-  const night = sc.night, sky = night ? "#22305e" : "#bfe6ff";
-  let g = `<rect width="320" height="180" fill="${sky}"/>`;
-  if(night) g += `<circle cx="40" cy="28" r="13" fill="#fff4b3"/><circle cx="46" cy="24" r="12" fill="${sky}"/>` + [[90, 18], [130, 34], [200, 14], [290, 30]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.8" fill="#fff"/>`).join("");
-  else g += `<circle cx="34" cy="30" r="14" fill="#ffd43b"/><ellipse cx="110" cy="30" rx="26" ry="9" fill="#fff"/><ellipse cx="200" cy="22" rx="20" ry="7" fill="#fff"/>`;
+  const night = !!sc.night, sky = night ? "#1f2a52" : "#bfe6ff";
+  let g = `<rect width="360" height="220" fill="${sky}"/>`;
+  if(night) g += `<circle cx="196" cy="30" r="14" fill="#fff4b3"/><circle cx="203" cy="25" r="13" fill="${sky}"/>` + [[40, 18], [120, 40], [160, 14], [250, 28], [340, 16], [300, 50]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.8" fill="#fff"/>`).join("");
+  else g += `<circle cx="190" cy="32" r="16" fill="#ffd43b" stroke="#fab005" stroke-width="3"/><g fill="#fff"><ellipse cx="120" cy="30" rx="26" ry="9"/><ellipse cx="136" cy="24" rx="16" ry="9"/><ellipse cx="250" cy="22" rx="22" ry="7"/></g>`;
+  g += backdrop(night);
   if(sc.rural){
-    g += `<rect y="98" width="320" height="82" fill="${night ? "#2f4a2f" : "#8fd16a"}"/><path d="M0 120h320v34H0Z" fill="#6b707c"/><path d="M0 118h320M0 156h320" stroke="#e9e4d4" stroke-width="3"/>
-      <path d="M10 137h30M70 137h30M130 137h30M190 137h30M250 137h30" stroke="#fff" stroke-width="3"/>`;
-    g += `<text x="40" y="112" font-size="30">🧒</text>${car(250, 148, "#f08c00", true)}`;
-  } else {
-    g += `<rect y="88" width="320" height="16" fill="${night ? "#8f8a7c" : "#e9e1cc"}" stroke="${INK}" stroke-width="2"/><rect y="104" width="320" height="56" fill="${night ? "#3d414b" : "#666b77"}"/>
-      <rect y="160" width="320" height="20" fill="${night ? "#8f8a7c" : "#e9e1cc"}" stroke="${INK}" stroke-width="2"/>`;
-    if(!sc.nocross) g += [0, 1, 2, 3, 4].map(i => `<rect x="${sc.sign || sc.ball ? 196 : 130}" y="${107 + i * 10.4}" width="58" height="6" fill="#fff" opacity="${night ? .7 : 1}"/>`).join("");
-    else g += `<path d="M10 132h40M90 132h40M170 132h40M250 132h40" stroke="#fff" stroke-width="3"/>`;
-    if(sc.light) g += pedLight(sc.light);
-    if(sc.sign) g += sign(sc.sign);
-    if(sc.lamp || night) g += `<rect x="20" y="30" width="5" height="60" fill="#555"/><path d="M22 32h18" stroke="#555" stroke-width="4"/><circle cx="40" cy="36" r="6" fill="#ffe066"/>${night ? `<path d="M40 40 20 88h40Z" fill="#ffe066" opacity=".18"/>` : ""}`;
-    if(sc.car) g += car(sc.carX || 50, 132, sc.carCol || "#e03131");
-    if(sc.ball) g += `<g transform="translate(120 132)"><circle r="11" fill="#fff" stroke="${INK}" stroke-width="2.5"/><path d="M-11 0h22M0-11q8 11 0 22M0-11q-8 11 0 22" fill="none" stroke="#e03131" stroke-width="2"/></g>`;
-    if(sc.friend) g += `<text x="140" y="176" font-size="22">👦</text><text x="166" y="170" font-size="14">👋</text>`;
-    if(sc.two){
-      g += `<text x="110" y="100" font-size="30" opacity=".45">🧒</text><text x="170" y="100" font-size="30">🧒</text><circle cx="196" cy="86" r="5" fill="#fff" stroke="#ffe066" stroke-width="3"/>`;
-    } else {
-      g += `<text x="${sc.sign ? 92 : 150}" y="100" font-size="30">🧒</text>`;
-      if(sc.refl) g += `<circle cx="${sc.sign ? 118 : 176}" cy="86" r="5" fill="#fff" stroke="#ffe066" stroke-width="3"/>`;
-      if(sc.phone) g += `<text x="180" y="88" font-size="18">📱</text>`;
-    }
-    if(sc.rain) g += Array.from({ length: 28 }, (_, i) => `<path d="M${(i * 37) % 320} ${(i * 53) % 150}l-4 10" stroke="#9cc4ff" stroke-width="2" stroke-linecap="round"/>`).join("");
-    if(sc.fog) g += `<rect width="320" height="180" fill="#fff" opacity=".55"/>`;
+    const gr = night ? "#2e4a33" : "#8ce99a";
+    g += `<rect y="112" width="360" height="108" fill="${gr}"/><rect y="138" width="360" height="50" fill="${night ? "#3a3f4b" : "#6c717d"}"/>
+      <path d="M0 141h360M0 185h360" stroke="#f1f3f5" stroke-width="2.5"/><path d="M0 163h360" stroke="#fff" stroke-width="3" stroke-dasharray="22 18"/>
+      ${[30, 150, 330].map(x => `<path d="M${x} 210q4-10 8 0M${x + 10} 212q4-12 8 0" stroke="#2f9e44" stroke-width="2.5" fill="none"/>`).join("")}`;
+    g += car(260, 178, "#f08c00", { flip: true, beam: night }) + kid(70, 206, { refl: sc.refl, glow: night });
+    return wrap(g + overlays(sc));
   }
-  return `<div class="scene-w"><svg class="scene" viewBox="0 0 320 180" role="img" aria-label="Gatvės paveikslėlis">${g}</svg></div>`;
+  g += `<rect y="112" width="360" height="17" fill="${night ? "#7d7a72" : "#e9e1cc"}"/><path d="M0 129h360" stroke="${INK}" stroke-width="2"/>
+    <rect y="129" width="360" height="47" fill="${night ? "#353a46" : "#666b77"}"/>
+    <rect y="176" width="360" height="44" fill="${night ? "#8a867c" : "#efe7d3"}"/><rect y="176" width="360" height="6" fill="${night ? "#9d998e" : "#fbf6ea"}"/><path d="M0 176h360M0 182h360" stroke="${INK}" stroke-width="2"/>
+    ${Array.from({ length: 12 }, (_, i) => `<path d="M${i * 32 + 14} 182v38" stroke="${night ? "#6f6b62" : "#d6ccb4"}" stroke-width="1.5"/>`).join("")}<path d="M0 201h360" stroke="${night ? "#6f6b62" : "#d6ccb4"}" stroke-width="1.5"/>`;
+  if(sc.nocross) g += `<path d="M0 152.5h360" stroke="#fff" stroke-width="3" stroke-dasharray="26 18"/>`;
+  else g += `<path d="M0 152.5h140M226 152.5h134" stroke="#fff" stroke-width="3" stroke-dasharray="26 18"/>` + [0, 1, 2, 3].map(i => `<rect x="150" y="${133 + i * 11}" width="68" height="7" rx="1" fill="#fff" opacity="${night ? .75 : 1}"/>`).join("");
+  if(sc.lamp || night) g += `<rect x="24" y="58" width="6" height="152" fill="#868e96" stroke="${INK}" stroke-width="1.5"/><path d="M27 60q0-8 10-8h14" fill="none" stroke="#868e96" stroke-width="5"/>
+      <path d="M44 50h16l-3 8H47Z" fill="#495057" stroke="${INK}" stroke-width="1.5"/>${night ? `<path d="M48 58 18 212h72Z" fill="#ffe066" opacity=".16"/><circle cx="52" cy="58" r="5" fill="#fff3a0"/>` : ""}`;
+  if(sc.ball) g += `<g transform="translate(194 160)"><circle r="11" fill="#fff" stroke="${INK}" stroke-width="2.5"/><path d="M0-5 5-1.5 3 4.5H-3L-5-1.5Z" fill="${INK}"/><path d="M0-5V-11M5-1.5 10.5-3.5M3 4.5l3 5.5M-3 4.5l-3 5.5M-5-1.5-10.5-3.5" stroke="${INK}" stroke-width="1.5"/></g>`;
+  if(sc.car) g += car(sc.carX || 64, 172, sc.carCol || "#e03131", { beam: night });
+  if(sc.friend) g += kid(316, 127, { s: .55, wave: true, jacket: "#51cf66", hair: "#2b2b2b", bag: "#4dabf7" });
+  if(sc.fog) g += `<rect width="360" height="220" fill="#f1f3f5" opacity=".6"/>`;
+  if(sc.light) g += pedLight(sc.light, 250);
+  if(sc.sign) g += sign(sc.sign, 286, 62);
+  if(sc.two) g += kid(92, 213, { s: .9, jacket: "#2b2f3a", pants: "#1f2433", bag: "#343a40", op: .5 }) + kid(130, 213, { s: .9, jacket: "#f1f3f5", refl: true, glow: true });
+  else g += kid(126, 213, { s: .9, refl: sc.refl, glow: night || sc.fog, phone: sc.phone });
+  return wrap(g + overlays(sc));
 }
+const overlays = sc => sc.rain ? Array.from({ length: 34 }, (_, i) => `<path d="M${(i * 41) % 360} ${(i * 57) % 200}l-4 11" stroke="#9cc4ff" stroke-width="2" stroke-linecap="round"/>`).join("") : "";
+const wrap = g => `<div class="scene-w"><svg class="scene" viewBox="0 0 360 220" role="img" aria-label="Gatvės paveikslėlis">${g}</svg></div>`;
+/* Mažos piktogramos: kelio juostai ir lygių kortelėms. */
+const ICON = {
+  home: `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M6 19 20 7l14 12" fill="#e8590c" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/><rect x="10" y="18" width="20" height="16" fill="#ffd8a8" stroke="${INK}" stroke-width="2.5"/><rect x="17" y="24" width="6" height="10" fill="#8d5a2b"/></svg>`,
+  school: `<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="14" width="30" height="20" fill="#d0ebff" stroke="${INK}" stroke-width="2.5"/><path d="M3 15 20 5l17 10" fill="#1c7ed6" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/><rect x="17" y="24" width="6" height="10" fill="#8d5a2b"/><rect x="9" y="19" width="5" height="5" fill="#fff" stroke="${INK}" stroke-width="1.5"/><rect x="26" y="19" width="5" height="5" fill="#fff" stroke="${INK}" stroke-width="1.5"/><path d="M20 5V0h6v3h-6" fill="#ff4f5e"/></svg>`,
+  light: `<svg viewBox="0 0 56 56" aria-hidden="true"><rect x="16" y="4" width="24" height="44" rx="6" fill="#2b2f3a" stroke="${INK}" stroke-width="2.5"/><circle cx="28" cy="16" r="8" fill="#ff3b3b"/><circle cx="28" cy="36" r="8" fill="#1d3d27"/>${ped(28, 16, 12, "#fff", "stand")}${ped(28, 36, 12, "#0006")}<rect x="25" y="48" width="6" height="6" fill="#adb5bd"/></svg>`,
+  sign: `<svg viewBox="0 0 56 56" aria-hidden="true"><rect x="6" y="6" width="44" height="44" rx="6" fill="#1864ab" stroke="${INK}" stroke-width="2.5"/><path d="M28 11 45 44H11Z" fill="#fff"/>${[0, 1, 2].map(i => `<rect x="${19 + i * 7}" y="38" width="4" height="3.5" fill="${INK}"/>`).join("")}${ped(28.5, 29, 17, INK)}</svg>`,
+  refl: `<svg viewBox="0 0 56 56" aria-hidden="true"><rect x="2" y="2" width="52" height="52" rx="12" fill="#1f2a52"/><circle cx="28" cy="28" r="12" fill="#d8f5a2" stroke="${INK}" stroke-width="2.5"/><circle cx="28" cy="28" r="5" fill="#fff"/><g stroke="#fff3a0" stroke-width="3" stroke-linecap="round"><path d="M28 9v-4M28 47v4M9 28H5M47 28h4M15 15l-3-3M41 15l3-3M15 41l-3 3M41 41l3 3"/></g></svg>`,
+  route: `<svg viewBox="0 0 56 56" aria-hidden="true"><path d="M8 46q12-4 20-18t20-18" fill="none" stroke="${INK}" stroke-width="3" stroke-dasharray="5 5" stroke-linecap="round"/><g transform="translate(-2 18) scale(.6)">${`<path d="M6 19 20 7l14 12" fill="#e8590c" stroke="${INK}" stroke-width="2.5"/><rect x="10" y="18" width="20" height="16" fill="#ffd8a8" stroke="${INK}" stroke-width="2.5"/>`}</g><g transform="translate(30 -2) scale(.65)"><rect x="5" y="14" width="30" height="20" fill="#d0ebff" stroke="${INK}" stroke-width="2.5"/><path d="M3 15 20 5l17 10" fill="#1c7ed6" stroke="${INK}" stroke-width="2.5"/></g></svg>`
+};
 
 /* ---------- situacijos: [lygis, scena, klausimas, [[ženkliukas, atsakymas, teisingas?]], paaiškinimas] ---------- */
 const S = [
@@ -124,7 +198,7 @@ const S = [
   [0, { light: "green" }, "Užsidegė žalias žmogeliukas. Ką darai?", [["👀", "Pažiūriu į abi puses ir einu", 1], ["🏃", "Bėgu nežiūrėdamas", 0]], "Žalias leidžia eiti, bet vis tiek pažiūrėk, ar visi automobiliai sustojo."],
   [0, { light: "blink" }, "Žalias žmogeliukas pradėjo mirksėti, o tu dar ant šaligatvio.", [["✋", "Palaukiu kito žalio", 1], ["🏃", "Bėgu, kol spėju", 0]], "Mirksintis žalias rodo, kad tuoj užsidegs raudonas. Jei dar neįžengei į perėją, saugiau palaukti."],
   [0, { light: "red" }, "Dega raudonas, bet automobilių nesimato.", [["✋", "Vis tiek laukiu žalio", 1], ["🚶", "Einu, juk tuščia", 0]], "Automobilis gali atsirasti labai greitai. Per raudoną neini niekada."],
-  [0, { light: "green", car: true, carX: 70 }, "Dega žalias, bet automobilis dar važiuoja link perėjos.", [["✋", "Palaukiu, kol jis sustos", 1], ["🚶", "Einu – juk man žalia", 0]], "Net kai dega žalias, įsitikink, kad vairuotojas tave pamatė ir sustojo."],
+  [0, { light: "green", car: true, carX: 46 }, "Dega žalias, bet automobilis dar važiuoja link perėjos.", [["✋", "Palaukiu, kol jis sustos", 1], ["🚶", "Einu – juk man žalia", 0]], "Net kai dega žalias, įsitikink, kad vairuotojas tave pamatė ir sustojo."],
   [0, { light: "red", friend: true }, "Draugas kitoje gatvės pusėje šaukia: „Bėk greičiau!“ Dega raudonas.", [["✋", "Laukiu žalio", 1], ["🏃", "Bėgu pas draugą", 0]], "Draugas palauks. Per gatvę eik tik tada, kai dega žalias."],
   [0, { light: "green", phone: true }, "Eini per perėją, o telefone kažkas sučirškė.", [["📵", "Telefoną pažiūrėsiu vėliau", 1], ["📱", "Žiūriu į telefoną ir einu", 0]], "Eidamas per gatvę žiūrėk į kelią, ne į telefoną."],
   [0, { light: "green" }, "Kokia spalva pėsčiųjų šviesofore leidžia eiti?", [["🟢", "Žalia", 1], ["🔴", "Raudona", 0], ["🟡", "Geltona", 0]], "Pėsčiųjų šviesofore yra raudonas ir žalias žmogeliukas. Eiti galima, kai dega žalias."],
@@ -133,7 +207,7 @@ const S = [
   [1, { sign: "vaikai" }, "Ką šis ženklas sako vairuotojams?", [["⚠️", "Atsargiai, šalia gali būti vaikų", 1], ["🚫", "Vaikams čia eiti draudžiama", 0]], "Trikampis ženklas su raudonu kraštu įspėja. Šis sako vairuotojui: šalia vaikai, važiuok atsargiai."],
   [1, { sign: "draud" }, "Ką reiškia šis ženklas?", [["🚫", "Pėstiesiems eiti draudžiama", 1], ["🚶", "Čia pėsčiųjų takas", 0]], "Apvalus ženklas su raudonu kraštu draudžia. Šis rodo, kad čia pėstiesiems eiti negalima."],
   [1, { sign: "dvir" }, "Ką reiškia šis ženklas?", [["🚲", "Dviračių takas", 1], ["🛴", "Paspirtukų nuoma", 0]], "Mėlynas apskritimas su dviračiu – tai dviračių takas."],
-  [1, { car: true, carX: 60 }, "Prie perėjos be šviesoforo artėja automobilis.", [["✋", "Palaukiu, kol sustos ar pravažiuos", 1], ["🚶", "Iškart einu", 0]], "Pirmiausia įsitikink, kad vairuotojas tave matė ir sustojo. Tik tada eik."],
+  [1, { car: true, carX: 46 }, "Prie perėjos be šviesoforo artėja automobilis.", [["✋", "Palaukiu, kol sustos ar pravažiuos", 1], ["🚶", "Iškart einu", 0]], "Pirmiausia įsitikink, kad vairuotojas tave matė ir sustojo. Tik tada eik."],
   [1, { nocross: true }, "Perėjos šalia nėra, o gatvė plati.", [["🚸", "Nueinu iki perėjos", 1], ["🏃", "Perbėgu tiesiai", 0]], "Gatvę saugiausia pereiti perėjoje, net jei iki jos reikia paeiti."],
   [1, {}, "Prieš žengdamas į perėją...", [["👀", "Pažiūriu į kairę ir į dešinę", 1], ["🎧", "Užsidedu ausines", 0]], "Prieš eidamas pažiūrėk į kairę, į dešinę ir dar kartą į kairę."],
   [1, { ball: true }, "Kamuolys nuriedėjo į gatvę.", [["🙋", "Paprašau suaugusiojo pagalbos", 1], ["🏃", "Bėgu paskui kamuolį", 0]], "Niekada nebėk į gatvę paskui kamuolį. Paprašyk suaugusiojo."],
@@ -142,17 +216,17 @@ const S = [
   [2, { night: true, refl: true }, "Kur prisisegti atšvaitą?", [["🧥", "Ant drabužių, kad matytų vairuotojai", 1], ["🎒", "Kuprinės viduje", 0]], "Atšvaitas turi būti matomas, todėl segk jį ant drabužių arba kuprinės išorėje."],
   [2, { night: true, two: true }, "Kurį vaiką vairuotojas tamsoje pamatys anksčiau?", [["✨", "Su atšvaitu ir šviesia striuke", 1], ["🌑", "Su tamsia striuke be atšvaito", 0]], "Šviesūs drabužiai ir atšvaitas padeda vairuotojui tave pamatyti laiku."],
   [2, { rural: true }, "Kelyje nėra šaligatvio. Kaip eisi?", [["⬅️", "Kelkraščiu prieš atvažiuojančius automobilius", 1], ["↔️", "Kelio viduriu", 0]], "Kur nėra šaligatvio, eik kelkraščiu prieš eismą – taip matysi atvažiuojančius automobilius."],
-  [2, { night: true, rain: true, car: true, carX: 60 }, "Lyja, tamsu, artėja automobilis.", [["✋", "Palaukiu, kol pravažiuos", 1], ["🏃", "Spėsiu perbėgti", 0]], "Šlapiame kelyje automobiliui reikia daugiau laiko sustoti. Palauk."],
-  [2, { night: true, car: true, carX: 60 }, "Tu matai automobilio žibintus. Ar vairuotojas tikrai mato tave?", [["🤔", "Nebūtinai – geriau palaukti", 1], ["👍", "Taip, visada", 0]], "Tu matai ryškius žibintus, bet vairuotojas vaiko be atšvaito tamsoje gali nepastebėti."],
+  [2, { night: true, rain: true, car: true, carX: 46 }, "Lyja, tamsu, artėja automobilis.", [["✋", "Palaukiu, kol pravažiuos", 1], ["🏃", "Spėsiu perbėgti", 0]], "Šlapiame kelyje automobiliui reikia daugiau laiko sustoti. Palauk."],
+  [2, { night: true, car: true, carX: 46 }, "Tu matai automobilio žibintus. Ar vairuotojas tikrai mato tave?", [["🤔", "Nebūtinai – geriau palaukti", 1], ["👍", "Taip, visada", 0]], "Tu matai ryškius žibintus, bet vairuotojas vaiko be atšvaito tamsoje gali nepastebėti."],
   [2, { fog: true, refl: true }, "Rytą tirštas rūkas. Ką darai?", [["✨", "Užsisegu atšvaitą ir einu atsargiai", 1], ["🌫️", "Rūke atšvaito nereikia", 0]], "Rūke blogai matyti, todėl atšvaitas labai padeda."],
   [2, { night: true, refl: true }, "Kiek atšvaitų gali turėti?", [["✨", "Kelis – kuo daugiau, tuo geriau", 1], ["1️⃣", "Tik vieną, daugiau negalima", 0]], "Keli atšvaitai – dar geriau. Vairuotojas tave pamatys iš įvairių pusių."]
 ].map(([lv, sc, q, opts, ex]) => ({ lv, sc, q, opts, ex }));
 
 const LEVELS = [
-  { id: "sviesoforas", name: "Šviesoforas", sub: "Raudonas, žalias, mirksintis", art: "🚦", pick: s => s.lv === 0 },
-  { id: "pereja", name: "Perėja ir ženklai", sub: "Ką reiškia kelio ženklai?", art: "🚸", pick: s => s.lv === 1 },
-  { id: "tamsa", name: "Tamsus metas", sub: "Atšvaitas, lietus ir rūkas", art: "✨", pick: s => s.lv === 2 },
-  { id: "misrus", name: "Visas kelias", sub: "Situacijos iš visų lygių", art: "🏫", pick: () => true }
+  { id: "sviesoforas", name: "Šviesoforas", sub: "Raudonas, žalias, mirksintis", art: ICON.light, pick: s => s.lv === 0 },
+  { id: "pereja", name: "Perėja ir ženklai", sub: "Ką reiškia kelio ženklai?", art: ICON.sign, pick: s => s.lv === 1 },
+  { id: "tamsa", name: "Tamsus metas", sub: "Atšvaitas, lietus ir rūkas", art: ICON.refl, pick: s => s.lv === 2 },
+  { id: "misrus", name: "Visas kelias", sub: "Situacijos iš visų lygių", art: ICON.route, pick: () => true }
 ];
 const N = 8;
 const LEARN = [
@@ -166,6 +240,8 @@ const app = $("app"), menu = $("menu"), play = $("play"), board = $("board");
 const saved = MK.get("mokomeskartu-klase", 0);
 app.prepend(MK.top({ title: "Saugi kelionė", grade: GRADES.includes(saved) ? saved : GRADES[0] }));
 $("heroArt").innerHTML = scene({ light: "green" });
+$("icHome").innerHTML = ICON.home; $("icSchool").innerHTML = ICON.school;
+$("kid").innerHTML = `<svg viewBox="-20 -84 40 86">${kid(0, 0)}</svg>`;
 
 let lvl = 0, L = null, deck = [], i = 0, okN = 0, tries = 0, dots = null, done = false;
 function showMenu(){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); MK.learn($("learn"), { topics: LEARN, onPlay: start }); window.scrollTo(0, 0); }
@@ -178,7 +254,7 @@ function next(){
   if(i >= deck.length) return finish();
   const s = deck[i]; tries = 0; done = false; dots.cur(i);
   board.innerHTML = `${scene(s.sc)}<div class="q">${s.q}</div>
-    <div class="opts">${MK.shuffle(s.opts).map(([e, t, ok]) => `<button type="button" data-ok="${ok}"><span>${e}</span>${t}</button>`).join("")}</div>
+    <div class="opts">${MK.shuffle(s.opts).map(([e, t, ok]) => `<button type="button" data-ok="${ok}"><span class="e" aria-hidden="true">${e}</span>${t}</button>`).join("")}</div>
     <div id="g">${MK.guide("Ką darytum tu?")}</div>`;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
