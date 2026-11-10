@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Miško namai – MokomėsKartu.lt</title>
-<meta name="description" content="1–2 klasių gamtos žaidimas: kur gyvena gyvūnai, ką jie ėda ir ką veikia žiemą.">
+<meta name="description" content="1–2 klasių gamtos žaidimas: kur gyvena gyvūnai, ką jie ėda ir ką veikia žiemą. Padėk gyvūnams ir surink juos į savo albumą.">
 <meta name="theme-color" content="#fff9e6">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMyZmE4NGYiLz48cGF0aCBkPSJNMTggOCA2IDMwaDdMNCA0NmgyOGwtOS0xNmg3eiIgZmlsbD0iI2JmZjBhOCIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xNSA0NnY4aDZ2LTgiIGZpbGw9IiM3YTRiMmEiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNMzQgNTRWMzZsMTMtMTAgMTMgMTB2MTh6IiBmaWxsPSIjZmZlMWNjIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iNDciIGN5PSI0MiIgcj0iNSIgZmlsbD0iI2ZmOGExZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSI0NS4zIiBjeT0iNDEiIHI9IjEiIGZpbGw9IiMxMjFhMzMiLz48Y2lyY2xlIGN4PSI0OC43IiBjeT0iNDEiIHI9IjEiIGZpbGw9IiMxMjFhMzMiLz48L3N2Zz4=">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,46 +12,110 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
 <script src="/bendra/mk.js"></script>
 <style>
-/* Miško namai: viršuje gyvūnas, po juo namelių (arba maisto) kortelės, apačioje pelėdžiukas. */
+/* Meniu: peizažas su jau surinktais gyvūnais, albumo kortelė ir lygiai.
+   Žaidimas: viršuje dienos juosta (saulė → mėnulis, 8 pėdutės), po ja – vienas didelis peizažas: gyvūnas stovi viduryje,
+   vaikas spaudžia jo namus (arba žiemos užsiėmimą), ir gyvūnas ten nueina. Maisto užduotyje – pieva ir trys patiekalai. */
 body{--ac:#2fa84f;--ac-ink:#fff;--ac-soft:#dcf5d9}
-.emo{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;line-height:1}
-.la{font-size:36px}
-#dots{margin:2px 0 10px}
-.who{display:grid;justify-items:center;gap:2px;background:#fff;border-radius:28px;padding:12px 10px 10px;box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.15)}
-.who .emo{font-size:clamp(84px,24vw,120px);animation:mkIn .45s cubic-bezier(.2,1.4,.4,1)}
-.who b{font:800 clamp(28px,7.5vw,38px)/1.05 var(--kid)}
-.who small{font:800 17px/1.2 var(--kid);color:var(--soft);text-align:center}
-.who.fly .emo{animation:fly .55s ease-in forwards}
-@keyframes fly{to{transform:translateY(120px) scale(.3);opacity:0}}
-.opts{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:10px;margin-top:14px}
-.opt{position:relative;display:grid;justify-items:center;align-content:start;gap:4px;min-height:118px;padding:10px 6px 8px;border:0;border-radius:24px;cursor:pointer;
-  background:var(--bg,#fff);box-shadow:inset 0 0 0 2.5px var(--ink),0 6px 0 rgba(18,26,51,.18);transition:transform .1s}
-.opt:active{transform:translateY(3px)}
-.opt .emo{font-size:46px}
-.opt b{font:800 clamp(17px,4.6vw,21px)/1.1 var(--kid);text-align:center}
-.opt .res{display:flex;flex-wrap:wrap;justify-content:center;gap:1px;min-height:22px;font-size:20px}
-.opt .res span{animation:mkPop .45s cubic-bezier(.2,1.6,.4,1)}
-.opt.ok{box-shadow:inset 0 0 0 4px var(--good),0 6px 0 rgba(18,26,51,.18);animation:mkPulse .6s}
-.opt.no{opacity:.45;pointer-events:none}
-.h-miskas{--bg:#d6f0cf}.h-vanduo{--bg:#cdeeff}.h-pieva{--bg:#fff3b8}.h-ukis{--bg:#ffe1cc}
-.w-isskrenda{--bg:#ffe9b8}.w-miega{--bg:#e6e0ff}.w-budrauja{--bg:#e2f4ff}
-.mk-guide{margin-top:14px}
+.la svg{width:56px;height:47px}
+.zl{font:800 14px var(--kid);fill:#121a33}
+
+/* ---------- meniu ---------- */
+.mk-hero{padding-top:0}
+#heroArt{width:min(100%,46vh)}
+.mk-hero h1{margin-top:8px}
+.mk-hero p{max-width:32ch;font-size:17px}
+.goal{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14);
+  display:grid;grid-template-columns:54px minmax(0,1fr);gap:12px;align-items:center}
+.goal-who{width:54px;height:54px;border-radius:50%;background:var(--ac-soft);box-shadow:inset 0 0 0 2.5px var(--ink);display:grid;place-items:center}
+.goal-who svg{width:32px;height:32px}
+.goal p{margin:0 0 6px;font:800 16.5px/1.25 var(--kid)}
+.goal-bar{height:14px;border-radius:999px;background:#eadfba;overflow:hidden;box-shadow:inset 0 0 0 2px var(--ink)}
+.goal-bar i{display:block;height:100%;background:var(--ac);border-radius:999px 0 0 999px}
+.goal .mk-btn{grid-column:1/-1;min-height:46px;font-size:18px}
+
+/* ---------- albumas ---------- */
+.alb-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 12px}
+.alb-head h2{margin:0;font:800 clamp(26px,7vw,36px)/1.1 var(--kid)}
+.alb-head span{font:800 18px/1 var(--kid);color:var(--soft);white-space:nowrap}
+.alb{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:10px}
+.tile{display:grid;justify-items:center;gap:2px;padding:8px 4px 8px;border:0;border-radius:18px;background:var(--bg,#eef7e6);box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.14);min-width:0}
+button.tile{cursor:pointer}
+.tile svg{width:100%;max-width:92px;height:auto}
+.tile b{font:800 13.5px/1.15 var(--kid);text-align:center;overflow-wrap:anywhere}
+.tile.lock{background:#f3ecd6;box-shadow:inset 0 0 0 2px #d8c99a}
+.tile.lock svg{filter:brightness(0);opacity:.13}
+.tile.lock b{color:#b3a67c}
+.card-art{width:190px;height:158px;border-radius:26px;background:var(--bg,#eef7e6);box-shadow:inset 0 0 0 3px var(--ink);display:grid;place-items:center}
+.card-art svg{width:164px;height:137px}
+.facts{display:grid;gap:4px;margin:2px 0 0;padding:0;list-style:none;font:700 17px/1.3 var(--body);color:var(--ink)}
+
+/* ---------- žaidimas ---------- */
+.paws{display:flex;justify-content:center;align-items:center;gap:5px;margin:0 0 10px}
+.paws i{width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2px #d8c99a;display:grid;place-items:center;transition:transform .2s}
+.paws i svg{width:18px;height:18px;opacity:.25}
+.paws i.cur{box-shadow:inset 0 0 0 3px var(--ink);transform:translateY(-3px)}
+.paws i.got{background:#8fe39b;box-shadow:inset 0 0 0 2.5px var(--ink);animation:mkPop .4s cubic-bezier(.2,1.6,.4,1)}
+.paws i.got svg{opacity:1}
+.paws i.miss{background:#e6e0cf;box-shadow:inset 0 0 0 2px #b9ad8a}
+.paws > svg{width:26px;height:26px;flex:none}
+@media (max-width:360px){.paws i{width:26px;height:26px}.paws > svg{width:22px;height:22px}}
+
+.scene{position:relative;width:min(100%,58vh);margin:0 auto;aspect-ratio:1;border-radius:9.5%;overflow:hidden;box-shadow:0 6px 0 rgba(18,26,51,.15)}
+.scene.wide{width:min(100%,92vh);aspect-ratio:360/230;border-radius:9.5%/14.8%}
+.scene > svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.scene::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none;z-index:5;transition:background 1.6s}
+.scene.dusk::after{background:linear-gradient(rgba(255,150,90,.38),rgba(120,90,220,.34))}
+.zbtn{position:absolute;border:0;padding:0;background:transparent;border-radius:15%/16.5%;cursor:pointer;z-index:2;transition:background .2s}
+.zbtn.wide{border-radius:7.5%/21%}
+.zbtn:active{background:rgba(255,255,255,.3)}
+.zbtn.no{background:rgba(255,249,230,.62);pointer-events:none}
+.zbtn.ok{box-shadow:inset 0 0 0 5px var(--good);animation:mkPulse .6s}
+.res{position:absolute;width:15%;transform:translate(-50%,-50%);pointer-events:none;z-index:1;animation:mkPop .4s cubic-bezier(.2,1.6,.4,1)}
+.res svg,.who svg{display:block;width:100%;height:auto;filter:drop-shadow(0 2px 0 rgba(18,26,51,.18))}
+.who{position:absolute;left:50%;top:49%;width:30%;transform:translate(-50%,-50%);z-index:3;pointer-events:none}
+.who.big{top:53%;width:42%}
+.who.in svg{animation:mkIn .45s cubic-bezier(.2,1.4,.4,1)}
+.who.go{transition:left .6s cubic-bezier(.4,0,.2,1),top .6s cubic-bezier(.4,0,.2,1),width .6s cubic-bezier(.4,0,.2,1)}
+.who.happy svg{animation:mkHop .5s cubic-bezier(.3,1.6,.5,1) 2}
+.who.bye{transition:opacity .4s,transform .4s;opacity:0;transform:translate(-50%,-50%) scale(.6)}
+.nm{display:flex;justify-content:center;margin-top:-2px;transition:opacity .25s}
+.nm b{flex:none;padding:3px 10px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2px var(--ink);font:800 clamp(14px,4vw,18px)/1.15 var(--kid);white-space:nowrap}
+.who.big .nm b{font-size:clamp(17px,5vw,22px)}
+.who.go .nm{opacity:0}
+.foods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(100%,92vh);margin:12px auto 0}
+.food{display:grid;justify-items:center;align-content:start;gap:2px;min-height:112px;padding:8px 4px 8px;border:0;border-radius:22px;cursor:pointer;background:var(--card);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 6px 0 rgba(18,26,51,.18);transition:transform .1s}
+.food:active{transform:translateY(3px)}
+.food svg{width:66px;height:66px}
+.food b{font:800 clamp(15px,4.4vw,19px)/1.1 var(--kid);text-align:center}
+.food.ok{box-shadow:inset 0 0 0 4px var(--good),0 6px 0 rgba(18,26,51,.18);background:#e9fbe9}
+.food.no{opacity:.4;pointer-events:none}
+.flyf{position:fixed;left:0;top:0;width:66px;height:66px;z-index:40;pointer-events:none}
+.mk-guide{margin-top:12px}
 </style>
 </head>
 <body>
 <div class="mk-app" id="app">
   <section id="menu">
     <div class="mk-hero">
-      <div class="mk-hero-art emo" id="heroArt" aria-hidden="true" style="font-size:64px;letter-spacing:4px">🌲🦊🐿️🦔</div>
+      <div class="mk-hero-art scene" id="heroArt"></div>
       <h1>Miško <em>namai</em></h1>
-      <p>Padėk gyvūnams surasti namus, maisto ir pasiruošti žiemai!</p>
+      <p id="heroP"></p>
     </div>
+    <div class="goal" id="goal"></div>
     <div id="levels"></div>
   </section>
+  <section id="album" hidden>
+    <div class="alb-head"><h2 id="albT"></h2><span id="albN"></span></div>
+    <div class="alb" id="alb"></div>
+    <div style="display:grid;margin-top:16px"><button type="button" class="mk-btn alt" id="albBack"></button></div>
+  </section>
   <section id="play" hidden>
-    <div id="dots"></div>
-    <div class="who" id="who"></div>
-    <div class="opts" id="opts"></div>
+    <div class="paws" id="paws" role="img"></div>
+    <div class="scene" id="sc-h" hidden></div>
+    <div class="scene" id="sc-w" hidden></div>
+    <div class="scene wide" id="sc-f" hidden></div>
+    <div class="foods" id="foods" hidden></div>
     <div id="guideBox"></div>
   </section>
 </div>
@@ -59,135 +123,421 @@ body{--ac:#2fa84f;--ac-ink:#fff;--ac-soft:#dcf5d9}
 (function(){
 "use strict";
 const GAME = "misko-namai", GRADES = [1, 2], ROUND = 8;
+const STORE = "mk-" + GAME + "-albumas"; // surinkti gyvūnai (atskirai nuo žvaigždučių)
+/* ---------- piešiniai: gyvūnai (langelis 120×100, žemė ties y=94, žiūri į dešinę) ir maistas (60×60) ---------- */
+const K = "#121a33", OUT = 'stroke="#cdc4ad" stroke-width="1.6"';
+const rot = (a, x, y) => `transform="rotate(${a} ${x} ${y})"`;
+const el = (cx, cy, rx, ry, f, x = "") => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${f}" ${x}/>`;
+const ci = (cx, cy, r, f, x = "") => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${f}" ${x}/>`;
+const pa = (d, f, x = "") => `<path d="${d}" fill="${f}" ${x}/>`;
+const ln = (d, s, w, x = "") => `<path d="${d}" fill="none" stroke="${s}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" ${x}/>`;
+const eye = (x, y, r = 3.2) => ci(x, y, r, K) + ci(x + r * 0.35, y - r * 0.38, r * 0.34, "#fff");
+const legs = (xs, y1, y2, w, f) => xs.map(x => `<rect x="${x - w / 2}" y="${y1}" width="${w}" height="${y2 - y1}" rx="${w / 2}" fill="${f}"/>`).join("");
+const inner = s => s.replace(/<\/?svg[^>]*>/g, "");
+const FROG_ART = `<path d="M24 76q-20 2-16 24h30q8-14-2-24z" fill="#2f9a47"/><path d="M96 76q20 2 16 24H82q-8-14 2-24z" fill="#2f9a47"/>
+  <ellipse cx="22" cy="101" rx="18" ry="6.5" fill="#43b85a"/><ellipse cx="98" cy="101" rx="18" ry="6.5" fill="#43b85a"/>
+  <ellipse cx="60" cy="68" rx="41" ry="33" fill="#43b85a"/><ellipse cx="60" cy="80" rx="25" ry="19" fill="#c8f2a0"/>
+  <path d="M39 78q-5 12 1 22M81 78q5 12-1 22" fill="none" stroke="#2f9a47" stroke-width="8" stroke-linecap="round"/>
+  <ellipse cx="41" cy="102" rx="10" ry="4.5" fill="#43b85a"/><ellipse cx="79" cy="102" rx="10" ry="4.5" fill="#43b85a"/>
+  <circle cx="37" cy="29" r="18" fill="#43b85a"/><circle cx="83" cy="29" r="18" fill="#43b85a"/>
+  <circle cx="37" cy="28" r="12.5" fill="#fff"/><circle cx="83" cy="28" r="12.5" fill="#fff"/>
+  <circle cx="39.5" cy="30" r="6.6" fill="#121a33"/><circle cx="80.5" cy="30" r="6.6" fill="#121a33"/><circle cx="42" cy="27" r="2.3" fill="#fff"/><circle cx="83" cy="27" r="2.3" fill="#fff"/>
+  <circle cx="27" cy="58" r="6" fill="#ff8aa0" opacity=".6"/><circle cx="93" cy="58" r="6" fill="#ff8aa0" opacity=".6"/>
+  <path d="M41 56q19 14 38 0" fill="none" stroke="#1b5e2a" stroke-width="3.6" stroke-linecap="round"/>`;
+const FISH_ART = `<path d="M14 0l20-15v30z" fill="#ff8a1f"/><path d="M-8-13q10-13 20-2z" fill="#ff8a1f"/><ellipse cx="-6" cy="0" rx="26" ry="16" fill="#ffa63a"/>
+  <path d="M0-2q7 6 0 13" fill="none" stroke="#e06d00" stroke-width="2.4" stroke-linecap="round"/><circle cx="-19" cy="-4" r="6" fill="#fff"/><circle cx="-20.5" cy="-4" r="3" fill="#121a33"/>
+  <path d="M-26 6q5 4 9 0" fill="none" stroke="#c75a00" stroke-width="2" stroke-linecap="round"/>`;
+const ART = {
+  "Lapė": el(22, 60, 22, 11, "#f08a2e", rot(-30, 22, 60)) + el(7, 51, 9, 7, "#fff", rot(-30, 7, 51)) + legs([38, 48], 66, 94, 7, "#7a4424") + el(58, 62, 30, 17, "#f08a2e")
+    + legs([72, 82], 66, 94, 7, "#7a4424") + el(60, 72, 22, 6, "#ffd9b0") + pa("M80 37l0-21 14 13z", "#f08a2e") + pa("M95 31l9-18 6 19z", "#f08a2e") + pa("M97 29l6-11 3 12z", "#7a4424")
+    + ci(94, 45, 15, "#f08a2e") + pa("M100 38q13 3 20 12q-9 9-22 7z", "#f08a2e") + pa("M84 52q10 12 24 6l10-8q-12 6-22 2z", "#fff") + ci(118.5, 50, 3.2, K) + eye(98, 43),
+  "Vilkas": el(20, 68, 17, 7, "#8b93a1", rot(28, 20, 68)) + legs([38, 48], 66, 94, 8, "#6b7280") + el(58, 60, 31, 18, "#8b93a1") + legs([72, 82], 66, 94, 8, "#6b7280")
+    + el(60, 71, 22, 6, "#d5d9e0") + pa("M81 35l2-18 12 12z", "#8b93a1") + pa("M96 30l8-16 6 18z", "#6b7280") + ci(94, 44, 15, "#8b93a1") + pa("M100 39q14 2 21 11q-9 10-23 8z", "#8b93a1")
+    + pa("M88 54q10 9 24 3l8-6q-12 5-22 2z", "#d5d9e0") + ci(119.5, 50, 3.4, K) + eye(98, 42) + ln("M92 36l8 2", K, 1.8),
+  "Šuo": ln("M30 54q-14-8-9-26", "#c98b4a", 7) + legs([38, 48], 66, 94, 8, "#c98b4a") + el(58, 60, 30, 17, "#c98b4a") + legs([72, 82], 66, 94, 8, "#c98b4a") + el(48, 55, 13, 9, "#8a5a36")
+    + pa("M78 50l10 13-5 4-10-13z", "#e5243b") + ci(94, 42, 15, "#c98b4a") + el(108, 48, 11, 8, "#f2d3a8") + ci(117, 45, 3.4, K) + el(86, 44, 7, 14, "#8a5a36", rot(16, 86, 44))
+    + eye(99, 38) + pa("M106 54q1 9 6 5l-1-6z", "#ff7f9d") + ln("M101 53q7 3 13-1", K, 1.6),
+  "Katė": ln("M30 64q-18 0-15-24q1-9 9-8", "#9aa3b5", 7) + legs([40, 49], 68, 94, 7, "#9aa3b5") + el(58, 64, 27, 15, "#9aa3b5") + legs([70, 79], 68, 94, 7, "#9aa3b5")
+    + ln("M46 51v9M56 49v9M66 51v9", "#6b7385", 3) + pa("M76 40l0-19 13 11z", "#9aa3b5") + pa("M92 32l12-13 1 19z", "#9aa3b5") + pa("M79 34l0-8 6 5zM95 31l6-7 1 9z", "#ffc2cf")
+    + ci(90, 46, 15.5, "#9aa3b5") + el(91, 53, 8, 5, "#fff") + pa("M88.5 49.5h5l-2.5 3z", "#ff8aa0") + eye(84, 44, 3) + eye(98, 44, 3) + ln("M100 53l13-3M100 55l12 3M82 53l-12-3M82 55l-11 3", "#fff", 1.3),
+  "Meška": ci(22, 58, 6, "#8a5a36") + legs([36, 50], 64, 94, 13, "#6e4426") + el(56, 58, 34, 24, "#8a5a36") + legs([68, 82], 64, 94, 13, "#6e4426")
+    + ci(80, 24, 7.5, "#8a5a36") + ci(106, 24, 7.5, "#8a5a36") + ci(80, 24, 3.6, "#d9b27a") + ci(106, 24, 3.6, "#d9b27a") + ci(93, 40, 18, "#8a5a36") + el(97, 47, 10, 8, "#d9b27a")
+    + el(99, 43, 4.2, 3.2, K) + eye(86, 36, 3) + eye(102, 35, 3) + ln("M94 50q4 3 8 0", K, 1.6),
+  "Šernas": pa("M30 48l5-11 5 8 6-11 5 9 6-11 5 9 6-10 5 9 5-8 3 12z", "#4e3426") + ln("M27 58q-9-2-8 8", "#4e3426", 3) + legs([38, 48], 68, 94, 7, "#4e3426") + el(58, 62, 32, 19, "#6e4a36")
+    + legs([72, 82], 68, 94, 7, "#4e3426") + pa("M82 46l3-15 11 12z", "#4e3426") + el(92, 58, 17, 15, "#6e4a36") + el(108, 64, 8, 7, "#c99a7a") + ci(107, 63, 1.5, K) + ci(111, 65, 1.5, K)
+    + pa("M99 70q3-11 9-10q-4 3-4 10z", "#fff") + eye(96, 53, 2.8),
+  "Elnias": el(27, 50, 5, 6, "#fff") + legs([40, 48], 62, 94, 5, "#a8693a") + el(54, 56, 26, 14, "#c98b4a") + legs([66, 74], 62, 94, 5, "#a8693a") + el(54, 64, 18, 5, "#f2d9b8")
+    + pa("M68 54l11-30 13 4-8 30z", "#c98b4a") + ln("M88 15q-5-11 1-15M87 9l-8-4M96 14q3-11 12-13M99 7l8 3", "#8a5a36", 3) + el(83, 20, 7, 4, "#a8693a", rot(-30, 83, 20))
+    + el(94, 24, 12, 9, "#c98b4a") + el(104, 27, 6, 5, "#f2d9b8") + ci(109, 26, 2.4, K) + eye(96, 22, 2.6) + ci(46, 52, 2, "#f2d9b8") + ci(58, 49, 2, "#f2d9b8") + ci(66, 54, 2, "#f2d9b8"),
+  "Kiškis": ci(22, 76, 7, "#fff") + el(42, 90, 17, 5, "#c2a685") + el(48, 68, 24, 22, "#c2a685") + ci(40, 75, 16, "#b39472") + legs([68], 70, 94, 7, "#c2a685")
+    + el(67, 16, 5.5, 19, "#c2a685", rot(-10, 67, 16)) + el(80, 14, 5.5, 19, "#c2a685", rot(12, 80, 14)) + el(80, 15, 2.4, 13, "#ffc2cf", rot(12, 80, 15))
+    + ci(76, 42, 14, "#c2a685") + el(84, 48, 6, 4, "#fff") + eye(80, 40, 3) + ci(89.5, 44, 2.3, "#ff8aa0"),
+  "Voverė": pa("M36 90q-28-8-24-42q4-26 26-24q14 2 12 16q-2 10-10 8q8 14 2 42z", "#d9702a") + el(60, 66, 18, 24, "#d9702a") + el(66, 70, 10, 16, "#ffe1c0") + el(66, 91, 14, 5, "#b85a1e")
+    + pa("M62 29l0-15 9 9z", "#d9702a") + pa("M74 24l8-12 3 14z", "#d9702a") + ci(72, 36, 14, "#d9702a") + el(79, 42, 7, 5, "#ffe1c0") + eye(76, 34, 3) + ci(86.5, 38, 2.3, K)
+    + ln("M68 62q9 3 14-2", "#b85a1e", 6) + el(87, 58, 5, 6.5, "#8a5a36") + pa("M81.5 56q5.5-6 11 0z", "#5a3a22"),
+  "Ežys": pa("M16 88q-4-30 20-44l4-8 6 6 6-9 6 8 8-8 4 9 8-5 2 10q16 10 16 36z", "#7a4b2a") + ln("M32 62l4 8M44 54l4 8M56 54l3 8M68 58l3 8M38 74l4 7M52 70l3 8M64 72l3 8", "#a8693a", 2.4)
+    + pa("M76 60q26 4 36 24q-2 6-12 6h-28z", "#f2d3a8") + el(38, 92, 8, 4, "#e3c08a") + el(70, 92, 8, 4, "#e3c08a") + el(96, 92, 7, 3.5, "#e3c08a") + ci(80, 62, 5, "#d9b27a")
+    + ci(111.5, 83, 3.4, K) + eye(94, 72, 3),
+  "Barsukas": el(20, 68, 10, 5, "#7d8494") + legs([36, 48], 72, 94, 9, "#3a3f52") + el(54, 66, 32, 18, "#7d8494") + legs([68, 80], 72, 94, 9, "#3a3f52") + ci(84, 49, 5.5, "#2b2f3e")
+    + el(94, 62, 17, 13, "#fff", OUT) + pa("M81 52q17-5 31 11l-4 3q-13-9-26-6z", "#2b2f3e") + pa("M84 70q10 6 24 2l-2 4q-12 3-22-2z", "#2b2f3e") + ci(110.5, 67, 3.2, K) + ci(97, 57.5, 2.2, "#fff") + ci(97.4, 57.5, 1.2, K),
+  "Ūdra": pa("M30 70q-22 2-26 17q16 2 30-6z", "#8a5a36") + legs([38, 48], 74, 94, 8, "#6e4426") + el(58, 68, 34, 13, "#8a5a36") + legs([72, 82], 74, 94, 8, "#6e4426") + el(82, 70, 10, 9, "#e3c08a")
+    + ci(88, 46, 3.6, "#6e4426") + ci(96, 56, 13, "#8a5a36") + el(104, 60, 8, 6, "#e3c08a") + el(109, 57, 3.4, 2.6, K) + eye(98, 52, 2.6) + ln("M106 62l10 2M106 64l9 5", "#fff", 1.2),
+  "Bebras": `<g transform="translate(62 58) scale(1.35)"><ellipse cx="-28" cy="16" rx="15" ry="7" fill="#5a3a22" transform="rotate(-14 -28 16)"/><ellipse cx="-2" cy="10" rx="24" ry="17" fill="#8a5a36"/>
+    <circle cx="6" cy="-22" r="5" fill="#6e4426"/><circle cx="28" cy="-22" r="5" fill="#6e4426"/><circle cx="17" cy="-8" r="16" fill="#9a683e"/><ellipse cx="20" cy="-2" rx="9" ry="6.5" fill="#e3c08a"/>
+    <ellipse cx="20" cy="-6" rx="3.6" ry="2.6" fill="#121a33"/><circle cx="11" cy="-12" r="2.6" fill="#121a33"/><circle cx="26" cy="-12" r="2.6" fill="#121a33"/><rect x="17" y="1" width="6.5" height="6.5" rx="1.2" fill="#fff" stroke="#c9b48a" stroke-width="1"/></g>`,
+  "Pelėda": null, // paimama iš bendro pelėdžiuko piešinio
+  "Žuvis": `<g transform="translate(58 52) scale(1.45)">${FISH_ART}</g>`,
+  "Antis": `<g transform="translate(58 56) scale(1.4)"><path d="M-34 8q-6-12 4-12q4 8 12 10z" fill="#8a5a36"/><ellipse cx="-4" cy="10" rx="28" ry="16" fill="#d2a468"/><path d="M-16 8q14-12 26 2q-14 10-26-2z" fill="#a8693a"/>
+    <rect x="12" y="-8" width="12" height="14" fill="#fff"/><circle cx="20" cy="-14" r="13" fill="#2f8f5a"/><path d="M31-16l13 4l-13 6z" fill="#ffb21a"/><circle cx="23" cy="-18" r="2.8" fill="#121a33"/></g>`,
+  "Varlė": `<g transform="translate(7 3) scale(.88)">${FROG_ART}</g>`,
+  "Gulbė": `<g transform="translate(58 62) scale(1.4)"><path d="M14 6q-6-30 10-34q12 0 8 12" fill="none" stroke="#b8c4d6" stroke-width="12" stroke-linecap="round"/><path d="M14 6q-6-30 10-34q12 0 8 12" fill="none" stroke="#fff" stroke-width="8.5" stroke-linecap="round"/>
+    <path d="M-34 20q-2-26 26-24q24 2 30 24z" fill="#fff" stroke="#b8c4d6" stroke-width="2"/><path d="M-24 10q12-12 28 0" fill="none" stroke="#b8c4d6" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M30-20l12 5l-11 3z" fill="#ff8a1f"/><circle cx="29" cy="-22" r="2.2" fill="#121a33"/></g>`,
+  "Bitė": el(50, 32, 15, 10, "#e6f6ff", 'stroke="#7fb8d8" stroke-width="1.6" ' + rot(-22, 50, 32)) + el(68, 30, 15, 10, "#e6f6ff", 'stroke="#7fb8d8" stroke-width="1.6" ' + rot(16, 68, 30))
+    + pa("M34 58l-12 0 9-6z", K) + el(58, 58, 27, 19, "#ffc61a") + ln("M48 42q-6 16 0 32", K, 7) + ln("M62 40q-6 18 0 36", K, 7) + ci(88, 56, 12, "#3a3f52") + ci(92, 52, 4.4, "#fff") + ci(93, 52, 2.2, K)
+    + ln("M90 45q1-11 8-11M95 47q6-9 13-7", K, 2.2) + ln("M86 62q4 3 8 0", "#fff", 1.6),
+  "Drugelis": el(40, 38, 24, 19, "#ff8a1f", rot(-20, 40, 38)) + el(80, 38, 24, 19, "#ff8a1f", rot(20, 80, 38)) + el(44, 68, 17, 15, "#ffc61a", rot(20, 44, 68)) + el(76, 68, 17, 15, "#ffc61a", rot(-20, 76, 68))
+    + ci(37, 36, 7, "#fff") + ci(83, 36, 7, "#fff") + ci(44, 68, 5, "#ff5fae") + ci(76, 68, 5, "#ff5fae") + ln("M58 22q-4-11-11-13M62 22q4-11 11-13", "#3a3f52", 2.2)
+    + el(60, 54, 5.5, 25, "#3a3f52") + ci(60, 27, 6.5, "#3a3f52") + ci(57.6, 26, 1.4, "#fff") + ci(62.4, 26, 1.4, "#fff"),
+  "Boružė": ln("M40 80l-6 12M58 84l-2 10M76 82l4 11", K, 3.2) + ln("M102 60q2-9 9-9M106 62q7-6 12-2", K, 2.2) + ci(98, 72, 12, K) + pa("M22 80a37 36 0 0 1 74 0z", "#e5243b")
+    + ln("M59 44v36", "#a8182b", 2.4) + ci(40, 62, 5.5, K) + ci(52, 52, 4.5, K) + ci(72, 54, 5, K) + ci(46, 73, 4, K) + ci(78, 70, 4.5, K) + ci(66, 68, 3.5, K) + ci(103, 68, 3.4, "#fff") + ci(104, 68, 1.7, K),
+  "Žiogas": ln("M52 64L33 30L20 90", "#2f8f42", 5) + ln("M70 70l-4 22M84 70l5 22", "#2f8f42", 3.2) + el(60, 66, 30, 9.5, "#58c45a") + el(50, 61, 25, 6, "#2f8f42", rot(-6, 50, 61))
+    + ln("M97 51q6-20 19-22M93 50q0-20 9-28", "#2f8f42", 2.2) + ci(94, 60, 10.5, "#58c45a") + ci(97.5, 57, 3.6, "#fff") + ci(98.5, 57, 1.8, K) + ln("M92 65q4 3 8 0", "#1b5e2a", 1.6),
+  "Karvė": ln("M27 52q-9 8-7 28", K, 2.6) + ci(20, 82, 4, K) + legs([38, 48, 72, 82], 66, 94, 8, "#fbf7ee") + legs([38, 48, 72, 82], 88, 94, 8, K) + el(52, 76, 9, 6, "#ffb3c1")
+    + el(58, 58, 32, 19, "#fbf7ee", OUT) + el(46, 52, 12, 9, K) + el(70, 64, 9, 7, K) + pa("M86 35q-5-8-1-13q5 6 7 11z", "#e3c08a") + pa("M104 33q7-6 5-13q-7 4-9 11z", "#e3c08a")
+    + el(80, 42, 7, 4, "#fbf7ee", OUT + " " + rot(-20, 80, 42)) + el(112, 40, 7, 4, "#fbf7ee", OUT + " " + rot(20, 112, 40)) + el(96, 46, 13, 15, "#fbf7ee", OUT) + el(90, 40, 6, 7, K)
+    + el(98, 58, 11, 8, "#ffb3c1") + ci(94, 58, 1.7, K) + ci(102, 58, 1.7, K) + eye(92, 47, 2.6) + eye(103, 46, 2.6),
+  "Kiaulė": ln("M27 56q-9-5-7 3q2 7 9 2", "#f08aa0", 3) + legs([38, 48], 68, 94, 8, "#f08aa0") + el(58, 62, 32, 19, "#ffb3c1") + legs([72, 82], 68, 94, 8, "#f08aa0") + pa("M82 45l1-15 13 10z", "#f08aa0")
+    + ci(94, 54, 16, "#ffb3c1") + el(108, 58, 8, 7, "#f08aa0") + ci(106, 58, 1.6, "#b3566a") + ci(110.5, 58, 1.6, "#b3566a") + eye(98, 50, 2.8) + ln("M98 64q4 3 8 1", "#b3566a", 1.6),
+  "Gaidys": pa("M36 60q-24-6-24-36q13 2 21 17q-4-19 5-27q10 11 8 32z", "#2f8f5a") + pa("M38 58q-15-14-9-35q10 8 15 27z", "#13a8d6") + ln("M52 82v11M52 93l-7 2M52 93l7 2M66 82v11M66 93l-7 2M66 93l7 2", "#ffb21a", 3)
+    + el(58, 64, 22, 20, "#fbf7ee", OUT) + el(52, 66, 13, 10, "#e9b872") + pa("M67 29q-1-11 6-9q2-9 9-4q7-4 8 7z", "#e5243b") + ci(78, 39, 13, "#fbf7ee", OUT) + el(86, 51, 4, 7, "#e5243b")
+    + pa("M89 38l13 4-13 5z", "#ffb21a") + eye(81, 37, 2.6),
+  "Avis": legs([40, 50, 68, 78], 70, 94, 6, "#3a3f52") + [[34, 58, 13], [50, 50, 15], [68, 50, 15], [80, 60, 13], [42, 68, 13], [60, 70, 14], [74, 70, 12]].map(([x, y, r]) => ci(x, y, r + 1.4, "#cdc4ad")).join("")
+    + [[34, 58, 13], [50, 50, 15], [68, 50, 15], [80, 60, 13], [42, 68, 13], [60, 70, 14], [74, 70, 12], [57, 60, 20]].map(([x, y, r]) => ci(x, y, r, "#fbf7ee")).join("")
+    + el(84, 50, 7, 4, "#3a3f52", rot(-25, 84, 50)) + el(96, 52, 11, 13, "#3a3f52") + ci(91, 40, 8.5, "#fbf7ee", OUT) + ci(100, 42, 6.5, "#fbf7ee", OUT) + ci(99, 50, 3, "#fff") + ci(100, 50, 1.6, K),
+  "Ožka": pa("M29 51l-9-9 11 2z", "#f1e6d0") + legs([40, 48], 64, 94, 6, "#d9c9a8") + el(56, 58, 27, 15, "#f1e6d0", OUT) + legs([66, 74], 64, 94, 6, "#d9c9a8") + pa("M72 56l8-25 12 4-6 27z", "#f1e6d0")
+    + ln("M90 22q-6-12-15-12M96 21q-2-12-9-16", "#8a7a5a", 4) + el(84, 31, 7, 3.5, "#d9c9a8", rot(22, 84, 31)) + el(94, 30, 12, 10, "#f1e6d0", OUT) + el(104, 34, 6, 5, "#fff", OUT)
+    + pa("M97 39l4 13 3-13z", "#d9c9a8") + eye(96, 28, 2.6) + ci(109, 33, 1.8, K),
+  "Arklys": pa("M30 46q-16 6-14 40q8-2 10-14q2-12 8-18z", "#5a3a22") + legs([40, 48, 68, 76], 62, 94, 6, "#a8693a") + legs([40, 48, 68, 76], 88, 94, 7, "#5a3a22") + el(56, 54, 28, 16, "#a8693a")
+    + pa("M70 52l12-34 16 6-10 34z", "#a8693a") + pa("M80 16q-10 10-12 32l8 2q2-20 10-30z", "#5a3a22") + pa("M88 12l2-11 7 9z", "#a8693a") + pa("M86 12q16-4 24 14q2 8-6 10q-10 0-20-10z", "#a8693a")
+    + el(107, 31, 7, 6, "#c98b4a") + ci(110, 31, 1.6, K) + eye(98, 20, 2.8) + pa("M90 12q8-2 12 6l-8-2z", "#5a3a22"),
+  "Kregždė": pa("M32 52l-26-12 15 14-17 10z", "#23305f") + pa("M50 48q-10-30-36-40q10 22 24 42z", "#23305f") + el(58, 52, 28, 11, "#23305f") + el(62, 57, 20, 6, "#fff")
+    + pa("M62 50q6-28 32-42q-6 26-18 44z", "#1a2447") + ci(88, 46, 10.5, "#23305f") + el(92, 52, 6, 4, "#c2412b") + pa("M97 43l11 3-11 3.5z", K) + ci(90, 43, 2.4, "#fff") + ci(90.6, 43, 1.3, K),
+  "Gandras": ln("M54 66v28M54 94h8M66 66v28M66 94h8", "#e5243b", 3) + ln("M72 50q10-10 8-28", "#cdc4ad", 10.5) + ln("M72 50q10-10 8-28", "#fbf7ee", 7.5) + pa("M34 50q-9 6-11 17q20 2 32-6z", K)
+    + el(56, 56, 22, 14, "#fbf7ee", OUT) + pa("M40 56q16 10 34 2q-12 12-30 6z", K) + ci(80, 20, 8.5, "#fbf7ee", OUT) + pa("M87 17l30 7-30 4z", "#e5243b") + eye(82, 18, 2.2),
+  "Gegutė": ln("M8 84h104", "#8a5a36", 6) + pa("M96 81q8-10 14-6q-4 8-14 6z", "#58c45a") + pa("M40 66l-32 14 4 6 34-10z", "#6b7280") + ln("M58 72v10M66 70v12", "#ffb21a", 2.6)
+    + el(60, 58, 24, 14, "#8b93a1", rot(-18, 60, 58)) + el(68, 64, 14, 8, "#fff", rot(-18, 68, 64)) + ln("M60 68l2-5M66 66l2-5M72 64l2-5", "#6b7280", 2) + el(52, 56, 15, 8, "#6b7280", rot(-18, 52, 56))
+    + ci(84, 42, 10.5, "#8b93a1") + pa("M93 40l12 3-11 4z", "#3a3f52") + ci(87, 40, 3.4, "#ffc61a") + ci(87, 40, 1.8, K),
+  "Šikšnosparnis": pa("M60 44q-20-26-54-18q11 6 9 19q10-6 14 6q8-8 12 4q8-6 19 0z", "#7a6a92") + pa("M60 44q20-26 54-18q-11 6-9 19q-10-6-14 6q-8-8-12 4q-8-6-19 0z", "#7a6a92")
+    + el(60, 58, 13, 19, "#5a4a6e") + pa("M50 31l-3-17 11 9z", "#5a4a6e") + pa("M70 31l3-17-11 9z", "#5a4a6e") + ci(60, 37, 12.5, "#5a4a6e") + eye(55, 35, 2.8) + eye(65, 35, 2.8)
+    + ln("M55 42q5 4 10 0", "#fff", 1.6) + ln("M55 76v6M65 76v6", "#5a4a6e", 2.4)
+};
+const FOODART = {
+  riesutai: el(30, 35, 16, 18, "#b5733f") + pa("M13 28q17-19 34 0q-17 9-34 0z", "#6e4426") + ln("M30 14v-6", "#6e4426", 3) + el(24, 38, 3.5, 7, "#d9a06a", 'opacity=".7"'),
+  morka: pa("M38 12q-3-11 5-12q2 8-1 13zM42 15q9-9 15-5q-5 8-13 8z", "#3f9a4a") + pa("M41 16q9 7 5 16L14 56q-6-1-6-7L28 15q6-4 13 1z", "#ff8a1f") + ln("M30 26l6 3M24 36l6 3M18 46l5 2", "#e06d00", 2),
+  zole: pa("M8 54q4-32 13-38q0 22 2 38zM20 54q2-36 11-46q2 28 0 46zM33 54q6-30 17-36q-4 22-8 36z", "#58c45a") + pa("M14 54q0-18 6-26q2 14 2 26zM40 54q2-14 12-20q-2 12-6 20z", "#2f8f42"),
+  medus: `<rect x="14" y="20" width="32" height="34" rx="9" fill="#ffb400"/><rect x="12" y="12" width="36" height="10" rx="4" fill="#8a5a36"/>` + el(24, 36, 3.5, 9, "#ffe27a", 'opacity=".8"')
+    + pa("M30 30q8 8 0 16q-8-8 0-16z", "#ffe27a"),
+  zuvis: `<g transform="translate(30 30) scale(.75)">${FISH_ART}</g>`,
+  grudai: ln("M30 56V20", "#c9952e", 3) + [[30, 12], [23, 20], [37, 20], [23, 30], [37, 30], [23, 40], [37, 40]].map(([x, y], i) => el(x, y, 5, 7.5, "#ffc61a", i ? rot(x < 30 ? -28 : 28, x, y) : "")).join(""),
+  nektaras: ln("M30 56V34", "#3f9a4a", 3.4) + pa("M30 48q-10-2-12-10q10 0 12 10z", "#58c45a") + [0, 72, 144, 216, 288].map(a => el(30, 12, 7, 10, "#ff7fb0", rot(a, 30, 22))).join("") + ci(30, 22, 6, "#ffc61a"),
+  vabzdziai: ci(14, 40, 9, "#7bd13a") + ci(27, 34, 9, "#58c45a") + ci(40, 38, 9, "#7bd13a") + ci(50, 30, 10, "#58c45a") + ci(54, 28, 2.6, "#fff") + ci(54.6, 28, 1.3, K) + ln("M50 20q0-7 5-8M55 21q4-6 9-4", K, 1.8)
+    + ln("M12 49v5M26 43v5M40 47v5", "#2f8f42", 2.4),
+  peles: ln("M12 42q-10 2-8-8", "#9aa3b5", 2.6) + el(30, 40, 20, 13, "#9aa3b5") + ci(40, 26, 8, "#9aa3b5") + ci(40, 26, 4.5, "#ffc2cf") + pa("M44 32q14 2 12 12q-8 4-16-2z", "#9aa3b5") + ci(56, 43, 2.4, "#ff8aa0") + eye(46, 37, 2.2),
+  kaulas: ln("M18 42L42 18", "#cdc4ad", 13) + ln("M18 42L42 18", "#fbf7ee", 9.5) + [[14, 38], [22, 46], [38, 14], [46, 22]].map(([x, y]) => ci(x, y, 7.2, "#fbf7ee", OUT)).join("") + ln("M19 41L41 19", "#fbf7ee", 9),
+  mesa: ln("M36 38l14 14", "#cdc4ad", 9) + ln("M36 38l14 14", "#fbf7ee", 6) + ci(52, 50, 5, "#fbf7ee", OUT) + ci(48, 54, 5, "#fbf7ee", OUT) + el(26, 28, 20, 16, "#b5552f", rot(40, 26, 28)) + el(22, 24, 9, 6, "#d97a4f", rot(40, 22, 24) + ' opacity=".8"')
+};
+ART["Pelėda"] = '<g transform="translate(14 2) scale(.78)">' + inner(MK.owl()) + "</g>";
+
+/* ---------- duomenys ---------- */
 const HOMES = {
-  miskas: { e: "🌲", t: "Miškas", loc: "miške" },
-  vanduo: { e: "💧", t: "Vanduo", loc: "vandenyje ar prie vandens" },
-  pieva:  { e: "🌼", t: "Pieva",  loc: "pievoje" },
-  ukis:   { e: "🏡", t: "Ūkis",   loc: "ūkyje, pas žmones" }
+  miskas: { t: "Miškas", loc: "miške", bg: "#d6f0cf" },
+  vanduo: { t: "Vanduo", loc: "vandenyje ar prie vandens", bg: "#cdeeff" },
+  pieva:  { t: "Pieva",  loc: "pievoje", bg: "#f4f7c2" },
+  ukis:   { t: "Ūkis",   loc: "ūkyje, pas žmones", bg: "#ffe6c9" }
 };
 const FOOD = {
-  riesutai: ["🌰", "Riešutai", "riešutus"], morka: ["🥕", "Morka", "morkas"], zole: ["🌿", "Žolė", "žolę"], medus: ["🍯", "Medus", "medų"],
-  zuvis: ["🐟", "Žuvis", "žuvį"], grudai: ["🌾", "Grūdai", "grūdus"], nektaras: ["🌸", "Žiedų nektaras", "žiedų nektarą"],
-  vabzdziai: ["🐛", "Vabzdžiai", "vabzdžius"], peles: ["🐭", "Pelės", "peles"], kaulas: ["🦴", "Kaulas", "kaulą"], mesa: ["🍖", "Mėsa", "mėsą"]
+  riesutai: ["Riešutai", "riešutus"], morka: ["Morka", "morkas"], zole: ["Žolė", "žolę"], medus: ["Medus", "medų"],
+  zuvis: ["Žuvis", "žuvį"], grudai: ["Grūdai", "grūdus"], nektaras: ["Žiedų nektaras", "žiedų nektarą"],
+  vabzdziai: ["Vabzdžiai", "vabzdžius"], peles: ["Pelės", "peles"], kaulas: ["Kaulas", "kaulą"], mesa: ["Mėsa", "mėsą"]
 };
-const WINTER = {
-  isskrenda: { e: "☀️", t: "Išskrenda į šiltus kraštus" },
-  miega:     { e: "💤", t: "Žiemą miega" },
-  budrauja:  { e: "❄️", t: "Žiemą būdrauja" }
-};
+const WINTER = { isskrenda: { t: "Išskrenda į šiltus kraštus" }, miega: { t: "Žiemą miega" }, budrauja: { t: "Žiemą būdrauja" } };
 /* h – kur gyvena (gali būti keli), f – ką ėda (rodomas pirmasis), no – tikrai ne jo maistas, w – ką veikia žiemą */
 const A = [
-  { n: "Lapė", e: "🦊", h: ["miskas"], f: ["peles"], no: ["zole", "nektaras", "morka"], w: "budrauja" },
-  { n: "Meška", e: "🐻", h: ["miskas"], w: "miega" },
-  { n: "Voverė", e: "🐿️", h: ["miskas"], f: ["riesutai"], no: ["zuvis", "kaulas", "zole"], w: "budrauja" },
-  { n: "Ežys", e: "🦔", h: ["miskas", "pieva"], f: ["vabzdziai"], no: ["zole", "grudai", "nektaras"], w: "miega" },
-  { n: "Pelėda", e: "🦉", h: ["miskas"], f: ["peles"], no: ["zole", "morka", "nektaras"] },
-  { n: "Šernas", e: "🐗", h: ["miskas"], w: "budrauja" },
-  { n: "Elnias", e: "🦌", h: ["miskas"], w: "budrauja" },
-  { n: "Vilkas", e: "🐺", h: ["miskas"], f: ["mesa"], no: ["zole", "nektaras", "morka"], w: "budrauja" },
-  { n: "Kiškis", e: "🐇", h: ["miskas", "pieva"], f: ["morka"], no: ["zuvis", "peles", "kaulas"], w: "budrauja" },
-  { n: "Žuvis", e: "🐟", h: ["vanduo"] },
-  { n: "Antis", e: "🦆", h: ["vanduo", "ukis"] },
-  { n: "Varlė", e: "🐸", h: ["vanduo", "pieva"], f: ["vabzdziai"], no: ["grudai", "morka", "medus"], w: "miega" },
-  { n: "Gulbė", e: "🦢", h: ["vanduo"] },
-  { n: "Bebras", e: "🦫", h: ["vanduo"] },
-  { n: "Ūdra", e: "🦦", h: ["vanduo"] },
-  { n: "Bitė", e: "🐝", h: ["pieva", "ukis"], f: ["nektaras"], no: ["peles", "zuvis", "kaulas"] },
-  { n: "Drugelis", e: "🦋", h: ["pieva"], f: ["nektaras"], no: ["peles", "zuvis", "grudai"] },
-  { n: "Boružė", e: "🐞", h: ["pieva"] },
-  { n: "Žiogas", e: "🦗", h: ["pieva"] },
-  { n: "Karvė", e: "🐄", h: ["ukis"], f: ["zole"], no: ["zuvis", "peles", "kaulas"] },
-  { n: "Kiaulė", e: "🐖", h: ["ukis"] },
-  { n: "Gaidys", e: "🐓", h: ["ukis"], f: ["grudai"], no: ["kaulas", "medus", "nektaras"] },
-  { n: "Avis", e: "🐑", h: ["ukis"], f: ["zole"], no: ["zuvis", "peles", "kaulas"] },
-  { n: "Ožka", e: "🐐", h: ["ukis"], f: ["zole"], no: ["zuvis", "peles", "medus"] },
-  { n: "Arklys", e: "🐴", h: ["ukis"], f: ["zole"], no: ["zuvis", "peles", "kaulas"] },
-  { n: "Šuo", e: "🐕", h: ["ukis"], f: ["mesa"], no: ["zole", "nektaras"] },
-  { n: "Katė", e: "🐈", h: ["ukis"], f: ["peles"], no: ["nektaras", "grudai", "morka"] },
-  { n: "Kregždė", e: "🐦", w: "isskrenda" },
-  { n: "Gandras", e: "🐦", w: "isskrenda" },
-  { n: "Gegutė", e: "🐦", w: "isskrenda" },
-  { n: "Šikšnosparnis", e: "🦇", w: "miega" },
-  { n: "Barsukas", e: "🦡", w: "miega" }
+  { n: "Lapė", h: ["miskas"], f: ["peles"], no: ["zole", "nektaras", "morka"], w: "budrauja" },
+  { n: "Meška", h: ["miskas"], w: "miega" },
+  { n: "Voverė", h: ["miskas"], f: ["riesutai"], no: ["zuvis", "kaulas", "zole"], w: "budrauja" },
+  { n: "Ežys", h: ["miskas", "pieva"], f: ["vabzdziai"], no: ["zole", "grudai", "nektaras"], w: "miega" },
+  { n: "Pelėda", h: ["miskas"], f: ["peles"], no: ["zole", "morka", "nektaras"] },
+  { n: "Šernas", h: ["miskas"], w: "budrauja" },
+  { n: "Elnias", h: ["miskas"], w: "budrauja" },
+  { n: "Vilkas", h: ["miskas"], f: ["mesa"], no: ["zole", "nektaras", "morka"], w: "budrauja" },
+  { n: "Kiškis", h: ["miskas", "pieva"], f: ["morka"], no: ["zuvis", "peles", "kaulas"], w: "budrauja" },
+  { n: "Žuvis", h: ["vanduo"] },
+  { n: "Antis", h: ["vanduo", "ukis"] },
+  { n: "Varlė", h: ["vanduo", "pieva"], f: ["vabzdziai"], no: ["grudai", "morka", "medus"], w: "miega" },
+  { n: "Gulbė", h: ["vanduo"] },
+  { n: "Bebras", h: ["vanduo"] },
+  { n: "Ūdra", h: ["vanduo"] },
+  { n: "Bitė", h: ["pieva", "ukis"], f: ["nektaras"], no: ["peles", "zuvis", "kaulas"] },
+  { n: "Drugelis", h: ["pieva"], f: ["nektaras"], no: ["peles", "zuvis", "grudai"] },
+  { n: "Boružė", h: ["pieva"] },
+  { n: "Žiogas", h: ["pieva"] },
+  { n: "Karvė", h: ["ukis"], f: ["zole"], no: ["zuvis", "peles", "kaulas"] },
+  { n: "Kiaulė", h: ["ukis"] },
+  { n: "Gaidys", h: ["ukis"], f: ["grudai"], no: ["kaulas", "medus", "nektaras"] },
+  { n: "Avis", h: ["ukis"], f: ["zole"], no: ["zuvis", "peles", "kaulas"] },
+  { n: "Ožka", h: ["ukis"], f: ["zole"], no: ["zuvis", "peles", "medus"] },
+  { n: "Arklys", h: ["ukis"], f: ["zole"], no: ["zuvis", "peles", "kaulas"] },
+  { n: "Šuo", h: ["ukis"], f: ["mesa"], no: ["zole", "nektaras"] },
+  { n: "Katė", h: ["ukis"], f: ["peles"], no: ["nektaras", "grudai", "morka"] },
+  { n: "Kregždė", w: "isskrenda" },
+  { n: "Gandras", w: "isskrenda" },
+  { n: "Gegutė", w: "isskrenda" },
+  { n: "Šikšnosparnis", w: "miega" },
+  { n: "Barsukas", w: "miega" }
 ];
+
+/* ---------- tekstai (atskirai nuo kodo, kad būtų lengva taisyti ar versti) ---------- */
+const many = (n, one, few, lots) => { const d = n % 10, h = n % 100; return d === 1 && h !== 11 ? one : d >= 2 && (h < 10 || h >= 20) ? few : lots; };
+const animals = n => `${n} ${many(n, "gyvūnas", "gyvūnai", "gyvūnų")}`;
+const T = {
+  hero: "Padėk gyvūnams iki vakaro ir surink juos visus į savo albumą!",
+  levels: [["Kur gyvena?", "Miškas, vanduo, pieva, ūkis"], ["Ką ėda?", "Pamaitink gyvūną"], ["Žiema", "Išskrenda, miega ar būdrauja?"], ["Visko po truputį", "Didysis miško iššūkis"]],
+  askHome: n => `Kur gyvena <b>${n}</b>? Paspausk tą vietą!`,
+  askFood: n => `Ką mėgsta ėsti <b>${n}</b>?`,
+  askWinter: n => `Ką žiemą veikia <b>${n}</b>?`,
+  again: "Ne čia. Pabandyk dar kartą!",
+  look: "Žiūrėk:",
+  lives: (n, locs) => `${n} gyvena ${locs.join(", o kartais ir ")}.`,
+  eats: (n, food) => `${n} mėgsta ${food}.`,
+  winter: { isskrenda: n => `${n} rudenį išskrenda į šiltus kraštus, o pavasarį grįžta.`, miega: n => `${n} žiemą miega.`, budrauja: n => `${n} žiemą nemiega – ieško maisto sniege.` },
+  newInAlbum: "<b>Naujas gyvūnas albume!</b>",
+  done: "Vakaras! Visi gyvūnai rado, ko ieškojo. Labanakt, miške!",
+  result: n => `Iš pirmo karto padėjai: ${n} iš ${ROUND}.`,
+  resNew: n => `Į albumą pateko ${n} ${many(n, "naujas gyvūnas", "nauji gyvūnai", "naujų gyvūnų")}.`,
+  resAlbum: (n, t) => `Albume jau ${n} iš ${t}.`,
+  goalEmpty: "Albumas dar tuščias. Padėk gyvūnui iš pirmo karto – ir jis atsiras albume!",
+  goal: (n, t) => `Albume ${animals(n)} iš ${t}.`,
+  goalAll: "Surinkai visus gyvūnus. Šaunu!",
+  openAlbum: "Atversti albumą",
+  album: "Mano albumas",
+  back: "Grįžti",
+  ok: "Gerai",
+  pawsLabel: (n, t) => `Padėta gyvūnų: ${n} iš ${t}`,
+  heroLabel: n => `Peizažas su miško, vandens, pievos ir ūkio gyvūnais. Albume ${animals(n)}.`
+};
 const LEVELS = [
-  { id: "namai", name: "Kur gyvena?", sub: "Miškas, vanduo, pieva, ūkis", art: '<span class="emo la">🌲</span>', kinds: ["h"] },
-  { id: "maistas", name: "Ką ėda?", sub: "Pamaitink gyvūną", art: '<span class="emo la">🥕</span>', kinds: ["f"] },
-  { id: "ziema", name: "Žiema", sub: "Išskrenda, miega ar būdrauja?", art: '<span class="emo la">❄️</span>', kinds: ["w"] },
-  { id: "visko", name: "Visko po truputį", sub: "Didysis miško iššūkis", art: '<span class="emo la">⭐</span>', kinds: ["h", "f", "w"] }
-];
+  { id: "namai", art: "Lapė", kinds: ["h"] }, { id: "maistas", art: "Kiškis", kinds: ["f"] }, { id: "ziema", art: "Meška", kinds: ["w"] }, { id: "visko", art: "Pelėda", kinds: ["h", "f", "w"] }
+].map((l, i) => Object.assign(l, { name: T.levels[i][0], sub: T.levels[i][1], art: `<span class="la"><svg viewBox="0 0 120 100" aria-hidden="true">${ART[l.art]}</svg></span>` }));
+
+/* ---------- scenos (360×360; maisto scena – 360×230) ---------- */
+const pill = (x, y, text, end) => { const w = Math.round(text.length * 7.6 + 22), x0 = end ? x - w : x;
+  return `<rect x="${x0}" y="${y}" width="${w}" height="24" rx="12" fill="#fff" stroke="${K}" stroke-width="2.2"/><text class="zl" x="${x0 + w / 2}" y="${y + 16.6}" text-anchor="middle">${text}</text>`; };
+const fir = (x, y, s, snow) => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-3.5" y="-10" width="7" height="12" fill="#8a5a36"/><path d="M0-56l15 26h-30zM0-38l20 30h-40z" fill="#3f9a4a"/>${snow ? '<path d="M0-56l8 14q-8 5-16 0zM0-38l10 15q-10 6-20 0z" fill="#fff"/>' : ""}</g>`;
+const leafy = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-4" y="-22" width="8" height="24" fill="#8a5a36"/><circle cx="0" cy="-36" r="20" fill="#58c45a"/><circle cx="-7" cy="-43" r="7" fill="#7ad977" opacity=".7"/></g>`;
+const zoneRect = (b, fill) => `<rect x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" rx="26" fill="${fill}" stroke="${K}" stroke-width="3"/>`;
+const SCN = {
+  h: { el: null, zones: {
+    miskas: { box: [8, 8, 164, 148], slots: [[40, 80], [90, 106], [36, 128], [94, 142], [138, 112]] },
+    ukis:   { box: [188, 8, 164, 148], slots: [[234, 110], [286, 86], [330, 102], [284, 136], [332, 140]] },
+    vanduo: { box: [8, 204, 164, 148], slots: [[40, 236], [94, 228], [44, 288], [102, 282], [138, 320]] },
+    pieva:  { box: [188, 204, 164, 148], slots: [[268, 230], [322, 238], [258, 284], [316, 290], [226, 320]] } } },
+  w: { el: null, zones: {
+    isskrenda: { box: [8, 8, 344, 124], wide: true, slots: [[54, 86], [112, 102], [250, 102], [302, 96], [192, 72]] },
+    miega:     { box: [8, 188, 164, 164], slots: [[44, 232], [100, 246], [40, 284], [96, 294], [142, 268]] },
+    budrauja:  { box: [188, 188, 164, 164], slots: [[244, 246], [300, 232], [334, 272], [258, 296], [312, 300]] } } },
+  f: { el: null, zones: {} }
+};
+function homeSvg(label, badge){
+  const Z = SCN.h.zones;
+  return `<svg viewBox="0 0 360 360" ${label ? `role="img" aria-label="${label}"` : 'aria-hidden="true"'}><rect width="360" height="360" fill="#dff1cb"/>
+    ${zoneRect(Z.miskas.box, "#b4e09c")}${leafy(96, 64, 0.9)}${fir(124, 66, 0.95)}${fir(152, 76, 1.1)}${pill(18, 18, HOMES.miskas.t)}
+    ${zoneRect(Z.ukis.box, "#ffe6c2")}<g transform="translate(200 24)"><path d="M0 24l29-22 29 22v36h-58z" fill="#e5243b" stroke="${K}" stroke-width="2.6" stroke-linejoin="round"/>
+      <rect x="19" y="34" width="20" height="26" fill="#fff3d6" stroke="${K}" stroke-width="2"/><path d="M19 34l20 26M39 34l-20 26" stroke="${K}" stroke-width="1.5"/><rect x="23" y="13" width="12" height="9" rx="2" fill="#fff3d6" stroke="${K}" stroke-width="1.8"/></g>
+      <path d="M262 66h34M266 60v14M278 60v14M290 60v14" stroke="#c9914a" stroke-width="3.5" stroke-linecap="round"/>${pill(342, 18, HOMES.ukis.t, true)}
+    ${zoneRect(Z.vanduo.box, "#a6dffb")}<path d="M22 258q9-6 18 0t18 0M70 250q9-6 18 0t18 0M30 320q9-6 18 0M96 306q9-6 18 0t18 0M118 258q9-6 18 0" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".85"/>
+      <path d="M152 346q-2-22 2-34M160 346q2-26-1-40" fill="none" stroke="#3f9a4a" stroke-width="3.4" stroke-linecap="round"/><rect x="150" y="304" width="7" height="16" rx="3.5" fill="#8a5a36"/><rect x="156" y="296" width="7" height="16" rx="3.5" fill="#8a5a36"/>
+      ${pill(18, 322, HOMES.vanduo.t)}
+    ${zoneRect(Z.pieva.box, "#eef6a6")}${[[206, 250, "#ff7fb0"], [300, 262, "#fff"], [344, 306, "#ff7fb0"], [236, 268, "#fff"], [288, 322, "#ffb21a"], [340, 216, "#fff"], [208, 290, "#ffb21a"]].map(([x, y, c]) =>
+      `<path d="M${x} ${y + 9}v-7" stroke="#3f9a4a" stroke-width="2.2" stroke-linecap="round"/><circle cx="${x}" cy="${y}" r="4.6" fill="${c}"/><circle cx="${x}" cy="${y}" r="1.8" fill="#ffc61a"/>`).join("")}${pill(342, 322, HOMES.pieva.t, true)}
+    <circle cx="180" cy="180" r="66" fill="#fff7dc" stroke="${K}" stroke-width="3"/>${badge || ""}</svg>`;
+}
+function winterSvg(){
+  const Z = SCN.w.zones;
+  return `<svg viewBox="0 0 360 360" aria-hidden="true"><rect width="360" height="360" fill="#e3f1ff"/>
+    ${[[30, 160], [330, 156], [176, 30], [20, 300], [344, 340]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3" fill="#fff"/>`).join("")}
+    ${zoneRect(Z.isskrenda.box, "#bfe3ff")}<circle cx="318" cy="50" r="34" fill="#ffe27a" opacity=".45"/><circle cx="318" cy="50" r="22" fill="#ffd84a"/>
+      <path d="M262 30q6-6 12 0q6-6 12 0M236 52q5-5 10 0q5-5 10 0" fill="none" stroke="${K}" stroke-width="2.2" stroke-linecap="round"/>
+      <ellipse cx="80" cy="120" rx="50" ry="12" fill="#fff" opacity=".8"/><ellipse cx="240" cy="126" rx="60" ry="10" fill="#fff" opacity=".7"/>${pill(18, 18, WINTER.isskrenda.t)}
+    ${zoneRect(Z.miega.box, "#f4f9ff")}<path d="M10 330q60-34 160-12v32h-160z" fill="#dcebfb"/><path d="M112 350a26 26 0 0 1 52 0z" fill="#5a4a3a"/>
+      <text x="126" y="320" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="15" fill="#7a8fb5">Zzz</text>${pill(18, 322, WINTER.miega.t)}
+    ${zoneRect(Z.budrauja.box, "#f4f9ff")}<path d="M190 334q70-26 160-6v22h-160z" fill="#dcebfb"/>${fir(204, 318, 0.7, true)}${fir(340, 222, 0.5, true)}${pill(342, 322, WINTER.budrauja.t, true)}
+    <circle cx="180" cy="176" r="64" fill="#fff" stroke="${K}" stroke-width="3"/></svg>`;
+}
+function feedSvg(){
+  return `<svg viewBox="0 0 360 230" aria-hidden="true"><rect width="360" height="230" fill="#cfeeff"/><circle cx="52" cy="46" r="22" fill="#ffd84a"/>
+    <g fill="#fff" opacity=".95"><ellipse cx="270" cy="44" rx="34" ry="13"/><circle cx="258" cy="35" r="13"/><circle cx="282" cy="32" r="15"/><ellipse cx="150" cy="28" rx="24" ry="9"/><circle cx="144" cy="22" r="9"/></g>
+    <ellipse cx="60" cy="186" rx="150" ry="50" fill="#bfe8a8"/><ellipse cx="300" cy="190" rx="160" ry="56" fill="#a9df90"/><rect y="176" width="360" height="60" fill="#9bdc7a"/>
+    ${leafy(34, 186, 1.5)}${fir(330, 184, 1.2)}${fir(306, 190, 0.8)}
+    ${[[84, 206, "#ff7fb0"], [112, 216, "#fff"], [262, 210, "#ffb21a"], [286, 218, "#fff"], [20, 214, "#ffb21a"]].map(([x, y, c]) => `<path d="M${x} ${y + 9}v-7" stroke="#3f9a4a" stroke-width="2.2" stroke-linecap="round"/><circle cx="${x}" cy="${y}" r="4.6" fill="${c}"/>`).join("")}</svg>`;
+}
+const PAW = `<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16" rx="6.2" ry="5" fill="${K}"/><circle cx="5" cy="10" r="2.6" fill="${K}"/><circle cx="9.6" cy="6" r="2.7" fill="${K}"/><circle cx="14.6" cy="6" r="2.7" fill="${K}"/><circle cx="19.2" cy="10" r="2.6" fill="${K}"/></svg>`;
+const SUN = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5.5" fill="#ffc61a" stroke="${K}" stroke-width="1.6"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" stroke="${K}" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+const MOON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3a9 9 0 1 0 4 14A8 8 0 0 1 17 3z" fill="#c9cfe6" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+const animalSvg = n => `<svg viewBox="0 0 120 100" aria-hidden="true">${ART[n]}</svg>`;
+const pct = v => (v / 3.6).toFixed(2) + "%";
+function zoneButtons(sc, names){
+  return Object.keys(sc.zones).map(id => { const b = sc.zones[id].box;
+    return `<button type="button" class="zbtn${sc.zones[id].wide ? " wide" : ""}" data-id="${id}" aria-label="${names[id].t}" style="left:${pct(b[0])};top:${pct(b[1])};width:${pct(b[2])};height:${pct(b[3])}"></button>`; }).join("");
+}
+
+/* ---------- elementai ---------- */
 const $ = id => document.getElementById(id);
-const app = $("app"), menu = $("menu"), play = $("play"), who = $("who"), opts = $("opts");
+const app = $("app"), menu = $("menu"), play = $("play"), album = $("album"), foods = $("foods"), pawsEl = $("paws");
+SCN.h.el = $("sc-h"); SCN.w.el = $("sc-w"); SCN.f.el = $("sc-f");
 const saved = MK.get("mokomeskartu-klase", 0);
 app.prepend(MK.top({ title: "Miško namai", grade: GRADES.includes(saved) ? saved : GRADES[0] }));
-$("guideBox").innerHTML = MK.guide("Padėk gyvūnui!");
+$("heroP").textContent = T.hero; $("albBack").textContent = T.back; $("albT").textContent = T.album;
+$("guideBox").innerHTML = MK.guide("");
 const guide = $("guideBox").firstElementChild;
+const save = Object.assign({ got: [] }, MK.get(STORE, {}));
+const got = new Set((save.got || []).filter(n => ART[n]));
+const who = document.createElement("div");
 
-let lvl = 0, L = null, list = [], ti = 0, cur = null, tries = 0, firstOK = 0, busy = false, dots = null, residents = {};
-function showMenu(){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); window.scrollTo(0, 0); }
+/* ---------- meniu ir albumas ---------- */
+function drawMenu(){
+  /* peizaže apsigyvena jau surinkti gyvūnai (iki penkių kiekvienuose namuose) */
+  const used = {}; let res = "";
+  A.forEach(a => { if(!got.has(a.n) || !a.h) return; const z = a.h[0], k = used[z] = (used[z] || 0) + 1; if(k > 5) return;
+    const [x, y] = SCN.h.zones[z].slots[k - 1]; res += `<div class="res" style="left:${pct(x)};top:${pct(y)};animation:none">${animalSvg(a.n)}</div>`; });
+  const badge = `<g transform="translate(166 132) scale(1.15)">${PAW.replace(/<\/?svg[^>]*>/g, "")}</g><text x="180" y="204" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="46" fill="${K}">${got.size}</text>
+    <text class="zl" x="180" y="226" text-anchor="middle" style="font-size:16px">iš ${A.length}</text>`;
+  $("heroArt").innerHTML = homeSvg(T.heroLabel(got.size), badge) + res;
+  const n = got.size, t = A.length;
+  $("goal").innerHTML = `<span class="goal-who" aria-hidden="true">${PAW}</span><div><p>${n === 0 ? T.goalEmpty : n >= t ? T.goalAll : T.goal(n, t)}</p>
+    <div class="goal-bar" aria-hidden="true"><i style="width:${Math.max(n ? 4 : 0, Math.round(n / t * 100))}%"></i></div></div><button type="button" class="mk-btn alt" id="albOpen">${T.openAlbum}</button>`;
+}
+function show(sec){ [menu, play, album].forEach(s => { s.hidden = s !== sec; }); window.scrollTo(0, 0); }
+function showMenu(){ drawMenu(); MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); show(menu); }
+const tileBg = a => a.h ? HOMES[a.h[0]].bg : "#e8eefc";
+function showAlbum(){
+  $("albN").textContent = `${got.size} / ${A.length}`;
+  $("alb").innerHTML = A.map((a, i) => got.has(a.n)
+    ? `<button type="button" class="tile" data-i="${i}" style="--bg:${tileBg(a)}">${animalSvg(a.n)}<b>${a.n}</b></button>`
+    : `<div class="tile lock">${animalSvg(a.n)}<b>?</b></div>`).join("");
+  show(album);
+}
+function factsOf(a){
+  const out = [];
+  if(a.h) out.push(T.lives(a.n, a.h.map(h => HOMES[h].loc)));
+  if(a.f) out.push(T.eats(a.n, FOOD[a.f[0]][1]));
+  if(a.w) out.push(T.winter[a.w](a.n));
+  return out;
+}
+function showCard(a){
+  const ov = document.createElement("div"); ov.className = "mk-ov";
+  ov.innerHTML = `<div class="mk-res" role="dialog" aria-modal="true" aria-labelledby="cT"><div class="card-art" style="--bg:${tileBg(a)}">${animalSvg(a.n)}</div>
+    <h2 id="cT">${a.n}</h2><ul class="facts">${factsOf(a).map(f => `<li>${f}</li>`).join("")}</ul><div class="mk-res-b"><button type="button" class="mk-btn">${T.ok}</button></div></div>`;
+  document.body.appendChild(ov);
+  const btn = ov.querySelector("button");
+  ov.addEventListener("click", e => { if(e.target === ov || e.target === btn){ MK.sfx.tap(); ov.remove(); } });
+  setTimeout(() => btn.focus({ preventScroll: true }), 60);
+}
+$("goal").addEventListener("click", e => { if(e.target.closest("#albOpen")){ MK.unlock(); MK.sfx.tap(); showAlbum(); } });
+$("alb").addEventListener("click", e => { const b = e.target.closest("button.tile"); if(b){ MK.sfx.tap(); showCard(A[+b.dataset.i]); } });
+$("albBack").addEventListener("click", () => { MK.sfx.tap(); showMenu(); });
+
+/* ---------- žaidimo eiga ---------- */
+let lvl = 0, L = null, list = [], ti = 0, cur = null, tries = 0, firstOK = 0, newCount = 0, busy = false, marks = [];
+const has = (a, kind) => kind === "h" ? a.h : kind === "f" ? a.f : a.w;
 function makeList(){
   const out = [], used = new Set();
   for(let i = 0; i < ROUND; i++){
-    const kind = MK.pick(L.kinds);
-    const pool = A.filter(a => (kind === "h" ? a.h : kind === "f" ? a.f : a.w) && !used.has(a.n));
-    const a = MK.pick(pool); used.add(a.n); out.push({ a, kind });
+    const kind = MK.pick(L.kinds), pool = A.filter(a => has(a, kind) && !used.has(a.n)), fresh = pool.filter(a => !got.has(a.n));
+    const a = fresh.length && Math.random() < 0.7 ? MK.pick(fresh) : MK.pick(pool); // dažniau siūlomi dar nesurinkti gyvūnai
+    used.add(a.n); out.push({ a, kind });
   }
   return out;
 }
+function drawPaws(){
+  pawsEl.setAttribute("aria-label", T.pawsLabel(firstOK, ROUND));
+  pawsEl.innerHTML = SUN + Array.from({ length: ROUND }, (_, k) => `<i class="${marks[k] || (k === ti ? "cur" : "")}">${PAW}</i>`).join("") + MOON;
+}
 function start(i){
-  lvl = i; L = LEVELS[i]; list = makeList(); ti = 0; firstOK = 0; residents = {};
-  menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
-  dots = MK.dots($("dots"), ROUND); next();
+  lvl = i; L = LEVELS[i]; list = makeList(); ti = 0; firstOK = 0; newCount = 0; marks = [];
+  SCN.h.el.innerHTML = homeSvg() + zoneButtons(SCN.h, HOMES); SCN.w.el.innerHTML = winterSvg() + zoneButtons(SCN.w, WINTER); SCN.f.el.innerHTML = feedSvg();
+  ["h", "w", "f"].forEach(k => { SCN[k].used = {}; SCN[k].el.classList.remove("dusk"); });
+  show(play); next();
 }
 function next(){
   if(ti >= ROUND) return finish();
-  cur = list[ti]; tries = 0; busy = false; dots.cur(ti);
-  const a = cur.a, k = cur.kind;
-  const q = k === "h" ? "Kur aš gyvenu?" : k === "f" ? "Ką aš mėgstu ėsti?" : "Ką aš veikiu žiemą?";
-  who.classList.remove("fly");
-  who.innerHTML = `<span class="emo" aria-hidden="true">${a.e}</span><b>${MK.esc(a.n)}</b><small>${q}</small>`;
-  let items;
-  if(k === "h") items = Object.keys(HOMES).map(id => ({ id, cls: "h-" + id, e: HOMES[id].e, t: HOMES[id].t, res: residents[id] || "" }));
-  else if(k === "w") items = Object.keys(WINTER).map(id => ({ id, cls: "w-" + id, e: WINTER[id].e, t: WINTER[id].t }));
-  else items = MK.shuffle([a.f[0], ...MK.shuffle(a.no).slice(0, 2)]).map(id => ({ id, cls: "", e: FOOD[id][0], t: FOOD[id][1] }));
-  opts.style.setProperty("--n", items.length === 4 ? 2 : 3);
-  opts.innerHTML = items.map(o => `<button type="button" class="opt ${o.cls}" data-id="${o.id}"><span class="emo" aria-hidden="true">${o.e}</span><b>${MK.esc(o.t)}</b>${k === "h" ? `<span class="res emo" aria-hidden="true">${o.res}</span>` : ""}</button>`).join("");
-  MK.say(guide, k === "h" ? `Kur gyvena <b>${MK.esc(a.n.toLowerCase())}</b>? Paspausk jo namus!` : k === "f" ? "Paspausk tinkamą maistą." : "Pagalvok, kaip gyvūnas leidžia žiemą.");
+  cur = list[ti]; tries = 0; busy = false; drawPaws();
+  const k = cur.kind, a = cur.a, sc = SCN[k];
+  ["h", "w", "f"].forEach(x => { SCN[x].el.hidden = x !== k; });
+  foods.hidden = k !== "f";
+  sc.el.querySelectorAll(".zbtn").forEach(b => b.classList.remove("no", "ok"));
+  who.className = "who in" + (k === "f" ? " big" : ""); who.removeAttribute("style");
+  who.innerHTML = `${animalSvg(a.n)}<span class="nm"><b>${a.n}</b></span>`;
+  sc.el.appendChild(who);
+  if(k === "f") foods.innerHTML = MK.shuffle([a.f[0], ...MK.shuffle(a.no).slice(0, 2)]).map(id =>
+    `<button type="button" class="food" data-id="${id}"><svg viewBox="0 0 60 60" aria-hidden="true">${FOODART[id]}</svg><b>${FOOD[id][0]}</b></button>`).join("");
+  const nm = a.n.toLowerCase();
+  MK.say(guide, k === "h" ? T.askHome(nm) : k === "f" ? T.askFood(nm) : T.askWinter(nm));
 }
 function isRight(id){ const a = cur.a; return cur.kind === "h" ? a.h.includes(id) : cur.kind === "f" ? a.f.includes(id) : a.w === id; }
-function fact(){
-  const a = cur.a;
-  if(cur.kind === "h") return `${a.n} gyvena ${a.h.map(h => HOMES[h].loc).join(", o kartais ir ")}.`;
-  if(cur.kind === "f") return `${a.n} mėgsta ${FOOD[a.f[0]][2]}.`;
-  return a.w === "isskrenda" ? `${a.n} rudenį išskrenda į šiltus kraštus, o pavasarį grįžta.` : a.w === "miega" ? `${a.n} žiemą miega.` : `${a.n} žiemą nemiega – ieško maisto sniege.`;
+function fact(){ const a = cur.a; return cur.kind === "h" ? T.lives(a.n, a.h.map(h => HOMES[h].loc)) : cur.kind === "f" ? T.eats(a.n, FOOD[a.f[0]][1]) : T.winter[a.w](a.n); }
+/* Gyvūnas nueina į pasirinktą vietą ir ten lieka. */
+async function settle(sc, id){
+  const z = sc.zones[id], k = sc.used[id] = (sc.used[id] || 0) + 1, slot = (k - 1) % z.slots.length, [x, y] = z.slots[slot];
+  who.classList.remove("in"); void who.offsetWidth; who.classList.add("go");
+  who.style.left = pct(x); who.style.top = pct(y); who.style.width = "15%";
+  await MK.wait(640);
+  const old = sc.el.querySelector(`.res[data-s="${id}${slot}"]`); if(old) old.remove();
+  const r = document.createElement("div"); r.className = "res"; r.dataset.s = id + slot; r.style.left = pct(x); r.style.top = pct(y); r.style.animation = "none";
+  r.innerHTML = animalSvg(cur.a.n); sc.el.appendChild(r); who.remove();
 }
-async function right(btn){
-  busy = true; if(tries === 0) firstOK++; dots.mark(ti, tries === 0);
-  btn.classList.add("ok"); MK.sfx.good();
-  if(cur.kind === "h"){
-    const id = btn.dataset.id; residents[id] = (residents[id] || "") + `<span>${cur.a.e}</span>`;
-    btn.querySelector(".res").innerHTML = residents[id]; who.classList.add("fly");
-  }
-  MK.say(guide, `${MK.praise()} ${MK.esc(fact())}`);
-  await MK.wait(1900); ti++; next();
+/* Maistas nuskrenda pas gyvūną, jis pasidžiaugia ir išeina. */
+async function feed(btn){
+  const from = btn.querySelector("svg").getBoundingClientRect(), to = who.querySelector("svg").getBoundingClientRect();
+  const f = document.createElement("div"); f.className = "flyf"; f.innerHTML = btn.querySelector("svg").outerHTML; document.body.appendChild(f);
+  const x1 = from.left, y1 = from.top, x2 = to.left + to.width * 0.62 - 33, y2 = to.top + to.height * 0.5 - 33;
+  await f.animate([{ transform: `translate(${x1}px,${y1}px) scale(1)` }, { transform: `translate(${(x1 + x2) / 2}px,${Math.min(y1, y2) - 40}px) scale(1.15)`, offset: 0.5 },
+    { transform: `translate(${x2}px,${y2}px) scale(.3)`, opacity: 0.4 }], { duration: 520, easing: "ease-in-out" }).finished.catch(() => {});
+  f.remove(); who.classList.remove("in"); void who.offsetWidth; who.classList.add("happy"); MK.sfx.coins();
+  await MK.wait(1050); who.classList.add("bye"); await MK.wait(380); who.remove();
 }
-async function reveal(){
-  busy = true; dots.mark(ti, false);
-  opts.querySelectorAll(".opt").forEach(b => { if(isRight(b.dataset.id)) b.classList.add("ok"); });
-  MK.say(guide, `Žiūrėk: ${MK.esc(fact())}`, "bad");
-  await MK.wait(2600); ti++; next();
-}
-opts.addEventListener("click", e => {
-  const b = e.target.closest(".opt"); if(!b || busy) return; MK.unlock();
-  if(isRight(b.dataset.id)) return right(b);
-  tries++; b.classList.add("no"); MK.sfx.bad();
-  if(tries >= 2) return reveal();
-  MK.say(guide, "Ne čia. Pabandyk dar kartą!", "bad");
-});
-function finish(){
+async function right(btn, auto){
   busy = true;
+  const a = cur.a, first = tries === 0 && !auto;
+  if(first) firstOK++;
+  marks[ti] = first ? "got" : "miss";
+  btn.classList.add("ok"); MK.sfx.good();
+  let fresh = false;
+  if(first && !got.has(a.n)){ got.add(a.n); save.got = [...got]; MK.set(STORE, save); fresh = true; newCount++; }
+  MK.say(guide, `${auto ? T.look : MK.praise()} ${MK.esc(fact())}${fresh ? " " + T.newInAlbum : ""}`, auto ? "bad" : undefined);
+  if(cur.kind === "f") await feed(btn); else await settle(SCN[cur.kind], btn.dataset.id);
+  drawPaws();
+  await MK.wait(auto ? 1500 : fresh ? 1300 : 900);
+  ti++; next();
+}
+function choose(btn){
+  if(!btn || busy) return; MK.unlock();
+  if(isRight(btn.dataset.id)) return right(btn);
+  tries++; btn.classList.add("no"); MK.sfx.bad();
+  if(tries >= 2){ const box = cur.kind === "f" ? foods : SCN[cur.kind].el; return right([...box.querySelectorAll("[data-id]")].find(b => isRight(b.dataset.id)), true); }
+  MK.say(guide, T.again, "bad");
+}
+[SCN.h.el, SCN.w.el].forEach(el => el.addEventListener("click", e => choose(e.target.closest(".zbtn"))));
+foods.addEventListener("click", e => choose(e.target.closest(".food")));
+async function finish(){
+  busy = true; foods.hidden = true;
+  const sc = SCN[list[ROUND - 1].kind];
+  sc.el.classList.add("dusk");
+  MK.say(guide, T.done);
+  await MK.wait(2400);
   const stars = MK.starsFor(firstOK, ROUND); MK.best(GAME, L.id, stars);
-  MK.result({ stars, text: `Iš pirmo karto teisingai: ${firstOK} iš ${ROUND}.`,
+  MK.result({ stars, text: T.result(firstOK) + "<br>" + (newCount ? T.resNew(newCount) : T.resAlbum(got.size, A.length)),
     next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
 }
 showMenu();
