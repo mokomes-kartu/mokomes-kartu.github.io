@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Švarus miestas – MokomėsKartu.lt</title>
+<meta name="description" content="3–4 klasių gamtos mokslų žaidimas: gaudyk krentančias atliekas ir rūšiuok jas į tinkamus konteinerius.">
+<meta name="theme-color" content="#fff9e6">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/svarus-miestas/tekstai.lt.js"></script>
+<style>
+/* Meniu: miesto kiemas su parku (auga pagal visų surūšiuotų daiktų skaičių), tikslo kortelė, lygiai.
+   Žaidimas: viršuje gyvybės (lapeliai), eilė ir taškai; scenoje iš vamzdžio leidžiasi daiktas; apačioje – konteineriai. */
+body{--ac:#1f9d55;--ac-ink:#fff;--ac-soft:#d9f5df}
+.la svg{width:56px;height:45px}
+
+/* ---------- meniu ---------- */
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px}
+.mk-hero p{max-width:34ch;font-size:17px}
+#heroArt{width:min(100%,520px)}
+.goal{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14);
+  display:grid;grid-template-columns:54px minmax(0,1fr);gap:12px;align-items:center}
+.goal-who{width:54px;height:54px;border-radius:50%;background:var(--ac-soft);box-shadow:inset 0 0 0 2.5px var(--ink);display:grid;place-items:center}
+.goal-who svg{width:34px;height:34px}
+.goal p{margin:0 0 6px;font:800 16.5px/1.25 var(--kid)}
+.goal-bar{height:14px;border-radius:999px;background:#eadfba;overflow:hidden;box-shadow:inset 0 0 0 2px var(--ink)}
+.goal-bar i{display:block;height:100%;background:var(--ac);border-radius:999px 0 0 999px}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;font-weight:600;text-align:center}
+@media (hover:none){.note{display:none}}
+
+/* ---------- žaidimas ---------- */
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:40px}
+.lives{display:flex;gap:3px;margin-right:auto}
+.lives svg{width:28px;height:28px;flex:none;transition:opacity .3s,transform .3s}
+.lives svg.off{opacity:.18;transform:scale(.8) rotate(25deg)}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.combo{background:#ffe27a;animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.scene{position:relative;width:100%;max-width:560px;margin:0 auto;aspect-ratio:360/300;border-radius:26px;overflow:hidden;box-shadow:0 6px 0 rgba(18,26,51,.15);touch-action:manipulation}
+.scene > svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.scene::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none;z-index:5}
+#heroArt.scene{margin-bottom:4px}
+.plant{transform-box:fill-box;transform-origin:50% 100%}
+.plant.new{animation:grow .7s cubic-bezier(.2,1.5,.4,1)}
+@keyframes grow{from{transform:scale(0)}}
+.item{position:absolute;left:50%;top:0;width:24%;transform:translate(-50%,-50%);z-index:3;pointer-events:none;display:grid;justify-items:center}
+.item svg{display:block;width:74%;height:auto;filter:drop-shadow(0 3px 0 rgba(18,26,51,.2))}
+.item b{margin-top:2px;padding:3px 9px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2px var(--ink);font:800 clamp(12.5px,3.5vw,16px)/1.15 var(--kid);white-space:nowrap}
+.item.land svg{transform:rotate(-14deg) translateY(6%);transition:transform .15s}
+.fly{position:fixed;left:0;top:0;z-index:40;pointer-events:none}
+.fly svg{display:block;width:100%;height:auto}
+.bins{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:8px;width:100%;max-width:560px;margin:10px auto 0}
+.bin{position:relative;display:grid;justify-items:center;align-content:start;gap:2px;min-height:96px;padding:6px 2px 7px;border:0;border-radius:18px;cursor:pointer;background:var(--card);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.18);transition:transform .1s;touch-action:manipulation}
+.bin:active{transform:translateY(3px)}
+.bin svg{width:min(100%,82px);height:auto;display:block}
+.bin b{font:800 clamp(12px,3.3vw,15px)/1.1 var(--kid);text-align:center;text-wrap:balance;padding:0 2px}
+.bin .key{position:absolute;left:7px;top:6px;width:20px;height:20px;border-radius:50%;background:var(--ac-soft);font:800 12px/20px var(--body);text-align:center;font-style:normal}
+@media (hover:none){.bin .key{display:none}}
+.bin.sel{box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.18),0 0 0 4px #2f6bff55}
+.bin.ok{background:#e4fbe9;box-shadow:inset 0 0 0 4px var(--good),0 5px 0 rgba(18,26,51,.18)}
+.bin.ok svg{animation:mkHop .45s cubic-bezier(.3,1.6,.5,1)}
+.bin.no{background:#ffe9e3;animation:mkShake .45s}
+.bin.show{box-shadow:inset 0 0 0 4px var(--good),0 5px 0 rgba(18,26,51,.18);animation:mkPulse .9s infinite}
+.bins.lock .bin{pointer-events:none}
+.plus{position:absolute;left:50%;z-index:6;transform:translate(-50%,-50%);font:800 24px/1 var(--kid);color:var(--ink);text-shadow:0 2px 0 #fff,0 -2px 0 #fff,2px 0 0 #fff,-2px 0 0 #fff;pointer-events:none;animation:up .8s ease-out forwards}
+@keyframes up{to{transform:translate(-50%,-190%);opacity:0}}
+.mk-guide{margin-top:12px;max-width:560px;margin-inline:auto}
+#go{display:flex;width:100%;max-width:560px;margin:10px auto 0}
+@media (prefers-reduced-motion:reduce){.bin.no,.bin.show{animation:none}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="scene" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="goal" id="goal"></div>
+    <div id="levels"></div>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><span class="lives" id="lives" role="img"></span><span class="chip combo" id="combo" hidden></span><span class="chip" id="cnt"></span><span class="chip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div class="scene" id="scene"></div>
+    <div class="bins" id="bins"></div>
+    <div id="guideBox"></div>
+    <button type="button" class="mk-btn" id="go" hidden></button>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T;
+const GAME = "svarus-miestas", GRADES = [3, 4], ROUND = 20, LIVES = 3, PLANT_EVERY = 5, PLANTS_MAX = 24;
+const REC = "mk-" + GAME + "-rekordai", PARK = "mk-" + GAME + "-parkas"; // atskirai nuo žvaigždučių
+const K = "#121a33", S = `stroke="${K}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"`;
+const REDUCED = window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+/* ---------- konteineriai (langelis 80×64, ženklas centruotas ties 40;39) ---------- */
+const BIN_ICON = {
+  popierius: `<rect x="33.500" y="30.500" width="13" height="17" rx="1.500" fill="#fff" ${S} stroke-width="1.800"/><path d="M36.500 35.500h7M36.500 39h7M36.500 42.500h4.500" stroke="${K}" stroke-width="1.500" stroke-linecap="round"/>`,
+  stiklas: `<path d="M38 29.500h4v4.500q4 2 4 6v6.500q0 2-2 2h-8q-2 0-2-2v-6.500q0-4 4-6z" fill="#bfeacb" ${S} stroke-width="1.800"/><path d="M37 41v5" stroke="#fff" stroke-width="1.600" stroke-linecap="round"/>`,
+  plastikas: `<path d="M34.500 29.500h4v4q2.500 1.500 2.500 4.500v8.500q0 2-2 2h-5q-2 0-2-2v-8.500q0-3 2.500-4.500z" fill="#bfe3ff" ${S} stroke-width="1.800"/><rect x="42.500" y="37.500" width="6.500" height="11" rx="1.500" fill="#d5d9e0" ${S} stroke-width="1.800"/><path d="M32 41h9" stroke="${K}" stroke-width="1.300"/>`,
+  maistas: `<path d="M40 34.500q-7.500-3.500-7.500 5q0 8 7.500 9q7.500-1 7.500-9q0-8.500-7.500-5z" fill="#ff6b5e" ${S} stroke-width="1.800"/><path d="M40 34.500q0-4 3.500-5.500" fill="none" stroke="${K}" stroke-width="1.800" stroke-linecap="round"/>`,
+  misrios: `<path d="M36.500 34q3.500-2 7 0q4.500 5 4.500 10q0 4.500-8 4.500t-8-4.500q0-5 4.500-10z" fill="#9aa3b5" ${S} stroke-width="1.800"/><path d="M36.500 33.500l3.500-4 3.500 4z" fill="#9aa3b5" ${S} stroke-width="1.800"/>`
+};
+const BINS = {
+  popierius: { c: "#3d86ff", d: "#1f56c9" }, stiklas: { c: "#35b257", d: "#1f7d38" }, plastikas: { c: "#ffc61a", d: "#e0a400" },
+  maistas: { c: "#a56a3c", d: "#6e4426" }, misrios: { c: "#858c9c", d: "#565c6b" }, taromatas: {}
+};
+const DEPOSIT = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" stroke="${K}" stroke-width="1.500"/><path d="M${x - r * .5} ${y + r * .1}a${r * .5} ${r * .5} 0 0 1 ${r * .85}-${r * .4}M${x + r * .5} ${y - r * .1}a${r * .5} ${r * .5} 0 0 1-${r * .85} ${r * .4}" fill="none" stroke="#1f9d55" stroke-width="${r * .32}" stroke-linecap="round"/>`;
+function binSvg(id){
+  if(id === "taromatas") return `<svg viewBox="0 0 80 64" aria-hidden="true"><rect x="15" y="4" width="50" height="56" rx="7" fill="#eef1f6" ${S} stroke-width="2.400"/><rect x="22" y="9.500" width="36" height="8" rx="3" fill="#35b257" stroke="${K}" stroke-width="1.600"/>
+    <circle cx="40" cy="38" r="13" fill="#2b2f3a" stroke="${K}" stroke-width="2"/><circle cx="40" cy="38" r="8.500" fill="#12151c"/>${DEPOSIT(40, 38, 5.500)}<rect x="24" y="54" width="32" height="3" rx="1.500" fill="#c3c9d6"/></svg>`;
+  const b = BINS[id];
+  return `<svg viewBox="0 0 80 64" aria-hidden="true"><circle cx="24" cy="59" r="3.500" fill="${K}"/><circle cx="56" cy="59" r="3.500" fill="${K}"/>
+    <path d="M12 19h56l-5 35.500q-.5 3.500-4.500 3.500h-37q-4 0-4.500-3.500z" fill="${b.c}" ${S} stroke-width="2.400"/><rect x="8" y="9.500" width="64" height="10" rx="5" fill="${b.d}" ${S} stroke-width="2.400"/>
+    <circle cx="40" cy="39" r="13.500" fill="#fff" stroke="${K}" stroke-width="2"/>${BIN_ICON[id]}</svg>`;
+}
+
+/* ---------- daiktų piešiniai (60×60) ---------- */
+const ART = {
+  laikrastis: `<path d="M8 14h40v32q0 4 4 4H12q-4 0-4-4z" fill="#f4f1e6" ${S}/><path d="M48 22h4v24q0 4-4 4" fill="#e2decf" ${S}/><rect x="13" y="19" width="30" height="6" rx="1.500" fill="${K}"/><rect x="13" y="29" width="13" height="11" fill="#9cc7f0" stroke="${K}" stroke-width="1.400"/><path d="M30 30h13M30 34.500h13M30 39h13M13 44.500h30" stroke="#8c8778" stroke-width="1.800" stroke-linecap="round"/>`,
+  deze: `<path d="M8 24h44v25q0 3-3 3H11q-3 0-3-3z" fill="#c99a5b" ${S}/><path d="M8 24l6-11h32l6 11z" fill="#e0bb85" ${S}/><path d="M30 13v11" stroke="${K}" stroke-width="2"/><rect x="25" y="24" width="10" height="9" fill="#f0dcb4" stroke="${K}" stroke-width="1.600"/><path d="M14 44h8M14 39.500h5" stroke="#8a6332" stroke-width="2" stroke-linecap="round"/>`,
+  sasiuvinis: `<rect x="13" y="7" width="34" height="46" rx="3.500" fill="#4aa3e8" ${S}/><path d="M19 7v46" stroke="${K}" stroke-width="2"/><rect x="24" y="15" width="18" height="12" rx="2" fill="#fff" stroke="${K}" stroke-width="1.600"/><path d="M27 19.500h12M27 23h8" stroke="#8c8778" stroke-width="1.600" stroke-linecap="round"/>`,
+  vokas: `<rect x="6" y="15" width="48" height="32" rx="3" fill="#fff7e0" ${S}/><path d="M6.500 16.500l23.500 17 23.500-17" fill="none" ${S}/><path d="M7 46l16-15M53 46 37 31" stroke="#c9b98a" stroke-width="1.600" stroke-linecap="round"/><rect x="41" y="19" width="8" height="9" fill="#ff8a7a" stroke="${K}" stroke-width="1.400"/>`,
+  popmaiselis: `<path d="M22 18q0-11 8-11t8 11" fill="none" stroke="#8a6332" stroke-width="2.600" stroke-linecap="round"/><path d="M13 18h34l3 32q0 3-3 3H13q-3 0-3-3z" fill="#d9b27a" ${S}/><path d="M13 18l5 8h24l5-8" fill="#c79e63" ${S}/><path d="M18 26v27M42 26v27" stroke="#b08a52" stroke-width="1.600"/>`,
+  stiklainis: `<rect x="13" y="16" width="34" height="38" rx="9" fill="#cfeeff" ${S}/><rect x="16" y="6" width="28" height="10" rx="3" fill="#d9a53a" ${S}/><path d="M20 9.500v3M26 9.500v3M32 9.500v3M38 9.500v3" stroke="#a5781c" stroke-width="1.600" stroke-linecap="round"/><path d="M20 26v18" stroke="#fff" stroke-width="3.400" stroke-linecap="round"/>`,
+  aliejus: `<path d="M26 14v6q-7 3-7 11v20q0 3 3 3h16q3 0 3-3V31q0-8-7-11v-6z" fill="#dff3c8" ${S}/><path d="M19.500 36h21v15q0 3-3 3h-15q-3 0-3-3z" fill="#f2c94c" opacity=".9"/><path d="M26 14v6q-7 3-7 11v20q0 3 3 3h16q3 0 3-3V31q0-8-7-11v-6z" fill="none" ${S}/><rect x="24" y="5" width="12" height="9" rx="2.500" fill="#3f9a4a" ${S}/><path d="M24 34v12" stroke="#fff" stroke-width="2.600" stroke-linecap="round"/>`,
+  kvepalai: `<rect x="14" y="25" width="32" height="29" rx="7" fill="#f7c9e6" ${S}/><rect x="25" y="17" width="10" height="8" fill="#e8ecf2" ${S}/><rect x="22" y="7" width="16" height="10" rx="3" fill="#d9a53a" ${S}/><path d="M38 11h7" stroke="${K}" stroke-width="2" stroke-linecap="round"/><path d="M21 33v12" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="35" cy="41" r="5" fill="#fff" opacity=".55"/>`,
+  sampunas: `<path d="M20 20q0-4 4-4h12q4 0 4 4v30q0 4-4 4H24q-4 0-4-4z" fill="#a98bf0" ${S}/><rect x="25" y="6" width="10" height="10" rx="2" fill="#fff" ${S}/><path d="M35 9h6" stroke="${K}" stroke-width="2.400" stroke-linecap="round"/><rect x="23.500" y="27" width="13" height="15" rx="3" fill="#fff" stroke="${K}" stroke-width="1.600"/><circle cx="30" cy="34.500" r="3.400" fill="#7fd0f5"/>`,
+  jogurtas: `<path d="M13 19h34l-5 32q-.5 3-3.500 3h-17q-3 0-3.500-3z" fill="#fff" ${S}/><path d="M10 19q20-11 40 0z" fill="#d5d9e0" ${S}/><path d="M15.500 31h29l-1.800 11.500h-25.400z" fill="#ffd9e2"/><circle cx="30" cy="36.500" r="5" fill="#ff5f7e" stroke="${K}" stroke-width="1.400"/><path d="M27.500 31.500l2.500 2 2.500-2" fill="#3f9a4a" stroke="${K}" stroke-width="1.200" stroke-linejoin="round"/>`,
+  maiselis: `<path d="M15 24q0-17 7-17q5 0 5 13h6q0-13 5-13q7 0 7 17l3 27q0 3-3 3H15q-3 0-3-3z" fill="#bfe3ff" ${S}/><path d="M22 24q8 5 16 0" fill="none" stroke="#7fb8d8" stroke-width="2" stroke-linecap="round"/><path d="M20 32v16M40 34v12" stroke="#fff" stroke-width="2.600" stroke-linecap="round"/>`,
+  konservai: `<rect x="12" y="13" width="36" height="38" rx="5" fill="#c5ccd6" ${S}/><ellipse cx="30" cy="13" rx="18" ry="5" fill="#e8ecf2" ${S}/><rect x="12" y="23" width="36" height="17" fill="#e5243b" stroke="${K}" stroke-width="2"/><circle cx="30" cy="31.500" r="5.500" fill="#ffe27a" stroke="${K}" stroke-width="1.400"/><path d="M12 46h36" stroke="#8b93a1" stroke-width="1.600"/>`,
+  folija: `<path d="M12 33l7-16 13-7 13 6 5 15-6 15-15 6-12-7z" fill="#d9dee6" ${S}/><path d="M19 17l9 14-16 2M28 31l4-21M28 31l17-15M28 31l22 0M28 31l1 21M28 31l16 15" fill="none" stroke="#8b93a1" stroke-width="1.500" stroke-linejoin="round"/><path d="M33 16l8 4" stroke="#fff" stroke-width="2.400" stroke-linecap="round"/>`,
+  grauztukas: `<path d="M30 14q-3-7 3-9" fill="none" stroke="#6e4426" stroke-width="2.600" stroke-linecap="round"/><path d="M15 15q15-7 30 0q-9 8-8 15t8 15q-15 7-30 0q9-8 8-15t-8-15z" fill="#fff3d6" ${S}/><path d="M15 15q15-7 30 0q-4 3.500-6 7q-9-4-18 0q-2-3.500-6-7zM15 45q15 7 30 0q-4-3.500-6-7q-9 4-18 0q-2 3.500-6 7z" fill="#e5243b" ${S}/><ellipse cx="27" cy="30" rx="1.600" ry="2.800" fill="#6e4426"/><ellipse cx="33" cy="30" rx="1.600" ry="2.800" fill="#6e4426"/>`,
+  zieve: `<path d="M28 8h5l1 8q14 6 18 26q-12-6-19-18q2 16-3 30q-8-14-5-30q-9 10-19 14q4-18 21-30z" fill="#ffd84a" ${S}/><rect x="27" y="5" width="6.500" height="6" rx="1.500" fill="#6e4426" stroke="${K}" stroke-width="1.600"/><path d="M30 20q1 14-1 24M24 22q-7 7-12 11M36 22q7 8 11 14" fill="none" stroke="#e0a400" stroke-width="1.800" stroke-linecap="round"/>`,
+  lukstai: `<path d="M7 34l5 4 4-5 5 5 4-5 4 4q0 13-11 13T7 34z" fill="#fbf1dd" ${S}/><path d="M31 30l4-6 5 5 4-6 5 5 4-4q2 14-9 17t-13-11z" fill="#f4e3c2" ${S}/><path d="M12 43q3 3 7 2M40 40q4 0 7-3" fill="none" stroke="#d9c49a" stroke-width="1.800" stroke-linecap="round"/><path d="M24 14l3 5M33 9v6M41 13l-2 5" stroke="#d9c49a" stroke-width="2" stroke-linecap="round"/>`,
+  arbata: `<path d="M30 20q4-12 14-13" fill="none" stroke="#8c8778" stroke-width="1.800" stroke-linecap="round"/><rect x="41" y="3" width="11" height="9" rx="1.500" fill="#ffe27a" ${S} stroke-width="1.600"/><path d="M19 28l11-9 11 9v24H19z" fill="#ead9b4" ${S}/><path d="M23 34h14v14H23z" fill="#b98a55" opacity=".75"/><path d="M19 28h22" stroke="${K}" stroke-width="1.600"/>`,
+  butelis: `<path d="M25 13v5q-6 3-6 10v23q0 3 3 3h16q3 0 3-3V28q0-7-6-10v-5z" fill="#c7ecff" ${S}/><rect x="24" y="5" width="12" height="8" rx="2" fill="#2f6bff" ${S}/><rect x="19" y="30" width="22" height="15" fill="#ff8a1f" stroke="${K}" stroke-width="1.800"/>${DEPOSIT(30, 37.500, 5.500)}<path d="M23 22v5" stroke="#fff" stroke-width="2.400" stroke-linecap="round"/>`,
+  skardine: `<rect x="16" y="10" width="28" height="44" rx="6" fill="#ff5f5f" ${S}/><ellipse cx="30" cy="10.500" rx="12.500" ry="4" fill="#e8ecf2" ${S}/><ellipse cx="32" cy="10.500" rx="4" ry="1.600" fill="#8b93a1"/><path d="M16.500 20h27M16.500 46h27" stroke="#c93030" stroke-width="1.800"/>${DEPOSIT(30, 33, 6.500)}`,
+  servetele: `<path d="M10 30l6-14 12-5 9 4 11-2 4 13-4 9 2 10-12 6-10-4-9 3-7-9z" fill="#fff" ${S}/><path d="M16 16l8 12-12 6M24 28l13-13M24 28l12 6 12-8M36 34l-5 13M36 34l12 5" fill="none" stroke="#c9cfdb" stroke-width="1.600" stroke-linejoin="round"/><circle cx="21" cy="39" r="3.200" fill="#c9a26a" opacity=".8"/><circle cx="40" cy="22" r="2.400" fill="#c9a26a" opacity=".8"/><circle cx="43" cy="43" r="2" fill="#c9a26a" opacity=".8"/>`,
+  puodelis: `<path d="M40 24h6q6 0 6 7t-6 7h-5" fill="none" stroke="${K}" stroke-width="5.500"/><path d="M40 24h6q6 0 6 7t-6 7h-5" fill="none" stroke="#ff8a7a" stroke-width="2.600"/><path d="M10 16h14l3 6 4-6h10v28q0 6-6 6H16q-6 0-6-6z" fill="#ff8a7a" ${S}/><path d="M27 22l-4 8 6 6-4 9" fill="none" stroke="${K}" stroke-width="1.800" stroke-linejoin="round"/><path d="M44 46l10 2-4 7-8-3z" fill="#ff8a7a" ${S}/>`,
+  sepetelis: `<path d="M9 50L37 22" stroke="${K}" stroke-width="9" stroke-linecap="round"/><path d="M9 50L37 22" stroke="#35b257" stroke-width="5" stroke-linecap="round"/><path d="M34 18l10-10 8 8-10 10z" fill="#e8ecf2" ${S}/><path d="M38.500 13.500l-5-5M42 10l-5-5M45.500 6.500l-3.500-3.500" stroke="#8b93a1" stroke-width="2.400" stroke-linecap="round"/><path d="M37 21l5 5" stroke="${K}" stroke-width="1.600"/>`
+};
+const ITEMS = {
+  popierius: ["laikrastis", "deze", "sasiuvinis", "vokas", "popmaiselis"],
+  stiklas: ["stiklainis", "aliejus", "kvepalai"],
+  plastikas: ["sampunas", "jogurtas", "maiselis", "konservai", "folija"],
+  maistas: ["grauztukas", "zieve", "lukstai", "arbata"],
+  taromatas: ["butelis", "skardine"],
+  misrios: ["servetele", "puodelis", "sepetelis"]
+};
+const itemSvg = id => `<svg viewBox="0 0 60 60" aria-hidden="true">${ART[id]}</svg>`;
+const LEAF = `<svg viewBox="0 0 30 30" aria-hidden="true"><path d="M5 25Q2 8 25 4q2 20-14 21z" fill="#4cc46a" stroke="${K}" stroke-width="2.200" stroke-linejoin="round"/><path d="M6 25Q12 16 20 10" fill="none" stroke="${K}" stroke-width="1.800" stroke-linecap="round"/></svg>`;
+const LEVELS = [
+  { id: "popierius", art: "popierius", bins: ["popierius", "stiklas"], t0: 5 },
+  { id: "plastikas", art: "plastikas", bins: ["popierius", "plastikas", "stiklas"], t0: 5 },
+  { id: "maistas", art: "maistas", bins: ["popierius", "plastikas", "stiklas", "maistas"], t0: 5 },
+  { id: "meistras", art: "taromatas", bins: ["popierius", "plastikas", "stiklas", "maistas", "taromatas", "misrios"], t0: 5.400 }
+];
+
+/* ---------- miesto kiemas (360×300) ---------- */
+const SLOTS = (() => { const xs = [24, 60, 96, 130, 230, 264, 300, 336], ys = [224, 254, 286], o = [];
+  ys.forEach((y, r) => xs.forEach((x, c) => o.push([x + (r % 2 ? 8 : 0) * (c < 4 ? 1 : -1), y])));
+  const order = [0, 7, 19, 12, 9, 22, 3, 4, 16, 23, 10, 13, 1, 6, 18, 21, 8, 15, 2, 5, 17, 20, 11, 14];
+  return order.map(i => o[i]); })();
+const tree = (x, y) => `<g transform="translate(${x} ${y})"><rect x="-3" y="-16" width="6" height="18" rx="2" fill="#8a5a36" stroke="${K}" stroke-width="1.600"/><circle cx="0" cy="-28" r="15" fill="#4cc46a" stroke="${K}" stroke-width="2"/><circle cx="-5" cy="-33" r="4.500" fill="#8fe39b"/></g>`;
+const bush = (x, y) => `<g transform="translate(${x} ${y})"><path d="M-15 2q-4-13 6-13q3-8 10-5q8-3 9 6q8 2 5 12z" fill="#35b257" stroke="${K}" stroke-width="2" stroke-linejoin="round"/><circle cx="-4" cy="-6" r="2" fill="#ff7fb0"/><circle cx="6" cy="-3" r="2" fill="#ffe27a"/></g>`;
+const flower = (x, y, c) => `<g transform="translate(${x} ${y})"><path d="M0 2v-13" stroke="#2f8f42" stroke-width="2.600" stroke-linecap="round"/><path d="M0-3q-7-1-8-7q7 0 8 7z" fill="#4cc46a" stroke="${K}" stroke-width="1.400" stroke-linejoin="round"/>
+  ${[0, 72, 144, 216, 288].map(a => `<ellipse cx="0" cy="-22" rx="4" ry="6" fill="${c}" stroke="${K}" stroke-width="1.400" transform="rotate(${a} 0 -16)"/>`).join("")}<circle cx="0" cy="-16" r="3.600" fill="#ffc61a" stroke="${K}" stroke-width="1.400"/></g>`;
+const FCOL = ["#ff7fb0", "#fff", "#ff8a1f", "#b48cf2"];
+const plantSvg = (i, fresh) => { const [x, y] = SLOTS[i], k = i % 3;
+  return `<g class="plant${fresh ? " new" : ""}">${k === 0 ? tree(x, y) : k === 1 ? flower(x, y, FCOL[(i >> 1) % 4]) : bush(x, y)}</g>`; };
+const house = (x, w, h, col, roof) => { const y = 196 - h; let win = "";
+  for(let r = 0; r * 26 + 14 < h - 22; r++) for(let c = 0; c * 22 + 10 < w - 12; c++) win += `<rect x="${x + 10 + c * 22}" y="${y + 14 + r * 26}" width="12" height="14" rx="2" fill="#fff8d6" stroke="${K}" stroke-width="1.600"/>`;
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${col}" stroke="${K}" stroke-width="2.400"/><path d="M${x - 5} ${y}h${w + 10}l-8-12h-${w - 6}z" fill="${roof}" stroke="${K}" stroke-width="2.400" stroke-linejoin="round"/>${win}`; };
+function citySvg(plants, o){
+  o = o || {};
+  const ps = []; for(let i = 0; i < Math.min(plants, PLANTS_MAX); i++) ps.push(i);
+  ps.sort((a, b) => SLOTS[a][1] - SLOTS[b][1]);
+  return `<svg viewBox="0 0 360 300" ${o.label ? `role="img" aria-label="${o.label}"` : 'aria-hidden="true"'}><rect width="360" height="300" fill="#dff3ff"/>
+    <circle cx="316" cy="40" r="20" fill="#ffd84a" stroke="${K}" stroke-width="2"/>
+    <g fill="#fff"><ellipse cx="70" cy="42" rx="30" ry="10"/><circle cx="60" cy="35" r="11"/><circle cx="80" cy="32" r="13"/><ellipse cx="252" cy="70" rx="22" ry="7"/><circle cx="246" cy="64" r="8"/></g>
+    ${house(8, 78, 96, "#ffd9c7", "#e5604a")}${house(96, 60, 124, "#d9e6ff", "#5b7bd6")}${house(206, 66, 108, "#fff0b8", "#e0a400")}${house(282, 72, 84, "#dff5d0", "#3f9a4a")}
+    <rect y="194" width="360" height="106" fill="#b9e8a2"/><path d="M0 194h360" stroke="${K}" stroke-width="2.400"/>
+    <path d="M0 240q90-14 180 0t180 0v60H0z" fill="#a5df8c"/>
+    <ellipse cx="180" cy="272" rx="62" ry="17" fill="#f3e7c4" stroke="${K}" stroke-width="2.400"/><ellipse cx="180" cy="272" rx="46" ry="11" fill="#e9d9ab"/>
+    <g id="plants">${ps.map(i => plantSvg(i, false)).join("")}</g>
+    ${o.chute ? `<rect x="154" y="-6" width="52" height="30" rx="6" fill="#8b93a1" stroke="${K}" stroke-width="2.400"/><rect x="146" y="20" width="68" height="11" rx="5.500" fill="#565c6b" stroke="${K}" stroke-width="2.400"/><path d="M166 4h28M166 11h28" stroke="#565c6b" stroke-width="2" stroke-linecap="round"/>` : ""}</svg>`;
+}
+
+/* ---------- elementai ir saugykla ---------- */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), scene = $("scene"), binsEl = $("bins"), goBtn = $("go");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("note").textContent = T.keys; $("ptsL").textContent = T.pts; goBtn.textContent = T.go + " →";
+$("guideBox").innerHTML = MK.guide("");
+const guide = $("guideBox").firstElementChild;
+let park = Math.max(0, +MK.get(PARK, 0) || 0);
+const plantsOf = n => Math.min(PLANTS_MAX, Math.floor(n / PLANT_EVERY));
+const LV = LEVELS.map((l, i) => Object.assign(l, { name: T.levels[i][0], baseSub: T.levels[i][1] }));
+
+function showMenu(){
+  cancelAnimationFrame(raf); state = "menu";
+  const n = plantsOf(park), rec = MK.get(REC, {});
+  $("heroArt").innerHTML = citySvg(n, { label: T.heroLabel(n) });
+  const left = PLANT_EVERY - park % PLANT_EVERY;
+  $("goal").innerHTML = `<span class="goal-who" aria-hidden="true">${LEAF}</span><div><p>${n >= PLANTS_MAX ? T.goalAll : n === 0 && park === 0 ? T.goalEmpty : T.goal(n, PLANTS_MAX, left)}</p>
+    <div class="goal-bar" aria-hidden="true"><i style="width:${Math.max(park ? 4 : 0, Math.round(n / PLANTS_MAX * 100))}%"></i></div></div>`;
+  MK.levels($("levels"), { game: GAME, onPick: start, levels: LV.map(l => ({ id: l.id, name: l.name, sub: l.baseSub + (rec[l.id] ? " · " + T.record(rec[l.id]) : ""),
+    art: `<span class="la">${binSvg(l.art)}</span>` })) });
+  play.hidden = true; menu.hidden = false; window.scrollTo(0, 0);
+}
+
+/* ---------- žaidimo eiga ---------- */
+let lvl = 0, L = null, list = [], idx = 0, cur = null, lives = LIVES, pts = 0, okN = 0, streak = 0, state = "menu", raf = 0, last = 0, el = 0, dur = 5, sel = 0, itemEl = null;
+const Y0 = 15, Y1 = 77; // daikto centro kelias scenoje (procentais)
+function makeList(){
+  const out = [], lastOf = {};
+  while(out.length < ROUND) for(const b of MK.shuffle(L.bins)){
+    const pool = ITEMS[b].filter(id => id !== lastOf[b]), id = MK.pick(pool.length ? pool : ITEMS[b]);
+    lastOf[b] = id; out.push({ id, bin: b }); if(out.length >= ROUND) break;
+  }
+  return out;
+}
+function hud(){
+  $("lives").innerHTML = Array.from({ length: LIVES }, (_, i) => LEAF.replace("<svg", `<svg class="${i < lives ? "" : "off"}"`)).join("");
+  $("lives").setAttribute("aria-label", T.livesLabel(lives));
+  $("cnt").textContent = T.cnt(Math.min(idx + 1, ROUND), ROUND); $("pts").textContent = pts;
+  const m = mult(), c = $("combo"); if(m > 1){ if(c.hidden || c.dataset.m != m){ c.hidden = false; c.dataset.m = m; c.textContent = T.comboChip(m); c.setAttribute("aria-label", T.comboLabel(m)); c.style.animation = "none"; void c.offsetWidth; c.style.animation = ""; } } else c.hidden = true;
+}
+const mult = () => streak >= 10 ? 3 : streak >= 5 ? 2 : 1;
+function start(i){
+  lvl = i; L = LV[i]; list = makeList(); idx = 0; lives = LIVES; pts = 0; okN = 0; streak = 0; sel = 0;
+  scene.innerHTML = citySvg(plantsOf(park), { chute: true });
+  binsEl.style.setProperty("--n", L.bins.length > 4 ? 3 : L.bins.length);
+  binsEl.innerHTML = L.bins.map((b, k) => `<button type="button" class="bin" data-id="${b}">${binSvg(b)}<b>${T.bins[b]}</b><i class="key" aria-hidden="true">${k + 1}</i></button>`).join("");
+  goBtn.hidden = true; menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
+  MK.say(guide, T.start); spawn();
+}
+function spawn(){
+  if(idx >= ROUND || lives <= 0) return finish();
+  cur = list[idx]; hud();
+  dur = Math.max(2.600, L.t0 - idx * 0.120) * (REDUCED ? 1.400 : 1);
+  itemEl = document.createElement("div"); itemEl.className = "item"; itemEl.dataset.id = cur.id;
+  itemEl.innerHTML = `${itemSvg(cur.id)}<b>${T.items[cur.id][0]}</b>`; itemEl.style.top = Y0 + "%"; scene.appendChild(itemEl);
+  binsEl.classList.remove("lock"); binsEl.querySelectorAll(".bin").forEach(b => b.classList.remove("ok", "no", "show"));
+  el = 0; last = 0; state = "fall"; cancelAnimationFrame(raf); raf = requestAnimationFrame(tick);
+}
+function tick(t){
+  if(state !== "fall") return;
+  if(last && !document.hidden) el += Math.min(0.050, (t - last) / 1000);
+  last = t;
+  const p = Math.min(1, el / dur);
+  itemEl.style.top = (Y0 + (Y1 - Y0) * p) + "%";
+  if(p >= 1) return fail(null);
+  raf = requestAnimationFrame(tick);
+}
+document.addEventListener("visibilitychange", () => { last = 0; });
+const binBtn = id => binsEl.querySelector(`.bin[data-id="${id}"]`);
+async function flyTo(btn){
+  const a = itemEl.querySelector("svg").getBoundingClientRect(), b = btn.querySelector("svg").getBoundingClientRect();
+  const f = document.createElement("div"); f.className = "fly"; f.style.width = a.width + "px"; f.innerHTML = itemSvg(cur.id); document.body.appendChild(f);
+  itemEl.remove();
+  const x2 = b.left + b.width / 2 - a.width / 2, y2 = b.top + b.height * 0.300 - a.height / 2;
+  if(f.animate) await f.animate([{ transform: `translate(${a.left}px,${a.top}px) scale(1)` }, { transform: `translate(${x2}px,${y2}px) scale(.35)`, opacity: 0.600 }],
+    { duration: REDUCED ? 1 : 300, easing: "ease-in" }).finished.catch(() => {});
+  f.remove();
+}
+async function right(btn){
+  state = "anim"; binsEl.classList.add("lock");
+  streak++; okN++; const m = mult(), gain = 10 * m; pts += gain;
+  const before = plantsOf(park); park++; MK.set(PARK, park);
+  MK.sfx.good(); await flyTo(btn); btn.classList.add("ok");
+  const plus = document.createElement("span"); plus.className = "plus"; plus.textContent = "+" + gain; plus.style.top = "62%"; scene.appendChild(plus); setTimeout(() => plus.remove(), 800);
+  if(plantsOf(park) > before){ const g = scene.querySelector("#plants"); g.insertAdjacentHTML("beforeend", plantSvg(plantsOf(park) - 1, !REDUCED)); MK.sfx.star(1); MK.say(guide, T.plant); }
+  else if(streak === 5) MK.say(guide, T.combo2); else if(streak === 10) MK.say(guide, T.combo3);
+  idx++; hud();
+  await MK.wait(REDUCED ? 500 : 380);
+  spawn();
+}
+function fail(btn){
+  state = "pause"; cancelAnimationFrame(raf); binsEl.classList.add("lock");
+  lives--; streak = 0; MK.sfx.bad(); hud();
+  if(btn) btn.classList.add("no"); else itemEl.classList.add("land");
+  binBtn(cur.bin).classList.add("show");
+  const it = T.items[cur.id];
+  MK.say(guide, `${btn ? T.wrong : T.missed} ${it[1] || T.why[cur.bin](it[0])}`, "bad");
+  goBtn.hidden = false; goBtn.focus({ preventScroll: true });
+  goBtn.scrollIntoView({ block: "nearest", behavior: REDUCED ? "auto" : "smooth" });
+}
+async function cont(){
+  if(state !== "pause") return;
+  state = "anim"; goBtn.hidden = true; MK.sfx.tap();
+  await flyTo(binBtn(cur.bin)); idx++; spawn();
+}
+function choose(btn){
+  if(!btn || state !== "fall") return; MK.unlock();
+  if(btn.dataset.id === cur.bin) right(btn); else fail(btn);
+}
+binsEl.addEventListener("click", e => choose(e.target.closest(".bin")));
+goBtn.addEventListener("click", cont);
+document.addEventListener("keydown", e => {
+  if(play.hidden || document.querySelector(".mk-ov")) return;
+  if(state === "pause"){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); cont(); } return; }
+  if(state !== "fall") return;
+  const bs = [...binsEl.querySelectorAll(".bin")], n = bs.length;
+  if(/^[1-9]$/.test(e.key) && +e.key <= n) return choose(bs[+e.key - 1]);
+  const mark = () => bs.forEach((b, k) => b.classList.toggle("sel", k === sel));
+  if(e.key === "ArrowLeft"){ e.preventDefault(); sel = (sel + n - 1) % n; mark(); }
+  else if(e.key === "ArrowRight"){ e.preventDefault(); sel = (sel + 1) % n; mark(); }
+  else if(e.key === "ArrowDown" || e.key === "Enter" || e.key === " "){ if(e.target.closest && e.target.closest(".bin")) return; e.preventDefault(); mark(); choose(bs[sel]); }
+});
+function finish(){
+  state = "end"; cancelAnimationFrame(raf); binsEl.classList.add("lock");
+  const stars = MK.starsFor(okN, ROUND); MK.best(GAME, L.id, stars);
+  const rec = MK.get(REC, {}), isNew = pts > (rec[L.id] || 0);
+  if(isNew){ rec[L.id] = pts; MK.set(REC, rec); }
+  MK.result({ stars, text: `${lives <= 0 ? T.resOut(okN, ROUND) : T.resOk(okN, ROUND)}<br>${T.resPts(pts)} ${isNew && pts ? `<b>${T.resNew}</b>` : rec[L.id] ? T.resBest(rec[L.id]) : ""}`,
+    next: lvl < LV.length - 1 && lives > 0 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+if(/[?&]test\b/.test(location.search)) window.__sm = { bin: () => cur && cur.bin, state: () => state, idx: () => idx, lives: () => lives };
+showMenu();
+})();
+</script>
+</body>
+</html>
