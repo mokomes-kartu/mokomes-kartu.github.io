@@ -182,5 +182,42 @@ window.MK_ZAIDIMAI = [
  "desc": "Žodžių daryba, laikai, prielinksniai, jungiamieji žodžiai ir kolokacijos su paaiškinimais lietuviškai.",
  "url": "/vbe-anglu/",
  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM3MDQ4ZTgiLz48cmVjdCB4PSI5IiB5PSIxNCIgd2lkdGg9IjQ2IiBoZWlnaHQ9IjM0IiByeD0iNiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjx0ZXh0IHg9IjMyIiB5PSIzOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTciIGZpbGw9IiMxMjFhMzMiPkVOPC90ZXh0PjxwYXRoIGQ9Ik0xOCA1NGgyOCIgc3Ryb2tlPSIjZmZkNDNiIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg=="
+},
+{
+ "id": "spalvu-dirbtuves",
+ "subject": "dai",
+ "grades": [
+  1,
+  2,
+  3
+ ],
+ "title": "Spalvų dirbtuvės",
+ "desc": "Maišyk dažus su dailininku: išvestinės, šiltos ir šaltos spalvos, šviesinimas ir tamsinimas. Surink savo galeriją.",
+ "url": "/spalvu-dirbtuves/",
+ "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiNlMDQ3OGYiLz48cGF0aCBkPSJNMzIgMTJjLTEzIDAtMjMgOS0yMyAyMHM4IDIwIDE5IDIwYzQgMCA1LTMgNC02LTEtNCAxLTYgNS02aDZjNyAwIDEyLTUgMTItMTEgMC0xMC0xMC0xNy0yMy0xN3oiIGZpbGw9IiNmNmRjYWUiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48Y2lyY2xlIGN4PSIyMSIgY3k9IjI3IiByPSI0LjUiIGZpbGw9IiNlNTI0M2IiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjIxIiByPSI0LjUiIGZpbGw9IiNmZmM2MWEiLz48Y2lyY2xlIGN4PSI0MyIgY3k9IjI2IiByPSI0LjUiIGZpbGw9IiMyZjZiZmYiLz48Y2lyY2xlIGN4PSIyMCIgY3k9IjM5IiByPSI0LjUiIGZpbGw9IiMyZmE4NGYiLz48L3N2Zz4="
+},
+{
+ "id": "lasteles-delione",
+ "subject": "bio",
+ "grades": [
+  6,
+  7
+ ],
+ "title": "Ląstelės dėlionė",
+ "desc": "Sudėk augalinę ir gyvūninę ląstelę, sužinok, ką veikia kiekviena jos dalis, ir surask klaidas piešiniuose.",
+ "url": "/lasteles-delione/",
+ "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMwZjhmN2UiLz48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI0NCIgaGVpZ2h0PSI0NCIgcng9IjEwIiBmaWxsPSIjZTZmNmM5IiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHJlY3QgeD0iMTQuNTAwIiB5PSIxNC41MDAiIHdpZHRoPSIzNSIgaGVpZ2h0PSIzNSIgcng9IjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU4Yjg0YSIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48ZWxsaXBzZSBjeD0iMzciIGN5PSIzNiIgcng9IjEwIiByeT0iMTEiIGZpbGw9IiNiZmU2ZmIiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PGNpcmNsZSBjeD0iMjMiIGN5PSIyNCIgcj0iNiIgZmlsbD0iI2E3OGJmYSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSIyMyIgY3k9IjI0IiByPSIyLjIwMCIgZmlsbD0iIzEyMWEzMyIvPjxlbGxpcHNlIGN4PSIyMyIgY3k9IjQyIiByeD0iNSIgcnk9IjMiIGZpbGw9IiMzZjlhNGEiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAyMyA0MikiLz48ZWxsaXBzZSBjeD0iNDEiIGN5PSIyMCIgcng9IjUiIHJ5PSIzIiBmaWxsPSIjM2Y5YTRhIiB0cmFuc2Zvcm09InJvdGF0ZSgxNSA0MSAyMCkiLz48L3N2Zz4="
+},
+{
+ "id": "reakciju-svarstykles",
+ "subject": "che",
+ "grades": [
+  9,
+  10
+ ],
+ "title": "Reakcijų svarstyklės",
+ "desc": "Išlygink chemines lygtis ant svarstyklių ir atpažink reakcijų tipus: jungimosi, skilimo, pavadavimo, mainų.",
+ "url": "/reakciju-svarstykles/",
+ "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMwYjcyODUiLz48cGF0aCBkPSJNMzIgMTZ2MzRNMjIgNTJoMjAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMTIgMjJsNDAtNiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHBhdGggZD0iTTUgNDBsNy0xOCA3IDE4eiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIuMjAwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTQgNDBoMTZhOCA2IDAgMCAxLTE2IDB6IiBmaWxsPSIjZmZlMDhhIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMiIvPjxwYXRoIGQ9Ik00NSAzNGw3LTE4IDcgMTh6IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi4yMDAiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNNDQgMzRoMTZhOCA2IDAgMCAxLTE2IDB6IiBmaWxsPSIjZmZlMDhhIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMiIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iMTkiIHI9IjQiIGZpbGw9IiNmZmE5NGQiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9zdmc+"
 }
 ];

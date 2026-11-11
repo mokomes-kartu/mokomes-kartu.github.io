@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ląstelės dėlionė – MokomėsKartu.lt</title>
+<meta name="description" content="Biologijos žaidimas: augalinės ir gyvūninės ląstelės sandara, ląstelės dalių funkcijos ir klaidų paieška piešiniuose.">
+<meta name="theme-color" content="#f1f8f6">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<style>
+/* Ląstelės dėlionė: biologo sąsiuvinis 6–7 klasei. Viršuje ląstelės piešinys su raidėmis (išnašomis), žemiau – užduotis ir pelėdžiuko paaiškinimas. */
+body{--paper:#f1f8f6;--grid:#d8ebe6;--soft:#4d6460;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#0f8f7e;--ac-ink:#fff;--ac-soft:#d2f3ec}
+.mk-ico[data-k="music"]{display:none}
+.mk-lvl{border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink)}
+.mk-lvl-art{border-radius:10px}
+.mk-lvl-art svg{width:46px;height:46px}
+.mk-lvl-t b{font-size:17px;letter-spacing:-.02em}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(30px,8vw,50px)}
+.mk-hero p{max-width:40ch}
+.mk-btn{border-radius:12px;font-size:17px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res .mk-owl{display:none}
+.mk-res h2{font-size:26px;letter-spacing:-.03em}
+.mk-sec{font-size:16px}
+.mk-hero-art{width:min(460px,100%)}
+.hero-card{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#fff;border-radius:18px;padding:10px 10px 8px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.hero-card figure{margin:0}
+.hero-card svg{display:block;width:100%;height:auto}
+.hero-card figcaption{font:800 12px/1.2 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft);text-align:center;padding-top:2px}
+.lt-ic{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--ac-soft);flex:none}
+.lt-ic svg{width:24px;height:24px}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;background:#fff;font:800 17px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink)}
+.chip small{font:800 11px/1 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.card{background:#fff;border-radius:14px;padding:14px 14px 16px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.card>small{display:block;font:800 12px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+.card h2{margin:4px 0 0;font:800 clamp(17px,4.8vw,21px)/1.2 var(--kid);letter-spacing:-.03em}
+.task{font:700 clamp(16.5px,4.5vw,19px)/1.45 var(--body);margin-top:6px}
+.task b{font-weight:800}
+.hint{color:var(--soft);font-size:14px;font-weight:700;margin-top:4px}
+.feat{margin:12px 0 2px;padding:20px 14px;border-radius:12px;background:var(--ac-soft);box-shadow:inset 0 0 0 2.5px var(--ink);text-align:center;font:800 clamp(18px,5.2vw,23px)/1.3 var(--kid);letter-spacing:-.02em}
+.fn{margin:8px 0 2px;padding:12px 14px;border-radius:12px;background:var(--ac-soft);box-shadow:inset 0 0 0 2.5px var(--ink);font:800 clamp(16px,4.5vw,19px)/1.35 var(--body)}
+
+/* ląstelės piešinys su išnašomis */
+.cell{position:relative;width:100%;max-width:440px;margin:8px auto 0;aspect-ratio:360/300}
+.cell>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cell .ghost *{fill:#f1f3f5!important;stroke:#a7b1bb!important;stroke-dasharray:5 4}
+.cell .ghost.p-mem *{fill:none!important}
+.cell .ghost .dec{display:none}
+.cell .hl{animation:hl 1s ease-in-out 3}
+@keyframes hl{50%{opacity:.35}}
+.pin{position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;border:0;padding:0;cursor:pointer;background:#fff;color:var(--ink);
+  font:800 17px/1 var(--kid);display:grid;place-items:center;box-shadow:inset 0 0 0 2.5px var(--ink),2px 2px 0 var(--ink)}
+.pin:active{transform:translate(1px,1px);box-shadow:inset 0 0 0 2.5px var(--ink),1px 1px 0 var(--ink)}
+.pin.q{background:#fff8d6;box-shadow:inset 0 0 0 2.5px var(--ink),2px 2px 0 var(--ink);border:0;outline:2.5px dashed transparent}
+.pin.q.over,.bin.over{background:#ffe27a}
+.pin.ok{background:#7ee08a}
+.pin.no{background:#ffb4a2}
+.pin.miss{background:#ffd08a}
+.pin:disabled{cursor:default;color:var(--ink)}
+.pin svg{width:20px;height:20px}
+.arm .pin.q,.arm .bin{animation:mkPulse 1s infinite}
+
+/* dėlionė: dėklas ir lentyna */
+.bin{display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;min-height:52px;margin-top:10px;padding:8px 12px;border:0;border-radius:10px;cursor:pointer;background:#f6f7f8;text-align:left;
+  font:800 15px/1.2 var(--body);box-shadow:inset 0 0 0 2.5px var(--ink);outline:0;background-image:repeating-linear-gradient(135deg,transparent 0 10px,rgba(18,26,51,.05) 10px 20px)}
+.bin .x{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);flex:none}
+.bin .x svg{width:18px;height:18px}
+.bin .in{display:inline-flex;align-items:center;gap:4px;padding:3px 8px 3px 4px;border-radius:999px;background:#7ee08a;box-shadow:inset 0 0 0 2px var(--ink);font-size:13.5px}
+.bin .in.miss{background:#ffd08a}
+.bin .in svg{width:22px;height:22px}
+.trayt{margin:14px 0 6px;font:800 12px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.tray{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-height:60px}
+.pc{display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:6px;min-height:58px;padding:6px 8px 6px 6px;border:0;border-radius:10px;cursor:grab;background:#fff;text-align:left;
+  font:800 14.5px/1.15 var(--body);box-shadow:inset 0 0 0 2.5px var(--ink),4px 4px 0 var(--ink);touch-action:none;user-select:none;-webkit-user-select:none}
+.pc svg{width:38px;height:38px;display:block;pointer-events:none}
+.pc span{overflow-wrap:anywhere}
+@media (min-width:480px){.pc{grid-template-columns:44px minmax(0,1fr);gap:8px;font-size:16px}.pc svg{width:44px;height:44px}}
+.pc.sel{background:var(--ac-soft);box-shadow:inset 0 0 0 3.5px var(--ac),4px 4px 0 var(--ink)}
+.pc.drag{opacity:.35}
+.pc.fly{position:fixed;left:0;top:0;z-index:40;pointer-events:none;width:170px;cursor:grabbing;box-shadow:inset 0 0 0 2.5px var(--ink),8px 8px 0 rgba(18,26,51,.3)}
+.done{margin:0;padding:14px;border-radius:10px;background:#effcf6;box-shadow:inset 0 0 0 2.5px var(--good);font:800 16px/1.3 var(--body);text-align:center;grid-column:1/-1}
+
+/* atsakymų mygtukai ir sąrašas */
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.opts button,.leg button{min-height:56px;border:0;border-radius:10px;cursor:pointer;background:#fff;font:800 16px/1.2 var(--body);padding:8px 6px;
+  box-shadow:inset 0 0 0 2.5px var(--ink),4px 4px 0 var(--ink)}
+.opts button:active,.leg button:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 2.5px var(--ink),2px 2px 0 var(--ink)}
+.opts button.ok,.leg button.ok{background:#7ee08a}
+.opts button.no,.leg button.no{background:#ffb4a2}
+.opts button:disabled,.leg button:disabled{cursor:default;color:var(--ink)}
+.leg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.leg button{display:grid;grid-template-columns:28px minmax(0,1fr);align-items:center;gap:8px;min-height:48px;padding:6px 8px;text-align:left;font-size:14.5px;box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink)}
+.leg button b{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--ac-soft);box-shadow:inset 0 0 0 2px var(--ink);font:800 14px/1 var(--kid)}
+.go{width:100%}
+@media (max-width:380px){.pc{font-size:13.5px;grid-template-columns:34px minmax(0,1fr)}.pc svg{width:34px;height:34px}.leg button{font-size:13.5px}.opts button{font-size:15px}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1 id="h1"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><span class="chip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="board"></div>
+    <div id="why"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "lasteles-delione", GRADES = [6, 7], N = 8, INK = "#121a33";
+const T = window.MK_T, P = MK.pick, SH = MK.shuffle;
+const ABC = "ABCDEFGH";
+
+/* ---------- ląstelių piešiniai (360×300) ----------
+   Kiekviena dalis – atskira grupė .p-<raktas>; klasė „ghost“ ją paverčia pilku punktyriniu kontūru (dėlionėje – dar nepadėta dalis).
+   pins: p – raidės (išnašos) vieta paraštėje, t – taškas ant pačios dalies. */
+const C = { wall: "#8fcf6a", wallS: "#2f6b2a", cyto: { p: "#eef8c9", a: "#fde6d6" }, mem: "#e8842a" };
+const chlAt = (x, y, r) => `<g transform="translate(${x} ${y}) rotate(${r})"><ellipse rx="18" ry="9.5" fill="#55b85a" stroke="#256b2a" stroke-width="2"/>
+  <g class="dec" fill="#2e7d32"><rect x="-12" y="-4.5" width="5" height="9" rx="1.5"/><rect x="-3" y="-5" width="5" height="10" rx="1.5"/><rect x="6" y="-4.5" width="5" height="9" rx="1.5"/></g></g>`;
+const mitAt = (x, y, r) => `<g transform="translate(${x} ${y}) rotate(${r})"><ellipse rx="17" ry="8.5" fill="#f8b06a" stroke="#b8581e" stroke-width="2"/>
+  <path class="dec" d="M-11 0l3-4 3.5 8 3.5-8 3.5 8 3.5-8 3 4" fill="none" stroke="#b8581e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+const nucAt = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#bba6ef" stroke="#5b3fb5" stroke-width="2.5"/><circle class="dec" cx="${x + r * 0.22}" cy="${y - r * 0.14}" r="${r * 0.36}" fill="#6f52c9"/>`;
+const BLOB = "M180 30C240 26 300 70 304 140C308 210 262 268 190 270C120 272 58 230 56 150C54 80 110 34 180 30Z";
+const CELL = {
+  p: {
+    parts: ["nuc", "mem", "wall", "cyto", "chl", "vac", "mit"],
+    draw: {
+      wall: `<rect x="52" y="14" width="256" height="272" rx="28" fill="${C.wall}" stroke="${C.wallS}" stroke-width="3"/>`,
+      cyto: `<rect x="63" y="25" width="234" height="250" rx="20" fill="${C.cyto.p}" stroke="none"/>`,
+      mem: `<rect x="63" y="25" width="234" height="250" rx="20" fill="none" stroke="${C.mem}" stroke-width="3.5"/>`,
+      vac: `<ellipse cx="186" cy="158" rx="70" ry="82" fill="#c9ebfb" stroke="#4a9ed0" stroke-width="2.5"/><path class="dec" d="M140 122q12-34 44-40" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".8"/>`,
+      chl: chlAt(90, 150, -75) + chlAt(96, 238, -25) + chlAt(200, 46, 8) + chlAt(268, 84, 50) + chlAt(220, 258, -6),
+      mit: mitAt(276, 190, 85) + mitAt(150, 256, 12) + mitAt(156, 44, -10),
+      nuc: nucAt(104, 66, 26)
+    },
+    order: ["wall", "cyto", "mem", "vac", "chl", "mit", "nuc"],
+    pins: { nuc: { p: [22, 62], t: [84, 63] }, chl: { p: [22, 150], t: [84, 150] }, wall: { p: [22, 232], t: [57, 232] },
+      mem: { p: [338, 62], t: [297, 62] }, vac: { p: [338, 136], t: [244, 144] }, mit: { p: [338, 206], t: [281, 194] }, cyto: { p: [338, 268], t: [274, 240] } }
+  },
+  a: {
+    parts: ["nuc", "mem", "cyto", "mit"],
+    draw: {
+      wall: `<path d="${BLOB}" fill="none" stroke="${C.wallS}" stroke-width="19" stroke-linejoin="round"/><path d="${BLOB}" fill="none" stroke="${C.wall}" stroke-width="13" stroke-linejoin="round"/>`,
+      cyto: `<path d="${BLOB}" fill="${C.cyto.a}" stroke="none"/><g class="dec" fill="#f1bfa3"><circle cx="150" cy="78" r="2.4"/><circle cx="210" cy="64" r="2.4"/><circle cx="92" cy="160" r="2.4"/><circle cx="262" cy="196" r="2.4"/><circle cx="196" cy="246" r="2.4"/><circle cx="282" cy="130" r="2.4"/><circle cx="128" cy="160" r="2.4"/></g>`,
+      mem: `<path d="${BLOB}" fill="none" stroke="${C.mem}" stroke-width="4"/>`,
+      chl: chlAt(166, 238, 6),
+      mit: mitAt(110, 110, -30) + mitAt(246, 92, 35) + mitAt(238, 212, -20) + mitAt(116, 204, 22),
+      nuc: nucAt(178, 150, 34)
+    },
+    order: ["wall", "cyto", "mem", "chl", "mit", "nuc"],
+    pins: { mit: { p: [22, 92], t: [102, 108] }, mem: { p: [22, 215], t: [68, 203] }, chl: { p: [22, 274], t: [154, 240] },
+      wall: { p: [338, 40], t: [268, 51] }, nuc: { p: [338, 112], t: [204, 138] }, cyto: { p: [338, 215], t: [270, 168] } }
+  }
+};
+/* o: { ghost:Set, extra:[], pins:[raktai – kurioms dalims piešti išnašų linijas], hl:raktas, label } */
+function cellSvg(type, o){
+  o = o || {}; const c = CELL[type], has = new Set(c.parts.concat(o.extra || []));
+  const body = c.order.filter(k => has.has(k)).map(k => `<g class="p p-${k}${o.ghost && o.ghost.has(k) ? " ghost" : ""}${o.hl === k ? " hl" : ""}">${c.draw[k]}</g>`).join("");
+  const lines = (o.pins || []).map(k => { const q = c.pins[k]; return `<path d="M${q.p[0]} ${q.p[1]}L${q.t[0]} ${q.t[1]}" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/><circle cx="${q.t[0]}" cy="${q.t[1]}" r="3.4" fill="${INK}"/>`; }).join("");
+  return `<svg viewBox="0 0 360 300" role="img" aria-label="${o.label || T.cellAlt[type]}">${body}${lines}</svg>`;
+}
+const pinPos = (type, k) => { const q = CELL[type].pins[k].p; return `left:${(q[0] / 3.6).toFixed(2)}%;top:${(q[1] / 3).toFixed(2)}%`; };
+/* raidės dalijamos iš eilės: kairė paraštė iš viršaus žemyn, tada dešinė */
+const pinOrder = (type, keys) => keys.slice().sort((a, b) => { const A = CELL[type].pins[a].p, B = CELL[type].pins[b].p; return (A[0] - B[0]) || (A[1] - B[1]); });
+
+/* mažos dalių piktogramos (44×44) dėklui */
+const ICON = {
+  nuc: nucAt(22, 22, 15),
+  chl: `<g transform="scale(1.05)">${chlAt(21, 21, -20)}</g>`,
+  mit: `<g transform="scale(1.1)">${mitAt(20, 20, -20)}</g>`,
+  vac: `<ellipse cx="22" cy="22" rx="14" ry="17" fill="#c9ebfb" stroke="#4a9ed0" stroke-width="2.5"/><path d="M14 16q3-7 9-8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`,
+  wall: `<path d="M8 38V20Q8 8 20 8H38" fill="none" stroke="${C.wallS}" stroke-width="12" stroke-linecap="round"/><path d="M8 38V20Q8 8 20 8H38" fill="none" stroke="${C.wall}" stroke-width="7.5" stroke-linecap="round"/>`,
+  mem: `<path d="M8 38V20Q8 8 20 8H38" fill="none" stroke="${C.mem}" stroke-width="4.5" stroke-linecap="round"/>`,
+  cyto: `<rect x="6" y="6" width="32" height="32" rx="10" fill="${C.cyto.p}" stroke="#b9cf7a" stroke-width="2" stroke-dasharray="4 3"/><g fill="#b9cf7a"><circle cx="15" cy="16" r="2"/><circle cx="27" cy="14" r="2"/><circle cx="21" cy="24" r="2"/><circle cx="14" cy="30" r="2"/><circle cx="30" cy="28" r="2"/></g>`
+};
+const icon = k => `<svg viewBox="0 0 44 44" aria-hidden="true">${ICON[k]}</svg>`;
+const CHECK = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="${INK}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CROSS = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="${INK}" stroke-width="3.2" stroke-linecap="round"/></svg>`;
+const mini = (type, o) => cellSvg(type, o).replace('role="img"', 'aria-hidden="true"').replace(/ aria-label="[^"]*"/, "");
+const LVART = [
+  `<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="9" width="19" height="30" rx="5" fill="${C.wall}" stroke="${INK}" stroke-width="2.4"/><ellipse cx="13.5" cy="25" rx="5" ry="8" fill="#c9ebfb" stroke="#4a9ed0" stroke-width="1.6"/><circle cx="35" cy="24" r="10.5" fill="${C.cyto.a}" stroke="${INK}" stroke-width="2.4"/><circle cx="36" cy="24" r="4" fill="#8f77dd"/></svg>`,
+  `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 14h9a4.5 4.5 0 1 1 9 0h10v10a4.5 4.5 0 1 0 0 9v9H9v-9a4.5 4.5 0 1 0 0-9z" fill="#fff" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/><circle cx="23" cy="29" r="5" fill="#8f77dd"/></svg>`,
+  `<svg viewBox="0 0 48 48" aria-hidden="true"><g transform="translate(24 24) rotate(-20) scale(1.25)"><ellipse rx="17" ry="8.5" fill="#f8b06a" stroke="${INK}" stroke-width="2"/><path d="M-11 0l3-4 3.5 8 3.5-8 3.5 8 3.5-8 3 4" fill="none" stroke="#b8581e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g><path d="M33 7l-5 8h5l-3 7" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="21" cy="21" r="13" fill="#fff" stroke="${INK}" stroke-width="2.8"/><path d="M31 31l10 10" stroke="${INK}" stroke-width="4.5" stroke-linecap="round"/><path d="M16 16l10 10M26 16L16 26" stroke="#e5243b" stroke-width="3.2" stroke-linecap="round"/></svg>`
+];
+const LT_ICON = { p: LVART[0], a: LVART[1], f: LVART[2], e: LVART[3] };
+const LEVELS = ["tipas", "delione", "funkcijos", "klaida"].map((id, i) => ({ id, name: T.levels[i][0], sub: T.levels[i][1], art: LVART[i] }));
+const LEARN = T.learn.map(t => ({ name: `<span class="lt-ic">${LT_ICON[t.icon]}</span>${t.name}`, level: t.level, html: t.html }));
+
+/* ---------- užduočių generavimas ---------- */
+function genType(){
+  const draws = ["p", "a"].map(k => ({ kind: "type", draw: k, a: k, ex: T.l1.draw[k] }));
+  const feats = SH(T.l1.feats).slice(0, N - 2).map(f => ({ kind: "type", feat: f.t, a: f.a, ex: f.ex }));
+  return SH(draws.concat(feats));
+}
+function genFunc(){
+  const out = [], cnt = {};
+  for(const f of SH(T.l3.funcs)){ if(out.length >= N) break; if((cnt[f.part] || 0) >= 2) continue; cnt[f.part] = (cnt[f.part] || 0) + 1;
+    const type = CELL.a.parts.includes(f.part) ? P(["p", "a"]) : "p";
+    out.push({ kind: "func", type, part: f.part, text: f.t, pins: pinOrder(type, CELL[type].parts) }); }
+  return out;
+}
+function genError(){
+  return SH(["chl", "wall", P(["chl", "wall"]), "label", "label", "label", "label", "label"]).map(k => {
+    if(k !== "label"){ const pins = pinOrder("a", CELL.a.parts.concat(k)), names = {}; pins.forEach(p => names[p] = p);
+      return { kind: "err", type: "a", extra: [k], pins, names, bad: k, ex: T.l4.extra[k] }; }
+    const type = P(["p", "a"]), bad = P(CELL[type].parts), shown = P(Object.keys(T.parts).filter(x => x !== bad));
+    const pins = pinOrder(type, CELL[type].parts.filter(x => x !== shown)), names = {}; pins.forEach(p => names[p] = p); names[bad] = shown;
+    return { kind: "err", type, extra: [], pins, names, bad, shown };
+  });
+}
+/* dėlionė: dvi ląstelės po 4 dalis; gyvūninėje – 1 arba 2 dalys, kurių joje nėra */
+function genPuzzle(){
+  const nd = P([1, 2]);
+  const a = { type: "a", real: SH(CELL.a.parts).slice(0, 4 - nd), fake: SH(["chl", "wall"]).slice(0, nd) };
+  const p = { type: "p", real: SH(CELL.p.parts).slice(0, 4), fake: [] };
+  return SH([a, p]).map(c => Object.assign(c, { tray: SH(c.real.concat(c.fake)), placed: {}, binned: {}, hl: null }));
+}
+
+/* ---------- elementai ---------- */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), board = $("board"), why = $("why");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("h1").innerHTML = T.h1; $("heroP").textContent = T.hero; $("note").textContent = T.note; $("ptsL").textContent = T.points;
+$("heroArt").innerHTML = `<div class="hero-card">${["p", "a"].map(k => `<figure>${cellSvg(k).replace('viewBox="0 0 360 300"', 'viewBox="40 6 280 288"')}<figcaption>${T.cellName[k]}</figcaption></figure>`).join("")}</div>`;
+
+let lvl = 0, Lv = null, ti = 0, list = [], cur = null, pts = 0, okN = 0, dots = null, answered = false;
+let pz = null, ci = 0, sel = null; // dėlionės būsena
+function showMenu(){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); MK.learn($("learn"), { topics: LEARN, onPlay: start }); window.scrollTo(0, 0); }
+function start(i){
+  lvl = i; Lv = LEVELS[i]; ti = 0; pts = 0; okN = 0; $("pts").textContent = 0; why.innerHTML = "";
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), N);
+  if(Lv.id === "delione"){ pz = genPuzzle(); ci = 0; sel = null; dots.cur(0); drawPuzzle(); window.scrollTo(0, 0); return; }
+  list = Lv.id === "tipas" ? genType() : Lv.id === "funkcijos" ? genFunc() : genError();
+  next();
+}
+const head = () => `<small>${Math.min(ti + 1, N)} / ${N} · ${Lv.name}</small>`;
+const letterOf = (c, part) => ABC[c.pins.indexOf(part)];
+function score(ok){
+  dots.mark(ti, ok); if(ok){ okN++; pts += 10; MK.sfx.good(); } else MK.sfx.bad();
+  $("pts").textContent = pts;
+}
+const goBtn = label => `<button type="button" class="mk-btn go" id="go">${label}</button>`;
+
+/* ---------- 1, 3 ir 4 lygiai ---------- */
+function draw(){
+  const c = cur; let h = head();
+  if(c.kind === "type"){
+    h += `<div class="task">${c.draw ? T.l1.askDraw : T.l1.askFeat}</div>` + (c.draw ? `<div class="cell">${cellSvg(c.draw)}</div>` : `<div class="feat">${c.feat}</div>`)
+      + `<div class="opts">${["p", "a", "b"].map(k => `<button type="button" data-k="${k}">${T.l1.opts[k]}</button>`).join("")}</div>`;
+  } else {
+    const pins = `<div class="cell">${cellSvg(c.type, { extra: c.extra, pins: c.pins })}${c.pins.map((p, k) => `<button type="button" class="pin" data-part="${p}" style="${pinPos(c.type, p)}">${ABC[k]}</button>`).join("")}</div>`;
+    if(c.kind === "func") h += `<div class="task">${T.l3.ask}</div><div class="fn">${c.text}</div>${pins}`;
+    else h += `<div class="task">${T.l4.ask[c.type]}</div>${pins}<div class="leg">${c.pins.map((p, k) => `<button type="button" data-part="${p}"><b>${ABC[k]}</b>${T.parts[c.names[p]].n}</button>`).join("")}</div>`;
+  }
+  board.innerHTML = `<div class="card">${h}</div>`;
+}
+function next(){
+  why.innerHTML = "";
+  if(ti >= N) return finish();
+  cur = list[ti]; answered = false; dots.cur(ti); draw(); window.scrollTo(0, 0);
+}
+function result(ok, wrongHead, more){
+  answered = true; score(ok);
+  why.innerHTML = MK.why({ ok, head: ok ? MK.praise() + " +10" : T.wrong + " " + wrongHead, more, sum: T.explain, open: !ok }) + goBtn(ti < N - 1 ? T.next : T.results);
+  $("go").scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+function answer(el){
+  const c = cur;
+  if(c.kind === "type"){
+    const k = el.dataset.k, ok = k === c.a;
+    board.querySelectorAll(".opts button").forEach(b => { b.disabled = true; if(b.dataset.k === c.a) b.classList.add("ok"); else if(b === el) b.classList.add("no"); });
+    return result(ok, T.l1.right[c.a], c.ex);
+  }
+  const part = el.dataset.part, right = c.kind === "func" ? c.part : c.bad, ok = part === right;
+  board.querySelectorAll("[data-part]").forEach(b => { b.disabled = true; if(b.dataset.part === right) b.classList.add("ok"); else if(b.dataset.part === part) b.classList.add("no"); });
+  const g = board.querySelector(".p-" + right); if(g) g.classList.add("hl");
+  if(c.kind === "func") return result(ok, T.l3.right(letterOf(c, right), T.parts[right].n), T.parts[right].info);
+  const L = letterOf(c, right);
+  result(ok, T.l4.right(L), c.shown ? T.l4.label(L, T.parts[right].acc, T.parts[c.shown].acc) + " " + T.parts[right].info : c.ex);
+}
+
+/* ---------- 2 lygis: dėlionė ---------- */
+function drawPuzzle(){
+  const c = pz[ci], left = c.tray.filter(k => !(k in c.placed) && !(k in c.binned));
+  const pinKeys = c.real;
+  const pins = pinKeys.map(k => { const st = c.placed[k];
+    return `<button type="button" class="pin ${st ? st : "q"}" data-slot="${k}" style="${pinPos(c.type, k)}" ${st ? "disabled" : ""} aria-label="${st ? T.parts[k].n : T.l2.slot}">${st ? CHECK : "?"}</button>`; }).join("");
+  const binned = Object.keys(c.binned).map(k => `<span class="in ${c.binned[k]}">${icon(k)}${T.parts[k].n}</span>`).join("");
+  board.innerHTML = `<div class="card${sel ? " arm" : ""}">${head()}<h2>${T.cellName[c.type]}</h2><div class="hint">${T.l2.hint}</div>
+    <div class="cell">${cellSvg(c.type, { ghost: new Set(c.real.filter(k => !c.placed[k])), pins: pinKeys, hl: c.hl })}${pins}</div>
+    <button type="button" class="bin" data-slot="bin"><span class="x">${CROSS}</span>${T.l2.bin}${binned}</button>
+    <div class="trayt">${T.l2.tray}</div>
+    <div class="tray">${left.length ? left.map(k => `<button type="button" class="pc${sel === k ? " sel" : ""}" data-pc="${k}" aria-pressed="${sel === k}">${icon(k)}<span>${T.parts[k].n}</span></button>`).join("") : `<p class="done">${T.l2.done}</p>`}</div></div>`;
+}
+function place(part, slot){
+  const c = pz[ci]; if(!c || part in c.placed || part in c.binned || ti >= N) return;
+  const real = c.real.includes(part), ok = real ? slot === part : slot === "bin", name = T.parts[part].n;
+  let body;
+  if(real){ c.placed[part] = ok ? "ok" : "miss"; c.hl = part;
+    body = ok ? T.parts[part].info : (slot === "bin" ? T.l2.exists(name, T.parts[part].where) : T.l2.misplaced(name, T.parts[part].where)) + " " + T.parts[part].info; }
+  else { c.binned[part] = ok ? "ok" : "miss"; c.hl = null; body = ok ? T.l2.absentOk[part] : T.l2.absent[part]; }
+  sel = null; score(ok); ti++;
+  const cellDone = c.tray.every(k => k in c.placed || k in c.binned);
+  if(ti < N) dots.cur(ti);
+  drawPuzzle();
+  why.innerHTML = MK.why({ ok, head: ok ? T.l2.okHead(MK.praise(), name) : T.wrong, body }) + (cellDone ? goBtn(ti >= N ? T.results : T.nextCell) : "");
+  (cellDone ? $("go") : why.firstElementChild).scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+/* tempimas (pelė, pirštas, rašiklis); be tempimo – paspausti dalį, tada vietą */
+let drag = null, skipClick = false;
+const slotAt = (x, y) => { const e = document.elementFromPoint(x, y); return e && e.closest(".pin.q, .bin"); };
+board.addEventListener("pointerdown", e => {
+  const pc = e.target.closest(".pc"); if(!pc || (e.pointerType === "mouse" && e.button !== 0)) return;
+  MK.unlock(); skipClick = false;
+  const r = pc.getBoundingClientRect();
+  drag = { pc, id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: e.clientX - r.left, dy: e.clientY - r.top, fly: null, over: null };
+  try{ pc.setPointerCapture(e.pointerId); }catch(_){}
+});
+board.addEventListener("pointermove", e => {
+  if(!drag || e.pointerId !== drag.id) return;
+  if(!drag.fly){
+    if(Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 8) return;
+    const f = drag.pc.cloneNode(true); f.classList.remove("sel"); f.classList.add("fly"); f.style.width = drag.pc.offsetWidth + "px"; document.body.appendChild(f);
+    drag.fly = f; drag.pc.classList.add("drag");
+  }
+  drag.fly.style.transform = `translate(${e.clientX - drag.dx}px,${e.clientY - drag.dy}px) rotate(-3deg)`;
+  const s = slotAt(e.clientX, e.clientY);
+  if(s !== drag.over){ if(drag.over) drag.over.classList.remove("over"); if(s) s.classList.add("over"); drag.over = s; }
+});
+function endDrag(e, cancel){
+  if(!drag || e.pointerId !== drag.id) return;
+  const d = drag; drag = null;
+  if(!d.fly) return; // tai buvo paprastas paspaudimas – jį sutvarkys „click“
+  skipClick = true; setTimeout(() => { skipClick = false; }, 350);
+  d.fly.remove(); d.pc.classList.remove("drag"); if(d.over) d.over.classList.remove("over");
+  const s = cancel ? null : slotAt(e.clientX, e.clientY);
+  if(s) place(d.pc.dataset.pc, s.dataset.slot);
+}
+board.addEventListener("pointerup", e => endDrag(e, false));
+board.addEventListener("pointercancel", e => endDrag(e, true));
+
+board.addEventListener("click", e => {
+  MK.unlock();
+  if(Lv.id === "delione"){
+    if(skipClick){ skipClick = false; return; }
+    const pc = e.target.closest(".pc"), s = e.target.closest(".pin.q, .bin");
+    if(pc){ sel = sel === pc.dataset.pc ? null : pc.dataset.pc; MK.sfx.tap(); return drawPuzzle(); }
+    if(s && sel) return place(sel, s.dataset.slot);
+    return;
+  }
+  if(answered) return;
+  const b = e.target.closest(".opts button, .pin, .leg button");
+  if(b) answer(b);
+});
+why.addEventListener("click", e => {
+  if(!e.target.closest("#go")) return;
+  if(Lv.id === "delione"){ why.innerHTML = ""; if(ti >= N) return finish(); ci++; drawPuzzle(); window.scrollTo(0, 0); return; }
+  ti++; next();
+});
+function finish(){
+  const stars = MK.starsFor(okN, N); MK.best(GAME, Lv.id, stars);
+  MK.result({ stars, title: T.resTitle(okN, N), text: T.resText(pts),
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+showMenu();
+})();
+</script>
+</body>
+</html>

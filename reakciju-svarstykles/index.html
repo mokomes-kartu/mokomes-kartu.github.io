@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Reakcijų svarstyklės – MokomėsKartu.lt</title>
+<meta name="description" content="Chemijos žaidimas 9–10 klasei: cheminių lygčių lyginimas, koeficientai ir reakcijų tipai su paaiškinimais.">
+<meta name="theme-color" content="#f2f8f8">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/reakciju-svarstykles/tekstai.lt.js"></script>
+<style>
+/* Reakcijų svarstyklės: laboratorijos sąsiuvinis 9–10 klasei. Viršuje lygtis su koeficientų mygtukais, po ja – svarstyklės ir atomų skaitikliai. */
+body{--paper:#f2f8f8;--grid:#d9e9ea;--soft:#4d6266;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#0b7285;--ac-ink:#fff;--ac-soft:#c5f6fa}
+.mk-ico[data-k="music"]{display:none}
+.mk-lvl{border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink)}
+.mk-lvl-art{border-radius:10px}
+.mk-lvl-art svg{width:46px;height:46px}
+.mk-lvl-t b{font-size:16px;letter-spacing:-.02em}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(28px,7.6vw,48px)}
+.mk-btn{border-radius:12px;font-size:17px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res .mk-owl{display:none}
+.mk-res h2{font-size:26px;letter-spacing:-.03em}
+.mk-sec{font-size:16px}
+.mk-hero-art{width:min(420px,100%)}
+.hero-card{background:#fff;border-radius:18px;padding:12px 12px 4px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink);
+  background-image:linear-gradient(#e9f3f4 1px,transparent 1px),linear-gradient(90deg,#e9f3f4 1px,transparent 1px);background-size:16px 16px}
+.hero-eq{font:800 clamp(17px,5vw,22px)/1.2 var(--body);text-align:center;margin:2px 0 4px}
+.hero-eq b{color:var(--ac)}
+.lt-ic{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--ac-soft);flex:none;font:800 13px/1 var(--body)}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+sub{font-size:.68em;line-height:0;vertical-align:-.28em}
+
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;background:#fff;font:800 17px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink)}
+.chip small{font:800 11px/1 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.card{background:#fff;border-radius:14px;padding:14px 12px 16px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.card>small{display:block;font:800 12px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+.task{font:700 clamp(16px,4.4vw,19px)/1.4 var(--body);margin:6px 0 12px}
+
+/* lygtis su koeficientų mygtukais */
+.eq{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 10px}
+.side{display:flex;align-items:center;justify-content:center;gap:5px}
+.arr{font:800 28px/1 var(--body);color:var(--ink);padding:0 2px}
+.pl{font:800 20px/1 var(--body);color:var(--soft)}
+.term{display:grid;justify-items:stretch;gap:5px;min-width:58px}
+.st{height:44px;min-width:56px;border:0;border-radius:10px;background:var(--ac-soft);cursor:pointer;font:800 24px/1 var(--body);color:var(--ink);padding:0;
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 var(--ink);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.st:active{transform:translateY(2px);box-shadow:inset 0 0 0 2.5px var(--ink),0 1px 0 var(--ink)}
+.st:disabled{opacity:.3;cursor:default;transform:none}
+.fm{display:flex;align-items:baseline;justify-content:center;gap:2px;padding:9px 6px;border-radius:10px;background:#f6fbfb;box-shadow:inset 0 0 0 2px #b9d3d6;
+  font:800 clamp(17px,4.9vw,21px)/1 var(--body);white-space:nowrap}
+.fm .k{color:var(--ac);font-size:1.25em;min-width:.7em;text-align:right}
+.fm .k.one{opacity:.35}
+.done .st{visibility:hidden;height:0;min-height:0}
+.done .term{gap:0}
+@media (max-width:560px){.eq{flex-direction:column;gap:2px}.arr{transform:rotate(90deg);padding:2px 0}}
+
+/* svarstyklės */
+.scale{display:block;width:100%;max-width:400px;margin:10px auto 2px}
+.scale .beam{transition:transform .5s cubic-bezier(.3,1.5,.5,1);transform-origin:180px 30px}
+.scale .pan{transition:transform .5s cubic-bezier(.3,1.5,.5,1)}
+.scale text{font:800 22px var(--body);fill:var(--ink)}
+.scale text.lbl{font:800 10.5px var(--body);letter-spacing:.08em;text-transform:uppercase;fill:#4d6266}
+.scale .plate{fill:#ffe8a3;transition:fill .3s}
+.scale.eqd .plate{fill:#8ce99a}
+.scale .lamp{fill:#ffa94d;transition:fill .3s}
+.scale.eqd .lamp{fill:#40c057}
+
+/* atomų skaitikliai */
+.cnt-h{margin:10px 0 6px;text-align:center;font:800 11px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.cnts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.cnt{display:grid;grid-template-columns:minmax(26px,auto) auto minmax(26px,auto);align-items:center;gap:6px;padding:6px 10px;border-radius:10px;font:800 18px/1 var(--body);
+  background:#fff1ee;box-shadow:inset 0 0 0 2.5px #ff8a7a}
+.cnt b{display:grid;place-items:center;min-width:34px;height:30px;padding:0 6px;border-radius:8px;background:var(--ink);color:#fff;font-size:15px}
+.cnt span{text-align:center}
+.cnt.ok{background:#effcf6;box-shadow:inset 0 0 0 2.5px var(--good)}
+.cnt.ok b{background:#2b8a3e}
+details.hint{margin-top:12px;font:600 15px/1.45 var(--body);color:var(--ink);background:#f6fbfb;border-radius:10px;padding:2px 12px;box-shadow:inset 0 0 0 2px #b9d3d6}
+details.hint summary{cursor:pointer;font-weight:800;color:var(--ac);min-height:40px;display:flex;align-items:center;gap:6px;list-style:none}
+details.hint summary::-webkit-details-marker{display:none}
+details.hint summary::before{content:"▸";transition:transform .15s}
+details.hint[open] summary::before{transform:rotate(90deg)}
+details.hint p{margin:0 0 10px}
+.msg{margin-top:12px;padding:10px 12px;border-radius:10px;background:#fff4e0;box-shadow:inset 0 0 0 2px #f0a13a;font:700 15px/1.4 var(--body)}
+.msg:empty{display:none}
+.check,.go{width:100%;margin-top:12px}
+
+/* tipo klausimas */
+.eqs{margin:4px 0 2px;padding:16px 8px;border-radius:12px;background:#f6fbfb;box-shadow:inset 0 0 0 2px #b9d3d6;text-align:center;font:800 clamp(18px,5.2vw,23px)/1.5 var(--body)}
+.eqs span,.mk-why-m .be span,.hero-eq span{white-space:nowrap}
+.eqs b,.be b{color:var(--ac)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.opts button{min-height:56px;border:0;border-radius:10px;cursor:pointer;background:#fff;font:800 17px/1.2 var(--body);padding:8px;
+  box-shadow:inset 0 0 0 2.5px var(--ink),4px 4px 0 var(--ink)}
+.opts button:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 2.5px var(--ink),2px 2px 0 var(--ink)}
+.opts button.ok{background:#7ee08a}
+.opts button.no{background:#ffb4a2}
+.opts button:disabled{cursor:default}
+.be{display:block;margin:6px 0;padding:8px 10px;border-radius:8px;background:var(--ac-soft);font:800 16.5px/1.5 var(--body)}
+.mk-why-m p{margin:6px 0}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1 id="h1"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><span class="chip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="board"></div>
+    <div id="why"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "reakciju-svarstykles", GRADES = [9, 10], N = 8, INK = "#121a33", T = window.MK_T;
+
+/* ---------- lygtys: [lygtis, mažiausi koeficientai, tipas] ----------
+   Tipai: J – jungimosi, S – skilimo, P – pavadavimo, M – mainų, D – degimo, O – oksidacijos-redukcijos (netelpa į keturis tipus).
+   Visos lygtys patikrintos skriptu: sprendinys vienintelis, koeficientai ne didesni kaip 9. */
+/*LYGTYS-START*/
+const EQ = {
+  jungimosi: [
+    ["H2 + O2 -> H2O", "2 1 2", "J"], ["Mg + O2 -> MgO", "2 1 2", "J"], ["N2 + H2 -> NH3", "1 3 2", "J"], ["Na + Cl2 -> NaCl", "2 1 2", "J"],
+    ["Al + O2 -> Al2O3", "4 3 2", "J"], ["Fe + Cl2 -> FeCl3", "2 3 2", "J"], ["Ca + O2 -> CaO", "2 1 2", "J"], ["P + O2 -> P2O5", "4 5 2", "J"],
+    ["H2 + Cl2 -> HCl", "1 1 2", "J"], ["K + Cl2 -> KCl", "2 1 2", "J"], ["Li + O2 -> Li2O", "4 1 2", "J"], ["Al + Cl2 -> AlCl3", "2 3 2", "J"],
+    ["SO2 + O2 -> SO3", "2 1 2", "J"], ["CO + O2 -> CO2", "2 1 2", "J"], ["Zn + O2 -> ZnO", "2 1 2", "J"], ["NO + O2 -> NO2", "2 1 2", "J"],
+    ["Al + S -> Al2S3", "2 3 1", "J"], ["Cu + O2 -> CuO", "2 1 2", "J"]
+  ],
+  degimas: [
+    ["CH4 + O2 -> CO2 + H2O", "1 2 1 2", "D"], ["C2H5OH + O2 -> CO2 + H2O", "1 3 2 3", "D"], ["C3H8 + O2 -> CO2 + H2O", "1 5 3 4", "D"],
+    ["C2H4 + O2 -> CO2 + H2O", "1 3 2 2", "D"], ["C2H6 + O2 -> CO2 + H2O", "2 7 4 6", "D"], ["C2H2 + O2 -> CO2 + H2O", "2 5 4 2", "D"],
+    ["CH3OH + O2 -> CO2 + H2O", "2 3 2 4", "D"], ["C6H12O6 + O2 -> CO2 + H2O", "1 6 6 6", "D"], ["C5H12 + O2 -> CO2 + H2O", "1 8 5 6", "D"],
+    ["H2S + O2 -> SO2 + H2O", "2 3 2 2", "D"],
+    ["H2O2 -> H2O + O2", "2 2 1", "S"], ["KClO3 -> KCl + O2", "2 2 3", "S"], ["H2O -> H2 + O2", "2 2 1", "S"], ["HgO -> Hg + O2", "2 2 1", "S"],
+    ["NaHCO3 -> Na2CO3 + CO2 + H2O", "2 1 1 1", "S"], ["Fe(OH)3 -> Fe2O3 + H2O", "2 1 3", "S"], ["NH3 -> N2 + H2", "2 1 3", "S"],
+    ["Al(OH)3 -> Al2O3 + H2O", "2 1 3", "S"], ["KNO3 -> KNO2 + O2", "2 2 1", "S"]
+  ],
+  mainu: [
+    ["H2SO4 + NaOH -> Na2SO4 + H2O", "1 2 1 2", "M"], ["Ca(OH)2 + HCl -> CaCl2 + H2O", "1 2 1 2", "M"], ["Al(OH)3 + H2SO4 -> Al2(SO4)3 + H2O", "2 3 1 6", "M"],
+    ["H3PO4 + NaOH -> Na3PO4 + H2O", "1 3 1 3", "M"], ["HNO3 + Ca(OH)2 -> Ca(NO3)2 + H2O", "2 1 1 2", "M"], ["H2SO4 + KOH -> K2SO4 + H2O", "1 2 1 2", "M"],
+    ["Mg(OH)2 + HNO3 -> Mg(NO3)2 + H2O", "1 2 1 2", "M"], ["BaCl2 + Na2SO4 -> BaSO4 + NaCl", "1 1 1 2", "M"], ["CuSO4 + NaOH -> Cu(OH)2 + Na2SO4", "1 2 1 1", "M"],
+    ["FeCl3 + NaOH -> Fe(OH)3 + NaCl", "1 3 1 3", "M"], ["AgNO3 + CaCl2 -> AgCl + Ca(NO3)2", "2 1 2 1", "M"], ["Na2CO3 + HCl -> NaCl + H2O + CO2", "1 2 2 1 1", "M"],
+    ["CaCO3 + HCl -> CaCl2 + H2O + CO2", "1 2 1 1 1", "M"], ["CuO + HCl -> CuCl2 + H2O", "1 2 1 1", "M"], ["Fe2O3 + HCl -> FeCl3 + H2O", "1 6 2 3", "M"],
+    ["Zn + HCl -> ZnCl2 + H2", "1 2 1 1", "P"], ["Mg + HCl -> MgCl2 + H2", "1 2 1 1", "P"], ["Na + H2O -> NaOH + H2", "2 2 2 1", "P"],
+    ["Al + CuSO4 -> Al2(SO4)3 + Cu", "2 3 1 3", "P"]
+  ],
+  sunkesnes: [
+    ["Fe2O3 + CO -> Fe + CO2", "1 3 2 3", "O"], ["Al + HCl -> AlCl3 + H2", "2 6 2 3", "P"], ["NH3 + O2 -> NO + H2O", "4 5 4 6", "O"],
+    ["Fe + O2 -> Fe3O4", "3 2 1", "J"], ["Al + H2SO4 -> Al2(SO4)3 + H2", "2 3 1 3", "P"], ["Fe2O3 + Al -> Al2O3 + Fe", "1 2 1 2", "P"],
+    ["Ca(OH)2 + H3PO4 -> Ca3(PO4)2 + H2O", "3 2 1 6", "M"], ["Fe2O3 + H2 -> Fe + H2O", "1 3 2 3", "P"], ["Al2O3 + HCl -> AlCl3 + H2O", "1 6 2 3", "M"],
+    ["Fe3O4 + H2 -> Fe + H2O", "1 4 3 4", "P"], ["NH3 + O2 -> N2 + H2O", "4 3 2 6", "O"], ["C3H7OH + O2 -> CO2 + H2O", "2 9 6 8", "D"],
+    ["ZnS + O2 -> ZnO + SO2", "2 3 2 2", "O"], ["Fe(OH)3 + H2SO4 -> Fe2(SO4)3 + H2O", "2 3 1 6", "M"], ["P2O5 + H2O -> H3PO4", "1 3 2", "J"],
+    ["Al + Fe3O4 -> Al2O3 + Fe", "8 3 4 9", "P"], ["MnO2 + HCl -> MnCl2 + Cl2 + H2O", "1 4 1 1 2", "O"], ["KMnO4 -> K2MnO4 + MnO2 + O2", "2 1 1 1", "S"]
+  ],
+  /* tik tipo klausimams (koeficientai visi lygūs 1 arba lygtis labai paprasta) */
+  tipui: [
+    ["CaCO3 -> CaO + CO2", "1 1 1", "S"], ["HCl + NaOH -> NaCl + H2O", "1 1 1 1", "M"], ["AgNO3 + NaCl -> AgCl + NaNO3", "1 1 1 1", "M"],
+    ["Fe + CuSO4 -> FeSO4 + Cu", "1 1 1 1", "P"], ["CaO + H2O -> Ca(OH)2", "1 1 1", "J"], ["C + O2 -> CO2", "1 1 1", "J"],
+    ["Zn + CuCl2 -> ZnCl2 + Cu", "1 1 1 1", "P"], ["S + O2 -> SO2", "1 1 1", "J"], ["H2CO3 -> H2O + CO2", "1 1 1", "S"],
+    ["NH3 + HCl -> NH4Cl", "1 1 1", "J"], ["Cu(OH)2 -> CuO + H2O", "1 1 1", "S"]
+  ]
+};
+/*LYGTYS-END*/
+
+/* ---------- formulių skaitymas ---------- */
+function atomsOf(f){
+  let i = 0;
+  const num = () => { let s = ""; while(i < f.length && /\d/.test(f[i])) s += f[i++]; return s ? +s : 1; };
+  const grp = () => { const m = {};
+    while(i < f.length && f[i] !== ")"){
+      if(f[i] === "("){ i++; const g = grp(); i++; const n = num(); for(const e in g) m[e] = (m[e] || 0) + g[e] * n; }
+      else { let e = f[i++]; while(i < f.length && /[a-z]/.test(f[i])) e += f[i++]; m[e] = (m[e] || 0) + num(); }
+    }
+    return m; };
+  return grp();
+}
+const fml = f => f.replace(/\d+/g, d => `<sub>${d}</sub>`);
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+function parse(row){
+  const [l, r] = row[0].split(" -> ").map(s => s.split(" + "));
+  const terms = l.concat(r).map((f, i) => ({ f, a: atomsOf(f), left: i < l.length }));
+  const els = []; terms.forEach(t => Object.keys(t.a).forEach(e => { if(!els.includes(e)) els.push(e); }));
+  return { raw: row[0], terms, nl: l.length, els, ans: row[1].split(" ").map(Number), type: row[2] };
+}
+function count(eq, k){
+  const L = {}, R = {};
+  eq.terms.forEach((t, i) => { const o = t.left ? L : R; for(const e in t.a) o[e] = (o[e] || 0) + t.a[e] * k[i]; });
+  return { L, R };
+}
+const sum = o => Object.values(o).reduce((a, b) => a + b, 0);
+function eqHtml(eq, k){
+  const part = (t, i) => `<span>${k && k[i] > 1 ? `<b>${k[i]}</b>` : ""}${fml(t.f)}</span>`;
+  const side = left => eq.terms.map((t, i) => t.left === left ? part(t, i) : "").filter(Boolean).join(" + ");
+  return `${side(true)} → ${side(false)}`;
+}
+function hintFor(eq){
+  if(eq.type === "D" && eq.els.includes("C") && eq.els.includes("H")) return T.hintComb;
+  if(eq.terms.some(t => t.f.includes("("))) return T.hintGroup;
+  const one = eq.terms.map(() => 1), c = count(eq, one); let best = null;
+  eq.els.forEach(e => {
+    const inL = eq.terms.filter(t => t.left && t.a[e]).length, inR = eq.terms.filter(t => !t.left && t.a[e]).length;
+    if(inL === 1 && inR === 1 && c.L[e] !== c.R[e]){ const m = c.L[e] * c.R[e] / gcd(c.L[e], c.R[e]); if(!best || m > best.m) best = { e, l: c.L[e], r: c.R[e], m }; }
+  });
+  return best ? T.hintEl(best.e, best.l, best.r, best.m) : T.hintGeneric;
+}
+
+/* ---------- svarstyklės ---------- */
+function scaleSvg(){
+  return `<svg class="scale" viewBox="0 0 360 178" role="img">
+    <path d="M120 170h120l-12-12h-96z" fill="#0b7285" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <rect x="174" y="30" width="12" height="130" rx="3" fill="#99e9f2" stroke="${INK}" stroke-width="3"/>
+    <g class="beam"><rect x="56" y="25" width="248" height="10" rx="5" fill="#fff" stroke="${INK}" stroke-width="3"/>
+      <circle cx="62" cy="30" r="4" fill="${INK}"/><circle cx="298" cy="30" r="4" fill="${INK}"/></g>
+    <circle cx="180" cy="30" r="13" fill="#fff" stroke="${INK}" stroke-width="3"/><circle class="lamp" cx="180" cy="30" r="6.5"/>
+    ${[62, 298].map((x, i) => `<g class="pan" data-p="${i}"><path d="M${x} 30L${x - 44} 104M${x} 30L${x + 44} 104" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>
+      <path class="plate" d="M${x - 54} 104h108q-4 22-54 22t-54-22z" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+      <text x="${x}" y="88" text-anchor="middle" class="num">0</text><text x="${x}" y="143" text-anchor="middle" class="lbl">${i ? T.products : T.reactants}</text></g>`).join("")}
+  </svg>`;
+}
+function setScale(svg, l, r, ok, sign){
+  const ang = ok ? 0 : Math.max(-13, Math.min(13, (sign < 0 ? -1 : 1) * (4 + Math.abs(r - l) * 1.5)));
+  const dy = 118 * Math.sin(ang * Math.PI / 180);
+  svg.classList.toggle("eqd", ok);
+  svg.querySelector(".beam").style.transform = `rotate(${ang}deg)`;
+  const pans = svg.querySelectorAll(".pan");
+  pans[0].style.transform = `translateY(${-dy}px)`; pans[1].style.transform = `translateY(${dy}px)`;
+  pans[0].querySelector(".num").textContent = l; pans[1].querySelector(".num").textContent = r;
+  svg.setAttribute("aria-label", T.scaleLabel(l, r, ok));
+}
+
+/* ---------- meniu ---------- */
+const ART = [
+  `<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="16" cy="24" r="10" fill="#ffa94d" stroke="${INK}" stroke-width="2.5"/><circle cx="32" cy="24" r="10" fill="#74c0fc" stroke="${INK}" stroke-width="2.5"/></svg>`,
+  `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4q14 14 14 26a14 14 0 0 1-28 0q0-8 7-14q1 6 5 7q-2-10 2-19z" fill="#ff922b" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/><path d="M24 26q7 6 7 11a7 7 0 0 1-14 0q0-5 7-11z" fill="#ffe066"/></svg>`,
+  `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M19 5h10M21 5v14L9 39q-2 5 4 5h22q6 0 4-5L27 19V5" fill="#fff" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/><path d="M15.500 30h17l5 8.500q1 3-2.500 3h-22q-3.500 0-2.500-3z" fill="#66d9e8"/></svg>`,
+  `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 18a8 8 0 1 1 12 7q-4 2-4 7" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><circle cx="24" cy="41" r="3.4" fill="${INK}"/></svg>`
+];
+const LEVELS = ["jungimosi", "degimas", "mainu", "tipai"].map((id, i) => ({ id, name: T.levels[i][0], sub: T.levels[i][1], art: ART[i] }));
+const LEARN = T.learn.map(t => ({ name: `<span class="lt-ic" aria-hidden="true">${{ k: "2H", m: "=", s: "1·2", d: "<span>O<sub>2</sub></span>", t: "A+B" }[t.ic]}</span>${t.name}`, html: t.html, level: t.level }));
+
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), board = $("board"), why = $("why");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("h1").innerHTML = `${T.h1[0]} <em>${T.h1[1]}</em>`; $("heroP").textContent = T.hero; $("note").textContent = T.note; $("ptsL").textContent = T.points;
+(function hero(){
+  const eq = parse(EQ.jungimosi[0]);
+  $("heroArt").innerHTML = `<div class="hero-card"><div class="hero-eq">${eqHtml(eq, [2, 1, 1])}</div>${scaleSvg()}</div>`;
+  const c = count(eq, [2, 1, 1]); setScale($("heroArt").querySelector(".scale"), sum(c.L), sum(c.R), false, sum(c.R) - sum(c.L));
+})();
+
+/* ---------- žaidimo eiga ---------- */
+let lvl = 0, Lv = null, list = [], ti = 0, cur = null, pts = 0, okN = 0, dots = null, answered = false;
+function showMenu(){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); MK.learn($("learn"), { topics: LEARN, onPlay: start }); window.scrollTo(0, 0); }
+function makeList(id){
+  if(id !== "tipai") return MK.shuffle(EQ[id]).slice(0, N).map(r => ({ kind: "bal", eq: parse(r) }));
+  /* 4 tipo klausimai (po vieną kiekvieno tipo) ir 4 sunkesnės lygtys pakaitomis */
+  const typed = [].concat(EQ.tipui, EQ.jungimosi, EQ.degimas, EQ.mainu).filter(r => r[0].split(" -> ")[1].split(" + ").length <= 2); // trijų produktų lygtys tipo klausimui netinka
+  const tq = MK.shuffle(["J", "S", "P", "M"]).map(t => ({ kind: "type", eq: parse(MK.pick(typed.filter(r => r[2] === t))) }));
+  const hard = MK.shuffle(EQ.sunkesnes).slice(0, N / 2).map(r => ({ kind: "bal", eq: parse(r) }));
+  const out = []; for(let i = 0; i < N / 2; i++) out.push(tq[i], hard[i]);
+  return out;
+}
+function start(i){
+  lvl = i; Lv = LEVELS[i]; list = makeList(Lv.id); ti = 0; pts = 0; okN = 0; $("pts").textContent = 0;
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), N); next();
+}
+function next(){
+  why.innerHTML = "";
+  if(ti >= N) return finish();
+  cur = list[ti]; cur.tries = 0; answered = false; dots.cur(ti);
+  if(cur.kind === "bal"){ cur.k = cur.eq.terms.map(() => 1); drawBal(); } else drawType();
+  window.scrollTo(0, 0);
+}
+function drawBal(){
+  const eq = cur.eq;
+  const term = (t, i) => `<div class="term" data-i="${i}" data-f="${t.f}"><button type="button" class="st" data-d="1" aria-label="${T.inc(t.f)}">+</button>
+    <div class="fm"><b class="k">1</b><span>${fml(t.f)}</span></div><button type="button" class="st" data-d="-1" aria-label="${T.dec(t.f)}">−</button></div>`;
+  const side = left => `<div class="side">${eq.terms.map((t, i) => t.left === left ? term(t, i) : "").filter(Boolean).join('<span class="pl">+</span>')}</div>`;
+  board.innerHTML = `<div class="card" data-eq="${eq.raw}"><small>${ti + 1} / ${N} · ${Lv.name}</small><div class="task">${T.taskBal}</div>
+    <div class="eq">${side(true)}<div class="arr" aria-hidden="true">→</div>${side(false)}</div>
+    ${scaleSvg()}<div class="cnt-h">${T.countersHead}</div><div class="cnts" id="cnts"></div>
+    ${lvl < 3 ? `<details class="hint"><summary>${T.hintSum}</summary><p>${hintFor(eq)}</p></details>` : ""}
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+    <button type="button" class="mk-btn check" id="chk">${T.check}</button></div>`;
+  update();
+}
+function state(){
+  const c = count(cur.eq, cur.k), bad = cur.eq.els.filter(e => (c.L[e] || 0) !== (c.R[e] || 0));
+  return { c, bad, l: sum(c.L), r: sum(c.R), balanced: !bad.length, minimal: cur.k.reduce(gcd) === 1 };
+}
+function update(){
+  const s = state();
+  board.querySelectorAll(".term").forEach(el => { const i = +el.dataset.i, k = cur.k[i], b = el.querySelectorAll(".st");
+    const kb = el.querySelector(".k"); kb.textContent = k; kb.classList.toggle("one", k === 1); kb.setAttribute("aria-label", T.coef(cur.eq.terms[i].f, k));
+    b[0].disabled = k >= 9; b[1].disabled = k <= 1; });
+  $("cnts").innerHTML = cur.eq.els.map(e => `<div class="cnt${s.bad.includes(e) ? "" : " ok"}"><span>${s.c.L[e] || 0}</span><b>${e}</b><span>${s.c.R[e] || 0}</span></div>`).join("");
+  let sign = s.r - s.l; if(!sign && s.bad.length) sign = (s.c.R[s.bad[0]] || 0) - (s.c.L[s.bad[0]] || 0);
+  setScale(board.querySelector(".scale"), s.l, s.r, s.balanced, sign);
+}
+function explain(eq){
+  const c = count(eq, eq.ans);
+  return `<p>${T.answerIs}</p><span class="be">${eqHtml(eq, eq.ans)}</span><p>${T.atomsLine} ${eq.els.map(e => `${e} ${c.L[e]} = ${c.R[e]}`).join(", ")}.</p>
+    <p>${T.typeIs} <b>${T.types[eq.type]}</b>. ${T.typeWhy[eq.type]}</p>`;
+}
+function drawType(){
+  const eq = cur.eq;
+  board.innerHTML = `<div class="card" data-eq="${eq.raw}"><small>${ti + 1} / ${N} · ${Lv.name}</small><div class="task">${T.taskType}</div>
+    <div class="eqs">${eqHtml(eq, eq.ans)}</div>
+    <div class="opts">${["J", "S", "P", "M"].map(t => `<button type="button" data-t="${t}">${T.typeBtn[t]}</button>`).join("")}</div></div>`;
+}
+function done(got, head, more){
+  answered = true; const ok = got > 0; dots.mark(ti, ok);
+  if(ok){ okN++; pts += got; MK.sfx.good(); } else MK.sfx.bad();
+  $("pts").textContent = pts;
+  why.innerHTML = MK.why({ ok, head: head + (ok ? ` +${got}` : ""), more, sum: T.whySum, open: !ok || got < 10 })
+    + `<button type="button" class="mk-btn go" id="go">${ti < N - 1 ? T.next : T.results}</button>`;
+  $("go").scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+function checkBal(){
+  const s = state(), msg = $("msg");
+  if(s.balanced && !s.minimal){ MK.sfx.tap(); msg.innerHTML = T.reducible; return; }
+  if(s.balanced){ lock(); return done(cur.tries ? 5 : 10, cur.tries ? T.okSecond : MK.praise() + " " + T.okFirst, explain(cur.eq)); }
+  cur.tries++;
+  if(cur.tries < 2){ MK.sfx.bad(); msg.innerHTML = T.notYet(s.bad); const h = board.querySelector("details.hint"); if(h) h.open = true; return; }
+  cur.k = cur.eq.ans.slice(); update(); lock(); done(0, T.fail, explain(cur.eq));
+}
+function lock(){ $("msg").innerHTML = ""; $("chk").hidden = true; board.firstElementChild.classList.add("done"); const h = board.querySelector("details.hint"); if(h) h.hidden = true; }
+board.addEventListener("click", e => {
+  MK.unlock(); if(answered) return;
+  const st = e.target.closest(".st");
+  if(st && cur.kind === "bal"){ const i = +st.closest(".term").dataset.i, k = cur.k[i] + (+st.dataset.d); if(k < 1 || k > 9) return;
+    cur.k[i] = k; MK.sfx.tap(); $("msg").innerHTML = ""; update(); return; }
+  if(e.target.closest("#chk")) return checkBal();
+  const b = e.target.closest(".opts button");
+  if(b){ const ok = b.dataset.t === cur.eq.type;
+    board.querySelectorAll(".opts button").forEach(x => { x.disabled = true; if(x.dataset.t === cur.eq.type) x.classList.add("ok"); else if(x === b) x.classList.add("no"); });
+    done(ok ? 10 : 0, ok ? MK.praise() : T.wrongType, `<p>${T.typeIs} <b>${T.types[cur.eq.type]}</b>. ${T.typeWhy[cur.eq.type]}</p>`); }
+});
+why.addEventListener("click", e => { if(e.target.closest("#go")){ ti++; next(); } });
+function finish(){
+  const stars = MK.starsFor(pts, N * 10); MK.best(GAME, Lv.id, stars);
+  MK.result({ stars, title: T.resultTitle(okN, N), text: T.resultText(pts),
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+showMenu();
+})();
+</script>
+</body>
+</html>
