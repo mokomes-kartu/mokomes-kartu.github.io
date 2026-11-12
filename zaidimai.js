@@ -56,6 +56,17 @@ window.MK_ZAIDIMAI = [
   "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM3YmQxM2EiLz48cGF0aCBkPSJNMjQgMTJ2MzhNMzQgMTJ2MzhNNDQgMTJ2MzhNMTQgMjBoNDBNMTQgMzBoNDBNMTQgNDBoNDAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjYiIG9wYWNpdHk9Ii43NSIvPjxwYXRoIGQ9Ik0xNCAxMHY0MGg0MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTM4IDE2bDEwIDEwTTQ4IDE2TDM4IDI2IiBzdHJva2U9IiNlNTI0M2IiIHN0cm9rZS13aWR0aD0iNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+"
  },
  {
+  "id": "skaiciu-gyvatele",
+  "subject": "mat",
+  "grades": [
+   5
+  ],
+  "title": "Skaičių gyvatėlė",
+  "desc": "Vesk gyvatėlę savo tempu ir rink kartotinius, daliklius, pirminius skaičius bei skaičius pagal dalumo požymius.",
+  "url": "/skaiciu-gyvatele/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM2NzQxZDkiLz48cmVjdCB4PSIzNiIgeT0iOCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSI0NiIgeT0iMjMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjEzIiBmaWxsPSIjMTIxYTMzIj4xMjwvdGV4dD48cGF0aCBkPSJNMTIgNTJWNDBxMC02IDYtNmgxNHE2IDAgNiA2djQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIxMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTEyIDUyVjQwcTAtNiA2LTZoMTRxNiAwIDYgNnY0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0MGMwNTciIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMzgiIGN5PSI0NiIgcj0iOCIgZmlsbD0iIzJmOWU0NCIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSIzNSIgY3k9IjQ3IiByPSIyLjYiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSI0MSIgY3k9IjQ3IiByPSIyLjYiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSIzNSIgY3k9IjQ3LjYiIHI9IjEuMiIgZmlsbD0iIzEyMWEzMyIvPjxjaXJjbGUgY3g9IjQxIiBjeT0iNDcuNiIgcj0iMS4yIiBmaWxsPSIjMTIxYTMzIi8+PC9zdmc+"
+ },
+ {
   "id": "netaisyklingieji",
   "subject": "en",
   "grades": [
@@ -222,7 +233,9 @@ window.MK_ZAIDIMAI = [
  {
   "id": "lasteles-delione",
   "subject": "bio",
-  "grades": [7],
+  "grades": [
+   7
+  ],
   "title": "Ląstelės dėlionė",
   "desc": "Sudėk augalinę ir gyvūninę ląstelę, sužinok, ką veikia kiekviena jos dalis, ir surask klaidas piešiniuose.",
   "url": "/lasteles-delione/",
