@@ -251,7 +251,7 @@ function start(i){
 function spawn(){
   if(idx >= ROUND || lives <= 0) return finish();
   cur = list[idx]; hud();
-  dur = Math.max(2.600, L.t0 - idx * 0.120) * (REDUCED ? 1.400 : 1);
+  dur = Math.max(2.600, L.t0 - idx * 0.120) / 0.9 * (REDUCED ? 1.400 : 1);
   itemEl = document.createElement("div"); itemEl.className = "item"; itemEl.dataset.id = cur.id;
   itemEl.innerHTML = `${itemSvg(cur.id)}<b>${T.items[cur.id][0]}</b>`; itemEl.style.top = Y0 + "%"; scene.appendChild(itemEl);
   binsEl.classList.remove("lock"); binsEl.querySelectorAll(".bin").forEach(b => b.classList.remove("ok", "no", "show"));

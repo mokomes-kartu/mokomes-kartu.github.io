@@ -199,10 +199,7 @@ window.MK_ZAIDIMAI = [
  {
   "id": "lasteles-delione",
   "subject": "bio",
-  "grades": [
-   6,
-   7
-  ],
+  "grades": [7],
   "title": "Ląstelės dėlionė",
   "desc": "Sudėk augalinę ir gyvūninę ląstelę, sužinok, ką veikia kiekviena jos dalis, ir surask klaidas piešiniuose.",
   "url": "/lasteles-delione/",
