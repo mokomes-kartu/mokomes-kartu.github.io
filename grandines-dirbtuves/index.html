@@ -43,6 +43,7 @@ body{--paper:#f6f8ee;--grid:#e1e7cf;--soft:#5a6147;--kid:"Unbounded","Arial Blac
 .sch .sw:hover .hit{fill:#d3f9d8}
 .task{font:700 clamp(17px,4.6vw,20px)/1.45 var(--body);margin-top:6px}
 .task b{font-weight:800}
+.task .ord{display:block;font:800 12px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:#1971c2;margin-bottom:2px}
 .hint{color:var(--soft);font-size:14px;font-weight:700;margin-top:4px}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .opts button{min-height:56px;border:0;border-radius:10px;cursor:pointer;background:#fff;font:800 17px/1.2 var(--body);padding:8px;
@@ -91,8 +92,13 @@ const val = s => +String(s).trim().replace(/\s+/g, "").replace(",", ".");
    Šakose gali būti dar vienas lygiagretus blokas (mišrusis jungimas). */
 const L = n => ({ t: "L", id: "L" + n }), S = n => ({ t: "S", id: "J" + n }), Rz = (n, v) => ({ t: "R", id: "R" + n, v });
 const Pr = (...b) => ({ par: b });
-const conducts = (items, st) => items.every(it => it.par ? it.par.some(b => conducts(b, st)) : it.t === "S" ? !!st.sw[it.id] : st.broken !== it.id);
-function lightUp(items, st, lit){ for(const it of items){ if(it.par){ for(const b of it.par) if(conducts(b, st)) lightUp(b, st, lit); } else if(it.t === "L") lit.add(it.id); } }
+/* perjungiklis: blokas { par: [b0, b1], sel: "P1" } – srovė eina tik pasirinkta šaka (išjungtas = viršutinė, įjungtas = apatinė);
+   laiptinės jungimas: { par: [b0, b1], sel: "P1", selR: "P2" } – grandinė uždara, kai abu perjungikliai rodo tą pačią šaką.
+   "X" – nutrūkęs laidas (srovė nepraeina). */
+const selIdx = (it, st) => { const a = st.sw[it.sel] ? 1 : 0; if(it.selR){ const b = st.sw[it.selR] ? 1 : 0; return a === b ? a : -1; } return a; };
+const conducts = (items, st) => items.every(it => it.par ? (it.sel ? (k => k >= 0 && conducts(it.par[k], st))(selIdx(it, st)) : it.par.some(b => conducts(b, st))) : it.t === "X" ? false : it.t === "S" ? !!st.sw[it.id] : st.broken !== it.id);
+function lightUp(items, st, lit){ for(const it of items){ if(it.par){ if(it.sel){ const k = selIdx(it, st); if(k >= 0 && conducts(it.par[k], st)) lightUp(it.par[k], st, lit); } else for(const b of it.par) if(conducts(b, st)) lightUp(b, st, lit); } else if(it.t === "L") lit.add(it.id); } }
+function sels(items, o){ o = o || []; items.forEach(it => { if(it.par){ if(it.sel) o.push(it.sel); if(it.selR) o.push(it.selR); it.par.forEach(b => sels(b, o)); } }); return o; }
 function litSet(main, st){ const lit = new Set(); if(conducts(main, st)) lightUp(main, st, lit); return lit; }
 function walk(items, f){ for(const it of items){ if(it.par) it.par.forEach(b => walk(b, f)); else f(it); } }
 const all = (main, t) => { const o = []; walk(main, c => c.t === t && o.push(c.id)); return o; };
@@ -100,12 +106,13 @@ function seqs(items, isMain, out){ out.push({ seq: items, main: isMain }); items
 const seqOf = (main, id) => seqs(main, true, []).find(s => s.seq.some(c => c.id === id));
 const list = ids => { ids = [...ids].sort((a, b) => a.localeCompare(b, "lt", { numeric: true })); return !ids.length ? "nė viena" : ids.length === 1 ? "tik " + ids[0] : ids.slice(0, -1).join(", ") + " ir " + ids[ids.length - 1]; };
 const cap = s => s[0].toUpperCase() + s.slice(1);
-const keyOf = items => items.map(it => it.par ? "(" + it.par.map(keyOf).sort().join("|") + ")" : it.t).join("");
+const keyOf = items => items.map(it => it.par ? (it.sel ? "<" : "") + (it.selR ? ">" : "") + "(" + (it.sel ? it.par.map(keyOf) : it.par.map(keyOf).sort()).join("|") + ")" : it.t).join("");
 
 /* ---------- schemos piešimas ---------- */
 const CW = 66, BR = 66, TOP = 40;
 const W = (x1, y1, x2, y2) => `<path d="M${x1} ${y1}L${x2} ${y2}" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
-function sz(items){ let w = 0, h = 1; for(const it of items){ if(it.par){ const s = it.par.map(sz); w += Math.max(...s.map(q => q.w)) + 40; h = Math.max(h, s.reduce((a, q) => a + q.h, 0)); } else w += CW; } return { w, h }; }
+const padL = it => it.sel ? 46 : 20, padR = it => it.selR ? 46 : 20;
+function sz(items){ let w = 0, h = 1; for(const it of items){ if(it.par){ const s = it.par.map(sz); w += Math.max(30, ...s.map(q => q.w)) + padL(it) + padR(it); h = Math.max(h, s.reduce((a, q) => a + q.h, 0)); } else w += CW; } return { w, h }; }
 function comp(it, x, y, st){
   const cx = x + CW / 2; let g = "";
   if(it.t === "L"){
@@ -116,6 +123,9 @@ function comp(it, x, y, st){
       <path d="M${cx - 10} ${y - 10}L${cx + 10} ${y + 10}M${cx + 10} ${y - 10}L${cx - 10} ${y + 10}" stroke="${INK}" stroke-width="2.5"/>`;
     if(br) g += `<path d="M${cx - 6} ${y - 28}l5 7-4 3 6 8" fill="none" stroke="#e03131" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
     g += `<text x="${cx}" y="${y - 22}" text-anchor="middle">${it.id}${br ? " ✗" : ""}</text>`;
+  } else if(it.t === "X"){
+    g += W(x, y, cx - 11, y) + W(cx + 11, y, x + CW, y) + `<circle cx="${cx - 11}" cy="${y}" r="3.5" fill="#fff" stroke="${INK}" stroke-width="2.5"/><circle cx="${cx + 11}" cy="${y}" r="3.5" fill="#fff" stroke="${INK}" stroke-width="2.5"/>
+      <path d="M${cx - 4} ${y - 9}l8 18" stroke="#e03131" stroke-width="2.5" stroke-linecap="round"/>`;
   } else if(it.t === "R"){
     g += W(x, y, cx - 18, y) + W(cx + 18, y, x + CW, y) + `<rect x="${cx - 18}" y="${y - 8}" width="36" height="16" fill="#fff" stroke="${INK}" stroke-width="3"/>
       <text x="${cx}" y="${y - 16}" text-anchor="middle">${it.id}${it.v != null ? " = " + it.v + " Ω" : ""}</text>`;
@@ -133,15 +143,27 @@ function series(items, x, y, st){
   let g = "";
   for(const it of items){
     if(it.par){
-      const s = it.par.map(sz), bw = Math.max(...s.map(q => q.w)) + 40, xl = x + 20, xr = x + bw - 20, ys = [];
+      const s = it.par.map(sz), inner = Math.max(30, ...s.map(q => q.w)), bw = inner + padL(it) + padR(it), xl = x + padL(it), xr = xl + inner, ys = [];
       let yy = y;
       it.par.forEach((b, k) => { ys.push(yy); g += series(b, xl, yy, st) + W(xl + s[k].w, yy, xr, yy); yy += s[k].h * BR; });
       const yl = ys[ys.length - 1];
-      g += W(x, y, xl, y) + W(xr, y, x + bw, y) + W(xl, y, xl, yl) + W(xr, y, xr, yl);
-      ys.slice(0, -1).forEach(v => { g += `<circle cx="${xl}" cy="${v}" r="4.5" fill="${INK}"/><circle cx="${xr}" cy="${v}" r="4.5" fill="${INK}"/>`; });
+      if(it.sel) g += selSw(it.sel, x, xl, y, ys, false, st);
+      else { g += W(x, y, xl, y) + W(xl, y, xl, yl); ys.slice(0, -1).forEach(v => { g += `<circle cx="${xl}" cy="${v}" r="4.5" fill="${INK}"/>`; }); }
+      if(it.selR) g += selSw(it.selR, x + bw, xr, y, ys, true, st);
+      else { g += W(xr, y, x + bw, y) + W(xr, y, xr, yl); ys.slice(0, -1).forEach(v => { g += `<circle cx="${xr}" cy="${v}" r="4.5" fill="${INK}"/>`; }); }
       x += bw;
     } else { g += comp(it, x, y, st); x += CW; }
   }
+  return g;
+}
+/* perjungiklio piešinys: ašis ant pagrindinės linijos, du kontaktai – prie šakų */
+function selSw(id, xe, xc, y, ys, right, st){
+  const k = st.sw[id] ? 1 : 0, px = right ? xe - 9 : xe + 9, d = right ? 1 : -1;
+  let g = `<g class="sw" data-id="${id}" role="button" aria-label="Perjungiklis ${id}: ${k ? "apatinė" : "viršutinė"} padėtis">`
+    + `<rect class="hit" x="${Math.min(xe, xc) - 4}" y="${y - 30}" width="${Math.abs(xc - xe) + 8}" height="${ys[1] - y + 46}" rx="8" fill="transparent"/>`
+    + W(xe, y, px, y) + ys.map(v => `<circle cx="${xc + d * 2}" cy="${v}" r="4" fill="#fff" stroke="${INK}" stroke-width="2.5"/>`).join("")
+    + `<path d="M${px} ${y}L${xc + d * 6} ${ys[k]}" stroke="#1971c2" stroke-width="3.8" stroke-linecap="round"/><circle cx="${px}" cy="${y}" r="4.5" fill="#1971c2"/>`
+    + `<text x="${right ? px - 4 : px + 4}" y="${y - 12}" text-anchor="${right ? "end" : "start"}" style="fill:#1971c2">${id}</text></g>`;
   return g;
 }
 function schema(main, st){
@@ -212,25 +234,57 @@ function litChoices(correct, pool){
   return MK.shuffle(out).map(s => ({ label: cap(list(s)), ok: setKey(s) === ck }));
 }
 
-/* ---------- 1. Uždek lemputę ---------- */
+/* ---------- 1. Uždek lemputę ----------
+   Jungikliai J, perjungikliai P (taip pat laiptinės pora), apgaulingos lemputės nutrūkusioje šakoje.
+   Tikslas niekada nepasiekiamas paprasčiausiai įjungus visus jungiklius; 2–3 užsakymai toje pačioje schemoje. */
+function numberSel(main){ let n = 0; (function f(items){ items.forEach(it => { if(it.par){ if(it.sel) it.sel = "P" + (++n); if(it.selR) it.selR = "P" + (++n); it.par.forEach(f); } }); })(main); }
+function blocksOf(main){ const o = []; (function f(items){ items.forEach(it => { if(it.par){ o.push(it); it.par.forEach(f); } }); })(main); return o; }
+function solTxt(sw, J, Ps){
+  const on = J.filter(id => sw[id]);
+  return (on.length ? `įjungti ${list(on).replace("tik ", "")}` : "neįjungti nė vieno jungiklio") + (Ps.length ? "; " + Ps.map(id => `${id} – ${sw[id] ? "apatinė" : "viršutinė"} padėtis`).join(", ") : "");
+}
 function genSwitch(tier){
-  return fresh("sw" + tier, () => {
+  const nG = [1, 2, 3][tier];
+  return fresh("sw2-" + tier, () => {
     for(;;){
-      const main = randTree(tier, tier > 0); addSwitches(main, [R(1, 2), R(2, 3), R(3, 4)][tier]); numberAll(main);
-      if(sz(main).w > 470) continue;
-      const lamps = all(main, "L"), sws = swSets(main), sets = sws.map(sw => litSet(main, { sw }));
-      const allOn = setKey(sets[sets.length - 1]);
-      const cands = [...new Set(sets.map(setKey))].filter(k => k && (tier === 0 || k !== allOn));
-      if(!cands.length) continue;
-      const gk = P(cands), goal = new Set(gk.split(","));
-      const ids = all(main, "S"), ok = sws.filter((sw, i) => setKey(sets[i]) === gk);
-      const on = ids.filter(id => ok.every(sw => sw[id])), off = ids.filter(id => ok.every(sw => !sw[id])), any = ids.filter(id => !on.includes(id) && !off.includes(id));
-      const offL = lamps.filter(l => !goal.has(l));
-      return { key: keyOf(main) + ":" + gk, kind: "sw", main, st: { sw: {} }, goal,
-        q: `Uždek <b>${list(goal).replace("tik ", "")}</b>${offL.length ? `, o ${list(offL).replace("tik ", "")} turi nedegti` : ""}.`, hint: "Bakstelėk jungiklį, kad jį įjungtum ar išjungtum.",
-        ex: `Srovė teka tik uždaru keliu nuo šaltinio ir atgal. Lemputė dega, jei visi jungikliai jos kelyje įjungti. ${on.length ? `Įjungti reikia: <b>${list(on).replace("tik ", "")}</b>. ` : ""}${off.length ? `Išjungti reikia: <b>${list(off).replace("tik ", "")}</b> – kitaip užsidegtų ir nereikalingos lemputės. ` : ""}${any.length ? `${list(any).replace("tik ", "")} – nesvarbu (jų šakos lemputės vis tiek dega arba nedega dėl kitų jungiklių).` : ""}` };
+      const main = randTree(tier, tier > 0), blocks = blocksOf(main);
+      const two = blocks.filter(x => x.par.length === 2);
+      if(two.length && Math.random() < [.45, .6, .7][tier]) P(two).sel = true;
+      if(tier > 0 && Math.random() < .35) main.splice(R(0, main.length), 0, { par: [[], []], sel: true, selR: true });
+      addSwitches(main, [R(1, 2), R(2, 3), R(2, 4)][tier]);
+      if(tier > 0 && Math.random() < .45){
+        const nb = blocks.filter(x => !x.sel);
+        if(nb.length){ const br = [E()]; if(Math.random() < .5) br.push({ t: "S" }); br.splice(R(0, br.length), 0, { t: "X" }); P(nb).par.push(br); }
+      }
+      numberAll(main); numberSel(main);
+      const zs = sz(main); if(zs.w > 430 || zs.h > 5) continue;
+      const J = all(main, "S"), Ps = sels(main), ids = J.concat(Ps), lamps = all(main, "L");
+      if(!J.length || ids.length > 7) continue;
+      const cfgs = Array.from({ length: 1 << ids.length }, (_, m) => { const sw = {}; ids.forEach((id, i) => sw[id] = !!(m >> i & 1)); return sw; });
+      const sets = cfgs.map(sw => setKey(litSet(main, { sw })));
+      const live = new Set(); sets.forEach(k => k && k.split(",").forEach(l => live.add(l)));
+      const greedy = new Set(cfgs.map((sw, i) => J.every(id => sw[id]) ? sets[i] : null).filter(x => x !== null));
+      const cands = [...new Set(sets)].filter(k => k && k !== sets[0] && !greedy.has(k) && [...live].some(l => !k.split(",").includes(l)));
+      if(cands.length < nG) continue;
+      const dead = lamps.filter(l => !live.has(l));
+      const goals = MK.shuffle(cands).slice(0, nG).map(gk => {
+        const ok = cfgs.filter((sw, i) => sets[i] === gk), cnt = sw => J.filter(id => sw[id]).length;
+        const min = Math.min(...ok.map(cnt)), best = ok.find(sw => cnt(sw) === min), goal = new Set(gk.split(","));
+        const must = J.filter(id => ok.every(sw => sw[id])), mustOff = J.filter(id => ok.every(sw => !sw[id]));
+        return { key: gk, goal, min, best, off: lamps.filter(l => !goal.has(l)),
+          ex: `Lemputė dega tik tada, kai visas jos kelias nuo šaltinio ir atgal uždaras. ${Ps.length ? "Perjungiklis srovę nukreipia tik į vieną šaką – kita šaka tada atjungta. " : ""}`
+            + `${mustOff.length ? `Jungiklis ${list(mustOff).replace("tik ", "")} turi likti išjungtas – kitaip užsidegtų ir nereikalingos lemputės. ` : ""}${must.length ? `Būtinai įjungti: ${list(must).replace("tik ", "")}. ` : ""}`
+            + `${dead.length ? `${list(dead).replace("tik ", "")} niekada nedega – jų šakoje nutrūkęs laidas. ` : ""}`
+            + `<span class="mk-ex">Sprendimas su mažiausiai įjungtų jungiklių (${min}): ${solTxt(best, J, Ps)}.</span>` };
+      });
+      return { key: keyOf(main) + ":" + goals.map(g => g.key).join("/"), kind: "sw", main, st: { sw: {} }, goals, gi: 0, allOk: true, J, Ps,
+        hint: `Bakstelėk jungiklį J – įjungsi ar išjungsi${Ps.length ? ", perjungiklį P – pakeisi padėtį" : ""}. Įjungęs ne daugiau jungiklių, nei būtina, gausi +5.` };
     }
   });
+}
+function swQ(c){
+  const g = c.goals[c.gi], n = c.goals.length;
+  return `${n > 1 ? `<span class="ord">Užsakymas ${c.gi + 1} iš ${n}</span>` : ""}Uždek <b>${list(g.goal).replace("tik ", "")}</b>${g.off.length ? `, o ${list(g.off).replace("tik ", "")} turi nedegti` : ""}.`;
 }
 
 /* ---------- 2. Nuoseklusis ar lygiagretusis ---------- */
@@ -433,7 +487,7 @@ const I = {
 };
 const lt = (ic, t) => `<span class="lt-ic">${I[ic]}</span>${t}`;
 const LEVELS = [
-  { id: "jungikliai", name: "Uždek lemputę", sub: "Įjunk tik reikiamus jungiklius", art: I.bulb, gen: genSwitch },
+  { id: "jungikliai", name: "Uždek lemputę", sub: "Jungikliai, perjungikliai ir apgaulingos šakos", art: I.bulb, gen: genSwitch },
   { id: "jungimas", name: "Nuoseklusis ar lygiagretusis", sub: "Jungimo būdas, perdegusi lemputė, jungikliai", art: I.series, gen: genSeries },
   { id: "omas", name: "Omo dėsnis", sub: "I = U / R · nuoseklusis jungimas", art: I.ohm, gen: genOhm },
   { id: "lygiagretus", name: "Lygiagretusis jungimas", sub: "Bendra varža ir šakų srovės", art: I.par, gen: genPar },
@@ -442,6 +496,7 @@ const LEVELS = [
 ];
 const LEARN = [
   { name: lt("bat", "Elektros grandinė"), level: 0, html: `<p>Srovė teka tik <b>uždara</b> grandine: nuo šaltinio per laidus ir prietaisus atgal į šaltinį.</p><p><b>Jungiklis</b> uždaro arba nutraukia grandinę. Išjungtas jungiklis – tai tarsi nutrūkęs laidas.</p><span class="mk-ex">Schemoje: ⊗ – lemputė, ▭ – rezistorius, ilgas ir trumpas brūkšniai – šaltinis.</span>` },
+  { name: lt("bulb", "Jungiklis ir perjungiklis"), level: 0, html: `<p><b>Jungiklis</b> (J) grandinę uždaro arba nutraukia.</p><p><b>Perjungiklis</b> (P) turi dvi padėtis: srovė eina <b>tik viena</b> iš dviejų šakų – įjungus vieną, kita atjungiama.</p><p>Du perjungikliai, sujungti dviem laidais, valdo lemputę iš dviejų vietų (kaip laiptinėje): lemputė dega, kai abu rodo į tą patį laidą.</p><span class="mk-ex">Tarpas laide su raudonu brūkšniu – nutrūkęs laidas: ta šaka niekada nepraleidžia srovės.</span>` },
   { name: lt("series", "Nuoseklusis jungimas"), level: 1, html: `<p>Prietaisai sujungti <b>viena paskui kitą</b>, srovė teka vienu keliu.</p><ul><li>Srovė visur ta pati: I = I1 = I2</li><li>Įtampos sudedamos: U = U1 + U2</li><li>Varžos sudedamos: R = R1 + R2</li></ul><p>Nutrūkus vienai vietai, nedega visos lemputės.</p>` },
   { name: lt("par", "Lygiagretusis jungimas"), level: 3, html: `<p>Prietaisai sujungti <b>atskiromis šakomis</b> tarp tų pačių dviejų taškų.</p><ul><li>Įtampa visose šakose ta pati: U = U1 = U2</li><li>Srovės sudedamos: I = I1 + I2</li><li>1/R = 1/R1 + 1/R2, dviem rezistoriams R = R1·R2 / (R1 + R2)</li></ul><p>Nutrūkus vienai šakai, kitos veikia. Taip sujungti prietaisai namuose.</p>` },
   { name: lt("ohm", "Omo dėsnis"), level: 2, html: `<p>Srovės stipris tiesiogiai proporcingas įtampai ir atvirkščiai proporcingas varžai:</p><span class="mk-ex">I = U / R</span><p>Iš jo: U = I · R ir R = U / I. Vienetai: srovė – amperai (A), įtampa – voltai (V), varža – omai (Ω).</p><span class="mk-ex">Pvz.: U = 12 V, R = 4 Ω → I = 12 / 4 = 3 A</span>` },
@@ -467,7 +522,7 @@ function draw(){
   const ans = c.kind === "sw" ? `<button type="button" class="mk-btn check" id="chk">Tikrinti</button>`
     : c.kind === "opt" ? `<div class="opts">${c.choices.map((o, k) => `<button type="button" data-k="${k}">${o.label}</button>`).join("")}</div>`
     : `<form class="ansrow" id="f" autocomplete="off"><input id="inp" inputmode="decimal" enterkeyhint="done" placeholder="Atsakymas" aria-label="Atsakymas"><span class="u">${c.unit}</span><button class="mk-btn" type="submit">Tikrinti</button></form>`;
-  board.innerHTML = `<div class="card"><small>${ti + 1} / ${N} · ${Lv.name}</small><div id="sch">${schema(c.main, c.st)}</div><div class="task">${c.q}</div>${c.hint ? `<div class="hint">${c.hint}</div>` : ""}${ans}</div>`;
+  board.innerHTML = `<div class="card"><small>${ti + 1} / ${N} · ${Lv.name}</small><div id="sch">${schema(c.main, c.st)}</div><div class="task">${c.kind === "sw" ? swQ(c) : c.q}</div>${c.hint ? `<div class="hint">${c.hint}</div>` : ""}${ans}</div>`;
 }
 function next(){
   $("why").innerHTML = "";
@@ -487,8 +542,17 @@ board.addEventListener("click", e => {
   const sw = e.target.closest(".sw");
   if(sw && !answered && cur.kind === "sw"){ const id = sw.dataset.id; cur.st.sw[id] = !cur.st.sw[id]; MK.sfx.tap(); $("sch").innerHTML = schema(cur.main, cur.st); return; }
   if(e.target.closest("#chk") && !answered){
-    const lit = litSet(cur.main, cur.st), ok = [...cur.goal].sort().join() === [...lit].sort().join();
-    $("chk").disabled = true; return result(ok, ok ? "" : `Dabar dega: ${list(lit)}.`);
+    const g = cur.goals[cur.gi], lit = litSet(cur.main, cur.st), ok = setKey(lit) === g.key, onN = cur.J.filter(id => cur.st.sw[id]).length, eco = ok && onN === g.min;
+    const last = cur.gi === cur.goals.length - 1;
+    $("chk").disabled = true; answered = true; if(!ok) cur.allOk = false;
+    if(ok){ pts += 10 + (eco ? 5 : 0); MK.sfx.good(); } else MK.sfx.bad();
+    if(last){ dots.mark(ti, cur.allOk); if(cur.allOk) okN++; }
+    $("pts").textContent = pts;
+    if(!ok){ cur.st.sw = Object.assign({}, g.best); $("sch").innerHTML = schema(cur.main, cur.st); }
+    $("why").innerHTML = MK.why({ ok, head: ok ? MK.praise() + " +10" + (eco ? " · taupiai +5" : "") : `Neteisingai. Degė: ${list(lit)}. Schemoje parodytas teisingas sprendimas.`,
+        more: g.ex + (ok && !eco ? ` Tavo sprendimas teisingas, bet įjungta ${onN} – užtenka ${g.min}.` : ""), open: !ok || !eco })
+      + `<button type="button" class="mk-btn go" id="${last ? "go" : "go2"}">${last ? (ti < N - 1 ? "Toliau →" : "Rezultatai") : "Kitas užsakymas →"}</button>`;
+    return $(last ? "go" : "go2").scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
   const b = e.target.closest(".opts button");
   if(b && !answered){
@@ -505,7 +569,7 @@ board.addEventListener("submit", e => {
   $("inp").readOnly = true; $("f").querySelector("button").disabled = true;
   result(ok, ok ? "" : `Teisingas atsakymas: <b>${num(cur.ans)} ${cur.unit}</b>.`);
 });
-$("why").addEventListener("click", e => { if(e.target.closest("#go")){ ti++; next(); } });
+$("why").addEventListener("click", e => { if(e.target.closest("#go")){ ti++; next(); } else if(e.target.closest("#go2")){ cur.gi++; answered = false; $("why").innerHTML = ""; draw(); board.scrollIntoView({ block: "start", behavior: "smooth" }); } });
 function finish(){
   const stars = MK.starsFor(okN, N); MK.best(GAME, Lv.id, stars);
   MK.result({ stars, title: `${okN} iš ${N}`, text: `${pts} ${taskai(pts)}.`,
