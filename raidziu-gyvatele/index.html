@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Raidžių gyvatėlė – MokomėsKartu.lt</title>
+<meta name="description" content="Anglų kalbos žaidimas be skubėjimo: perskaityk lietuvišką žodį ir gyvatėle suvalgyk angliško žodžio raides iš eilės.">
+<meta name="theme-color" content="#fff7e6">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<style>
+/* Raidžių gyvatėlė (4 kl., anglų k.): ėjimais, be laiko spaudimo. Viršuje lietuviškas žodis ir raidžių langeliai, laukas (canvas) su medinėmis raidėmis. */
+body{--paper:#fff7e6;--grid:#fff7e6;--soft:#6b5a3e;--kid:"Fredoka","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;--ac:#d9480f;--ac-ink:#fff;--ac-soft:#ffe8d9;
+  background-image:radial-gradient(#f5e3b8 1.4px,transparent 1.6px);background-size:20px 20px}
+html.playing,body.playing{overflow:hidden;height:100%;overscroll-behavior:none}
+body.playing .mk-app{min-height:0;height:100vh;height:100dvh;padding-bottom:10px}
+.mk-lvl{border-radius:18px}
+.mk-lvl-art{border-radius:14px;background:#fff1cf}
+.mk-lvl-art svg{width:44px;height:44px}
+.mk-lvl-t b{font-size:19px}
+.mk-btn{font-size:19px}
+.mk-res .mk-owl{display:none}
+.mk-res h2{font-size:27px}
+.mk-res p{font-size:16px}
+.mk-sec{font-size:19px}
+.errs{width:100%;margin:6px 0 0;padding:10px 12px;border-radius:12px;background:#fff4f1;border:2px dashed #ff8a7a;text-align:left;font:600 14.5px/1.4 var(--body);color:var(--ink)}
+.errs b.h{display:block;font-weight:800;margin-bottom:4px}
+.errs ul{margin:0;padding-left:18px}
+.errs li+li{margin-top:3px}
+.errs.ok{background:#effcf6;border-color:var(--good);text-align:center;font-weight:800}
+.skin-new{display:block;margin-top:8px;padding:8px 10px;border-radius:12px;background:var(--ac-soft);font-weight:800;color:var(--ink)}
+.hero-card{background:#fff;border-radius:22px;padding:8px;box-shadow:inset 0 0 0 3px var(--ink),0 7px 0 rgba(18,26,51,.2);display:grid;place-items:center}
+.hero-card canvas{display:block;border-radius:14px}
+.mk-hero-art{width:min(420px,100%)}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+.lvl-best{display:block;font:800 12px/1.2 var(--body);color:var(--ac);margin-top:3px}
+/* žodynas ir kolekcija */
+.dict{max-width:520px;margin:0 auto;background:#fff;border-radius:18px;padding:12px 14px 6px;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.dict b{font:700 17px/1.2 var(--kid)}
+.bar{height:14px;border-radius:99px;background:#f1e6c8;margin:8px 0 6px;overflow:hidden;box-shadow:inset 0 0 0 2px #d9c89a}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#51cf66,#2f9e44);border-radius:99px;transition:width .5s}
+.dict details summary{cursor:pointer;font-weight:800;color:var(--ac);min-height:40px;display:flex;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:2px 0 10px}
+.chips span{padding:4px 10px;border-radius:99px;background:#ebfbee;box-shadow:inset 0 0 0 2px #8ce99a;font:700 13.5px/1.3 var(--body)}
+.chips em{font-style:normal;color:var(--soft);font-weight:600}
+.empty{margin:0;padding:2px 0 10px;color:var(--soft);font-weight:600;font-size:14px}
+.coll{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;max-width:520px;margin:0 auto}
+.skin{position:relative;border:0;border-radius:14px;background:#fff;padding:6px 2px 7px;cursor:pointer;display:grid;justify-items:center;gap:4px;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.2);font:700 12px/1.15 var(--kid);color:var(--ink)}
+.skin canvas{display:block;width:100%;max-width:62px;height:auto}
+.skin.sel{background:var(--ac-soft);box-shadow:inset 0 0 0 3px var(--ac),0 4px 0 var(--ac)}
+.skin.lock{cursor:default;background:#f4ecd6}
+.skin.lock canvas{filter:grayscale(1);opacity:.4}
+.skin .lk{position:absolute;left:50%;top:13px;width:26px;height:26px;transform:translateX(-50%);display:grid;place-items:center}
+.skin .lk svg{width:24px;height:24px;display:block}
+.skin small{font:700 10px/1.15 var(--body);color:var(--soft);min-height:23px}
+.skin.sel small{color:var(--ac);font-weight:800}
+.mk-lt-b li small{color:var(--soft);font-weight:600}
+/* žaidimas */
+#play{position:relative;display:flex;flex-direction:column;flex:1;min-height:0;user-select:none;-webkit-user-select:none}
+.hud{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:8px;align-items:stretch;margin:0 0 6px}
+.clue{background:#fff;border-radius:16px;padding:6px 8px 8px;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.2);text-align:center;min-width:0}
+.clue small{display:block;font:800 10.5px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+.clue .lt{font:700 clamp(20px,6vw,26px)/1.15 var(--kid);margin:1px 0 5px;overflow-wrap:anywhere}
+.slots{display:flex;justify-content:center;gap:3px}
+.slot{flex:1 1 0;min-width:0;max-width:30px;height:34px;border-radius:8px;background:#fff8e1;box-shadow:inset 0 0 0 2px #d8c08a;display:grid;place-items:center;font:700 20px/1 var(--kid);color:var(--ink)}
+.slot.on{background:#d3f9d8;box-shadow:inset 0 0 0 2px #2f9e44}
+.slot.cur{box-shadow:inset 0 0 0 3px var(--ac);background:#fff}
+.slot.done{background:#51cf66;box-shadow:inset 0 0 0 2px var(--ink);color:#0b3d1a;animation:mkPop .35s}
+.pbtn{border:0;border-radius:14px;background:#fff;cursor:pointer;display:grid;place-items:center;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.2);padding:0}
+.pbtn svg{width:26px;height:26px;display:block}
+.pbtn:disabled{opacity:.4}
+.pbtn:active{transform:translateY(3px)}
+.stat{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 8px}
+.lives{display:inline-flex;gap:3px}
+.lives svg{width:24px;height:22px;display:block}
+.wcount{font:700 14px/1 var(--kid);color:var(--soft)}
+.stage{position:relative;margin:0 auto;border-radius:16px;overflow:hidden;box-shadow:0 0 0 3px var(--ink),0 6px 0 3px rgba(18,26,51,.25);background:#c5e8a8;flex:none;touch-action:none}
+.stage canvas{display:block;touch-action:none}
+.stage.shake{animation:mkShake .3s}
+.ovl{position:absolute;left:-4px;right:-4px;top:var(--ot,0);bottom:0;z-index:5;display:grid;place-items:start center;align-content:center;padding:8px 6px;background:var(--paper);border-radius:16px;overflow:auto;animation:mkFade .2s}
+.ocard{width:min(340px,100%);background:#fff;border-radius:20px;padding:14px 14px 16px;box-shadow:inset 0 0 0 3px var(--ink),0 7px 0 rgba(18,26,51,.2);text-align:center;display:grid;gap:9px;justify-items:center}
+.ocard>b{font:700 20px/1.25 var(--kid)}
+.ocard .hnt{font:600 15px/1.45 var(--body);color:var(--ink);margin:0;text-align:left}
+.ocard .mk-why{margin:0;width:100%}
+.ocard .mk-btn{width:100%}
+.spell{font:700 26px/1.2 var(--kid);letter-spacing:.14em;word-break:break-all}
+.spell u{text-decoration:none;color:var(--ac);background:var(--ac-soft);border-radius:6px;padding:0 3px;box-shadow:inset 0 -3px 0 var(--ac)}
+.spell s{text-decoration:none;color:#2b8a3e}
+.reason{min-height:34px;margin:6px auto 0;display:grid;align-items:center;text-align:center;font:800 14.5px/1.3 var(--body);color:var(--ink);flex:none;padding:0 4px}
+.reason.ok{color:#2b8a3e}
+.reason.warn{color:#c2410c}
+.dpad{display:grid;grid-template-columns:repeat(4,64px);gap:10px;justify-content:center;margin:6px auto 0;flex:none}
+.dpad button{height:48px;border:0;border-radius:16px;background:#fff;cursor:pointer;display:grid;place-items:center;padding:0;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.3);touch-action:manipulation}
+.dpad button:active,.dpad button.dn{transform:translateY(3px);box-shadow:inset 0 0 0 2.5px var(--ink),0 1px 0 rgba(18,26,51,.3);background:var(--ac-soft)}
+.dpad svg{width:26px;height:26px;display:block}
+.keys{margin:8px auto 0;color:var(--soft);font-size:13px;font-weight:700;text-align:center;display:none}
+@media (hover:hover) and (pointer:fine){.dpad{display:none}.keys{display:block}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art"><div class="hero-card"><canvas id="heroCv" role="img"></canvas></div></div>
+      <h1 id="heroT"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div id="levels"></div>
+    <h2 class="mk-sec" id="dictH"></h2>
+    <div class="dict" id="dict"></div>
+    <h2 class="mk-sec" id="collH"></h2><p class="mk-sec-p" id="collP"></p>
+    <div class="coll" id="coll"></div>
+    <div id="learn"></div>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="hud">
+      <button type="button" class="pbtn" id="spkB"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.500h4l5-4v13l-5-4H4z" fill="#d9480f" stroke="#121a33" stroke-width="1.800" stroke-linejoin="round"/><path d="M16.500 8.500a5 5 0 0 1 0 7M19 6a8.500 8.500 0 0 1 0 12" fill="none" stroke="#121a33" stroke-width="2" stroke-linecap="round"/></svg></button>
+      <div class="clue"><small id="clueL"></small><div class="lt" id="clueT"></div><div class="slots" id="slots" role="img"></div></div>
+      <button type="button" class="pbtn" id="hintB"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.500a6.500 6.500 0 0 0-3.600 11.900c.7.500 1.100 1.200 1.100 2v.6h5v-.6c0-.8.400-1.500 1.100-2A6.500 6.500 0 0 0 12 2.500z" fill="#ffd43b" stroke="#121a33" stroke-width="1.800" stroke-linejoin="round"/><path d="M9.700 19.500h4.600M10.500 21.800h3" stroke="#121a33" stroke-width="2" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="stat"><span class="lives" id="lives" role="img"></span><span class="wcount" id="wcount"></span></div>
+    <div class="stage" id="stage"><canvas id="cv" role="img"></canvas></div>
+    <div class="reason" id="reason" aria-live="polite"></div>
+    <div class="dpad" id="dpad"></div>
+    <p class="keys" id="keys"></p>
+    <div class="ovl" id="ovl" hidden></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, GAME = "raidziu-gyvatele", GRADES = [4], SKIN_KEY = "mk-" + GAME + "-gyvate", DICT_KEY = "mk-" + GAME + "-zodynas";
+const COLS = 7, ROWS = 8, ROUND = 6, LIVES = 4, FIELD = 5, INK = "#121a33", UNLOCK = [0, 8, 20, 40, 70];
+
+/*LOGIKA-START*/
+/* Grynoji žaidimo logika (be DOM): žodžių atranka, klaidinančių raidžių parinkimas. */
+const LG = (function(){
+  const ALPHA = "abcdefghijklmnopqrstuvwxyz";
+  /* Raidės, kurias lietuviai dažnai painioja su anglų kalbos raidėmis */
+  const CONF = { a: "eo", e: "ai", i: "ye", o: "au", u: "ov", y: "ie", c: "ksh", k: "cq", s: "zc", z: "s", v: "wf", w: "vu", j: "g", g: "jq", t: "dc", d: "tb", b: "pd", p: "bq", m: "n", n: "mh", f: "vp", h: "nk", l: "ir", r: "ln", q: "kg", x: "sk" };
+  const shuffle = (a, r) => { a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  /* count raidžių, kurios tikrai nėra „need“ ir nėra tarp „have“ */
+  function decoys(word, pos, have, count, r){
+    r = r || Math.random;
+    const need = word[pos], out = [], bad = new Set([need].concat(have || []));
+    const add = c => { if(c && !bad.has(c) && out.length < count){ out.push(c); bad.add(c); } };
+    const conf = shuffle((CONF[need] || "").split(""), r);
+    add(conf[0]);
+    const later = shuffle(word.slice(pos + 1).split("").filter(c => c !== need), r);   // raidės iš šio žodžio, bet ne dabar
+    add(later[0]);
+    shuffle(word.split("").concat(conf.slice(1)), r).forEach(add);
+    shuffle(ALPHA.split(""), r).forEach(add);
+    return out;
+  }
+  /* Raundo žodžiai: pirma dar neišmoktieji, tada trumpesni → ilgesni. */
+  function pickWords(pool, learned, n, r){
+    r = r || Math.random;
+    const sh = shuffle(pool, r).sort((a, b) => (learned[a.w] ? 1 : 0) - (learned[b.w] ? 1 : 0));
+    return sh.slice(0, n).sort((a, b) => a.w.length - b.w.length || r() - 0.5);
+  }
+  return { decoys, pickWords, shuffle, CONF };
+})();
+/*LOGIKA-END*/
+
+/* ---------- lygiai ir žodžiai ---------- */
+const ALLW = T.words.map((list, i) => list.map(x => Object.assign({}, x, { lv: i })));
+const LEVELS = T.levels.map((l, i) => Object.assign({}, l, { pool: ALLW[i] }))
+  .concat([Object.assign({}, T.champion, { pool: [].concat(...ALLW).filter(x => x.w.length >= 6) })]);
+const TOTAL_WORDS = [].concat(...ALLW).length;
+const ICON = {
+  paw: '<ellipse cx="22" cy="29" rx="9" ry="7.500" fill="#a8693a"/><ellipse cx="10" cy="20" rx="3.500" ry="4.500" fill="#a8693a"/><ellipse cx="17" cy="12" rx="3.500" ry="4.500" fill="#a8693a"/><ellipse cx="27" cy="12" rx="3.500" ry="4.500" fill="#a8693a"/><ellipse cx="34" cy="20" rx="3.500" ry="4.500" fill="#a8693a"/>',
+  apple: '<path d="M22 14c-6-5-15-1-14 9 1 8 7 15 11 14 2-1 2-1 3-1s1 0 3 1c4 1 10-6 11-14 1-10-8-14-14-9z" fill="#ff6b6b"/><path d="M22 14c0-4 1-7 4-9" fill="none" stroke="#7a4b2a" stroke-width="2.500" stroke-linecap="round"/><path d="M25 8c3-3 7-2 9 0-3 2-6 3-9 0z" fill="#51cf66"/>',
+  leaf: '<path d="M8 36C6 20 16 8 36 8c1 18-8 29-24 28z" fill="#51cf66"/><path d="M8 36C14 26 22 18 30 14" fill="none" stroke="#2f9e44" stroke-width="2.500" stroke-linecap="round"/>',
+  bus: '<rect x="6" y="10" width="32" height="24" rx="5" fill="#fcc419"/><rect x="10" y="14" width="10" height="8" rx="2" fill="#d0ebff"/><rect x="24" y="14" width="10" height="8" rx="2" fill="#d0ebff"/><rect x="6" y="26" width="32" height="3" fill="#f08c00"/><circle cx="14" cy="35" r="4" fill="#343a40"/><circle cx="30" cy="35" r="4" fill="#343a40"/>',
+  ball: '<circle cx="22" cy="22" r="15" fill="#fff" stroke="#343a40" stroke-width="2.500"/><path d="M22 14l7 5-3 8h-8l-3-8z" fill="#343a40"/><path d="M22 14V7M29 19l7-2M26 27l5 6M18 27l-5 6M15 19l-7-2" stroke="#343a40" stroke-width="2.500" stroke-linecap="round"/>',
+  book: '<path d="M5 9q9-3 17 2v26q-8-5-17-2z" fill="#4dabf7"/><path d="M39 9q-9-3-17 2v26q8-5 17-2z" fill="#a5d8ff"/><path d="M10 15q4-1 8 1M10 21q4-1 8 1M26 16q4-2 8-1M26 22q4-2 8-1" stroke="#fff" stroke-width="2" stroke-linecap="round"/>',
+  house: '<path d="M6 21L22 7l16 14z" fill="#e8590c"/><rect x="10" y="21" width="24" height="17" fill="#ffd8a8"/><rect x="19" y="26" width="7" height="12" rx="1.500" fill="#a8693a"/><rect x="12" y="24" width="5" height="5" fill="#a5d8ff"/><rect x="28" y="24" width="4" height="5" fill="#a5d8ff"/>',
+  helmet: '<path d="M7 31a15 15 0 0 1 30 0z" fill="#fcc419"/><rect x="4" y="30" width="36" height="6" rx="3" fill="#f08c00"/><rect x="19" y="10" width="6" height="14" rx="2" fill="#f08c00"/>',
+  cup: '<path d="M12 8h20v10a10 10 0 0 1-20 0z" fill="#fcc419"/><path d="M12 11H6c0 8 3 11 7 12M32 11h6c0 8-3 11-7 12" fill="none" stroke="#f08c00" stroke-width="2.800"/><rect x="19" y="27" width="6" height="6" fill="#f08c00"/><rect x="13" y="33" width="18" height="5" rx="2" fill="#f08c00"/>'
+};
+const icon = k => `<svg viewBox="0 0 44 44" aria-hidden="true">${ICON[k] || ""}</svg>`;
+
+/* ---------- Mano žodynas ---------- */
+const dictGet = () => MK.get(DICT_KEY, {});
+const dictLearned = () => Object.keys(dictGet()).filter(w => ALLW.some(l => l.some(x => x.w === w))).length;
+function dictAdd(w){ const d = dictGet(); if(!d[w]){ d[w] = 1; MK.set(DICT_KEY, d); } }
+
+/* ---------- gyvatėlių išvaizda ---------- */
+const SKINS = [
+  { body: "#40c057", dark: "#2f9e44", dot: "#b2f2bb", gap: 0.62 },
+  { body: "#ffd43b", dark: "#f59f00", dot: "#ff922b", gap: 0.5 },
+  { body: "#4dabf7", dark: "#1c7ed6", dot: "#d0ebff", gap: 0.62 },
+  { body: "#f06595", dark: "#c2255c", dot: "#ffdeeb", gap: 0.45 },
+  { body: "#9775fa", dark: "#6741d9", dot: "#e5dbff", gap: 0.62, crown: true }
+];
+const skinSel = () => { const s = MK.get(SKIN_KEY, 0); return s >= 0 && s < SKINS.length && dictLearned() >= UNLOCK[s] ? s : 0; };
+const unlocked = i => dictLearned() >= UNLOCK[i];
+
+/* ---------- piešimas (canvas) ---------- */
+const FONT = '"Fredoka","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif';
+function fit(cv, cols, rows, cell){
+  const dpr = Math.min(3, window.devicePixelRatio || 1);
+  cv.width = Math.round(cols * cell * dpr); cv.height = Math.round(rows * cell * dpr);
+  cv.style.width = cols * cell + "px"; cv.style.height = rows * cell + "px";
+  const c = cv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0); return c;
+}
+function rr(c, x, y, w, h, r){ c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+/* Medinė raidės plytelė. glow – kita reikalinga raidė (užuominos metu). */
+function tile(c, x, y, cell, ch, scale, bad, glow, now){
+  const p = 2, w = cell - 2 * p - 2, cx = x + cell / 2, cy = y + cell / 2;
+  c.save(); c.translate(cx, cy); c.scale(scale, scale); c.translate(-w / 2 - 1, -w / 2 - 2);
+  if(glow){ const k = 0.5 + 0.5 * Math.sin(now / 160); c.beginPath(); c.arc(w / 2, w / 2 + 1, w * (0.72 + 0.1 * k), 0, 7); c.fillStyle = "rgba(255,212,59," + (0.45 + 0.35 * k) + ")"; c.fill(); }
+  rr(c, 0, 4, w, w, cell * 0.22); c.fillStyle = "#a8742f"; c.fill();
+  rr(c, 0, 0, w, w, cell * 0.22); c.fillStyle = bad ? "#ffb4a2" : "#fff1cf"; c.fill(); c.lineWidth = 2.2; c.strokeStyle = INK; c.stroke();
+  c.font = `700 ${Math.round(cell * 0.6)}px ${FONT}`; c.textAlign = "center"; c.textBaseline = "alphabetic"; c.fillStyle = INK;
+  c.fillText(ch, w / 2, w / 2 + cell * 0.2, w - 4);
+  c.restore();
+}
+/* pts – taškai pikseliais (nuo galvos), d – galvos kryptis. */
+function drawSnake(c, pts, d, cell, skin, hurt, now){
+  const K = SKINS[skin], w = cell * 0.7, body = hurt ? "#ff8a7a" : K.body, dark = hurt ? "#e8590c" : K.dark;
+  const path = () => { c.beginPath(); c.moveTo(pts[0][0], pts[0][1]); for(let i = 1; i < pts.length; i++) c.lineTo(pts[i][0], pts[i][1]); if(pts.length === 1) c.lineTo(pts[0][0] + 0.01, pts[0][1]); };
+  c.lineJoin = "round"; c.lineCap = "round";
+  path(); c.lineWidth = w + 5; c.strokeStyle = INK; c.stroke();
+  path(); c.lineWidth = w; c.strokeStyle = body; c.stroke();
+  path(); c.lineWidth = w * 0.3; c.strokeStyle = hurt ? "#ffc9c0" : K.dot; c.setLineDash([w * 0.3, w * K.gap]); c.stroke(); c.setLineDash([]);
+  const [hx, hy] = pts[0], r = cell * 0.46, px = -d.y, py = d.x;
+  if(!hurt && Math.sin(now / 260) > 0.35){ c.beginPath(); const tx = hx + d.x * (r + cell * 0.2), ty = hy + d.y * (r + cell * 0.2);
+    c.moveTo(hx + d.x * r * 0.8, hy + d.y * r * 0.8); c.lineTo(tx, ty); c.moveTo(tx, ty); c.lineTo(tx + d.x * 4 + px * 3, ty + d.y * 4 + py * 3); c.moveTo(tx, ty); c.lineTo(tx + d.x * 4 - px * 3, ty + d.y * 4 - py * 3);
+    c.lineWidth = 2.4; c.strokeStyle = "#e03131"; c.stroke(); }
+  c.beginPath(); c.arc(hx, hy, r, 0, 7); c.fillStyle = dark; c.fill(); c.lineWidth = 2.5; c.strokeStyle = INK; c.stroke();
+  for(const s of [1, -1]){
+    const ex = hx + d.x * r * 0.22 + px * r * 0.46 * s, ey = hy + d.y * r * 0.22 + py * r * 0.46 * s;
+    c.beginPath(); c.arc(ex, ey, r * 0.36, 0, 7); c.fillStyle = "#fff"; c.fill(); c.lineWidth = 1.6; c.strokeStyle = INK; c.stroke();
+    if(hurt){ const q = r * 0.2; c.beginPath(); c.moveTo(ex - q, ey - q); c.lineTo(ex + q, ey + q); c.moveTo(ex + q, ey - q); c.lineTo(ex - q, ey + q); c.lineWidth = 2; c.stroke(); }
+    else { c.beginPath(); c.arc(ex + d.x * r * 0.12, ey + d.y * r * 0.12, r * 0.18, 0, 7); c.fillStyle = INK; c.fill(); }
+  }
+  if(K.crown){
+    const cw = r * 1.15, cy = hy - r * 0.78, x0 = hx - cw / 2;
+    c.beginPath(); c.moveTo(x0, cy); c.lineTo(x0 - cw * 0.04, cy - r * 0.62); c.lineTo(x0 + cw * 0.25, cy - r * 0.28); c.lineTo(hx, cy - r * 0.78); c.lineTo(x0 + cw * 0.75, cy - r * 0.28); c.lineTo(x0 + cw * 1.04, cy - r * 0.62); c.lineTo(x0 + cw, cy); c.closePath();
+    c.fillStyle = "#ffd43b"; c.fill(); c.lineWidth = 2; c.strokeStyle = INK; c.stroke();
+  }
+}
+/* Pieva su išsibarsčiusiomis gėlytėmis (vietos pastovios). */
+function meadow(c, cols, rows, cell){
+  for(let y = 0; y < rows; y++) for(let x = 0; x < cols; x++){ c.fillStyle = (x + y) % 2 ? "#b9e29a" : "#c8ebaf"; c.fillRect(x * cell, y * cell, cell, cell); }
+  for(let y = 0; y < rows; y++) for(let x = 0; x < cols; x++){
+    const h = (x * 73 + y * 151 + 17) % 11;
+    if(h > 1) continue;
+    const fx = (x + 0.78) * cell, fy = (y + 0.8) * cell, pr = cell * 0.06;
+    c.fillStyle = "#fff"; for(let k = 0; k < 5; k++){ c.beginPath(); c.arc(fx + Math.cos(k * 1.2566) * pr * 1.6, fy + Math.sin(k * 1.2566) * pr * 1.6, pr, 0, 7); c.fill(); }
+    c.beginPath(); c.arc(fx, fy, pr * 0.9, 0, 7); c.fillStyle = h ? "#ffd43b" : "#ff8787"; c.fill();
+  }
+}
+/* S: { cols, rows, segs, prev, dir, items, fx, hurt, glow } ; t – judesio tarp langelių dalis (0–1). */
+function drawScene(c, S, cell, t, now, skin){
+  const W = S.cols * cell, H = S.rows * cell;
+  c.clearRect(0, 0, W, H); meadow(c, S.cols, S.rows, cell);
+  for(const it of S.items){ const k = Math.min(1, (now - (it.born || 0)) / 220); tile(c, it.x * cell, it.y * cell, cell, it.ch, 0.55 + 0.45 * k, false, S.glow && it.need, now); }
+  for(const f of S.fx) if(f.eat){ const k = (now - f.born) / f.dur; if(k < 1) tile(c, f.x * cell, f.y * cell, cell, f.eat, 1 - k * 0.8, f.bad, false, now); }
+  const pts = S.segs.map((s, i) => { const p = S.prev[i] || S.prev[S.prev.length - 1] || s; return [(p.x + (s.x - p.x) * t + 0.5) * cell, (p.y + (s.y - p.y) * t + 0.5) * cell]; });
+  if(pts.length) drawSnake(c, pts, S.dir, cell, skin, S.hurt, now);
+  for(const f of S.fx) if(f.text){ const k = (now - f.born) / 800; if(k < 1){ c.globalAlpha = 1 - k * k; c.font = `700 ${Math.round(cell * 0.46)}px ${FONT}`; c.textAlign = "center"; c.textBaseline = "middle";
+    const x = Math.max(cell * 0.7, Math.min(W - cell * 0.7, (f.x + 0.5) * cell)), y = (f.y + 0.5) * cell - cell * 0.5 - k * cell * 0.9;
+    c.lineWidth = 4; c.strokeStyle = "#fff"; c.strokeText(f.text, x, y); c.fillStyle = "#2b8a3e"; c.fillText(f.text, x, y); c.globalAlpha = 1; } }
+}
+function drawSkinPreview(cv, skin){
+  const cell = 15, c = fit(cv, 6, 2.2, cell), pts = [[4.6, 1.1], [3.6, 1.1], [2.6, 1.1], [1.7, 1.1], [0.8, 1.1]].map(([x, y]) => [x * cell, y * cell]);
+  drawSnake(c, pts, { x: 1, y: 0 }, cell, skin, false, 0);
+}
+
+/* ---------- elementai ---------- */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), stage = $("stage"), cv = $("cv"), ovl = $("ovl"), dpad = $("dpad"), reasonEl = $("reason");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroT").innerHTML = T.heroTitle; $("heroP").textContent = T.hero; $("note").textContent = T.note; $("heroCv").setAttribute("aria-label", T.heroLabel);
+$("dictH").textContent = T.dictHead; $("collH").textContent = T.collHead; $("collP").textContent = T.collP;
+$("clueL").textContent = T.clueLabel; $("hintB").setAttribute("aria-label", T.hintBtn); $("spkB").setAttribute("aria-label", T.speak); $("keys").textContent = T.keysHint; cv.setAttribute("aria-label", T.boardLabel);
+if(!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") $("spkB").style.visibility = "hidden";
+const ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l8 10h-5v6H9v-6H4z" fill="#121a33"/></svg>';
+const DIRS = { u: { x: 0, y: -1 }, d: { x: 0, y: 1 }, l: { x: -1, y: 0 }, r: { x: 1, y: 0 } };
+dpad.innerHTML = [["l", -90, T.dpad.left], ["u", 0, T.dpad.up], ["d", 180, T.dpad.down], ["r", 90, T.dpad.right]]
+  .map(([k, a, lab]) => `<button type="button" data-d="${k}" aria-label="${lab}"><span style="display:grid;transform:rotate(${a}deg)">${ARROW}</span></button>`).join("");
+const HEART = on => `<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20.5C5 15 1.5 11.5 1.5 7A5.2 5.2 0 0 1 12 4.8 5.2 5.2 0 0 1 22.5 7c0 4.5-3.5 8-10.5 13.5z" fill="${on ? "#fa5252" : "#fff"}" stroke="${on ? INK : "#d9c89a"}" stroke-width="2" stroke-linejoin="round"/></svg>`;
+const LOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="#6b5a3e"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="#6b5a3e" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="15.5" r="1.6" fill="#f4ecd6"/></svg>';
+function speak(w){ try{ const u = new SpeechSynthesisUtterance(w); u.lang = "en-GB"; u.rate = 0.85; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
+
+function drawHero(){
+  const hc = $("heroCv"), w = Math.min(404, hc.parentElement.clientWidth - 16), cell = Math.floor(w / 9), c = fit(hc, 9, 4, cell);
+  const segs = [[5, 2], [4, 2], [3, 2], [3, 1], [2, 1], [1, 1], [1, 2]].map(([x, y]) => ({ x, y }));
+  drawScene(c, { cols: 9, rows: 4, segs, prev: segs, dir: DIRS.r, fx: [], glow: false, items: [{ x: 6, y: 2, ch: "c", need: true }, { x: 4, y: 0, ch: "o" }, { x: 7, y: 0, ch: "k" }, { x: 0, y: 3, ch: "a" }, { x: 7, y: 3, ch: "t" }] }, cell, 1, 1e6, skinSel());
+}
+function drawColl(){
+  const el = $("coll"), sel = skinSel(), n = dictLearned();
+  el.innerHTML = SKINS.map((s, i) => { const ok = unlocked(i);
+    return `<button type="button" class="skin${ok ? "" : " lock"}${i === sel ? " sel" : ""}" data-i="${i}" ${ok ? "" : 'aria-disabled="true"'} aria-label="${ok ? T.skinPick(T.skins[i].name) : T.skinLocked(UNLOCK[i])}"><canvas></canvas>${ok ? "" : `<span class="lk">${LOCK}</span>`}<small>${ok ? (i === sel ? T.skinSel : T.skins[i].name) : T.skinNeed(UNLOCK[i])}</small></button>`; }).join("");
+  el.querySelectorAll(".skin").forEach((b, i) => drawSkinPreview(b.querySelector("canvas"), i));
+}
+$("coll").addEventListener("click", e => { const b = e.target.closest(".skin"); if(!b) return; const i = +b.dataset.i; if(!unlocked(i)) return; MK.unlock(); MK.sfx.tap(); MK.set(SKIN_KEY, i); drawColl(); drawHero(); });
+function drawDict(){
+  const d = dictGet(), n = dictLearned(), words = [].concat(...ALLW).filter(x => d[x.w]);
+  $("dict").innerHTML = `<b>${T.dictCount(n, TOTAL_WORDS)}</b><div class="bar" role="img" aria-label="${T.dictCount(n, TOTAL_WORDS)}"><i style="width:${Math.round(100 * n / TOTAL_WORDS)}%"></i></div>
+    <p class="mk-sec-p" style="margin:0 0 4px">${T.dictP}</p>
+    <details><summary>${T.dictOpen}</summary>${words.length ? `<div class="chips">${words.map(x => `<span>${x.w} <em>${x.t}</em></span>`).join("")}</div>` : `<p class="empty">${T.dictEmpty}</p>`}</details>`;
+}
+
+/* ---------- būsena ---------- */
+let lvl = 0, Lv = null, words = [], wi = 0, cur = null, pos = 0, segs = [], prev = [], dir = DIRS.r, grow = 0, items = [], fx = [];
+let phase = "menu", lives = LIVES, mistakes = [], hints = 0, wordFlag = false, doneWords = 0, learnedNow = [], missed = [], skinsBefore = 0;
+let cell = 40, ctx = null, raf = 0, hurtT = 0, moveAt = 0, moveDur = 120, walk = null, walkTimer = 0, reasonTimer = 0, skin = 0, glowUntil = 0, moves = 0;
+const HOOK = window.__rg = { LG, get s(){ return { phase, cols: COLS, rows: ROWS, segs: segs.map(s => ({ x: s.x, y: s.y })), dir, grow, lives, wi, pos, word: cur && cur.w, level: Lv && Lv.id, doneWords, learnedNow: learnedNow.slice(), missed: missed.slice(),
+  items: items.map(it => ({ x: it.x, y: it.y, ch: it.ch, need: it.need })) }; }, step: d => step(DIRS[d]), tapCell: (x, y) => tapCell(x, y), cell: () => cell, words: () => words };
+const copy = a => a.map(s => ({ x: s.x, y: s.y }));
+
+function layout(){
+  const W = play.clientWidth - 11, top = stage.getBoundingClientRect().top;
+  const ctl = 34 + 6 + (dpad.offsetHeight ? dpad.offsetHeight + 8 : $("keys").offsetHeight + 8);
+  const availH = window.innerHeight - top - ctl - 14;
+  cell = Math.max(24, Math.min(56, Math.floor(W / COLS), Math.floor(availH / ROWS)));
+  ctx = fit(cv, COLS, ROWS, cell); ovl.style.setProperty("--ot", (stage.offsetTop - 6) + "px"); stage.style.width = COLS * cell + "px"; stage.style.height = ROWS * cell + "px";
+}
+function slotsHtml(flash){
+  const n = cur.w.length;
+  return cur.w.split("").map((ch, i) => `<span class="slot${i < pos ? (flash ? " done" : " on") : i === pos ? " cur" : ""}">${i < pos ? ch : ""}</span>`).join("");
+}
+function hud(flash){
+  if(cur){
+    $("clueT").textContent = cur.t; $("slots").innerHTML = slotsHtml(flash); $("slots").setAttribute("aria-label", T.slotsLabel(pos, cur.w.length));
+  }
+  $("lives").innerHTML = Array.from({ length: LIVES }, (_, i) => HEART(i < lives)).join(""); $("lives").setAttribute("aria-label", T.livesLabel(lives));
+  $("wcount").textContent = T.wordOf(Math.min(wi + 1, words.length), words.length);
+  $("hintB").disabled = phase !== "play"; $("spkB").disabled = phase === "menu";
+}
+function say(html, cls, ms){
+  clearTimeout(reasonTimer); reasonEl.className = "reason" + (cls ? " " + cls : ""); reasonEl.innerHTML = html;
+  if(ms) reasonTimer = setTimeout(() => { reasonEl.innerHTML = ""; }, ms);
+}
+function showOvl(html){ ovl.innerHTML = html; ovl.hidden = false; ovl.scrollTop = 0; }
+function hideOvl(){ ovl.hidden = true; ovl.innerHTML = ""; }
+
+/* ---------- laukas ---------- */
+function resetSnake(){
+  const cy = Math.floor(ROWS / 2), cx = Math.floor(COLS / 2);
+  segs = [{ x: cx, y: cy }, { x: cx - 1, y: cy }, { x: cx - 2, y: cy }]; grow = 0; dir = DIRS.r; prev = copy(segs);
+}
+const onSnake = (x, y) => segs.some(s => s.x === x && s.y === y);
+const itemAt = (x, y) => items.findIndex(it => it.x === x && it.y === y);
+const occupied = (x, y, tailFree) => segs.some((s, i) => s.x === x && s.y === y && !(tailFree && i === segs.length - 1));
+const inside = (x, y) => x >= 0 && y >= 0 && x < COLS && y < ROWS;
+/* Ar visos raidės pasiekiamos iš galvos, neperžengiant kitų raidžių? */
+function unreachable(list){
+  const key = (x, y) => y * COLS + x, seen = new Set([key(segs[0].x, segs[0].y)]), q = [[segs[0].x, segs[0].y]], at = new Set(list.map(it => key(it.x, it.y)));
+  const hit = new Set();
+  while(q.length){
+    const [x, y] = q.shift();
+    for(const d of Object.values(DIRS)){
+      const nx = x + d.x, ny = y + d.y, kk = key(nx, ny);
+      if(!inside(nx, ny) || seen.has(kk)) continue;
+      if(at.has(kk)){ hit.add(kk); continue; }
+      if(occupied(nx, ny, grow === 0)) continue;
+      seen.add(kk); q.push([nx, ny]);
+    }
+  }
+  return list.filter(it => !hit.has(key(it.x, it.y)));
+}
+const allReachable = list => unreachable(list).length === 0;
+function fixItems(){
+  for(let tries = 0; tries < 5; tries++){
+    const h = segs[0], nb = Object.values(DIRS).map(d => ({ x: h.x + d.x, y: h.y + d.y })).filter(c => inside(c.x, c.y) && !occupied(c.x, c.y, grow === 0));
+    const bad = unreachable(items);
+    /* Jei visi laisvi langeliai šalia galvos užimti raidėmis – tas raides perkeliame (kad kelio neuždarytų klaidinanti raidė). */
+    if(nb.length && nb.every(c => itemAt(c.x, c.y) >= 0)) nb.forEach(c => { const it = items[itemAt(c.x, c.y)]; if(it && !bad.includes(it)) bad.push(it); });
+    if(!bad.length) return;
+    if(tries >= 3){ while(segs.length > 3) segs.pop(); prev = copy(segs); }
+    const move = tries >= 2 ? items.slice() : bad;
+    items = items.filter(it => !move.includes(it));
+    move.forEach(it => { const c = freeCell(); it.x = c.x; it.y = c.y; it.born = performance.now(); items.push(it); });
+  }
+}
+function freeCell(skip){
+  for(let pass = 0; pass < 3; pass++) for(let k = 0; k < 90; k++){
+    const x = MK.rnd(0, COLS - 1), y = MK.rnd(0, ROWS - 1);
+    if(onSnake(x, y) || items.some(it => it !== skip && it.x === x && it.y === y)) continue;
+    if(pass < 2 && Math.abs(x - segs[0].x) + Math.abs(y - segs[0].y) < 3) continue;
+    if(pass < 1 && items.some(it => it !== skip && Math.abs(it.x - x) <= 1 && Math.abs(it.y - y) <= 1)) continue;
+    if(pass < 2 && !allReachable(items.filter(it => it !== skip).concat([{ x, y }]))) continue;
+    return { x, y };
+  }
+  for(let y = 0; y < ROWS; y++) for(let x = 0; x < COLS; x++) if(!onSnake(x, y) && itemAt(x, y) < 0) return { x, y };
+  return { x: 0, y: 0 };
+}
+function addItem(ch, need){ const c = freeCell(); items.push({ x: c.x, y: c.y, ch, need: !!need, born: performance.now() }); }
+/* Lauke visada lygiai viena reikalinga raidė ir FIELD-1 klaidinančios (nė viena nesutampa su reikalinga). */
+function newField(){ items = []; addItem(cur.w[pos], true); LG.decoys(cur.w, pos, [], FIELD - 1).forEach(ch => addItem(ch, false)); }
+function refreshField(){
+  const need = cur.w[pos], have = items.filter(it => !it.need && it.ch !== need).map(it => it.ch);
+  items = items.filter(it => !it.need && it.ch !== need);
+  addItem(need, true);
+  const miss = FIELD - items.length;
+  if(miss > 0) LG.decoys(cur.w, pos, have.concat([need]), miss).forEach(ch => addItem(ch, false));
+}
+
+/* ---------- eiga ---------- */
+function showMenu(){
+  phase = "menu"; stopWalk(); cancelAnimationFrame(raf); raf = 0; hideOvl();
+  document.documentElement.classList.remove("playing"); document.body.classList.remove("playing");
+  play.hidden = true; menu.hidden = false;
+  const d = dictGet();
+  MK.levels($("levels"), { game: GAME, levels: LEVELS.map((l, i) => Object.assign({}, l, { art: icon(l.art), sub: `${l.sub}<span class="lvl-best">${T.levelCount(l.pool.filter(x => d[x.w]).length, l.pool.length)}</span>` })), onPick: start });
+  MK.learn($("learn"), { topics: [{ name: T.learnTips.head, html: T.learnTips.html }].concat(T.levels.map((l, i) => ({ name: l.name, html: T.learnWords(l.name, T.words[i]), level: i }))), onPlay: start });
+  drawDict(); drawColl(); drawHero(); window.scrollTo(0, 0);
+}
+function start(i){
+  lvl = i; Lv = LEVELS[i]; skin = skinSel(); skinsBefore = dictLearned();
+  words = LG.pickWords(Lv.pool, dictGet(), ROUND); wi = 0; doneWords = 0; mistakes = []; missed = []; learnedNow = []; hints = 0; moves = 0; lives = LIVES; fx = []; hurtT = 0; walk = null; glowUntil = 0;
+  menu.hidden = true; play.hidden = false; window.scrollTo(0, 0); say("");
+  document.documentElement.classList.add("playing"); document.body.classList.add("playing");
+  cur = words[0]; pos = 0; wordFlag = false; resetSnake(); newField(); phase = "card"; hud(); layout();
+  if(!raf){ raf = requestAnimationFrame(frame); }
+  showOvl(`<div class="ocard"><b>${T.startHead}</b><p class="hnt">${T.startBody}</p><button type="button" class="mk-btn" data-a="go">${T.go}</button></div>`);
+  setTimeout(() => { const b = ovl.querySelector("[data-a=go]"); if(b) b.focus({ preventScroll: true }); }, 60);
+}
+function resume(){ hideOvl(); fixItems(); phase = "play"; hud(); }
+
+/* ---------- judesys ---------- */
+function bump(msg){
+  stage.classList.remove("shake"); void stage.offsetWidth; stage.classList.add("shake"); MK.sfx.tap(); say(msg, "warn", 2200);
+}
+function step(d, dur){
+  if(phase !== "play") return false;
+  const h = segs[0], nx = h.x + d.x, ny = h.y + d.y;
+  if(!inside(nx, ny)){ dir = d; bump(T.bumpWall); return false; }
+  if(occupied(nx, ny, grow === 0)){ bump(T.bumpSelf); return false; }
+  dir = d; prev = copy(segs); segs.unshift({ x: nx, y: ny });
+  if(grow > 0) grow--; else segs.pop();
+  moves++; moveAt = performance.now(); moveDur = dur || 120;
+  const k = itemAt(nx, ny);
+  if(k >= 0){ const it = items[k]; items.splice(k, 1); stopWalk(); if(it.need) good(it); else wrong(it); }
+  if(phase === "play"){ unstick(); fixItems(); }
+  return true;
+}
+function freeRoom(){
+  const key = (x, y) => y * COLS + x, seen = new Set([key(segs[0].x, segs[0].y)]), q = [[segs[0].x, segs[0].y]];
+  while(q.length){
+    const [x, y] = q.shift();
+    for(const d of Object.values(DIRS)){
+      const nx = x + d.x, ny = y + d.y, kk = key(nx, ny);
+      if(!inside(nx, ny) || seen.has(kk) || occupied(nx, ny, grow === 0)) continue;
+      seen.add(kk); q.push([nx, ny]);
+    }
+  }
+  return seen.size - 1;
+}
+/* Jei gyvatėlė užsisukusi ir įstrigusi mažoje erdvėje – uodega sutrumpėja, kad galėtų judėti toliau. */
+function unstick(){
+  let cut = 0;
+  while(segs.length > 3 && freeRoom() < 10){ segs.pop(); cut++; }
+  if(cut){ prev = prev.slice(0, segs.length + 1); say(T.shrank, "warn", 3500); }
+}
+function stopWalk(){ walk = null; clearTimeout(walkTimer); }
+/* Kelias iki taikinio (BFS): aplenkia gyvatėlės kūną ir kitas raides. */
+function planStep(tx, ty){
+  const h = segs[0], key = (x, y) => y * COLS + x, from = new Map([[key(h.x, h.y), null]]), q = [[h.x, h.y]];
+  const blocked = (x, y) => occupied(x, y, grow === 0) || (itemAt(x, y) >= 0 && !(x === tx && y === ty));
+  while(q.length){
+    const [x, y] = q.shift();
+    if(x === tx && y === ty) break;
+    for(const d of Object.values(DIRS)){
+      const nx = x + d.x, ny = y + d.y, kk = key(nx, ny);
+      if(!inside(nx, ny) || from.has(kk) || blocked(nx, ny)) continue;
+      from.set(kk, [x, y]); q.push([nx, ny]);
+    }
+  }
+  if(!from.has(key(tx, ty))) return null;
+  let c = [tx, ty], p = from.get(key(tx, ty));
+  while(p && !(p[0] === h.x && p[1] === h.y)){ c = p; p = from.get(key(p[0], p[1])); }
+  return { x: c[0] - h.x, y: c[1] - h.y };
+}
+function walkTick(){
+  if(!walk || phase !== "play") return stopWalk();
+  let d = planStep(walk.x, walk.y);
+  if(!d){ fixItems(); const it = walk.it; if(it && items.includes(it)){ walk.x = it.x; walk.y = it.y; d = planStep(it.x, it.y); } }
+  if(!d){ stopWalk(); say(T.blocked, "warn", 3000); return; }
+  if(!step(d, 135)) return stopWalk();
+  if(walk) walkTimer = setTimeout(walkTick, 150);
+}
+function tapCell(x, y){
+  if(phase !== "play" || !inside(x, y)) return;
+  const h = segs[0]; if(x === h.x && y === h.y) return;
+  if(itemAt(x, y) >= 0){ stopWalk(); walk = { x, y, it: items[itemAt(x, y)] }; walkTick(); return; }
+  stopWalk();
+  const dx = x - h.x, dy = y - h.y;
+  step(Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? DIRS.r : DIRS.l) : (dy > 0 ? DIRS.d : DIRS.u));
+}
+function manual(d){ if(phase !== "play") return; stopWalk(); step(d); }
+
+/* ---------- raidžių valgymas ---------- */
+function good(it){
+  const now = performance.now();
+  pos++; grow++; glowUntil = 0;
+  fx.push({ x: it.x, y: it.y, eat: it.ch, born: now, dur: 280 }, { x: it.x, y: it.y, text: "+1", born: now });
+  say(T.okLetter(it.ch), "ok", 1200);
+  if(pos >= cur.w.length){
+    phase = "end"; doneWords++; MK.sfx.good();
+    const clean = !wordFlag;
+    if(clean){ dictAdd(cur.w); learnedNow.push(cur.w); } else missed.push(cur);
+    hud(true); say(T.wordDone(cur.w, cur.t), "ok");
+    setTimeout(nextWord, 1100);
+    return;
+  }
+  MK.sfx.hop(pos); refreshField(); hud();
+}
+function nextWord(){
+  if(phase !== "end") return;
+  wi++;
+  if(wi >= words.length) return finish(true);
+  cur = words[wi]; pos = 0; wordFlag = false;
+  segs.length = Math.min(segs.length, 3); grow = 0; prev = copy(segs); fx = [];
+  newField(); say(""); phase = "play"; fixItems(); hud();
+}
+function wrong(it){
+  lives--; wordFlag = true; hurtT = performance.now() + 700; stage.classList.remove("shake"); void stage.offsetWidth; stage.classList.add("shake"); MK.sfx.bad();
+  fx.push({ x: it.x, y: it.y, eat: it.ch, born: performance.now(), dur: 300, bad: true });
+  const need = cur.w[pos], letters = cur.w.split("");
+  const spelled = letters.map((ch, i) => i < pos ? `<s>${ch}</s>` : i === pos ? `<u>${ch}</u>` : ch).join(" ");
+  mistakes.push({ w: cur.w, t: cur.t, got: it.ch, need });
+  phase = "why"; say(""); hud();
+  showOvl(`<div class="ocard">${MK.why({ ok: false, head: T.wrongHead(need, it.ch), body: T.wrongBody(cur.t), more: cur.n || T.wrongTipDefault, sum: T.wrongTipSum, open: true })}
+    <div class="spell" aria-label="${cur.w.split("").join(" ")}">${spelled}</div>
+    <button type="button" class="mk-btn" data-a="next">${lives > 0 ? T.next : T.results}</button></div>`);
+  setTimeout(() => { const b = ovl.querySelector("[data-a=next]"); if(b) b.focus({ preventScroll: true }); }, 60);
+}
+function afterWhy(){
+  if(phase !== "why") return;
+  if(lives <= 0){ hideOvl(); return finish(false); }
+  /* nauja klaidinanti raidė vietoje suvalgytos */
+  const have = items.filter(it => !it.need).map(it => it.ch), need = cur.w[pos];
+  LG.decoys(cur.w, pos, have, FIELD - items.length).forEach(ch => addItem(ch, false));
+  resume();
+}
+function finish(win){
+  phase = "over"; stopWalk(); hideOvl(); hud();
+  const wr = mistakes.length + hints, stars = win ? (wr <= 0 ? 3 : wr <= 2 ? 2 : 1) : 0;
+  if(stars) MK.best(GAME, Lv.id, stars);
+  const after = dictLearned(); let nu = -1;
+  UNLOCK.forEach((u, i) => { if(i > 0 && skinsBefore < u && after >= u) nu = i; });
+  const miss = [...new Map(missed.map(m => [m.w, m])).values()];
+  const errs = miss.length ? `<div class="errs"><b class="h">${T.resMissed}</b><ul>${miss.map(m => `<li><b>${m.w}</b> – ${m.t}</li>`).join("")}</ul></div>` : `<div class="errs ok">${T.resClean}</div>`;
+  MK.result({ stars, title: win ? T.winTitle : T.loseTitle,
+    text: `${T.resWords(doneWords, words.length)} ${T.resLearned(learnedNow.length)}${nu >= 0 ? `<span class="skin-new">${T.resNewSkin(T.skins[nu].name)}</span>` : ""}</p>${errs}<p hidden>`,
+    next: win && lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+function frame(){
+  raf = requestAnimationFrame(frame);
+  const now = performance.now(); fx = fx.filter(f => now - f.born < 850);
+  drawScene(ctx, { cols: COLS, rows: ROWS, segs, prev, dir, items, fx, hurt: now < hurtT, glow: now < glowUntil }, cell, Math.min(1, (now - moveAt) / moveDur), now, skin);
+}
+
+/* ---------- valdymas ---------- */
+const KEYS = { ArrowUp: "u", ArrowDown: "d", ArrowLeft: "l", ArrowRight: "r", w: "u", s: "d", a: "l", d: "r", W: "u", S: "d", A: "l", D: "r" };
+window.addEventListener("keydown", e => {
+  if(play.hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+  if(KEYS[e.key]){ if(phase === "play"){ e.preventDefault(); MK.unlock(); manual(DIRS[KEYS[e.key]]); } else if(e.key.startsWith("Arrow") && phase !== "menu") e.preventDefault(); }
+});
+dpad.addEventListener("pointerdown", e => { const b = e.target.closest("[data-d]"); if(!b) return; e.preventDefault(); MK.unlock(); manual(DIRS[b.dataset.d]); b.classList.add("dn"); setTimeout(() => b.classList.remove("dn"), 120); });
+let sw = null;
+cv.addEventListener("pointerdown", e => { MK.unlock(); sw = { x: e.clientX, y: e.clientY, moved: false }; });
+cv.addEventListener("pointermove", e => {
+  if(!sw) return; const dx = e.clientX - sw.x, dy = e.clientY - sw.y;
+  if(Math.max(Math.abs(dx), Math.abs(dy)) < 22) return;
+  sw.moved = true; manual(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? DIRS.r : DIRS.l) : (dy > 0 ? DIRS.d : DIRS.u)); sw.x = e.clientX; sw.y = e.clientY;
+});
+cv.addEventListener("pointerup", e => {
+  if(sw && !sw.moved){ const r = cv.getBoundingClientRect(); tapCell(Math.floor((e.clientX - r.left) / cell), Math.floor((e.clientY - r.top) / cell)); }
+  sw = null;
+});
+cv.addEventListener("pointercancel", () => { sw = null; });
+$("hintB").addEventListener("click", () => {
+  if(phase !== "play") return; MK.sfx.tap();
+  if(!wordFlag){ wordFlag = true; hints++; }
+  glowUntil = performance.now() + 4500; say(T.hintNote, "warn", 4500);
+});
+$("spkB").addEventListener("click", () => { if(cur) speak(cur.w); });
+ovl.addEventListener("click", e => {
+  const b = e.target.closest("[data-a]"); if(!b) return; MK.unlock(); MK.sfx.tap();
+  if(b.dataset.a === "next") afterWhy();
+  else if(b.dataset.a === "go") resume();
+});
+window.addEventListener("resize", () => { if(play.hidden) drawHero(); else { layout(); } });
+showMenu();
+if(document.fonts && document.fonts.load) Promise.all([document.fonts.load('700 20px "Fredoka"'), document.fonts.ready]).then(() => { if(!menu.hidden) drawHero(); });
+})();
+</script>
+</body>
+</html>
