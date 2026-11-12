@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Genetikos laboratorija – MokomėsKartu.lt</title>
+<meta name="description" content="11–12 klasių biologijos žaidimas pasiruošti VBE: Peneto gardelė, monohibridinis ir dihibridinis kryžminimas, kraujo grupės, su lytimi sukibęs paveldėjimas.">
+<meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/genetikos-laboratorija/tekstai.lt.js"></script>
+<style>
+/* Meniu: laborantė prie Peneto lentos, laboratorijos kolekcija (lentyna), lygiai, „Noriu pasimokyti“.
+   Uždavinys: situacija su tėvais → 1) gametos → 2) Peneto gardelė (paliesk langelius) → 3) klausimas, paaiškinimas, „Toliau“. */
+body{--ac:#7c4dff;--ac-ink:#fff;--ac-soft:#ece5ff;--lab:#e9f7f3}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(32px,8.4vw,54px)}
+.mk-hero p{max-width:40ch;font-size:16.5px}
+.hero-art{width:min(100%,480px);border-radius:26px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15)}
+.hero-art svg{display:block;width:100%;height:auto}
+.hero-art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 18px/1.2 var(--kid);display:flex;gap:8px;align-items:center}
+.col h2 svg{width:26px;height:26px;flex:none}
+.col p{margin:4px 0 10px;color:var(--soft);font-weight:700;font-size:14.5px}
+.shelf{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px;padding:6px;border-radius:14px;background:#f4ead6;box-shadow:inset 0 0 0 2px #dcc9a3}
+.shelf i{aspect-ratio:1;border-radius:9px;background:#fff;display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px #e3d5b8}
+.shelf i.e{background:transparent;box-shadow:inset 0 0 0 1.5px #e3d5b8;border:0}
+.shelf i svg{width:84%;height:84%}
+.shelf i.new{animation:mkPop .5s cubic-bezier(.2,1.6,.4,1)}
+.la{font:800 15px/1 var(--kid)}
+
+/* ---------- žaidimas ---------- */
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.card{width:100%;max-width:600px;margin:0 auto 10px;padding:12px 14px 14px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12)}
+.case-t{margin:0 0 10px;font:700 16px/1.45 var(--body)}
+.case-t b{font-weight:800}
+.pars{display:grid;grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr);align-items:center;gap:4px}
+.par{display:grid;grid-template-columns:clamp(36px,10vw,52px) minmax(0,1fr);gap:6px;align-items:center;padding:8px;border-radius:14px;background:var(--lab);box-shadow:inset 0 0 0 2px #b9e3d7}
+.par svg{width:100%;height:auto;display:block}
+.par small{display:block;white-space:nowrap;font:800 10px/1.2 var(--body);color:var(--soft);text-transform:uppercase;letter-spacing:.04em}
+.par b{display:block;font:800 clamp(17px,4.8vw,21px)/1.15 var(--kid);white-space:nowrap}
+.par span{display:block;font:700 13px/1.25 var(--body);color:var(--soft)}
+.x{font:800 26px/1 var(--kid);text-align:center;color:var(--ac)}
+.step h3{margin:0 0 8px;font:800 15px/1.3 var(--body);color:var(--ac);letter-spacing:.01em}
+.step .qt{margin:0 0 10px;font:800 17.5px/1.35 var(--body)}
+.ans{display:grid;gap:8px}
+.ans.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.a{min-height:52px;padding:10px 12px;border:0;border-radius:14px;background:#fff;cursor:pointer;text-align:left;font:800 16.5px/1.3 var(--body);color:var(--ink);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16);transition:transform .1s;touch-action:manipulation}
+.ans.two .a{text-align:center;font-size:18px}
+.a:active{transform:translateY(3px)}
+.a.ok{background:#dff7e6;box-shadow:inset 0 0 0 3.5px var(--good),0 4px 0 rgba(18,26,51,.16)}
+.a.no{background:#ffe6df;box-shadow:inset 0 0 0 3.5px var(--bad),0 4px 0 rgba(18,26,51,.16)}
+.ans.done .a{pointer-events:none}
+.ans.done .a:not(.ok):not(.no){opacity:.5}
+.pg-wrap{overflow-x:auto;margin:0 -4px;padding:2px 4px 4px}
+.pg{border-collapse:separate;border-spacing:4px;margin:0 auto}
+.pg th,.pg td{padding:0;text-align:center}
+.pg .cor{font:800 13px/1.1 var(--body);color:var(--soft)}
+.gm{display:inline-grid;place-items:center;min-width:46px;height:36px;padding:0 6px;border-radius:999px;background:var(--ac-soft);box-shadow:inset 0 0 0 2px var(--ac);font:800 16px/1 var(--kid)}
+.gm.f{background:#ffe1ec;box-shadow:inset 0 0 0 2px #e0457b}
+.gm.m{background:#dff0ff;box-shadow:inset 0 0 0 2px #2f8bff}
+.cell{width:68px;height:66px;border:0;border-radius:12px;background:#f6f3ff;box-shadow:inset 0 0 0 2px #cfc3f5;cursor:pointer;display:grid;place-items:center;align-content:center;gap:1px;padding:2px;font:800 15px/1 var(--kid);color:var(--ink)}
+.cell .qm{font-size:22px;color:#b7a8ee}
+.cell svg{width:30px;height:30px;display:block}
+.cell.on{background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);animation:mkPop .35s cubic-bezier(.2,1.6,.4,1);cursor:default}
+.cell.hl{background:#fff4c8;box-shadow:inset 0 0 0 3px #e0a400}
+.pg.big .cell{width:56px;height:56px;font-size:12.5px}
+.pg.big .cell svg{width:24px;height:24px}
+.pg.big .gm{min-width:44px;height:30px;font-size:14px}
+@media (max-width:380px){.cell{width:60px;height:60px}.pg.big .cell{width:50px;height:52px;font-size:11.5px}.pg.big .gm{min-width:40px;font-size:13px;padding:0 4px}.pg{border-spacing:3px}}
+.pg-help{margin:6px 0 8px;color:var(--soft);font-weight:700;font-size:14px;text-align:center}
+.fillbtn{display:flex;margin:6px auto 0;min-height:46px;font-size:17px}
+.sum{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.sum span{display:inline-flex;align-items:center;gap:4px;padding:4px 10px 4px 4px;border-radius:999px;background:var(--lab);box-shadow:inset 0 0 0 2px #b9e3d7;font:800 14px/1 var(--body)}
+.sum svg{width:24px;height:24px}
+.go{display:flex;width:100%;max-width:600px;margin:4px auto 0}
+.mk-why{max-width:600px;margin-inline:auto}
+.mk-why-m p{margin:4px 0}
+.fade{animation:mkIn .4s cubic-bezier(.2,1.2,.4,1)}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="hero-art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="col" id="col"></div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="ptsChip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="stage"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T;
+const GAME = "genetikos-laboratorija", GRADES = [11, 12], COLK = "mk-" + GAME + "-kolekcija", COL_MAX = 36;
+const K = "#121a33", S = `stroke="${K}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"`;
+const R = MK.rnd, P = MK.pick, SH = MK.shuffle;
+
+/* ================= genetikos variklis ================= */
+const RANKS = { "Iᴬ": 0, "Iᴮ": 1, "i": 2, "Xᴴ": 0, "Xʰ": 1, "Xᴰ": 0, "Xᵈ": 1, "Y": 9 };
+const rank = t => t in RANKS ? RANKS[t] : (t === t.toUpperCase() ? 0 : 1);
+const sortG = a => a.slice().sort((x, y) => rank(x) - rank(y) || (x < y ? -1 : 1));
+const uniq = a => [...new Set(a)];
+/* genotipas: vieno geno – masyvas ["A","a"]; dihibridinis – [["A","a"],["B","b"]] */
+const parseG = s => s.match(/Iᴬ|Iᴮ|Xᴴ|Xʰ|Xᴰ|Xᵈ|Y|i|[A-Za-z]/g);
+const isDi = g => Array.isArray(g[0]);
+function gametes(g){
+  if(isDi(g)){ const o = []; for(const a of sortG(uniq(g[0]))) for(const b of sortG(uniq(g[1]))) o.push(a + b); return o; }
+  return sortG(uniq(g));
+}
+function cross(g1, g2){
+  const r = gametes(g1), c = gametes(g2);
+  const cells = r.map(a => c.map(b => isDi(g1) ? [sortG([a[0], b[0]]), sortG([a[1], b[1]])] : sortG(parseG(a).concat(parseG(b)))));
+  return { r, c, cells, flat: cells.flat() };
+}
+const gStr = g => isDi(g) ? g.map(p => sortG(p).join("")).join("") : sortG(g).join("");
+const mkDi = s => [[s[0], s[1]], [s[2], s[3]]];
+/* fenotipai pagal tipą */
+const PH = {
+  dom: { order: ["D", "R"], of: g => g.some(t => t === t.toUpperCase()) ? "D" : "R" },
+  inc: { order: ["AA", "Aa", "aa"], of: g => sortG(g).join("") },
+  abo: { order: ["A", "B", "AB", "0"], of: g => { const a = g.includes("Iᴬ"), b = g.includes("Iᴮ"); return a && b ? "AB" : a ? "A" : b ? "B" : "0"; } },
+  xl:  { order: ["F0", "F1", "F2", "M0", "M2"], of: g => g.includes("Y") ? (g.some(t => RANKS[t] === 0) ? "M0" : "M2") : "F" + g.filter(t => RANKS[t] === 1).length },
+  di:  { order: ["AB", "Ab", "aB", "ab"], of: g => (g[0].includes("A") ? "A" : "a") + (g[1].includes("B") ? "B" : "b") }
+};
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+function counts(kind, flat, by){
+  const m = new Map(); for(const g of flat){ const k = by === "g" ? gStr(g) : PH[kind].of(g); m.set(k, (m.get(k) || 0) + 1); }
+  return m;
+}
+function ratioOf(kind, flat, by, label, fem){
+  const m = counts(kind, flat, by);
+  const keys = by === "g" ? [...m.keys()].sort((a, b) => genoOrder(a) - genoOrder(b)) : PH[kind].order.filter(k => m.has(k));
+  let nums = keys.map(k => m.get(k)); const d = nums.reduce(gcd); nums = nums.map(n => n / d);
+  const labels = keys.map(label);
+  if(keys.length === 1) return by === "g" ? T.allG(labels[0]) : fem ? T.allF(labels[0]) : T.all(labels[0]);
+  return by === "g" ? T.gRatio(nums, labels) : T.ratio(nums, labels);
+}
+function genoOrder(s){ return parseG(s).reduce((a, t, i) => a + rank(t) * Math.pow(10, 4 - i), 0); }
+/* tikimybės */
+const frac = (k, n) => { const d = gcd(k, n) || 1; return k === 0 ? "0" : k === n ? "1" : `${k / d}/${n / d}`; };
+const pct = (k, n) => `${Math.round(k / n * 10000) / 100} %`.replace(".", ",");
+function probOpts(k, n, useFrac){
+  const fmt = (a, b) => useFrac ? frac(a, b) : pct(a, b);
+  const right = fmt(k, n);
+  const pool = useFrac ? [[1, 16], [3, 16], [9, 16], [1, 4], [1, 2], [3, 4], [1, 8], [0, 1]] : [[0, 4], [1, 4], [2, 4], [3, 4], [4, 4]];
+  const others = SH(pool.map(([a, b]) => fmt(a, b)).filter(x => x !== right));
+  return mkOpts(right, others, 4);
+}
+function mkOpts(right, others, n){
+  const o = [right]; for(const x of others){ if(!o.includes(x)) o.push(x); if(o.length === n) break; }
+  const all = SH(o); return { opts: all, ans: all.indexOf(right) };
+}
+
+/* ================= piešiniai ================= */
+function seed(c, sh){
+  const fill = c === "y" ? "#ffd23f" : "#8fd36a", dark = c === "y" ? "#e0a400" : "#4f9a37";
+  return sh === "r" ? `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="21" r="13" fill="${fill}" ${S}/><circle cx="15" cy="16" r="3.4" fill="#fff" opacity=".7"/><path d="M26 27q2-2 2-5" stroke="${dark}" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`
+    : `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 20q-1-9 7-11q5-4 9 0q8 0 8 8q4 6-2 11q-3 6-10 4q-8 2-10-4q-4-3-2-8z" fill="${fill}" ${S}/><path d="M13 17q4 3 2 8M21 13q-1 5 3 7M24 25q-4 1-5 5" stroke="${dark}" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>`;
+}
+function flower(c){
+  const fill = { v: "#9b6bff", w: "#ffffff", r: "#ef3b4f", p: "#ff9ec4" }[c];
+  return `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 30v8" stroke="#3f9a4a" stroke-width="3" stroke-linecap="round"/>${[0, 72, 144, 216, 288].map(a => `<ellipse cx="20" cy="10.5" rx="6" ry="8" fill="${fill}" ${S} transform="rotate(${a} 20 19)"/>`).join("")}<circle cx="20" cy="19" r="4.6" fill="#ffd23f" ${S}/></svg>`;
+}
+function drop(g){
+  return `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3q12 15 12 23a12 12 0 0 1-24 0q0-8 12-23z" fill="#e5243b" ${S}/><text x="20" y="${g.length > 1 ? 31 : 32}" text-anchor="middle" font-family="Grandstander,Arial,sans-serif" font-weight="800" font-size="${g.length > 1 ? 11 : 14}" fill="#fff">${g}</text></svg>`;
+}
+function person(sex, st, hair){
+  const body = st === 2 ? "#ff8a7a" : st === 1 ? "#ffd27a" : "#8fd3a8";
+  const h = hair || "#6b3b1f";
+  return `<svg viewBox="0 0 40 40" aria-hidden="true">${sex === "F" ? `<path d="M11 14q0-10 9-10t9 10v6H11z" fill="${h}" ${S}/>` : ""}
+    <path d="${sex === "F" ? "M12 37l3-14h10l3 14z" : "M12 37v-11q0-4 4-4h8q4 0 4 4v11z"}" fill="${body}" ${S}/>
+    <circle cx="20" cy="13" r="7" fill="#f2c29b" ${S}/>${sex === "M" ? `<path d="M13 12q1-7 7-7t7 7q-4-3-7-3t-7 3z" fill="${h}" ${S}/>` : `<path d="M13 12q2-6 7-6t7 6q-4-2-7-2t-7 2z" fill="${h}"/>`}
+    ${st === 1 ? `<circle cx="31" cy="9" r="4" fill="#fff" stroke="${K}" stroke-width="1.6"/><circle cx="31" cy="9" r="1.6" fill="${K}"/>` : ""}</svg>`;
+}
+const ART = {
+  seed: (c, s) => seed(c, s), fl: c => flower(c), drop: g => drop(g),
+  per: (sex, st) => person(sex, +st), alb: a => person("M", 0, a === "1" ? "#f6f1df" : "#6b3b1f")
+};
+const art = key => { const [k, ...a] = key.split(":"); return ART[k](...a); };
+/* veikėjo (tėvų) piešiniai */
+function plantArt(phKey){
+  return `<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M14 40h24l-3 10H17z" fill="#d98b4a" ${S}/><rect x="12" y="36" width="28" height="6" rx="2" fill="#c06f33" ${S}/>
+    <path d="M26 36V12" stroke="#3f9a4a" stroke-width="3" stroke-linecap="round"/><path d="M26 26q-10-2-12-10q9 0 12 8M26 22q9-1 11-9q-9 0-11 7" fill="#6fd07f" ${S}/>
+    <g transform="translate(14 -2) scale(.6)">${art(phKey).replace(/<\/?svg[^>]*>/g, "")}</g></svg>`;
+}
+
+/* ================= požymiai ================= */
+const TR = T.tr;
+const DOMTR = {
+  seedC: { L: "A", art: ph => ph === "D" ? "seed:y:r" : "seed:g:r" },
+  seedS: { L: "B", art: ph => ph === "D" ? "seed:y:r" : "seed:y:w" },
+  flower: { L: "A", art: ph => ph === "D" ? "fl:v" : "fl:w" },
+  albin: { L: "A", art: ph => ph === "D" ? "alb:0" : "alb:1", human: true }
+};
+const incArt = k => ({ AA: "fl:r", Aa: "fl:p", aa: "fl:w" })[k];
+const xlArt = k => `per:${k[0]}:${k[1]}`;
+const diArt = k => `seed:${k[0] === "A" ? "y" : "g"}:${k[1] === "B" ? "r" : "w"}`;
+const withL = (s, L) => L === "A" ? s : s.replace(/A/g, L).replace(/a/g, L.toLowerCase());
+
+/* ================= uždavinių kūrimas ================= */
+function gStep(g, who){
+  const gs = gametes(g), di = isDi(g);
+  const gl = gStr(g);
+  const lab = l => l.length === 1 ? T.gamOnly(l[0]) : di ? T.gamList(l) : T.gamAnd(l[0], l[1]);
+  const right = lab(gs);
+  let wrong;
+  if(di){
+    const a = uniq(g[0]), b = uniq(g[1]);
+    wrong = [T.gamList([sortG(g[0]).join(""), sortG(g[1]).join("")]), T.gamList(sortG(uniq(a.concat(b)))), gs.length === 4 ? T.gamList([gs[0], gs[3]]) : T.gamList(["AB", "Ab", "aB", "ab"]), gs.length === 1 ? T.gamList([gs[0], gs[0].toLowerCase()]) : T.gamOnly(gs[0])];
+  } else {
+    const t = sortG(g);
+    const PAIR = { "Xᴴ": "Xʰ", "Xʰ": "Xᴴ", "Xᴰ": "Xᵈ", "Xᵈ": "Xᴰ", "Iᴬ": "i", "Iᴮ": "i", "i": "Iᴬ" };
+    const other = x => PAIR[x] || (x === x.toUpperCase() ? x.toLowerCase() : x.toUpperCase());
+    const alt = t.includes("Y") ? T.gamAnd(...sortG([t[0], other(t[0])])) : t[0] === t[1] ? T.gamAnd(...sortG([t[0], other(t[0])])) : T.gamAnd(t[0] + t[0], t[1] + t[1]);
+    wrong = [T.gamOnly(gl), T.gamOnly(t[0]), T.gamOnly(t[1]), alt];
+  }
+  const o = mkOpts(right, SH(wrong.filter(w => w !== right)), 4);
+  return { q: T.gStepQ(`${who} (${gl})`), opts: o.opts, ans: o.ans, why: di ? T.gamWhyDi(gl, gs.join(", ")) : T.gamWhy(gl, gs.join(", "), gs.length) };
+}
+function sumHtml(kind, flat, artOf, labOf){
+  const m = counts(kind, flat, "p");
+  return PH[kind].order.filter(k => m.has(k)).map(k => `<span>${art(artOf(k))}${m.get(k)} · ${labOf(k)}</span>`).join("");
+}
+function genoList(flat){
+  const m = new Map(); flat.forEach(g => { const s = gStr(g); m.set(s, (m.get(s) || 0) + 1); });
+  return [...m.keys()].sort((a, b) => genoOrder(a) - genoOrder(b)).map(k => `${m.get(k)} ${k}`).join(", ");
+}
+
+/* --- 1 lygis: monohibridinis (pilnas dominavimas) --- */
+function domTask(trId, g1s, g2s, qType){
+  const tr = TR[trId], d = DOMTR[trId], L = d.L;
+  const g1 = parseG(withL(g1s, L)), g2 = parseG(withL(g2s, L)), X = cross(g1, g2), kind = "dom";
+  const lab = k => k === "D" ? tr.D : tr.R;
+  let intro, pars;
+  if(d.human){
+    intro = T.crossAlbin(T.albinParent(T.motherT, gStr(g1)), T.albinParent(T.fatherT, gStr(g2)));
+    pars = [{ who: T.motherT, sex: "♀", g: g1, art: person("F", 0, PH.dom.of(g1) === "R" ? "#f6f1df" : null), ph: lab(PH.dom.of(g1)) }, { who: T.fatherT, sex: "♂", g: g2, art: person("M", 0, PH.dom.of(g2) === "R" ? "#f6f1df" : null), ph: lab(PH.dom.of(g2)) }];
+  } else {
+    const nm = g => PH.dom.of(g) === "D" ? tr.pD : tr.pR;
+    intro = `${tr.fact} ${T.crossPlants(T.plantG(nm(g1), gStr(g1)), T.plantG(nm(g2), gStr(g2)))}`;
+    pars = [{ who: T.p1, g: g1, art: plantArt(d.art(PH.dom.of(g1))), ph: lab(PH.dom.of(g1)) }, { who: T.p2, g: g2, art: plantArt(d.art(PH.dom.of(g2))), ph: lab(PH.dom.of(g2)) }];
+  }
+  const n = X.flat.length, m = counts(kind, X.flat, "p");
+  const base = `<p>${T.explGrid(genoList(X.flat), n)}</p>`;
+  let q;
+  if(qType === "pheno" || qType === "geno"){
+    const by = qType === "geno" ? "g" : "p", labF = by === "g" ? (k => k) : lab;
+    const fem = trId.startsWith("seed");
+    const right = ratioOf(kind, X.flat, by, labF, fem);
+    const alts = SH([["Aa", "Aa"], ["Aa", "aa"], ["AA", "aa"], ["AA", "Aa"], ["aa", "aa"], ["AA", "AA"]]).map(([a, b]) => ratioOf(kind, cross(parseG(withL(a, L)), parseG(withL(b, L))).flat, by, labF, fem));
+    const o = mkOpts(right, alts, 4);
+    q = { text: qType === "geno" ? T.genoQ : T.phenoQ, ...o, more: base + `<p>${T.explPheno(sumTxt(kind, X.flat, lab))}</p>` };
+  } else if(qType === "het"){
+    const k = X.flat.filter(g => g[0] !== g[1]).length, o = probOpts(k, n, false);
+    q = { text: T.hetQ, ...o, more: base + `<p>${T.explP(k, n, pct(k, n))}</p>`, hl: g => g[0] !== g[1] };
+  } else {
+    const ph = qType === "probD" ? "D" : "R", k = m.get(ph) || 0;
+    if(qType === "count"){
+      const N = P([120, 200, 240, 400, 800]), right = String(N * k / n);
+      const others = SH([0, 1, 2, 3, 4].filter(j => j !== k * 4 / n).map(j => String(N * j / 4)));
+      q = { text: tr.cnt(N, lab(ph)), ...mkOpts(right, others, 4), more: base + `<p>${T.explCnt(N, frac(k, n), right)}</p>`, hl: g => PH.dom.of(g) === ph };
+    } else q = { text: tr.q(lab(ph)), ...probOpts(k, n, false), more: base + `<p>${T.explP(k, n, pct(k, n))}</p>`, hl: g => PH.dom.of(g) === ph };
+  }
+  const hetIdx = gametes(g2).length > gametes(g1).length ? 1 : 0;
+  return { intro, pars, gstep: gStep([g1, g2][hetIdx], d.human ? (hetIdx ? T.fatherG : T.motherG) : (hetIdx ? T.p2G : T.p1G)), X, kind, artOf: k => d.art(k), labOf: lab, q, fact: tr.fact, female: d.human };
+}
+function sumTxt(kind, flat, lab){ const m = counts(kind, flat, "p"); return PH[kind].order.filter(k => m.has(k)).map(k => `${m.get(k)} ${lab(k)}`).join(", "); }
+
+/* --- 2 lygis --- */
+function testTask(isHet){
+  const tr = TR.seedC, nD = R(44, 58), nR = R(42, 56), total = R(80, 120);
+  const res = isHet ? T.testRes1(nD, nR, tr.D, tr.R) : T.testRes2(total, tr.D);
+  const g = parseG(isHet ? "Aa" : "AA"), X = cross(g, parseG("aa"));
+  const o = mkOpts(isHet ? "Aa" : "AA", ["AA", "Aa", "aa"].filter(x => x !== (isHet ? "Aa" : "AA")), 3);
+  return { intro: `${tr.fact} ${T.testIntro(tr.pD, "žalių sėklų žirniu", res)}`, pars: [{ who: T.p1, g: null, gtxt: "A?", art: plantArt("seed:y:r"), ph: tr.D }, { who: T.p2, g: parseG("aa"), art: plantArt("seed:g:r"), ph: tr.R }],
+    qFirst: true, X, kind: "dom", artOf: k => DOMTR.seedC.art(k), labOf: k => k === "D" ? tr.D : tr.R,
+    q: { text: T.testQ, ...o, more: `<p>${T.testWhy(isHet ? "Aa" : "AA")}</p>`, two: true } };
+}
+function conceptTask(qt, answers, why, extra){
+  const o = mkOpts(answers[0], answers.slice(1), 4);
+  return Object.assign({ intro: "", pars: null, X: null, q: { text: qt, ...o, more: `<p>${why}</p>` } }, extra || {});
+}
+function incTask(g1s, g2s, qType){
+  const tr = TR.inc, g1 = parseG(g1s), g2 = parseG(g2s), X = cross(g1, g2), kind = "inc", n = X.flat.length;
+  const lab = k => tr[k], m = counts(kind, X.flat, "p");
+  const nm = g => tr["p" + gStr(g)];
+  const t = { intro: `${tr.fact} ${T.crossPlants(T.plantG(nm(g1), gStr(g1)), T.plantG(nm(g2), gStr(g2)))}`,
+    pars: [{ who: T.p1, g: g1, art: plantArt(incArt(gStr(g1))), ph: lab(gStr(g1)) }, { who: T.p2, g: g2, art: plantArt(incArt(gStr(g2))), ph: lab(gStr(g2)) }],
+    X, kind, artOf: incArt, labOf: lab };
+  const hetIdx = gametes(g2).length > gametes(g1).length ? 1 : 0;
+  t.gstep = gStep([g1, g2][hetIdx], hetIdx ? T.p2G : T.p1G);
+  const base = `<p>${T.explGrid(genoList(X.flat), n)}</p>`;
+  if(qType === "pheno"){
+    const right = ratioOf(kind, X.flat, "p", lab);
+    const alts = SH([["Aa", "Aa"], ["Aa", "aa"], ["AA", "aa"], ["AA", "Aa"], ["AA", "AA"]]).map(([a, b]) => ratioOf(kind, cross(parseG(a), parseG(b)).flat, "p", lab)).concat([T.ratio([3, 1], [lab("AA"), lab("aa")])]);
+    t.q = { text: T.phenoQ, ...mkOpts(right, alts, 4), more: base + `<p>${T.explPheno(sumTxt(kind, X.flat, lab))}</p>` };
+  } else if(qType === "same"){
+    t.q = { text: T.incSameQ, ...mkOpts(T.incSameA[0], T.incSameA.slice(1), 4), more: base + `<p>${T.incSameWhy}</p>` };
+  } else {
+    const ph = qType, k = m.get(ph) || 0;
+    t.q = { text: tr.q(lab(ph)), ...probOpts(k, n, false), more: base + `<p>${T.explP(k, n, pct(k, n))}</p>`, hl: g => gStr(g) === ph };
+  }
+  return t;
+}
+
+/* --- 3 lygis: ABO --- */
+const ABO_G = { A: ["IᴬIᴬ", "Iᴬi"], B: ["IᴮIᴮ", "Iᴮi"], AB: ["IᴬIᴮ"], "0": ["ii"] };
+const GR = ["A", "B", "AB", "0"];
+const grpList = s => GR.filter(x => s.has(x)).join(", ");
+function aboCross(g1s, g2s, qType){
+  const g1 = parseG(g1s), g2 = parseG(g2s), X = cross(g1, g2), kind = "abo", n = X.flat.length, m = counts(kind, X.flat, "p");
+  const t = { intro: `${T.aboWhyGen} ${T.aboIntro(gStr(g1), gStr(g2))}`,
+    pars: [{ who: T.motherT, sex: "♀", g: g1, art: drop(PH.abo.of(g1)), ph: `${PH.abo.of(g1)} ${T.grp}` }, { who: T.fatherT, sex: "♂", g: g2, art: drop(PH.abo.of(g2)), ph: `${PH.abo.of(g2)} ${T.grp}` }],
+    X, kind, artOf: k => "drop:" + k, labOf: k => k, female: true };
+  const hetIdx = gametes(g2).length > gametes(g1).length ? 1 : 0;
+  t.gstep = gStep([g1, g2][hetIdx], hetIdx ? T.fatherG : T.motherG);
+  const base = `<p>${T.explGrid(genoList(X.flat), n)}</p>`;
+  if(qType === "poss"){
+    const right = grpList(new Set(m.keys()));
+    t.q = { text: T.aboPossQ, ...mkOpts(right, aboAlt(right), 4), more: base + `<p>${T.aboWhyPoss(genoList(X.flat))}</p>` };
+  } else {
+    const k = m.get(qType) || 0;
+    t.q = { text: T.aboProbQ(qType), ...probOpts(k, n, false), more: base + `<p>${T.explP(k, n, pct(k, n))}</p>`, hl: g => PH.abo.of(g) === qType };
+  }
+  return t;
+}
+function aboAlt(right){
+  const c = ["A, B, AB, 0", "A, B", "AB", "A, B, AB", "A, 0", "B, AB", "A, AB", "0", "AB, 0", "A, B, 0"];
+  return SH(c.filter(x => x !== right));
+}
+function aboPhen(p1, p2){
+  const s = new Set(); const gl = [];
+  for(const a of ABO_G[p1]) for(const b of ABO_G[p2]){ cross(parseG(a), parseG(b)).flat.forEach(g => s.add(PH.abo.of(g))); }
+  const right = grpList(s);
+  return { intro: `${T.aboWhyGen} ${T.aboPhenIntro(p1, p2)}`, pars: [{ who: T.motherT, sex: "♀", g: null, gtxt: "?", art: drop(p1), ph: `${p1} ${T.grp}` }, { who: T.fatherT, sex: "♂", g: null, gtxt: "?", art: drop(p2), ph: `${p2} ${T.grp}` }],
+    X: null, q: { text: T.aboPossQ, ...mkOpts(right, aboAlt(right), 4), more: `<p>${T.aboWhyPhen(ABO_G[p1].join(" / "), ABO_G[p2].join(" / "))}</p><p>${right}.</p>` } };
+}
+function aboInf(mo, ch){
+  /* kurios tėvo grupės negalimos: tėvas galimas, jei bent viena jo ir motinos genotipų pora duoda vaiko grupę */
+  const ok = new Set();
+  for(const fp of GR) for(const fg of ABO_G[fp]) for(const mg of ABO_G[mo]) if(cross(parseG(mg), parseG(fg)).flat.some(g => PH.abo.of(g) === ch)) ok.add(fp);
+  const no = GR.filter(x => !ok.has(x)), right = no.length ? no.join(", ") : T.aboNone;
+  const alts = SH(["A", "B", "AB", "0", "A, 0", "B, 0", "AB, 0", "A, AB", T.aboNone].filter(x => x !== right));
+  const need = ch === "0" ? T.aboNeed0 : T.aboNeedAB;
+  return { intro: `${T.aboWhyGen} ${T.aboInfIntro(mo, ch)}`, pars: [{ who: T.motherT, sex: "♀", g: null, gtxt: "?", art: drop(mo), ph: `${mo} ${T.grp}` }, { who: T.child, g: null, gtxt: "?", art: drop(ch), ph: `${ch} ${T.grp}` }],
+    X: null, q: { text: T.aboInfQ, ...mkOpts(right, alts, 4), more: `<p>${T.aboWhyInf(ch, need, right)}</p>`, check: { mo, ch, no } } };
+}
+
+/* --- 4 lygis: su lytimi sukibęs --- */
+function xlTask(dis, mg, fg, qType){
+  const d = T.xl[dis], L = d.L, l = L.toLowerCase();
+  const map = s => s.replace(/H/g, "ᴴ").replace(/h/g, "ʰ").replace(/D/g, "ᴰ").replace(/d/g, "ᵈ");
+  const sup = { H: "ᴴ", D: "ᴰ" }[L], sub = { H: "ʰ", D: "ᵈ" }[L];
+  const conv = s => parseG(s.replace(/X\+/g, "X" + sup).replace(/X-/g, "X" + sub));
+  const g1 = conv(mg), g2 = conv(fg), X = cross(g1, g2), kind = "xl", n = X.flat.length;
+  const mSt = PH.xl.of(g1), fSt = PH.xl.of(g2);
+  const mDesc = { F0: T.xlHealthyF, F1: T.xlCarrier, F2: d.sickF }[mSt], fDesc = fSt === "M0" ? T.xlHealthyM : d.sickM;
+  const lab = k => ({ F0: `${T.dau}: ${T.xlHealthyF}`, F1: `${T.dau}: ${T.xlCarrier}`, F2: `${T.dau}: ${d.sickF}`, M0: `${T.son}: ${T.xlHealthyM}`, M2: `${T.son}: ${d.sickM}` })[k];
+  const t = { intro: `${d.desc} ${T.xlMother(gStr(g1), mDesc)}, ${T.xlFather(gStr(g2), fDesc)}`,
+    pars: [{ who: T.motherT, sex: "♀", g: g1, art: person("F", +mSt[1]), ph: mDesc }, { who: T.fatherT, sex: "♂", g: g2, art: person("M", +fSt[1]), ph: fDesc }],
+    X, kind, artOf: xlArt, labOf: lab, female: true };
+  const gi = R(0, 1); t.gstep = gStep([g1, g2][gi], gi ? T.fatherG : T.motherG);
+  const flat = X.flat, sons = flat.filter(g => g.includes("Y")), daus = flat.filter(g => !g.includes("Y"));
+  const base = `<p>${T.xlWhyGen}</p><p>${T.explGrid(genoList(flat), n)}</p>`;
+  let k, nn, txt, why, hl;
+  if(qType === "son"){ k = sons.filter(g => PH.xl.of(g) === "M2").length; nn = sons.length; txt = T.xlQSon(d.sickM); why = T.xlWhySon(k, nn, pct(k, nn)); hl = g => PH.xl.of(g) === "M2"; }
+  else if(qType === "all"){ k = sons.filter(g => PH.xl.of(g) === "M2").length; nn = n; txt = T.xlQSonAll(d.sickM); why = T.xlWhyAll(k, pct(k, nn)); hl = g => PH.xl.of(g) === "M2"; }
+  else if(qType === "car"){ k = daus.filter(g => PH.xl.of(g) === "F1").length; nn = daus.length; txt = T.xlQDauCar; why = T.xlWhyDau(k, nn, pct(k, nn)); hl = g => PH.xl.of(g) === "F1"; }
+  else { k = daus.filter(g => PH.xl.of(g) === "F2").length; nn = daus.length; txt = T.xlQDauSick(d.sickF); why = T.xlWhyDau(k, nn, pct(k, nn)); hl = g => PH.xl.of(g) === "F2"; }
+  t.q = { text: txt, ...probOpts(k, nn, false), more: base + `<p>${why}</p>`, hl };
+  return t;
+}
+
+/* --- 5 lygis: dihibridinis --- */
+function diTask(g1s, g2s, qType){
+  const g1 = mkDi(g1s), g2 = mkDi(g2s), X = cross(g1, g2), kind = "di", n = X.flat.length, m = counts(kind, X.flat, "p");
+  const lab = k => T.diPh[k];
+  const t = { intro: T.diIntro(gStr(g1), gStr(g2)), pars: [{ who: T.p1, g: g1, art: plantArt(diArt(PH.di.of(g1))), ph: lab(PH.di.of(g1)) }, { who: T.p2, g: g2, art: plantArt(diArt(PH.di.of(g2))), ph: lab(PH.di.of(g2)) }],
+    X, kind, artOf: diArt, labOf: lab, big: n > 8 };
+  const hetIdx = gametes(g2).length > gametes(g1).length ? 1 : 0;
+  t.gstep = gStep([g1, g2][hetIdx], hetIdx ? T.p2G : T.p1G);
+  const base = `<p>${T.diWhyGen}</p><p>${T.explPheno(sumTxt(kind, X.flat, lab))}</p>`;
+  if(qType === "pheno"){
+    const right = ratioOf(kind, X.flat, "p", lab, true);
+    const alts = SH([["AaBb", "AaBb"], ["AaBb", "aabb"], ["AaBB", "aabb"], ["AABb", "aaBb"], ["AaBb", "AABB"], ["Aabb", "aaBb"]]).map(([a, b]) => ratioOf(kind, cross(mkDi(a), mkDi(b)).flat, "p", lab, true))
+      .concat([T.ratio([3, 1], [lab("AB"), lab("ab")]), T.ratio([9, 3, 3, 1], ["AB", "Ab", "aB", "ab"].map(lab))]);
+    t.q = { text: T.diPhenoQ, ...mkOpts(right, alts, 4), more: base };
+  } else {
+    const k = m.get(qType) || 0;
+    t.q = { text: T.diQ(lab(qType)), ...probOpts(k, n, true), more: base + `<p>${T.explP(k, n, frac(k, n))}</p>`, hl: g => PH.di.of(g) === qType };
+  }
+  return t;
+}
+
+/* --- lygių planai --- */
+const LV = [
+  () => SH([
+    domTask("seedC", "Aa", "Aa", "pheno"), domTask("flower", "Aa", "aa", "probR"), domTask("seedS", "Aa", "Aa", "geno"),
+    domTask("albin", "Aa", "Aa", "probR"), domTask(P(["seedC", "flower"]), "AA", "Aa", "het"), domTask(P(["seedC", "seedS"]), "Aa", "Aa", "count"),
+    domTask("albin", "Aa", P(["Aa", "aa"]), "probD"), domTask(P(["flower", "seedS"]), P(["AA", "Aa"]), "aa", "pheno")
+  ]),
+  () => SH([
+    testTask(true), testTask(false), conceptTask(T.testConcQ, T.testConcA, T.testConcWhy),
+    incTask("Aa", "Aa", "pheno"), incTask("AA", "aa", P(["pheno", "Aa"])), incTask("Aa", "aa", P(["pheno", "aa", "Aa"])),
+    incTask("Aa", "Aa", "same"), incTask(P(["Aa", "AA"]), "Aa", P(["AA", "aa"]))
+  ]),
+  () => SH([
+    aboCross("Iᴬi", "Iᴮi", "poss"), aboCross("IᴬIᴬ", "IᴮIᴮ", "poss"), aboCross("IᴬIᴮ", "ii", P(["poss", "AB"])), aboCross("Iᴬi", "Iᴬi", "0"),
+    aboCross("IᴬIᴮ", "IᴬIᴮ", P(["AB", "A"])), aboCross(P(["IᴮIᴮ", "Iᴮi"]), "Iᴬi", "poss"),
+    aboPhen(...P([["A", "B"], ["AB", "0"], ["A", "0"], ["B", "AB"]])), aboInf(...P([["A", "0"], ["B", "0"], ["A", "AB"], ["0", "0"]]))
+  ]),
+  () => SH([
+    xlTask("hem", "X+X-", "X+Y", "son"), xlTask("dal", "X+X-", "X+Y", "all"), xlTask("hem", "X+X+", "X-Y", "car"), xlTask("dal", "X+X-", "X-Y", "sick"),
+    xlTask(P(["hem", "dal"]), "X+X-", "X+Y", "car"), xlTask("dal", "X-X-", "X+Y", P(["son", "car"])), xlTask("hem", "X+X+", "X-Y", "son"),
+    conceptTask(T.hemiQ, T.hemiA, T.hemiWhy)
+  ]),
+  () => SH([
+    diTask("AaBb", "AaBb", "pheno"), diTask("AaBb", "AaBb", "ab"), diTask("AaBb", "AaBb", P(["Ab", "aB"])), diTask("AaBb", "aabb", P(["pheno", "AB"])),
+    diTask("AaBB", "aabb", "pheno"), diTask("AABb", "aaBb", P(["pheno", "Ab"])), diTask("AaBb", "AABB", "ab"),
+    conceptTask(T.diGamQ, ["8", "6", "4", "3"], T.diGamWhy)
+  ])
+];
+LV.push(() => SH([0, 0, 1, 1, 2, 2, 3, 3, 4, 4].map(i => SH(LV[i]())[0])));
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: [
+  `<svg viewBox="0 0 56 56">${seed("y", "r").replace("<svg", '<svg x="4" y="8" width="28" height="28"')}${seed("g", "r").replace("<svg", '<svg x="26" y="22" width="26" height="26"')}</svg>`,
+  `<svg viewBox="0 0 56 56">${flower("r").replace("<svg", '<svg x="2" y="6" width="26" height="26"')}${flower("p").replace("<svg", '<svg x="16" y="24" width="26" height="26"')}${flower("w").replace("<svg", '<svg x="30" y="6" width="24" height="24"')}</svg>`,
+  `<svg viewBox="0 0 56 56">${drop("A").replace("<svg", '<svg x="2" y="4" width="28" height="28"')}${drop("AB").replace("<svg", '<svg x="24" y="22" width="30" height="30"')}</svg>`,
+  `<svg viewBox="0 0 56 56">${person("F", 1).replace("<svg", '<svg x="0" y="8" width="32" height="40"')}${person("M", 2).replace("<svg", '<svg x="24" y="8" width="32" height="40"')}</svg>`,
+  `<svg viewBox="0 0 56 56">${seed("y", "w").replace("<svg", '<svg x="2" y="2" width="26" height="26"')}${seed("g", "r").replace("<svg", '<svg x="28" y="2" width="26" height="26"')}${seed("y", "r").replace("<svg", '<svg x="2" y="28" width="26" height="26"')}${seed("g", "w").replace("<svg", '<svg x="28" y="28" width="26" height="26"')}</svg>`,
+  `<span class="la">VBE</span>`][i] }));
+
+/* ================= meniu ================= */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), stage = $("stage");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("ptsL").textContent = T.pts;
+let col = MK.get(COLK, []); if(!Array.isArray(col)) col = [];
+
+function heroSvg(){
+  return `<svg viewBox="0 0 360 220" aria-hidden="true">
+  <rect width="360" height="220" fill="#e9f7f3"/><path d="M0 0h360v150H0z" fill="#dff1ec"/>
+  <rect x="22" y="22" width="150" height="106" rx="8" fill="#2d6a5a" stroke="${K}" stroke-width="3"/>
+  <g font-family="Grandstander,Arial,sans-serif" font-weight="800" fill="#fff" text-anchor="middle">
+    <text x="97" y="40" font-size="13">Aa × Aa</text>
+    <path d="M60 64h80M98 50v74M60 94h80" stroke="#cfe9df" stroke-width="2"/>
+    <text x="79" y="60" font-size="12" fill="#ffd23f">A</text><text x="119" y="60" font-size="12" fill="#ffd23f">a</text>
+    <text x="48" y="84" font-size="12" fill="#ffd23f">A</text><text x="48" y="114" font-size="12" fill="#ffd23f">a</text>
+    <text x="79" y="84" font-size="13">AA</text><text x="119" y="84" font-size="13">Aa</text><text x="79" y="114" font-size="13">Aa</text><text x="119" y="114" font-size="13">aa</text></g>
+  <rect x="0" y="150" width="360" height="70" fill="#cfe4dd"/><rect x="184" y="140" width="176" height="14" rx="4" fill="#fff" stroke="${K}" stroke-width="2.6"/>
+  <rect x="196" y="154" width="10" height="66" fill="#9aa3b5" stroke="${K}" stroke-width="2.4"/><rect x="336" y="154" width="10" height="66" fill="#9aa3b5" stroke="${K}" stroke-width="2.4"/>
+  ${[0, 1, 2, 3].map(i => `<g transform="translate(${196 + i * 38} 98)">${plantArt(["seed:y:r", "seed:g:r", "fl:v", "fl:w"][i]).replace("<svg", '<svg width="44" height="44"')}</g>`).join("")}
+  <g transform="translate(212 108)"></g>
+  <g transform="translate(110 64)">
+    <ellipse cx="40" cy="152" rx="30" ry="5" fill="#000" opacity=".14"/>
+    <path d="M28 118v30M52 118v30" stroke="#2d3a66" stroke-width="10" stroke-linecap="round"/>
+    <path d="M20 146h16v6H18zM44 146h16l2 6H44z" fill="#121a33"/>
+    <path d="M18 66q22-10 44 0l6 60H12z" fill="#fff" ${S} stroke-width="2.4"/>
+    <path d="M40 62v64" stroke="${K}" stroke-width="1.6"/><path d="M33 62l7 16 7-16" fill="#7c4dff" ${S}/>
+    <rect x="44" y="84" width="12" height="9" rx="2" fill="#ece5ff" stroke="${K}" stroke-width="1.6"/>
+    <path d="M18 70q-10 22-4 44" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/><path d="M18 70q-10 22-4 44" fill="none" stroke="${K}" stroke-width="2" stroke-dasharray="0" opacity=".0"/>
+    <path d="M62 70q14 12 20 26" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
+    <circle cx="14" cy="116" r="5" fill="#d9a07a" ${S}/><circle cx="84" cy="98" r="5" fill="#d9a07a" ${S}/>
+    <path d="M78 98l18-24" stroke="#5a6b8c" stroke-width="3" stroke-linecap="round"/><rect x="90" y="58" width="10" height="20" rx="3" fill="#bfe8ff" ${S} transform="rotate(37 95 68)"/>
+    <rect x="34" y="50" width="12" height="12" rx="3" fill="#d9a07a" ${S}/>
+    <circle cx="40" cy="36" r="17" fill="#d9a07a" ${S}/>
+    <path d="M22 36q-2-22 18-22t18 22q-6-10-18-10t-18 10z" fill="#1d1b2e" ${S}/><path d="M22 36q-4 14 2 22" fill="none" stroke="#1d1b2e" stroke-width="5" stroke-linecap="round"/><path d="M58 36q4 14-2 22" fill="none" stroke="#1d1b2e" stroke-width="5" stroke-linecap="round"/>
+    <rect x="25" y="20" width="30" height="8" rx="4" fill="#bfe8ff" ${S}/>
+    <circle cx="34" cy="38" r="2.2" fill="${K}"/><circle cx="46" cy="38" r="2.2" fill="${K}"/><path d="M35 45q5 4 10 0" fill="none" stroke="${K}" stroke-width="2" stroke-linecap="round"/>
+  </g></svg>`;
+}
+function renderCol(fresh){
+  const n = col.length;
+  $("col").innerHTML = `<h2><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M12 4h8M13 4v9L6 26q-1 3 2 3h16q3 0 2-3l-7-13V4" fill="#ece5ff" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/><path d="M9 21h14" stroke="#7c4dff" stroke-width="3"/></svg>${T.colH}</h2>
+    <p>${n ? T.colP(n, COL_MAX) : T.colEmpty}</p><div class="shelf">${Array.from({ length: COL_MAX }, (_, i) => i < n ? `<i class="${fresh && i >= n - fresh ? "new" : ""}">${art(col[i])}</i>` : `<i class="e"></i>`).join("")}</div>`;
+}
+function showMenu(fresh){
+  play.hidden = true; menu.hidden = false;
+  $("heroArt").innerHTML = heroSvg(); renderCol(fresh);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, stepsN = 0, pts = 0, dots = null, added = 0, firstOk = true;
+function start(i){
+  L = i; tasks = LV[i](); ti = 0; okN = 0; stepsN = 0; pts = 0; added = 0; $("pts").textContent = 0;
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+function parHtml(p){
+  const g = p.g ? gStr(p.g) : p.gtxt;
+  return `<div class="par">${p.art}<div><small>${p.sex ? p.sex + " " : ""}${p.who}</small><b>${g}</b><span>${p.ph || ""}</span></div></div>`;
+}
+function show(){
+  cur = tasks[ti]; dots.cur(ti); firstOk = true;
+  stage.innerHTML = `<div class="card fade" id="case">${cur.intro ? `<p class="case-t">${cur.intro}</p>` : ""}${cur.pars ? `<div class="pars">${parHtml(cur.pars[0])}<div class="x">×</div>${parHtml(cur.pars[1])}</div>` : ""}</div><div id="flow"></div>`;
+  if(!cur.intro && !cur.pars) $("case").remove();
+  window.scrollTo({ top: 0 });
+  if(cur.X && !cur.qFirst && cur.gstep) stepGam(); else if(cur.X && !cur.qFirst) stepGrid(); else stepQ();
+}
+function block(html){ const d = document.createElement("div"); d.className = "card step fade"; d.innerHTML = html; $("flow").appendChild(d); setTimeout(() => d.scrollIntoView({ behavior: "smooth", block: "nearest" }), 40); return d; }
+function ansHtml(o, two){ return `<div class="ans${two ? " two" : ""}">${o.map((x, i) => `<button type="button" class="a" data-i="${i}">${x}</button>`).join("")}</div>`; }
+function award(ok, n){ stepsN++; if(ok){ okN++; pts += n; const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); } else firstOk = false; }
+function stepGam(){
+  const g = cur.gstep, b = block(`<h3>${T.g1H}</h3><p class="qt">${g.q}</p>${ansHtml(g.opts, false)}<div class="w"></div>`);
+  b.querySelector(".ans").onclick = e => {
+    const x = e.target.closest(".a"); if(!x) return; const i = +x.dataset.i, ok = i === g.ans, box = b.querySelector(".ans");
+    box.classList.add("done"); x.classList.add(ok ? "ok" : "no"); if(!ok) box.children[g.ans].classList.add("ok");
+    ok ? MK.sfx.good() : MK.sfx.bad(); award(ok, 5);
+    b.querySelector(".w").innerHTML = MK.why({ ok, head: ok ? `${MK.pick(T.ok)} ${T.ptsPlus(5)}` : `${T.bad} ${T.right(g.opts[g.ans])}`, body: g.why });
+    setTimeout(stepGrid, 450);
+  };
+}
+function gridTable(filled){
+  const X = cur.X, fm = cur.female;
+  return `<div class="pg-wrap"><table class="pg${cur.big ? " big" : ""}"><tr><th class="cor">${fm ? "♀ \\ ♂" : ""}</th>${X.c.map(c => `<th><span class="gm${fm ? " m" : ""}">${c}</span></th>`).join("")}</tr>
+    ${X.r.map((r, i) => `<tr><th><span class="gm${fm ? " f" : ""}">${r}</span></th>${X.c.map((c, j) => `<td><button type="button" class="cell${filled ? " on" : ""}" data-r="${i}" data-c="${j}" aria-label="${r} + ${c}">${filled ? cellIn(X.cells[i][j]) : '<span class="qm">?</span>'}</button></td>`).join("")}</tr>`).join("")}</table></div>`;
+}
+function cellIn(g){ return `${art(cur.artOf(PH[cur.kind].of(g)))}<span>${gStr(g)}</span>`; }
+function stepGrid(){
+  const pre = cur.qFirst;
+  const b = block(`<h3>${pre ? T.gridH2 : T.gridH}</h3>${pre ? "" : `<p class="pg-help">${T.gridHelp}</p>`}${gridTable(pre)}${pre ? "" : `<button type="button" class="mk-btn alt fillbtn">${T.gridFill}</button>`}<div class="sum"></div>`);
+  const X = cur.X; let left = pre ? 0 : X.flat.length;
+  const done = () => { b.querySelector(".sum").innerHTML = sumHtml(cur.kind, X.flat, cur.artOf, cur.labOf); const fb = b.querySelector(".fillbtn"); if(fb) fb.remove(); if(!pre) setTimeout(stepQ, 350); else highlight(b); };
+  const fill = el => { if(el.classList.contains("on")) return; const g = X.cells[+el.dataset.r][+el.dataset.c]; el.innerHTML = cellIn(g); el.classList.add("on"); MK.sfx.hop(left, false); left--; if(left === 0) done(); };
+  if(pre){ done(); return; }
+  b.querySelector(".pg").onclick = e => { const el = e.target.closest(".cell"); if(el){ MK.unlock(); fill(el); } };
+  b.querySelector(".fillbtn").onclick = () => { MK.unlock(); [...b.querySelectorAll(".cell:not(.on)")].forEach((el, i) => setTimeout(() => fill(el), i * (X.flat.length > 8 ? 45 : 110))); };
+}
+function highlight(b){
+  if(!cur.q.hl) return;
+  b.querySelectorAll(".cell").forEach(el => { const g = cur.X.cells[+el.dataset.r][+el.dataset.c]; if(cur.q.hl(g)) el.classList.add("hl"); });
+}
+function stepQ(){
+  const q = cur.q, hasSteps = cur.X && !cur.qFirst;
+  const b = block(`<h3>${hasSteps ? T.qH : T.qH1}</h3><p class="qt">${q.text}</p>${ansHtml(q.opts, q.two || q.opts.every(o => o.length <= 9))}<div class="w"></div>`);
+  b.querySelector(".ans").onclick = e => {
+    const x = e.target.closest(".a"); if(!x) return; const i = +x.dataset.i, ok = i === q.ans, box = b.querySelector(".ans");
+    box.classList.add("done"); x.classList.add(ok ? "ok" : "no"); if(!ok) box.children[q.ans].classList.add("ok");
+    ok ? MK.sfx.good() : MK.sfx.bad(); award(ok, 10); dots.mark(ti, ok && firstOk);
+    if(ok && col.length < COL_MAX){ col.push(colKey()); added++; MK.set(COLK, col); }
+    b.querySelector(".w").innerHTML = MK.why({ ok, head: ok ? `${MK.pick(T.ok)} ${T.ptsPlus(10)}` : `${T.bad} ${T.right(q.opts[q.ans])}`, more: q.more, sum: T.why, open: !ok || !!cur.qFirst });
+    if(cur.X && !hasSteps) stepGrid(); else { const pg = $("flow").querySelector(".pg"); if(pg) highlight(pg.closest(".step")); }
+    const go = document.createElement("button"); go.type = "button"; go.className = "mk-btn go fade"; go.textContent = (ti < tasks.length - 1 ? T.next : T.finish) + " →";
+    go.onclick = () => { MK.sfx.tap(); ti++; ti < tasks.length ? show() : finish(); };
+    $("flow").appendChild(go); setTimeout(() => go.scrollIntoView({ behavior: "smooth", block: "nearest" }), 120);
+  };
+}
+function colKey(){
+  if(cur.X){ const f = cur.X.flat; const g = cur.q.hl ? (f.find(cur.q.hl) || P(f)) : P(f); return cur.artOf(PH[cur.kind].of(g)); }
+  return P(["drop:AB", "per:M:2", "seed:g:w", "fl:p"]);
+}
+function finish(){
+  const stars = MK.starsFor(okN, stepsN); MK.best(GAME, LEVELS[L].id, stars);
+  MK.result({ stars, title: `${okN} / ${stepsN}`, text: T.res(okN, stepsN, pts) + (added ? `<br><b>${T.resCol(added)}</b>` : ""),
+    next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(added) });
+}
+Object.defineProperty(window, "__cur", { get: () => cur });
+window.__MK_TEST = { LV, cross, gametes, parseG, PH, gStr, mkDi, aboInf, aboPhen, counts };
+showMenu();
+})();
+</script>
+</body>
+</html>
