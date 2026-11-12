@@ -66,7 +66,7 @@ body{--paper:#f6f8ee;--grid:#e1e7cf;--soft:#5a6147;--kid:"Unbounded","Arial Blac
     <div class="mk-hero">
       <div class="mk-hero-art" id="heroArt"></div>
       <h1>Grandinės <em>dirbtuvės</em></h1>
-      <p>Jungik jungiklius, uždek lemputes, skaičiuok srovę ir surask gedimą.</p>
+      <p>Jungik jungiklius, uždek lemputes, skaičiuok srovę ir varžą, surask gedimą. Kiekviename lygyje grandinės vis sudėtingesnės.</p>
     </div>
     <div id="levels"></div>
     <div id="learn"></div>
@@ -81,34 +81,31 @@ body{--paper:#f6f8ee;--grid:#e1e7cf;--soft:#5a6147;--kid:"Unbounded","Arial Blac
 <script>
 (function(){
 "use strict";
-const GAME = "grandines-dirbtuves", GRADES = [8], N = 8, INK = "#121a33";
+const GAME = "grandines-dirbtuves", GRADES = [8], N = 10, INK = "#121a33";
 const R = MK.rnd, P = MK.pick;
 const num = v => String(Math.round(v * 100) / 100).replace(".", ",");
 const val = s => +String(s).trim().replace(/\s+/g, "").replace(",", ".");
 
 /* ---------- grandinės modelis ----------
-   grandinė – nuosekliai sujungtų elementų masyvas; elementas: { t:"L"|"S"|"R", id, v } arba { par: [[...], [...]] } (lygiagrečios šakos). */
+   grandinė – nuosekliai sujungtų elementų masyvas; elementas: { t:"L"|"S"|"R", id, v } arba { par: [[...], [...]] } (lygiagrečios šakos).
+   Šakose gali būti dar vienas lygiagretus blokas (mišrusis jungimas). */
 const L = n => ({ t: "L", id: "L" + n }), S = n => ({ t: "S", id: "J" + n }), Rz = (n, v) => ({ t: "R", id: "R" + n, v });
 const Pr = (...b) => ({ par: b });
 const conducts = (items, st) => items.every(it => it.par ? it.par.some(b => conducts(b, st)) : it.t === "S" ? !!st.sw[it.id] : st.broken !== it.id);
-function litSet(main, st){
-  const lit = new Set(); if(!conducts(main, st)) return lit;
-  for(const it of main){
-    if(it.par){ for(const b of it.par) if(conducts(b, st)) b.forEach(c => { if(c.t === "L") lit.add(c.id); }); }
-    else if(it.t === "L") lit.add(it.id);
-  }
-  return lit;
-}
-const all = (main, t) => { const o = []; main.forEach(it => it.par ? it.par.forEach(b => b.forEach(c => c.t === t && o.push(c.id))) : it.t === t && o.push(it.id)); return o; };
-const where = (main, id) => { for(const it of main){ if(it.par){ for(const b of it.par) if(b.some(c => c.id === id)) return b; } else if(it.id === id) return null; } };
-const list = ids => { ids = [...ids].sort(); return !ids.length ? "nė viena" : ids.length === 1 ? "tik " + ids[0] : ids.slice(0, -1).join(", ") + " ir " + ids[ids.length - 1]; };
+function lightUp(items, st, lit){ for(const it of items){ if(it.par){ for(const b of it.par) if(conducts(b, st)) lightUp(b, st, lit); } else if(it.t === "L") lit.add(it.id); } }
+function litSet(main, st){ const lit = new Set(); if(conducts(main, st)) lightUp(main, st, lit); return lit; }
+function walk(items, f){ for(const it of items){ if(it.par) it.par.forEach(b => walk(b, f)); else f(it); } }
+const all = (main, t) => { const o = []; walk(main, c => c.t === t && o.push(c.id)); return o; };
+function seqs(items, isMain, out){ out.push({ seq: items, main: isMain }); items.forEach(it => it.par && it.par.forEach(b => seqs(b, false, out))); return out; }
+const seqOf = (main, id) => seqs(main, true, []).find(s => s.seq.some(c => c.id === id));
+const list = ids => { ids = [...ids].sort((a, b) => a.localeCompare(b, "lt", { numeric: true })); return !ids.length ? "nė viena" : ids.length === 1 ? "tik " + ids[0] : ids.slice(0, -1).join(", ") + " ir " + ids[ids.length - 1]; };
 const cap = s => s[0].toUpperCase() + s.slice(1);
+const keyOf = items => items.map(it => it.par ? "(" + it.par.map(keyOf).sort().join("|") + ")" : it.t).join("");
 
 /* ---------- schemos piešimas ---------- */
 const CW = 66, BR = 66, TOP = 40;
 const W = (x1, y1, x2, y2) => `<path d="M${x1} ${y1}L${x2} ${y2}" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
-function widthOf(items){ return items.reduce((w, it) => w + (it.par ? Math.max(...it.par.map(b => b.length)) * CW + 40 : CW), 0); }
-function rows(items){ return Math.max(1, ...items.map(it => it.par ? it.par.length : 1)); }
+function sz(items){ let w = 0, h = 1; for(const it of items){ if(it.par){ const s = it.par.map(sz); w += Math.max(...s.map(q => q.w)) + 40; h = Math.max(h, s.reduce((a, q) => a + q.h, 0)); } else w += CW; } return { w, h }; }
 function comp(it, x, y, st){
   const cx = x + CW / 2; let g = "";
   if(it.t === "L"){
@@ -124,7 +121,7 @@ function comp(it, x, y, st){
       <text x="${cx}" y="${y - 16}" text-anchor="middle">${it.id}${it.v != null ? " = " + it.v + " Ω" : ""}</text>`;
   } else {
     const on = !!st.sw[it.id];
-    g += `<g class="sw" data-id="${it.id}" role="button" aria-label="Jungiklis ${it.id}: ${on ? "įjungtas" : "išjungtas"}"><rect class="hit" x="${x + 4}" y="${y - 30}" width="${CW - 8}" height="46" rx="8" fill="transparent"/>`
+    g += `<g class="sw" data-id="${it.id}" role="button" aria-label="Jungiklis ${it.id}: ${on ? "įjungtas" : "išjungtas"}"><rect class="hit" x="${x}" y="${y - 36}" width="${CW}" height="56" rx="8" fill="transparent"/>`
       + W(x, y, cx - 14, y) + W(cx + 14, y, x + CW, y)
       + `<path d="M${cx - 14} ${y}L${on ? cx + 14 : cx + 10} ${on ? y : y - 18}" stroke="${on ? "#2b8a3e" : INK}" stroke-width="3.5" stroke-linecap="round"/>
       <circle cx="${cx - 14}" cy="${y}" r="4" fill="#fff" stroke="${INK}" stroke-width="2.5"/><circle cx="${cx + 14}" cy="${y}" r="4" fill="#fff" stroke="${INK}" stroke-width="2.5"/>
@@ -136,18 +133,20 @@ function series(items, x, y, st){
   let g = "";
   for(const it of items){
     if(it.par){
-      const bw = Math.max(...it.par.map(b => b.length)) * CW + 40, xl = x + 20, xr = x + bw - 20, yl = y + (it.par.length - 1) * BR;
+      const s = it.par.map(sz), bw = Math.max(...s.map(q => q.w)) + 40, xl = x + 20, xr = x + bw - 20, ys = [];
+      let yy = y;
+      it.par.forEach((b, k) => { ys.push(yy); g += series(b, xl, yy, st) + W(xl + s[k].w, yy, xr, yy); yy += s[k].h * BR; });
+      const yl = ys[ys.length - 1];
       g += W(x, y, xl, y) + W(xr, y, x + bw, y) + W(xl, y, xl, yl) + W(xr, y, xr, yl);
-      it.par.forEach((b, k) => { const yy = y + k * BR; g += series(b, xl, yy, st) + W(xl + b.length * CW, yy, xr, yy); });
-      for(let k = 0; k < it.par.length - 1; k++) g += `<circle cx="${xl}" cy="${y + k * BR}" r="4.5" fill="${INK}"/><circle cx="${xr}" cy="${y + k * BR}" r="4.5" fill="${INK}"/>`;
+      ys.slice(0, -1).forEach(v => { g += `<circle cx="${xl}" cy="${v}" r="4.5" fill="${INK}"/><circle cx="${xr}" cy="${v}" r="4.5" fill="${INK}"/>`; });
       x += bw;
     } else { g += comp(it, x, y, st); x += CW; }
   }
   return g;
 }
 function schema(main, st){
-  st.lit = litSet(main, st);
-  const x0 = 50, xe = x0 + widthOf(main), h = rows(main), yb = TOP + (h - 1) * BR + 52, mid = (TOP + yb) / 2, bx = 22, wd = xe + 22;
+  st.lit = st.hide ? new Set() : litSet(main, st);
+  const s = sz(main), x0 = 50, xe = x0 + s.w, yb = TOP + (s.h - 1) * BR + 52, mid = (TOP + yb) / 2, bx = 22, wd = xe + 22;
   let g = W(bx, TOP, x0, TOP) + series(main, x0, TOP, st) + W(xe, TOP, wd - 4, TOP) + W(wd - 4, TOP, wd - 4, yb) + W(wd - 4, yb, bx, yb)
     + W(bx, TOP, bx, mid - 6) + W(bx, mid + 6, bx, yb)
     + `<path d="M${bx - 14} ${mid - 6}h28" stroke="${INK}" stroke-width="3.5"/><path d="M${bx - 7} ${mid + 6}h14" stroke="${INK}" stroke-width="6"/>
@@ -156,109 +155,272 @@ function schema(main, st){
   return `<svg class="sch" viewBox="0 0 ${wd + 4} ${yb + (st.U != null ? 32 : 12)}" role="img" aria-label="Elektros grandinės schema">${g}</svg>`;
 }
 
-/* ---------- užduotys ---------- */
-const SW_T = [
-  () => [S(1), L(1), Pr([S(2), L(2)], [S(3), L(3)])],
-  () => [Pr([S(1), L(1)], [S(2), L(2)]), S(3)],
-  () => [S(1), Pr([L(1)], [S(2), L(2)], [S(3), L(3)])],
-  () => [Pr([S(1), L(1), L(2)], [S(2), L(3)]), S(3)],
-  () => [S(1), Pr([S(2), L(1)], [L(2)])],
-  () => [L(1), Pr([S(1), L(2)], [S(2), L(3)])]
+/* ---------- atsitiktinės grandinės ----------
+   Sudaroma iš nuoseklių dalių ir lygiagrečių blokų (šakose gali būti dar vienas blokas). Sudėtingumas – pakopa 0, 1, 2. */
+const CFG = [
+  { minL: 2, maxL: 4, units: 2, pPar: .55, maxBr: 2, nest: 0, maxW: 320, maxH: 2 },
+  { minL: 3, maxL: 5, units: 3, pPar: .6, maxBr: 3, nest: .25, maxW: 380, maxH: 3 },
+  { minL: 4, maxL: 7, units: 3, pPar: .65, maxBr: 3, nest: .5, maxW: 440, maxH: 4 }
 ];
-function genSwitch(){
-  for(;;){
-    const main = P(SW_T)(), ids = all(main, "S"), sw = {}; ids.forEach(id => sw[id] = Math.random() < .6);
-    const goal = litSet(main, { sw }), lamps = all(main, "L");
-    if(!goal.size) continue;
-    const off = lamps.filter(l => !goal.has(l));
-    const ex = [];
-    const mainSw = main.filter(it => it.t === "S").map(it => it.id);
-    if(mainSw.length) ex.push(`Jungiklis ${mainSw.join(", ")} sujungtas nuosekliai su visa grandine – jis turi būti įjungtas, kitaip nedegs nė viena lemputė.`);
-    main.filter(it => it.par).forEach(it => it.par.forEach(b => {
-      const bs = b.filter(c => c.t === "S").map(c => c.id), bl = b.filter(c => c.t === "L").map(c => c.id); if(!bs.length) return;
-      ex.push(bl.some(l => goal.has(l)) ? `Šakoje su ${bl.join(", ")} jungiklis ${bs.join(", ")} turi būti <b>įjungtas</b>.` : `Šakoje su ${bl.join(", ")} jungiklis ${bs.join(", ")} turi būti <b>išjungtas</b>.`);
-    }));
-    return { kind: "sw", main, st: { sw: {} }, goal,
-      q: `Uždek <b>${list(goal).replace("tik ", "")}</b>${off.length ? `, o ${off.join(", ")} turi nedegti` : ""}.`, hint: "Bakstelėk jungiklį, kad jį įjungtum ar išjungtum.",
-      ex: "Srovė teka tik uždara grandine. " + ex.join(" ") };
-  }
+const E = () => ({ t: "L" });
+function branch(c, depth){
+  const n = R(1, 2), b = [];
+  for(let i = 0; i < n; i++) b.push(depth < 2 && Math.random() < c.nest ? parBlock(c, 2) : E());
+  if(!b.some(x => !x.par)) b.push(E());
+  return MK.shuffle(b);
 }
-function subsets(arr){ const o = []; for(let m = 0; m < 1 << arr.length; m++) o.push(arr.filter((_, i) => m >> i & 1)); return o; }
-function setChoices(correct, pool){
-  const key = s => [...s].sort().join(","), ck = key(correct);
-  const others = MK.shuffle(subsets(pool).filter(s => key(s) !== ck)).slice(0, 3);
-  return MK.shuffle([[...correct], ...others]).map(s => ({ label: cap(list(s)), ok: key(s) === ck }));
+const parBlock = (c, depth) => ({ par: Array.from({ length: R(2, depth === 1 ? c.maxBr : 2) }, () => branch(c, depth)) });
+function randTree(tier, needPar){
+  const c = CFG[tier];
+  for(let t = 0; t < 800; t++){
+    const main = Array.from({ length: R(1, c.units) }, () => Math.random() < c.pPar ? parBlock(c, 1) : E());
+    let n = 0; walk(main, () => n++);
+    if(n < c.minL || n > c.maxL) continue;
+    if(needPar !== false && !main.some(it => it.par)) { if(needPar || tier > 0 || Math.random() < .6) continue; }
+    const s = sz(main); if(s.w > c.maxW || s.h > c.maxH) continue;
+    return main;
+  }
+  return [E(), Pr([E()], [E()])];
 }
-const BRK_T = [() => [L(1), L(2)], () => [Pr([L(1)], [L(2)])], () => [L(1), Pr([L(2)], [L(3)])], () => [Pr([L(1), L(2)], [L(3)])], () => [L(1), L(2), L(3)], () => [Pr([L(1)], [L(2)], [L(3)])]];
-const SWQ_T = [() => [Pr([S(1), L(1)], [L(2)])], () => [S(1), Pr([L(1)], [L(2)])], () => [L(1), Pr([S(1), L(2)], [L(3)])], () => [Pr([S(1), L(1), L(2)], [L(3)])]];
-function genSeries(){
-  const k = R(0, 2);
-  if(k === 0){
-    const par = Math.random() < .5, n = R(2, 3), ls = Array.from({ length: n }, (_, i) => L(i + 1));
-    const main = par ? [Pr(...ls.map(l => [l]))] : ls;
-    return { kind: "opt", main, st: { sw: {} }, q: `Kaip sujungtos lemputės?`,
-      choices: [{ label: "Nuosekliai", ok: !par }, { label: "Lygiagrečiai", ok: par }],
-      ex: par ? "Kiekviena lemputė turi savo atskirą šaką, o šakų galai sujungti tuose pačiuose taškuose – tai <b>lygiagretusis</b> jungimas." : "Lemputės sujungtos viena paskui kitą, srovė teka vienu keliu – tai <b>nuoseklusis</b> jungimas." };
-  }
-  if(k === 1){
-    const main = P(BRK_T)(), lamps = all(main, "L"), b = P(lamps), st = { sw: {}, broken: b, show: true }, lit = litSet(main, st);
-    const br = where(main, b);
-    return { kind: "opt", main, st, q: `Lemputė <b>${b}</b> perdegė. Kurios lemputės degs?`, choices: setChoices(lit, lamps.filter(l => l !== b)),
-      ex: (br ? `${b} yra lygiagrečioje šakoje. Nutrūkus vienai šakai, srovė toliau teka kitomis, todėl nedega tik tos šakos lemputės.` : `${b} sujungta nuosekliai su visa grandine. Ji nutrūko – srovė nebeteka niekur, todėl visos lemputės užgęsta.`) + ` Degs: ${list(lit)}.` };
-  }
-  const main = P(SWQ_T)(), lamps = all(main, "L"), st = { sw: { J1: false } }, lit = litSet(main, st), inBr = where(main, "J1");
-  return { kind: "opt", main, st, q: `Jungiklis <b>J1</b> išjungtas. Kurios lemputės degs?`, choices: setChoices(lit, lamps),
-    ex: (inBr ? "J1 yra vienoje iš lygiagrečių šakų. Jį išjungus nutrūksta tik ta šaka – kitos lemputės dega." : "J1 sujungtas nuosekliai su visa grandine. Jį išjungus grandinė nutrūksta ir nedega nė viena lemputė.") + ` Degs: ${list(lit)}.` };
+function numberAll(main){ const k = { L: 0, S: 0, R: 0 }; walk(main, c => { k[c.t]++; c.id = (c.t === "S" ? "J" : c.t) + k[c.t]; }); return main; }
+function addSwitches(main, n){
+  const ss = MK.shuffle(seqs(main, true, [])).slice(0, n);
+  ss.forEach(s => s.seq.splice(R(0, s.seq.length), 0, { t: "S" }));
+  return ss.length;
 }
-function genOhm(){
-  const k = R(0, 4);
-  const pickIR = () => { for(;;){ const r = P([2, 3, 4, 5, 6, 8, 10, 12, 20]), i = P([0.5, 1, 1.5, 2, 2.5, 3]), u = r * i; if(u <= 24 && Number.isInteger(u * 2)) return [i, r, u]; } };
-  if(k <= 2){
-    const [i, r, u] = pickIR();
-    if(k === 0) return { kind: "num", main: [Rz(1, r)], st: { sw: {}, U: u }, q: "Kokio stiprumo srovė teka grandine?", unit: "A", ans: i,
-      ex: `Omo dėsnis: <span class="mk-ex">I = U / R = ${num(u)} V / ${r} Ω = ${num(i)} A</span>` };
-    if(k === 1) return { kind: "num", main: [{ t: "R", id: "R1", v: "?" }], st: { sw: {}, U: u, I: i }, q: "Ampermetras rodo srovę I. Kokia rezistoriaus varža?", unit: "Ω", ans: r,
-      ex: `Iš Omo dėsnio: <span class="mk-ex">R = U / I = ${num(u)} V / ${num(i)} A = ${r} Ω</span>` };
-    return { kind: "num", main: [Rz(1, r)], st: { sw: {}, I: i, U: "?" }, q: `Grandine teka ${num(i)} A srovė. Kokia įtampa rezistoriuje?`, unit: "V", ans: u,
-      ex: `Iš Omo dėsnio: <span class="mk-ex">U = I · R = ${num(i)} A · ${r} Ω = ${num(u)} V</span>` };
-  }
-  for(;;){
-    const r1 = R(1, 10), r2 = R(1, 10), rs = r1 + r2, i = P([0.5, 1, 1.5, 2]), u = rs * i;
-    if(u > 24 || !Number.isInteger(u * 2)) continue;
-    const main = [Rz(1, r1), Rz(2, r2)];
-    if(k === 3) return { kind: "num", main, st: { sw: {}, U: u }, q: "Rezistoriai sujungti nuosekliai. Kokio stiprumo srovė teka grandine?", unit: "A", ans: i,
-      ex: `Nuosekliai jungiant varžos sudedamos: <span class="mk-ex">R = R1 + R2 = ${r1} + ${r2} = ${rs} Ω</span> Tada <span class="mk-ex">I = U / R = ${num(u)} V / ${rs} Ω = ${num(i)} A</span>` };
-    return { kind: "num", main, st: { sw: {}, U: u }, q: "Kokia įtampa rezistoriuje R1?", unit: "V", ans: i * r1,
-      ex: `Pirmiausia bendra varža ir srovė: <span class="mk-ex">R = ${r1} + ${r2} = ${rs} Ω; I = ${num(u)} / ${rs} = ${num(i)} A</span> Nuosekliai jungiant srovė visur ta pati, todėl <span class="mk-ex">U1 = I · R1 = ${num(i)} · ${r1} = ${num(i * r1)} V</span>` };
-  }
+function swSets(main){ const ids = all(main, "S"); return Array.from({ length: 1 << ids.length }, (_, m) => { const sw = {}; ids.forEach((id, i) => sw[id] = !!(m >> i & 1)); return sw; }); }
+const setKey = s => [...s].sort().join(",");
+
+/* kartojimosi vengimas: įsimenamos neseniai matytos schemos (tik šiame įrenginyje) */
+const SEENK = "mk-grandines-dirbtuves-matyta";
+let seen = MK.get(SEENK, {}); if(typeof seen !== "object" || !seen) seen = {};
+function fresh(lv, fn){
+  const arr = seen[lv] || (seen[lv] = []);
+  let t, k;
+  for(let i = 0; i < 60; i++){ t = fn(); k = t.key; if(!arr.includes(k)) break; }
+  arr.push(k); if(arr.length > 150) arr.splice(0, arr.length - 150); MK.set(SEENK, seen);
+  return t;
 }
-const PAIRS = [[2, 2, 1], [3, 6, 2], [4, 4, 2], [6, 6, 3], [4, 12, 3], [6, 12, 4], [10, 10, 5], [12, 12, 6], [5, 20, 4], [10, 40, 8], [6, 3, 2], [12, 4, 3]];
-function genPar(){
-  const k = R(0, 3), [r1, r2, rp] = P(PAIRS), main = [Pr([Rz(1, r1)], [Rz(2, r2)])];
-  const fx = `<span class="mk-ex">R = R1 · R2 / (R1 + R2) = ${r1} · ${r2} / (${r1} + ${r2}) = ${rp} Ω</span>`;
-  if(k === 0) return { kind: "num", main, st: { sw: {} }, q: "Rezistoriai sujungti lygiagrečiai. Kokia bendra jų varža?", unit: "Ω", ans: rp,
-    ex: `Lygiagrečiai jungiant <b>1/R = 1/R1 + 1/R2</b>. Dviem rezistoriams patogu: ${fx} Bendra varža visada mažesnė už mažiausią šakos varžą.` };
-  const nice = x => Math.abs(Math.round(x * 100) - x * 100) < 1e-6;
-  const us = [1, 2, 3, 4, 6].map(m => rp * m).filter(u => u <= 48 && nice(u / r1) && nice(u / r2)), u = us.length ? P(us) : r1 * r2;
-  if(k === 1) return { kind: "num", main, st: { sw: {}, U: u }, q: "Kokio stiprumo srovė teka nešakota grandinės dalimi (per šaltinį)?", unit: "A", ans: u / rp,
-    ex: `Bendra varža: ${fx} Tada <span class="mk-ex">I = U / R = ${u} V / ${rp} Ω = ${num(u / rp)} A</span>` };
-  if(k === 2) return { kind: "num", main, st: { sw: {}, U: u }, q: "Kokio stiprumo srovė teka per rezistorių R1?", unit: "A", ans: u / r1,
-    ex: `Lygiagrečiai jungiant visų šakų įtampa ta pati, kaip šaltinio: U1 = ${u} V. <span class="mk-ex">I1 = U / R1 = ${u} V / ${r1} Ω = ${num(u / r1)} A</span>` };
-  return { kind: "num", main, st: { sw: {}, U: u }, q: "Kokia yra visų šakų srovių suma I1 + I2?", unit: "A", ans: u / r1 + u / r2,
-    ex: `Kiekvienos šakos įtampa ${u} V: <span class="mk-ex">I1 = ${u} / ${r1} = ${num(u / r1)} A; I2 = ${u} / ${r2} = ${num(u / r2)} A</span> Šakų srovės sudedamos: <span class="mk-ex">I = I1 + I2 = ${num(u / r1 + u / r2)} A</span> Tiek pat gaunama ir iš bendros varžos: ${u} / ${rp} = ${num(u / rp)} A.` };
+function litChoices(correct, pool){
+  const out = [], ks = new Set(), add = s => { const k = setKey(s); if(!ks.has(k) && out.length < 4){ ks.add(k); out.push([...s]); } };
+  const tog = (s, l) => { const n = new Set(s); n.has(l) ? n.delete(l) : n.add(l); return n; };
+  add(correct);
+  MK.shuffle(pool).forEach(l => add(tog(correct, l)));
+  add(pool); add([]);
+  MK.shuffle(pool).forEach(l => add(tog(tog(correct, l), P(pool))));
+  const ck = setKey(correct);
+  return MK.shuffle(out).map(s => ({ label: cap(list(s)), ok: setKey(s) === ck }));
 }
-const FAULT_T = [() => [L(1), Pr([L(2)], [L(3)])], () => [Pr([L(1), L(2)], [L(3)])], () => [Pr([L(1)], [L(2), L(3)])], () => [L(1), Pr([L(2)], [L(3), L(4)])], () => [Pr([L(1)], [L(2)]), Pr([L(3)], [L(4)])]];
-function genFault(){
-  for(;;){
-    const main = P(FAULT_T)(), lamps = all(main, "L"), key = b => [...litSet(main, { sw: {}, broken: b })].sort().join(",");
-    const uniq = lamps.filter(b => lamps.filter(c => key(c) === key(b)).length === 1);
-    if(!uniq.length) continue;
-    const b = P(uniq), st = { sw: {}, broken: b }, lit = litSet(main, st), br = where(main, b);
-    return { kind: "opt", main, st, q: `Viena lemputė perdegė. Dega: <b>${list(lit)}</b>. Kuri lemputė sugedo?`,
-      choices: MK.shuffle(lamps).map(l => ({ label: l, ok: l === b })),
-      ex: (br ? `Nedega tik ${list(br.filter(c => c.t === "L").map(c => c.id)).replace("tik ", "")} – vienos lygiagrečios šakos lemputės. Vadinasi, nutrūko ta šaka: kitose šakose srovė teka.` : `Nedega nė viena lemputė, todėl nutrūko vieta, per kurią teka visa srovė – nuosekliai su visa grandine sujungta lemputė.`)
-        + ` Jei būtų perdegusi kita lemputė, degtų kitos, todėl atsakymas vienas: <b>${b}</b>.` };
-  }
+
+/* ---------- 1. Uždek lemputę ---------- */
+function genSwitch(tier){
+  return fresh("sw" + tier, () => {
+    for(;;){
+      const main = randTree(tier, tier > 0); addSwitches(main, [R(1, 2), R(2, 3), R(3, 4)][tier]); numberAll(main);
+      if(sz(main).w > 470) continue;
+      const lamps = all(main, "L"), sws = swSets(main), sets = sws.map(sw => litSet(main, { sw }));
+      const allOn = setKey(sets[sets.length - 1]);
+      const cands = [...new Set(sets.map(setKey))].filter(k => k && (tier === 0 || k !== allOn));
+      if(!cands.length) continue;
+      const gk = P(cands), goal = new Set(gk.split(","));
+      const ids = all(main, "S"), ok = sws.filter((sw, i) => setKey(sets[i]) === gk);
+      const on = ids.filter(id => ok.every(sw => sw[id])), off = ids.filter(id => ok.every(sw => !sw[id])), any = ids.filter(id => !on.includes(id) && !off.includes(id));
+      const offL = lamps.filter(l => !goal.has(l));
+      return { key: keyOf(main) + ":" + gk, kind: "sw", main, st: { sw: {} }, goal,
+        q: `Uždek <b>${list(goal).replace("tik ", "")}</b>${offL.length ? `, o ${list(offL).replace("tik ", "")} turi nedegti` : ""}.`, hint: "Bakstelėk jungiklį, kad jį įjungtum ar išjungtum.",
+        ex: `Srovė teka tik uždaru keliu nuo šaltinio ir atgal. Lemputė dega, jei visi jungikliai jos kelyje įjungti. ${on.length ? `Įjungti reikia: <b>${list(on).replace("tik ", "")}</b>. ` : ""}${off.length ? `Išjungti reikia: <b>${list(off).replace("tik ", "")}</b> – kitaip užsidegtų ir nereikalingos lemputės. ` : ""}${any.length ? `${list(any).replace("tik ", "")} – nesvarbu (jų šakos lemputės vis tiek dega arba nedega dėl kitų jungiklių).` : ""}` };
+    }
+  });
+}
+
+/* ---------- 2. Nuoseklusis ar lygiagretusis ---------- */
+function pairs(main){
+  const ser = [], par = [];
+  seqs(main, true, []).forEach(s => { const ls = s.seq.filter(c => c.t === "L"); for(let i = 0; i < ls.length; i++) for(let j = i + 1; j < ls.length; j++) ser.push([ls[i].id, ls[j].id]); });
+  const pb = []; (function f(items){ items.forEach(it => { if(it.par){ pb.push(it); it.par.forEach(f); } }); })(main);
+  pb.forEach(p => { const one = p.par.filter(b => b.length === 1 && b[0].t === "L").map(b => b[0].id); for(let i = 0; i < one.length; i++) for(let j = i + 1; j < one.length; j++) par.push([one[i], one[j]]); });
+  return { ser, par };
+}
+function genSeries(tier){
+  const kinds = [["pair", "pair", "brk", "swq"], ["pair", "brk", "brk", "swq", "swq"], ["pair", "brk", "brk", "swq", "swq"]][tier];
+  const k = P(kinds);
+  return fresh("ser" + tier + k, () => {
+    if(k === "pair"){
+      for(;;){
+        const main = numberAll(randTree(tier, false)), pr = pairs(main);
+        const typ = pr.ser.length && pr.par.length ? P(["ser", "par"]) : pr.ser.length ? "ser" : pr.par.length ? "par" : null;
+        if(!typ) continue;
+        const [a, b] = P(pr[typ]), isPar = typ === "par";
+        return { key: keyOf(main) + ":" + a + b, kind: "opt", main, st: { sw: {} }, q: `Kaip tarpusavyje sujungtos lemputės <b>${a}</b> ir <b>${b}</b>?`,
+          choices: [{ label: "Nuosekliai", ok: !isPar }, { label: "Lygiagrečiai", ok: isPar }],
+          ex: isPar ? `${a} ir ${b} yra atskirose šakose, kurių galai sujungti tuose pačiuose dviejuose mazguose (juodi taškai). Tai <b>lygiagretusis</b> jungimas: jų įtampa vienoda, o srovė išsišakoja.`
+                    : `${a} ir ${b} yra toje pačioje grandinės dalyje viena paskui kitą, be išsišakojimo tarp jų. Per abi teka ta pati srovė – tai <b>nuoseklusis</b> jungimas.` };
+      }
+    }
+    if(k === "brk"){
+      for(;;){
+        const main = numberAll(randTree(tier)), lamps = all(main, "L"); if(lamps.length < 2) continue;
+        const b = P(lamps), st = { sw: {}, broken: b, show: true, hide: true }, lit = litSet(main, { sw: {}, broken: b }), s = seqOf(main, b);
+        const dark = lamps.filter(l => l !== b && !lit.has(l));
+        return { key: keyOf(main) + ":" + b, kind: "opt", main, st, q: `Lemputė <b>${b}</b> perdegė. Kurios lemputės degs?`, choices: litChoices(lit, lamps.filter(l => l !== b)),
+          ex: (s.main ? `${b} sujungta nuosekliai su visa grandine – per ją teka visa srovė. Jai nutrūkus, srovė nebeteka niekur.` : `${b} yra lygiagrečioje šakoje. Nutrūksta tik ta šaka, o kitomis šakomis srovė teka toliau.`)
+            + (dark.length && !s.main ? ` Kartu užgęsta ${list(dark).replace("tik ", "")} – jos yra toje pačioje šakoje kaip ir ${b}.` : "") + ` Degs: <b>${list(lit)}</b>.` };
+      }
+    }
+    for(;;){
+      const main = randTree(tier); addSwitches(main, [1, R(1, 2), R(2, 3)][tier]); numberAll(main);
+      if(sz(main).w > 470) continue;
+      const ids = all(main, "S"), sw = {}; ids.forEach(id => sw[id] = Math.random() < .5);
+      if(ids.every(id => sw[id])) sw[P(ids)] = false;
+      const st = { sw, hide: true }, lit = litSet(main, { sw }), lamps = all(main, "L"), offS = ids.filter(id => !sw[id]);
+      const reason = offS.map(id => { const s = seqOf(main, id); return s.main ? `${id} išjungtas ir sujungtas nuosekliai su visa grandine – srovė nutrūksta visur` : `${id} išjungtas – nutrūksta jo šaka`; }).join("; ");
+      return { key: keyOf(main) + ":" + ids.map(id => +sw[id]).join(""), kind: "opt", main, st, q: `Jungikliai nustatyti taip, kaip parodyta schemoje. Kurios lemputės degs?`, choices: litChoices(lit, lamps),
+        ex: `${cap(reason)}. Lemputė dega tik tada, kai visas jos kelias nuo šaltinio ir atgal uždaras. Degs: <b>${list(lit)}</b>.` };
+    }
+  });
+}
+
+/* ---------- 3. Omo dėsnis ---------- */
+const nice = x => Math.abs(Math.round(x * 100) - x * 100) < 1e-6;
+const RV = [2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 24, 30], IV = [0.2, 0.25, 0.5, 0.75, 1, 1.2, 1.5, 2, 2.5, 3, 4];
+function genOhm(tier){
+  const k = P([[0, 1, 2], [3, 4, 5, 6], [7, 8, 9]][tier]);
+  return fresh("ohm" + tier, () => {
+    for(;;){
+      if(k <= 2){
+        const r = P(RV), i = P(IV), u = r * i; if(u > 60 || !nice(u)) continue;
+        const key = "o" + k + ":" + r + ":" + i;
+        if(k === 0) return { key, kind: "num", main: [Rz(1, r)], st: { sw: {}, U: u }, q: "Kokio stiprumo srovė teka grandine?", unit: "A", ans: i,
+          ex: `Omo dėsnis grandinės daliai: <span class="mk-ex">I = U / R = ${num(u)} V / ${r} Ω = ${num(i)} A</span>` };
+        if(k === 1) return { key, kind: "num", main: [{ t: "R", id: "R1", v: "?" }], st: { sw: {}, U: u, I: i }, q: "Ampermetras rodo srovę I. Kokia rezistoriaus varža?", unit: "Ω", ans: r,
+          ex: `Iš Omo dėsnio: <span class="mk-ex">R = U / I = ${num(u)} V / ${num(i)} A = ${r} Ω</span>` };
+        return { key, kind: "num", main: [Rz(1, r)], st: { sw: {} }, q: `Rezistoriumi teka ${num(i)} A srovė. Kokia įtampa jo galuose?`, unit: "V", ans: u,
+          ex: `Iš Omo dėsnio: <span class="mk-ex">U = I · R = ${num(i)} A · ${r} Ω = ${num(u)} V</span>` };
+      }
+      const n = k <= 6 ? 2 : 3, rs = Array.from({ length: n }, () => R(1, 15)), sum = rs.reduce((a, b) => a + b, 0), i = P(IV), u = sum * i;
+      if(u > 60 || !nice(u)) continue;
+      const main = rs.map((r, j) => Rz(j + 1, r)), key = "o" + k + ":" + rs.join(",") + ":" + i, sumT = `R = ${rs.join(" + ")} = ${sum} Ω`;
+      if(k === 3 || k === 7) return { key, kind: "num", main, st: { sw: {}, U: u }, q: "Rezistoriai sujungti nuosekliai. Kokio stiprumo srovė teka grandine?", unit: "A", ans: i,
+        ex: `Nuosekliai jungiant varžos sudedamos: <span class="mk-ex">${sumT}</span> Tada <span class="mk-ex">I = U / R = ${num(u)} V / ${sum} Ω = ${num(i)} A</span>` };
+      if(k === 4 || k === 8){ const j = R(0, n - 1); return { key: key + j, kind: "num", main, st: { sw: {}, U: u }, q: `Kokia įtampa rezistoriuje R${j + 1}?`, unit: "V", ans: i * rs[j],
+        ex: `Bendra varža ir srovė: <span class="mk-ex">${sumT}; I = ${num(u)} / ${sum} = ${num(i)} A</span> Nuosekliai jungiant srovė visur ta pati: <span class="mk-ex">U${j + 1} = I · R${j + 1} = ${num(i)} · ${rs[j]} = ${num(i * rs[j])} V</span>` }; }
+      if(k === 5) return { key, kind: "num", main, st: { sw: {}, U: u }, q: "Kokia bendra nuosekliai sujungtų rezistorių varža?", unit: "Ω", ans: sum,
+        ex: `Nuosekliai jungiant varžos sudedamos: <span class="mk-ex">${sumT}</span>` };
+      const j = R(0, n - 1), m = main.map((x, q) => q === j ? { t: "R", id: x.id, v: "?" } : x), rest = sum - rs[j];
+      return { key: key + "x" + j, kind: "num", main: m, st: { sw: {}, U: u, I: i }, q: `Ampermetras rodo srovę I. Kokia rezistoriaus R${j + 1} varža?`, unit: "Ω", ans: rs[j],
+        ex: `Bendra varža: <span class="mk-ex">R = U / I = ${num(u)} / ${num(i)} = ${sum} Ω</span> Nuosekliai jungiant varžos sudedamos, todėl <span class="mk-ex">R${j + 1} = ${sum} − ${rest} = ${rs[j]} Ω</span>` };
+    }
+  });
+}
+
+/* ---------- 4. Lygiagretusis jungimas ---------- */
+const PAIRS = [[2, 2, 1], [3, 6, 2], [4, 4, 2], [6, 6, 3], [4, 12, 3], [6, 12, 4], [10, 10, 5], [12, 12, 6], [5, 20, 4], [10, 40, 8], [6, 3, 2], [12, 4, 3], [10, 15, 6], [20, 30, 12], [8, 8, 4], [20, 20, 10], [30, 6, 5], [12, 24, 8], [15, 30, 10], [9, 18, 6], [8, 24, 6], [40, 10, 8], [60, 12, 10], [14, 14, 7], [28, 7, 5.6], [18, 9, 6], [20, 5, 4], [36, 12, 9], [24, 24, 12], [21, 42, 14]];
+const TRIPLES = [[3, 6, 6, 1.5], [6, 6, 6, 2], [4, 4, 2, 1], [6, 12, 12, 3], [9, 9, 9, 3], [12, 12, 6, 3], [10, 10, 5, 2.5], [2, 3, 6, 1], [4, 6, 12, 2], [6, 10, 15, 3], [12, 12, 12, 4], [20, 20, 10, 5], [10, 15, 30, 5], [8, 8, 4, 2], [30, 30, 15, 7.5], [6, 9, 18, 3], [15, 15, 15, 5], [12, 24, 24, 6]];
+function genPar(tier){
+  const k = P([[0, 1, 2], [3, 4, 5, 6], [7, 8, 9]][tier]);
+  return fresh("par" + tier, () => {
+    for(;;){
+      if(k <= 6){
+        const [r1, r2, rp] = P(PAIRS), main = [Pr([Rz(1, r1)], [Rz(2, r2)])];
+        const fx = `<span class="mk-ex">R = R1 · R2 / (R1 + R2) = ${r1} · ${r2} / (${r1} + ${r2}) = ${num(rp)} Ω</span>`;
+        const us = [1, 2, 3, 4, 5, 6, 8, 10, 12].map(m => rp * m).filter(u => u <= 60 && nice(u / r1) && nice(u / r2) && nice(u)), u = us.length ? P(us) : 0;
+        const key = "p" + k + ":" + r1 + "," + r2 + ":" + u;
+        if(k === 0) return { key, kind: "num", main, st: { sw: {} }, q: "Rezistoriai sujungti lygiagrečiai. Kokia bendra jų varža?", unit: "Ω", ans: rp,
+          ex: `Lygiagrečiai jungiant <b>1/R = 1/R1 + 1/R2</b>. Dviem rezistoriams: ${fx} Bendra varža visada mažesnė už mažiausią šakos varžą.` };
+        if(!u) continue;
+        if(k === 1 || k === 4) return { key, kind: "num", main, st: { sw: {}, U: u }, q: "Kokio stiprumo srovė teka nešakota grandinės dalimi (per šaltinį)?", unit: "A", ans: u / rp,
+          ex: `Bendra varža: ${fx} Tada <span class="mk-ex">I = U / R = ${u} V / ${num(rp)} Ω = ${num(u / rp)} A</span>` };
+        if(k === 2 || k === 3){ const j = R(1, 2), rj = j === 1 ? r1 : r2; return { key: key + j, kind: "num", main, st: { sw: {}, U: u }, q: `Kokio stiprumo srovė teka per rezistorių R${j}?`, unit: "A", ans: u / rj,
+          ex: `Lygiagrečiai jungiant visų šakų įtampa ta pati, kaip šaltinio: U${j} = ${u} V. <span class="mk-ex">I${j} = U / R${j} = ${u} V / ${rj} Ω = ${num(u / rj)} A</span>` }; }
+        if(k === 5) return { key, kind: "num", main, st: { sw: {}, U: u }, q: "Kokia yra visų šakų srovių suma I1 + I2?", unit: "A", ans: u / r1 + u / r2,
+          ex: `Kiekvienos šakos įtampa ${u} V: <span class="mk-ex">I1 = ${u} / ${r1} = ${num(u / r1)} A; I2 = ${u} / ${r2} = ${num(u / r2)} A</span> Šakų srovės sudedamos: <span class="mk-ex">I = I1 + I2 = ${num(u / r1 + u / r2)} A</span>` };
+        /* k === 6: žinoma bendra srovė ir I1 – rasti I2 */
+        const i1 = u / r1, it = u / rp;
+        return { key, kind: "num", main, st: { sw: {}, U: u, I: it }, q: `Per R1 teka ${num(i1)} A srovė. Kokia srovė teka per R2?`, unit: "A", ans: it - i1,
+          ex: `Lygiagrečiai jungiant nešakotos dalies srovė lygi šakų srovių sumai: <span class="mk-ex">I2 = I − I1 = ${num(it)} − ${num(i1)} = ${num(it - i1)} A</span> Patikrinimas: ${u} V / ${r2} Ω = ${num(u / r2)} A.` };
+      }
+      if(k === 7 || k === 8){
+        const [a, b, c, rp] = P(TRIPLES), main = [Pr([Rz(1, a)], [Rz(2, b)], [Rz(3, c)])];
+        const fx = `<span class="mk-ex">1/R = 1/${a} + 1/${b} + 1/${c} → R = ${num(rp)} Ω</span>`;
+        if(k === 7) return { key: "t" + a + b + c, kind: "num", main, st: { sw: {} }, q: "Trys rezistoriai sujungti lygiagrečiai. Kokia bendra jų varža?", unit: "Ω", ans: rp,
+          ex: `Lygiagrečiai jungiant atvirkštinės varžos sudedamos: ${fx} Ji mažesnė už mažiausią šakos varžą (${Math.min(a, b, c)} Ω).` };
+        const us = [1, 2, 3, 4, 6, 12].map(m => rp * m * 2).filter(u => u <= 60 && nice(u) && nice(u / a) && nice(u / b) && nice(u / c)); if(!us.length) continue;
+        const u = P(us);
+        return { key: "tu" + a + b + c + u, kind: "num", main, st: { sw: {}, U: u }, q: "Kokio stiprumo srovė teka per šaltinį?", unit: "A", ans: u / rp,
+          ex: `Kiekvienos šakos įtampa ${u} V, srovės: <span class="mk-ex">${num(u / a)} + ${num(u / b)} + ${num(u / c)} = ${num(u / rp)} A</span> Tą patį gauname ir per bendrą varžą: ${fx} I = ${u} / ${num(rp)} = ${num(u / rp)} A.` };
+      }
+      /* k === 9: žinoma bendra varža ir R1 – rasti R2 */
+      const [r1, r2, rp] = P(PAIRS);
+      return { key: "x" + r1 + "," + r2, kind: "num", main: [Pr([Rz(1, r1)], [{ t: "R", id: "R2", v: "?" }])], st: { sw: {} }, q: `Bendra lygiagrečiai sujungtų rezistorių varža ${num(rp)} Ω. Kokia rezistoriaus R2 varža?`, unit: "Ω", ans: r2,
+        ex: `<span class="mk-ex">1/R2 = 1/R − 1/R1 = 1/${num(rp)} − 1/${r1}</span> Iš čia <span class="mk-ex">R2 = R · R1 / (R1 − R) = ${num(rp)} · ${r1} / (${r1} − ${num(rp)}) = ${r2} Ω</span>` };
+    }
+  });
+}
+
+/* ---------- 5. Mišrusis jungimas ---------- */
+function genMix(tier){
+  const k = P([[0, 1], [0, 1, 2, 3, 4], [2, 3, 5, 6, 7]][tier]);
+  return fresh("mix" + tier, () => {
+    for(;;){
+      if(k <= 3){
+        /* R1 nuosekliai su (R2 ∥ R3) */
+        const [r2, r3, rp] = P(PAIRS), r1 = R(1, 12), rt = r1 + rp, i = P([0.5, 1, 1.5, 2, 3, 4]), u = rt * i;
+        if(u > 60 || !nice(u) || !nice(i * rp / r2)) continue;
+        const main = [Rz(1, r1), Pr([Rz(2, r2)], [Rz(3, r3)])], key = "m" + k + ":" + [r1, r2, r3, i].join(",");
+        const rpT = `<span class="mk-ex">R23 = ${r2} · ${r3} / (${r2} + ${r3}) = ${num(rp)} Ω</span>`;
+        if(k === 0) return { key, kind: "num", main, st: { sw: {} }, q: "Kokia visos grandinės varža?", unit: "Ω", ans: rt,
+          ex: `Pirmiausia lygiagrečioji dalis: ${rpT} Ji sujungta nuosekliai su R1: <span class="mk-ex">R = R1 + R23 = ${r1} + ${num(rp)} = ${num(rt)} Ω</span>` };
+        if(k === 1) return { key, kind: "num", main, st: { sw: {}, U: u }, q: "Kokio stiprumo srovė teka per šaltinį?", unit: "A", ans: i,
+          ex: `${rpT} <span class="mk-ex">R = ${r1} + ${num(rp)} = ${num(rt)} Ω; I = U / R = ${num(u)} / ${num(rt)} = ${num(i)} A</span>` };
+        if(k === 2) return { key, kind: "num", main, st: { sw: {}, U: u }, q: "Kokia įtampa lygiagrečiai sujungtuose rezistoriuose R2 ir R3?", unit: "V", ans: i * rp,
+          ex: `${rpT} <span class="mk-ex">R = ${num(rt)} Ω; I = ${num(u)} / ${num(rt)} = ${num(i)} A</span> Visa srovė teka per lygiagrečiąją dalį: <span class="mk-ex">U23 = I · R23 = ${num(i)} · ${num(rp)} = ${num(i * rp)} V</span>` };
+        return { key, kind: "num", main, st: { sw: {}, U: u }, q: "Kokio stiprumo srovė teka per rezistorių R2?", unit: "A", ans: i * rp / r2,
+          ex: `${rpT} <span class="mk-ex">I = ${num(u)} / ${num(rt)} = ${num(i)} A; U23 = ${num(i)} · ${num(rp)} = ${num(i * rp)} V</span> <span class="mk-ex">I2 = U23 / R2 = ${num(i * rp)} / ${r2} = ${num(i * rp / r2)} A</span>` };
+      }
+      if(k === 6){
+        /* (R1 ∥ R2) + (R3 ∥ R4) */
+        const [a, b, p1] = P(PAIRS), [c, d, p2] = P(PAIRS), rt = p1 + p2;
+        const main = [Pr([Rz(1, a)], [Rz(2, b)]), Pr([Rz(3, c)], [Rz(4, d)])];
+        return { key: "q:" + [a, b, c, d].join(","), kind: "num", main, st: { sw: {} }, q: "Kokia visos grandinės varža?", unit: "Ω", ans: rt,
+          ex: `Du lygiagretūs blokai sujungti nuosekliai. <span class="mk-ex">R12 = ${a} · ${b} / (${a} + ${b}) = ${num(p1)} Ω</span> <span class="mk-ex">R34 = ${c} · ${d} / (${c} + ${d}) = ${num(p2)} Ω</span> <span class="mk-ex">R = ${num(p1)} + ${num(p2)} = ${num(rt)} Ω</span>` };
+      }
+      if(k === 7){
+        /* R1 + (R2 ∥ R3) + R4 */
+        const [r2, r3, rp] = P(PAIRS), r1 = R(1, 10), r4 = R(1, 10), rt = r1 + rp + r4, i = P([0.5, 1, 1.5, 2, 3]), u = rt * i;
+        if(u > 60 || !nice(u)) continue;
+        const main = [Rz(1, r1), Pr([Rz(2, r2)], [Rz(3, r3)]), Rz(4, r4)];
+        return { key: "w:" + [r1, r2, r3, r4, i].join(","), kind: "num", main, st: { sw: {}, U: u }, q: "Kokio stiprumo srovė teka per šaltinį?", unit: "A", ans: i,
+          ex: `<span class="mk-ex">R23 = ${r2} · ${r3} / (${r2} + ${r3}) = ${num(rp)} Ω</span> Kitos dalys sujungtos nuosekliai: <span class="mk-ex">R = ${r1} + ${num(rp)} + ${r4} = ${num(rt)} Ω</span> <span class="mk-ex">I = U / R = ${num(u)} / ${num(rt)} = ${num(i)} A</span>` };
+      }
+      /* (R1 + R2) ∥ R3 */
+      const [a, r3, rp] = P(PAIRS); if(a < 3) continue;
+      const r1 = R(1, a - 1), r2 = a - r1, main = [Pr([Rz(1, r1), Rz(2, r2)], [Rz(3, r3)])], key = "n" + k + ":" + [r1, r2, r3].join(",");
+      const fx = `Viršutinė šaka – nuoseklioji: <span class="mk-ex">R12 = ${r1} + ${r2} = ${a} Ω</span> Ji lygiagreti su R3: <span class="mk-ex">R = ${a} · ${r3} / (${a} + ${r3}) = ${num(rp)} Ω</span>`;
+      if(k === 4) return { key, kind: "num", main, st: { sw: {} }, q: "Kokia visos grandinės varža?", unit: "Ω", ans: rp, ex: fx };
+      const us = [1, 2, 3, 4, 6, 12].map(m => a * m).filter(u => u <= 60 && nice(u / r3)); if(!us.length) continue;
+      const u = P(us);
+      return { key: key + ":" + u, kind: "num", main, st: { sw: {}, U: u }, q: "Kokia įtampa rezistoriuje R1?", unit: "V", ans: u / a * r1,
+        ex: `Abiejų šakų įtampa lygi šaltinio įtampai ${u} V. Šakoje R1 ir R2 sujungti nuosekliai: <span class="mk-ex">I12 = ${u} / (${r1} + ${r2}) = ${num(u / a)} A</span> <span class="mk-ex">U1 = I12 · R1 = ${num(u / a)} · ${r1} = ${num(u / a * r1)} V</span>` };
+    }
+  });
+}
+
+/* ---------- 6. Rask gedimą ---------- */
+function genFault(tier){
+  return fresh("fault" + tier, () => {
+    for(;;){
+      const main = numberAll(randTree(tier ? 2 : 1, true)), lamps = all(main, "L"); if(lamps.length < 3) continue;
+      const kb = b => setKey(litSet(main, { sw: {}, broken: b }));
+      const uniq = lamps.filter(b => lamps.filter(c => kb(c) === kb(b)).length === 1);
+      if(!uniq.length) continue;
+      const b = P(uniq), lit = litSet(main, { sw: {}, broken: b }), s = seqOf(main, b), dark = lamps.filter(l => !lit.has(l));
+      return { key: keyOf(main) + ":" + b, kind: "opt", main, st: { sw: {}, broken: b }, q: `Viena lemputė perdegė. Dega: <b>${list(lit)}</b>. Kuri lemputė sugedo?`,
+        choices: MK.shuffle(lamps).map(l => ({ label: l, ok: l === b })),
+        ex: (s.main ? `Nedega nė viena lemputė – nutrūko vieta, per kurią teka visa srovė. Tokia yra tik ${b}: ji sujungta nuosekliai su visa grandine.`
+                    : `Nedega ${list(dark).replace("tik ", "")}. Tai lemputės, per kurias srovė teka tik ta šaka, kurioje yra ${b}.`)
+          + ` Jei būtų perdegusi kita lemputė, užgestų kitos, todėl atsakymas vienas: <b>${b}</b>.` };
+    }
+  });
 }
 const I = {
   bulb: `<svg viewBox="0 0 44 44"><circle cx="22" cy="18" r="11" fill="#ffe066" stroke="${INK}" stroke-width="2.5"/><path d="M16 12l12 12M28 12 16 24" stroke="${INK}" stroke-width="2"/><rect x="17" y="29" width="10" height="7" rx="2" fill="#adb5bd" stroke="${INK}" stroke-width="2"/><g stroke="#f59f00" stroke-width="2.5" stroke-linecap="round"><path d="M22 2v3M6 18H3M41 18h-3M10 6l2 2M34 6l-2 2"/></g></svg>`,
@@ -266,14 +428,16 @@ const I = {
   ohm: `<svg viewBox="0 0 44 44"><rect x="5" y="10" width="34" height="24" rx="6" fill="#fff" stroke="${INK}" stroke-width="2.5"/><text x="22" y="29" text-anchor="middle" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="16" fill="${INK}">Ω</text></svg>`,
   par: `<svg viewBox="0 0 44 44"><path d="M4 22h6M34 22h6M10 12v20M34 12v20M10 12h6M28 12h6M10 32h6M28 32h6" fill="none" stroke="${INK}" stroke-width="2.5"/><rect x="16" y="8" width="12" height="8" fill="#fff" stroke="${INK}" stroke-width="2.5"/><rect x="16" y="28" width="12" height="8" fill="#fff" stroke="${INK}" stroke-width="2.5"/><circle cx="10" cy="22" r="3" fill="${INK}"/><circle cx="34" cy="22" r="3" fill="${INK}"/></svg>`,
   fault: `<svg viewBox="0 0 44 44"><circle cx="18" cy="18" r="11" fill="#e9ecef" stroke="${INK}" stroke-width="2.5"/><path d="M12 12l12 12M24 12 12 24" stroke="${INK}" stroke-width="2"/><circle cx="31" cy="31" r="8" fill="#fff" stroke="${INK}" stroke-width="2.5"/><path d="M37 37l5 5" stroke="${INK}" stroke-width="3.5" stroke-linecap="round"/><path d="M15 2l3 5-3 2 4 5" fill="none" stroke="#e03131" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+  mix: `<svg viewBox="0 0 44 44"><path d="M2 22h4M14 22h4M38 22h4M18 12v20M38 12v20M18 12h4M32 12h6M18 32h4M32 32h6" fill="none" stroke="${INK}" stroke-width="2.5"/><rect x="6" y="18" width="8" height="8" fill="#fff" stroke="${INK}" stroke-width="2.2"/><rect x="22" y="8" width="10" height="8" fill="#fff" stroke="${INK}" stroke-width="2.2"/><rect x="22" y="28" width="10" height="8" fill="#fff" stroke="${INK}" stroke-width="2.2"/><circle cx="18" cy="22" r="2.6" fill="${INK}"/><circle cx="38" cy="22" r="2.6" fill="${INK}"/></svg>`,
   bat: `<svg viewBox="0 0 44 44"><rect x="8" y="12" width="26" height="20" rx="4" fill="#fff" stroke="${INK}" stroke-width="2.5"/><rect x="34" y="18" width="4" height="8" fill="${INK}"/><path d="M13 22h6M16 19v6M24 22h5" stroke="${INK}" stroke-width="2.5"/></svg>`
 };
 const lt = (ic, t) => `<span class="lt-ic">${I[ic]}</span>${t}`;
 const LEVELS = [
   { id: "jungikliai", name: "Uždek lemputę", sub: "Įjunk tik reikiamus jungiklius", art: I.bulb, gen: genSwitch },
-  { id: "jungimas", name: "Nuoseklusis ar lygiagretusis", sub: "Kas nutinka perdegus lemputei?", art: I.series, gen: genSeries },
+  { id: "jungimas", name: "Nuoseklusis ar lygiagretusis", sub: "Jungimo būdas, perdegusi lemputė, jungikliai", art: I.series, gen: genSeries },
   { id: "omas", name: "Omo dėsnis", sub: "I = U / R · nuoseklusis jungimas", art: I.ohm, gen: genOhm },
   { id: "lygiagretus", name: "Lygiagretusis jungimas", sub: "Bendra varža ir šakų srovės", art: I.par, gen: genPar },
+  { id: "misrus", name: "Mišrusis jungimas", sub: "Nuoseklioji ir lygiagrečioji dalys kartu", art: I.mix, gen: genMix },
   { id: "gedimas", name: "Rask gedimą", sub: "Kuri lemputė perdegė?", art: I.fault, gen: genFault }
 ];
 const LEARN = [
@@ -281,7 +445,8 @@ const LEARN = [
   { name: lt("series", "Nuoseklusis jungimas"), level: 1, html: `<p>Prietaisai sujungti <b>viena paskui kitą</b>, srovė teka vienu keliu.</p><ul><li>Srovė visur ta pati: I = I1 = I2</li><li>Įtampos sudedamos: U = U1 + U2</li><li>Varžos sudedamos: R = R1 + R2</li></ul><p>Nutrūkus vienai vietai, nedega visos lemputės.</p>` },
   { name: lt("par", "Lygiagretusis jungimas"), level: 3, html: `<p>Prietaisai sujungti <b>atskiromis šakomis</b> tarp tų pačių dviejų taškų.</p><ul><li>Įtampa visose šakose ta pati: U = U1 = U2</li><li>Srovės sudedamos: I = I1 + I2</li><li>1/R = 1/R1 + 1/R2, dviem rezistoriams R = R1·R2 / (R1 + R2)</li></ul><p>Nutrūkus vienai šakai, kitos veikia. Taip sujungti prietaisai namuose.</p>` },
   { name: lt("ohm", "Omo dėsnis"), level: 2, html: `<p>Srovės stipris tiesiogiai proporcingas įtampai ir atvirkščiai proporcingas varžai:</p><span class="mk-ex">I = U / R</span><p>Iš jo: U = I · R ir R = U / I. Vienetai: srovė – amperai (A), įtampa – voltai (V), varža – omai (Ω).</p><span class="mk-ex">Pvz.: U = 12 V, R = 4 Ω → I = 12 / 4 = 3 A</span>` },
-  { name: lt("fault", "Kaip ieškoti gedimo"), level: 4, html: `<p>Pažiūrėk, kurios lemputės <b>dega</b>. Jei nedega niekas – nutrūko vieta, per kurią teka visa srovė (nuoseklioji dalis).</p><p>Jei nedega tik vienos šakos lemputės – gedimas toje šakoje.</p>` }
+  { name: lt("mix", "Mišrusis jungimas"), level: 4, html: `<p>Grandinėje yra ir nuosekliai, ir lygiagrečiai sujungtų dalių.</p><ul><li>Pirmiausia apskaičiuok kiekvienos lygiagrečiosios dalies varžą (dviem: R = R1·R2 / (R1 + R2)).</li><li>Tada ją sudėk su nuosekliai prijungtomis varžomis.</li><li>Iš bendros varžos rask srovę, o tada – kiekvienos dalies įtampą ir šakų sroves.</li></ul><span class="mk-ex">Pvz.: R1 = 4 Ω ir (6 Ω ∥ 3 Ω = 2 Ω) → R = 6 Ω</span>` },
+  { name: lt("fault", "Kaip ieškoti gedimo"), level: 5, html: `<p>Pažiūrėk, kurios lemputės <b>dega</b>. Jei nedega niekas – nutrūko vieta, per kurią teka visa srovė (nuoseklioji dalis).</p><p>Jei nedega tik vienos šakos lemputės – gedimas toje šakoje.</p>` }
 ];
 
 const $ = id => document.getElementById(id);
@@ -307,7 +472,7 @@ function draw(){
 function next(){
   $("why").innerHTML = "";
   if(ti >= N) return finish();
-  cur = Lv.gen(); answered = false; dots.cur(ti); draw(); window.scrollTo(0, 0);
+  cur = Lv.gen(ti < 3 ? 0 : ti < 7 ? 1 : 2); answered = false; dots.cur(ti); draw(); window.scrollTo(0, 0);
 }
 function result(ok, extra){
   answered = true; dots.mark(ti, ok);
@@ -328,6 +493,7 @@ board.addEventListener("click", e => {
   const b = e.target.closest(".opts button");
   if(b && !answered){
     const o = cur.choices[+b.dataset.k];
+    if(cur.st.hide){ cur.st.hide = false; $("sch").innerHTML = schema(cur.main, cur.st); }
     board.querySelectorAll(".opts button").forEach((x, k) => { x.disabled = true; if(cur.choices[k].ok) x.classList.add("ok"); else if(x === b) x.classList.add("no"); });
     return result(o.ok);
   }
@@ -345,6 +511,7 @@ function finish(){
   MK.result({ stars, title: `${okN} iš ${N}`, text: `${pts} ${taskai(pts)}.`,
     next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
 }
+window.__GD = { LEVELS, litSet, all, keyOf, sz, PAIRS, TRIPLES, schema };
 showMenu();
 })();
 </script>
