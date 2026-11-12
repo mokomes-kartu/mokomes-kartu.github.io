@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Skaičių bėgikas – MokomėsKartu.lt</title>
+<meta name="description" content="2 klasės matematikos žaidimas: rask, koks skaičius sekoje bus toliau, ir bėk pro tinkamus vartus.">
+<meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/skaiciu-begikas/tekstai.lt.js"></script>
+<style>
+/* Meniu: bėgikė prie vartų, spinta (apranga už monetas), lygiai, „Kaip žaisti?“.
+   Žaidimas: viršuje seka, scenoje bėgimo takas su 3 takeliais ir artėjantys vartai su skaičiais, apačioje – trys dideli mygtukai. */
+body{--ac:#ff7a1a;--ac-ink:#fff;--ac-soft:#ffe6d1}
+.la svg{width:56px;height:56px}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px}
+.mk-hero p{font-size:17px}
+.hero-art{width:min(100%,460px);border-radius:26px;overflow:hidden;box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.15);position:relative}
+.hero-art svg{display:block;width:100%;height:auto}
+.hero-art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+
+/* spinta */
+.ward{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.ward h2{margin:0;font:800 18px/1.2 var(--kid);display:flex;align-items:center;gap:8px}
+.ward h2 svg{width:26px;height:26px;flex:none}
+.ward p{margin:4px 0 10px;color:var(--soft);font-weight:700;font-size:14.5px}
+.outs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.out{position:relative;display:grid;justify-items:center;gap:2px;padding:6px 2px 4px;border:0;border-radius:14px;background:#fff8ee;box-shadow:inset 0 0 0 2px #e6d3b5;cursor:pointer}
+.out svg{width:100%;max-width:46px;height:auto;display:block}
+.out small{font:800 10.5px/1.1 var(--body);color:var(--soft);text-align:center;min-height:2.2em;display:flex;align-items:center}
+.out.on{background:var(--ac-soft);box-shadow:inset 0 0 0 3px var(--ac)}
+.out.lock{cursor:default}
+.out.lock svg{filter:grayscale(1);opacity:.35}
+.out .lk{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:24px;height:24px}
+.out.new{animation:mkPop .5s cubic-bezier(.2,1.6,.4,1)}
+.how{max-width:520px;margin:16px auto 0;padding:10px 14px;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2px var(--ink)}
+.how summary{cursor:pointer;font:800 16px/1.2 var(--kid);list-style:none;min-height:36px;display:flex;align-items:center;gap:6px}
+.how summary::-webkit-details-marker{display:none}
+.how summary::before{content:"▸";color:var(--ac);transition:transform .15s}
+.how[open] summary::before{transform:rotate(90deg)}
+.how ol{margin:4px 0 4px;padding-left:22px;font-weight:600}
+.how li{margin:4px 0}
+.note{max-width:520px;margin:10px auto 0;color:var(--soft);font-size:13px;font-weight:600;text-align:center}
+@media (hover:none){.note{display:none}}
+
+/* ---------- žaidimas ---------- */
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px 0 6px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/1 var(--kid);white-space:nowrap}
+.chip svg{width:24px;height:24px}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.task{width:100%;max-width:560px;margin:0 auto 8px;padding:8px 10px 10px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12);text-align:center}
+.task-q{font:800 15px/1.2 var(--body);color:var(--soft);letter-spacing:.02em;margin-bottom:6px}
+.seq{display:flex;justify-content:center;align-items:center;gap:4px;flex-wrap:nowrap}
+.tile{min-width:0;flex:0 1 64px;height:48px;border-radius:12px;display:grid;place-items:center;background:#fff3e2;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 clamp(18px,5.4vw,25px)/1 var(--kid)}
+.tile.q{background:#fff;box-shadow:inset 0 0 0 3px var(--ac);color:var(--ac);animation:mkPulse 1.4s infinite}
+.tile.fill{background:#dff7e6;box-shadow:inset 0 0 0 3px var(--good);color:var(--ink);animation:mkPop .4s cubic-bezier(.2,1.6,.4,1)}
+.sep{flex:none;width:10px;height:10px;border-radius:50%;background:#e4cfa8}
+.par{display:flex;justify-content:center;align-items:center;gap:10px;font:800 clamp(19px,5.4vw,24px)/1.15 var(--kid);min-height:48px}
+.par b{color:var(--ac)}
+.scene{position:relative;isolation:isolate;width:100%;max-width:560px;margin:0 auto;aspect-ratio:360/380;border-radius:26px;overflow:hidden;box-shadow:0 6px 0 rgba(18,26,51,.15);touch-action:pan-y;user-select:none;-webkit-user-select:none;background:#bfe8ff}
+.scene::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none;z-index:110}
+.scene>svg.bg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.obj{position:absolute;left:0;top:0;transform-origin:50% 100%;will-change:transform;pointer-events:none}
+.obj svg{display:block;width:100%;height:100%}
+.gate{position:absolute;left:0;top:0;transform-origin:50% 100%;will-change:transform}
+.gate svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.board{position:absolute;top:7%;width:30%;height:33%;padding:0;border-radius:calc(var(--u)*16px);background:#fff;display:grid;place-items:center;cursor:pointer;
+  border:calc(var(--u)*5px) solid var(--ink);box-shadow:0 calc(var(--u)*6px) 0 rgba(18,26,51,.25);font:800 calc(var(--u)*50px)/1 var(--kid);color:var(--ink);transform:translateX(-50%)}
+.board.sm{font-size:calc(var(--u)*34px)}
+.board.no{background:#ffd9cf;animation:mkShake .45s}
+.board.off{background:#e9e4da;color:#a39c8c}
+.board.ok{background:#c9f5d6}
+.runner{position:absolute;bottom:2%;width:23%;transform:translateX(-50%);transition:left .28s cubic-bezier(.3,1.2,.5,1);z-index:96;pointer-events:none}
+.runner svg{display:block;width:100%;height:auto;overflow:visible}
+.runner .bob{animation:bob .42s infinite ease-in-out}
+.runner .lg1{transform-box:view-box;transform-origin:50px 100px;animation:legA .42s infinite ease-in-out}
+.runner .lg2{transform-box:view-box;transform-origin:50px 100px;animation:legB .42s infinite ease-in-out}
+.runner .ar1{transform-box:view-box;transform-origin:36px 52px;animation:armA .42s infinite ease-in-out}
+.runner .ar2{transform-box:view-box;transform-origin:64px 52px;animation:armB .42s infinite ease-in-out}
+.runner .pony{transform-box:view-box;transform-origin:50px 16px;animation:pony .42s infinite ease-in-out}
+.runner.idle .bob,.runner.idle .lg1,.runner.idle .lg2,.runner.idle .ar1,.runner.idle .ar2,.runner.idle .pony{animation:none}
+.runner.bump{animation:bump .6s ease-out}
+.runner.jump svg{animation:jump .5s ease-out}
+@keyframes bob{50%{transform:translateY(-3px)}}
+@keyframes legA{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-9px) scaleY(.78)}}
+@keyframes legB{0%,100%{transform:translateY(-9px) scaleY(.78)}50%{transform:translateY(0) scaleY(1)}}
+@keyframes armA{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-14deg)}}
+@keyframes armB{0%,100%{transform:rotate(14deg)}50%{transform:rotate(-18deg)}}
+@keyframes pony{0%,100%{transform:rotate(9deg)}50%{transform:rotate(-9deg)}}
+@keyframes bump{0%{transform:translateX(-50%)}25%{transform:translateX(-50%) translateY(10%) scale(.92)}60%{transform:translateX(-50%) translateY(4%) rotate(-6deg)}100%{transform:translateX(-50%)}}
+@keyframes jump{40%{transform:translateY(-18%)}}
+.coin-f{position:absolute;z-index:99;width:9%;pointer-events:none;animation:coinUp .8s ease-out forwards}
+.coin-f svg{display:block;width:100%;height:auto}
+@keyframes coinUp{to{transform:translate(var(--dx),-170%) scale(.7);opacity:0}}
+.flash{position:absolute;left:50%;top:22%;z-index:99;transform:translateX(-50%);padding:6px 14px;border-radius:999px;background:#ffe27a;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 18px/1 var(--kid);white-space:nowrap;pointer-events:none;animation:flash 1.1s ease-out forwards}
+@keyframes flash{0%{opacity:0;transform:translate(-50%,10px)}15%{opacity:1;transform:translate(-50%,0)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-14px)}}
+.startbtn{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:100;min-width:58%}
+.opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;max-width:560px;margin:10px auto 0}
+.opt{min-height:62px;border:0;border-radius:18px;background:#fff;cursor:pointer;font:800 clamp(22px,6.4vw,30px)/1 var(--kid);color:var(--ink);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.18);transition:transform .1s;touch-action:manipulation;padding:0 4px}
+.opt.sm{font-size:clamp(17px,4.6vw,22px)}
+.opt:active{transform:translateY(3px)}
+.opt.cur{box-shadow:inset 0 0 0 3.5px var(--ac),0 5px 0 rgba(18,26,51,.18);background:var(--ac-soft)}
+.opt.off{opacity:.38;pointer-events:none}
+.opts.wait .opt:not(.off){animation:mkPulse 1.1s infinite}
+.mk-guide{margin:12px auto 0;max-width:560px}
+@media (prefers-reduced-motion:reduce){.runner .bob,.runner .lg1,.runner .lg2,.runner .ar1,.runner .ar2,.runner .pony,.tile.q,.opts.wait .opt{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="hero-art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="ward" id="ward"></div>
+    <div id="levels"></div>
+    <details class="how" id="how"></details>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="coinChip"></span></div>
+    <div class="task" id="task"></div>
+    <div class="scene" id="scene"></div>
+    <div class="opts" id="opts"></div>
+    <div id="guideBox"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T;
+const GAME = "skaiciu-begikas", GRADES = [2], N = 10;
+const COINS = "mk-" + GAME + "-monetos", OUTK = "mk-" + GAME + "-apranga";
+const K = "#121a33", S = `stroke="${K}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+const REDUCED = window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+/* ---------- apranga (spinta) ---------- */
+const OUTFITS = [
+  { need: 0,   shirt: "#ff7a1a", shorts: "#2f4fb8", shoe: "#ffffff", band: "#ffd23f" },
+  { need: 40,  shirt: "#2f8bff", shorts: "#1d2c5e", shoe: "#ffd23f", band: "#ffffff" },
+  { need: 100, shirt: "#2fb36b", shorts: "#14553a", shoe: "#ff5e7a", band: "#ffd23f" },
+  { need: 180, shirt: "#8b5cf6", shorts: "#3b2a73", shoe: "#5ee0c8", band: "#ff8fd0" },
+  { need: 280, shirt: "#ef3b4f", shorts: "#ffffff", shoe: "#121a33", band: "#ffffff" },
+  { need: 400, shirt: "#ffc21a", shorts: "#121a33", shoe: "#ffc21a", band: "#ef3b4f" }
+];
+/* Bėgikė iš nugaros (viewBox 100×150, pėdos ties y=146). */
+function runnerSvg(o, cls){
+  const skin = "#f2c29b", hair = "#6b3b1f";
+  return `<svg viewBox="0 0 100 150" class="${cls || ""}" aria-hidden="true">
+  <ellipse cx="50" cy="146" rx="26" ry="5" fill="#000" opacity=".16"/>
+  <g class="bob">
+    <g class="lg1"><path d="M44 98v34" stroke="${skin}" stroke-width="9" stroke-linecap="round"/><path d="M44 98v34" fill="none" stroke="${K}" stroke-width="0"/>
+      <path d="M36 134q0-6 8-6t8 6v5q0 3-3 3H39q-3 0-3-3z" fill="${o.shoe}" ${S}/><path d="M37 139h14" stroke="${K}" stroke-width="2"/></g>
+    <g class="lg2"><path d="M56 98v34" stroke="${skin}" stroke-width="9" stroke-linecap="round"/>
+      <path d="M48 134q0-6 8-6t8 6v5q0 3-3 3H51q-3 0-3-3z" fill="${o.shoe}" ${S}/><path d="M49 139h14" stroke="${K}" stroke-width="2"/></g>
+    <path d="M36 86h28l3 16q-8 3-17 3t-17-3z" fill="${o.shorts}" ${S}/><path d="M50 92v12" stroke="${K}" stroke-width="2"/>
+    <g class="ar1"><path d="M36 52q-8 12-9 26" fill="none" stroke="${o.shirt}" stroke-width="10" stroke-linecap="round"/><path d="M29 70q-2 6-2 9" stroke="${skin}" stroke-width="8" stroke-linecap="round"/><circle cx="27" cy="80" r="4.6" fill="${skin}" ${S} stroke-width="2"/></g>
+    <g class="ar2"><path d="M64 52q8 12 9 26" fill="none" stroke="${o.shirt}" stroke-width="10" stroke-linecap="round"/><path d="M71 70q2 6 2 9" stroke="${skin}" stroke-width="8" stroke-linecap="round"/><circle cx="73" cy="80" r="4.6" fill="${skin}" ${S} stroke-width="2"/></g>
+    <path d="M35 50q15-7 30 0l2 38H33z" fill="${o.shirt}" ${S}/>
+    <rect x="40" y="58" width="20" height="17" rx="3" fill="#fff" stroke="${K}" stroke-width="2"/>
+    <text x="50" y="71.5" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="12" fill="${K}">MK</text>
+    <rect x="45" y="40" width="10" height="11" rx="3" fill="${skin}" stroke="${K}" stroke-width="2"/>
+    <circle cx="50" cy="28" r="15" fill="${hair}" ${S}/>
+    <path d="M35.5 25q14.5-6 29 0" fill="none" stroke="${o.band}" stroke-width="5" stroke-linecap="round"/>
+    <ellipse cx="35" cy="30" rx="3" ry="4.5" fill="${skin}" stroke="${K}" stroke-width="2"/><ellipse cx="65" cy="30" rx="3" ry="4.5" fill="${skin}" stroke="${K}" stroke-width="2"/>
+    <g class="pony"><path d="M50 14q-9-2-6 14q2 12 6 18q4-6 6-18q3-16-6-14z" fill="${hair}" ${S}/><circle cx="50" cy="15" r="3.6" fill="${o.band}" stroke="${K}" stroke-width="2"/></g>
+  </g></svg>`;
+}
+const COIN = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#ffc61a" stroke="${K}" stroke-width="2"/><circle cx="12" cy="12" r="6.3" fill="none" stroke="#d99a00" stroke-width="1.8"/><path d="M10.5 9.5h3v5" fill="none" stroke="#d99a00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const LOCK = `<svg class="lk" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="#fff" stroke="${K}" stroke-width="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="${K}" stroke-width="2"/><circle cx="12" cy="15.5" r="1.6" fill="${K}"/></svg>`;
+const SHIRT = `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M11 5l-7 4 3 6 3-1v13h12V14l3 1 3-6-7-4q-2 3-5 3t-5-3z" fill="#ff7a1a" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"/></svg>`;
+
+/* ---------- scenos geometrija (viewBox 360×380, horizontas y=120, takas: x = 180 ± X/z) ---------- */
+const VW = 360, VH = 380, HOR = 120, F = 260, LANE = 120, Z_FAR = 14, Z_STOP = 1.6, Z_HIT = 1.08;
+const yAt = z => HOR + F / z;
+function bgSvg(){
+  return `<svg class="bg" viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="none" aria-hidden="true">
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fdcff"/><stop offset="1" stop-color="#e3f6ff"/></linearGradient></defs>
+  <rect width="${VW}" height="${HOR + 4}" fill="url(#sky)"/>
+  <circle cx="300" cy="44" r="20" fill="#ffe27a" stroke="${K}" stroke-width="2.4"/>
+  <g fill="#fff" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"><path d="M40 50q0-12 13-12q4-9 15-6q11 0 11 10q9 1 9 8z"/><path d="M196 34q0-9 10-9q4-7 12-4q8 0 8 7q7 1 7 6z"/></g>
+  <path d="M0 112q40-26 90-8q50-22 100 2q50-26 100-4q40-14 70 2v24H0z" fill="#8fd07a" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M0 ${HOR}H${VW}V${VH}H0z" fill="#7fca6a"/>
+  <path d="M0 ${HOR}H${VW}" stroke="${K}" stroke-width="2.2"/>
+  <path d="M178 ${HOR}h4L${VW} ${VH}H0z" fill="#e7774e"/>
+  <path d="M178 ${HOR}L0 ${VH}M182 ${HOR}L${VW} ${VH}" stroke="#fff" stroke-width="4"/>
+  </svg>`;
+}
+/* Takas: kraštai X=±180 (z=1 aukštyje). Pastaba: horizontas y=120 → plotis 0. */
+const TREE = `<svg viewBox="0 0 60 90" aria-hidden="true"><rect x="26" y="52" width="8" height="34" rx="3" fill="#8a5a33" stroke="${K}" stroke-width="2.4"/><circle cx="30" cy="34" r="24" fill="#3fae5a" stroke="${K}" stroke-width="2.4"/><circle cx="21" cy="28" r="7" fill="#6fd07f"/></svg>`;
+const BUSH = `<svg viewBox="0 0 60 40" aria-hidden="true"><path d="M6 36q-4-14 10-16q2-12 14-10q12-4 16 8q12 0 10 18z" fill="#4dbb63" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/></svg>`;
+const DASH = `<svg viewBox="0 0 10 40" preserveAspectRatio="none" aria-hidden="true"><rect width="10" height="40" rx="3" fill="#fff" opacity=".9"/></svg>`;
+function gateSvg(){
+  return `<svg viewBox="0 0 360 230" preserveAspectRatio="none" aria-hidden="true">
+  <rect x="2" y="6" width="16" height="222" rx="5" fill="#fff" stroke="${K}" stroke-width="3"/><rect x="342" y="6" width="16" height="222" rx="5" fill="#fff" stroke="${K}" stroke-width="3"/>
+  <path d="M4 40h12M4 80h12M4 120h12M4 160h12M4 200h12M344 40h12M344 80h12M344 120h12M344 160h12M344 200h12" stroke="#ef3b4f" stroke-width="8"/>
+  <rect x="0" y="0" width="360" height="16" rx="6" fill="#ffc61a" stroke="${K}" stroke-width="3"/>
+  <path d="M60 16v10M120 16v10M180 16v10M240 16v10M300 16v10" stroke="${K}" stroke-width="2.5"/>
+  </svg>`;
+}
+
+/* ---------- užduočių generatoriai (2 klasė: skaičiai iki 1000) ---------- */
+const R = MK.rnd, P = MK.pick;
+function opts3(ans, cands, fmt){
+  const seen = new Set([String(ans)]), d = [];
+  for(const c of MK.shuffle(cands.slice(0, 4)).concat(cands.slice(4))){
+    const k = String(c); if(seen.has(k)) continue;
+    if(typeof c === "number" && (c < 0 || c > 1000 || !Number.isInteger(c))) continue;
+    seen.add(k); d.push(c); if(d.length === 2) break;
+  }
+  const all = MK.shuffle([ans].concat(d));
+  return { opts: all.map(v => fmt ? fmt(v) : String(v)), ans: all.indexOf(ans) };
+}
+function seqTask(start, step, n, dir){
+  const terms = Array.from({ length: n }, (_, i) => start + dir * step * i);
+  const last = terms[n - 1], ans = last + dir * step;
+  return { terms, last, ans };
+}
+function nextTask(step, dir, start, maxV){
+  const { terms, last, ans } = seqTask(start, step, 3, dir);
+  let cands;
+  if(dir > 0) cands = [last + 1, ans + 1, ans - 1, last + 2 * step, ans + 10, ans + 100, ans - 10, ans + 2];
+  else cands = [last + step, ans - 1, ans + 1, last - 2 * step, ans + 10, ans - 10, ans + 100, ans - 100];
+  if(step === 10) cands.unshift(last + dir * 100, last + dir);
+  if(step === 100) cands.unshift(last + dir * 10, last + dir * 200);
+  cands = cands.filter(c => c !== ans && c >= 0 && c <= maxV && !terms.includes(c));
+  const o = opts3(ans, cands);
+  return { kind: "next", tiles: terms.concat([null]), opts: o.opts, ans: o.ans, hint: dir > 0 ? T.hintUp(step, last) : T.hintDown(step, last), ok: dir > 0 ? T.okUp(last, step, ans) : T.okDown(last, step, ans), val: ans };
+}
+function dblTask(){
+  const a = P([1, 2, 3, 4, 5]), terms = [a, a * 2, a * 4], last = a * 4, ans = a * 8;
+  const o = opts3(ans, [last + a * 2, last + a, ans + 1, ans - 2, last + 4]);
+  return { kind: "next", tiles: terms.concat([null]), opts: o.opts, ans: o.ans, hint: T.hintDbl(last), ok: T.okDbl(last, ans), val: ans };
+}
+const GEN = [
+  /* 1: po 2, 5, 10 iki 100 */
+  () => { const step = P([2, 2, 5, 5, 10, 10]); let start;
+    if(step === 2) start = R(0, 40) * 2 + (Math.random() < .35 ? 1 : 0);
+    else if(step === 5) start = R(0, 16) * 5;
+    else start = Math.random() < .5 ? R(0, 6) * 10 : R(1, 9) + R(0, 5) * 10;
+    while(start + step * 3 > 100) start -= step;
+    return nextTask(step, 1, start, 100); },
+  /* 2: dešimtimis ir šimtais iki 1000 */
+  () => { const step = P([10, 10, 10, 20, 50, 100, 100]); let start;
+    if(step === 10){ const h = R(1, 9) * 100; start = Math.random() < .55 ? h - 30 + (Math.random() < .4 ? R(1, 9) : 0) : R(10, 95) * 10 + (Math.random() < .4 ? R(1, 9) : 0); }
+    else if(step === 20) start = R(5, 45) * 20 + P([0, 10]);
+    else if(step === 50) start = R(2, 16) * 50 + P([0, 0, 25]);
+    else start = R(1, 6) * 100 + P([0, R(1, 9) * 10, R(11, 99)]);
+    while(start + step * 3 > 1000) start -= step;
+    return nextTask(step, 1, start, 1000); },
+  /* 3: atgal */
+  () => { const step = P([1, 2, 5, 10, 10, 100]); let start;
+    if(step === 1) start = R(1, 9) * 100 + 2;
+    else if(step === 2) start = R(10, 95) * 10 + P([0, 4]);
+    else if(step === 5) start = R(4, 60) * 5 + 10;
+    else if(step === 10) start = Math.random() < .6 ? R(1, 9) * 100 + 20 : R(10, 99) * 10 + R(0, 9);
+    else start = R(4, 10) * 100 - P([0, R(1, 9) * 10, R(11, 99)]);
+    if(step === 100 && start > 1000) start = 1000;
+    while(start - step * 3 < 0) start += step;
+    return nextTask(step, -1, start, 1000); },
+  /* 4: rask taisyklę / ko trūksta */
+  (i) => {
+    const kind = ["rule", "miss", "rule", "next", "miss", "rule", "dbl", "miss", "rule", "next"][i % 10];
+    if(kind === "dbl") return dblTask();
+    const step = P([3, 4, 5, 10, 20, 25, 50, 100]), dir = Math.random() < .3 ? -1 : 1;
+    let start = step >= 20 ? R(1, 8) * step + (step === 100 ? R(0, 9) * 10 : 0) : R(1, 30) * (step === 5 ? 5 : 1);
+    if(dir < 0) start += step * 4;
+    while((dir > 0 ? start + step * 4 : start) > 1000) start -= step;
+    if(kind === "next") return nextTask(step, dir, start, 1000);
+    const terms = Array.from({ length: 4 }, (_, j) => start + dir * step * j);
+    if(kind === "rule"){
+      const ans = dir > 0 ? T.ruleUp(step) : T.ruleDown(step);
+      const alt = [dir > 0 ? T.ruleDown(step) : T.ruleUp(step), dir > 0 ? T.ruleUp(step * 2) : T.ruleDown(step * 2), dir > 0 ? T.ruleUp(step + 1) : T.ruleDown(step + 1), dir > 0 ? T.ruleUp(10) : T.ruleDown(10)];
+      const o = opts3(ans, alt);
+      return { kind: "rule", tiles: terms, opts: o.opts, ans: o.ans, hint: T.hintRule(terms[1], terms[2]), ok: dir > 0 ? T.okUp(terms[1], step, terms[2]) : T.okDown(terms[1], step, terms[2]), val: ans };
+    }
+    const hole = R(1, 2), ans = terms[hole];
+    const o = opts3(ans, [ans + 1, ans - 1, ans + 10, ans - 10, ans + step + 1].filter(c => !terms.includes(c)));
+    const tiles = terms.slice(); tiles[hole] = null;
+    return { kind: "miss", tiles, opts: o.opts, ans: o.ans, hint: T.hintMiss(terms[hole - 1], terms[hole + 1]), ok: dir > 0 ? T.okUp(terms[hole - 1], step, ans) : T.okDown(terms[hole - 1], step, ans), val: ans };
+  },
+  /* 5: lyginiai ir nelyginiai */
+  (i) => {
+    const even = i % 2 === 0 ? Math.random() < .5 : Math.random() < .5;
+    const mk = (par) => { let n; do { n = P([R(10, 99), R(10, 99), R(100, 999), R(100, 999), R(100, 999)]); } while(n % 2 !== par); return n; };
+    const target = mk(even ? 0 : 1);
+    const used = new Set([target]); const others = [];
+    while(others.length < 2){ const n = mk(even ? 1 : 0); if(!used.has(n)){ used.add(n); others.push(n); } }
+    const all = MK.shuffle([target].concat(others));
+    return { kind: "par", even, opts: all.map(String), ans: all.indexOf(target), hint: even ? T.hintEven : T.hintOdd, ok: even ? T.okEven(target) : T.okOdd(target), val: target };
+  }
+];
+function makeRound(li){
+  const out = [], keys = new Set();
+  for(let i = 0, guard = 0; out.length < N && guard < 500; guard++){
+    const t = GEN[li](i); const k = (t.tiles || []).join(",") + "|" + t.opts.join(",");
+    if(keys.has(k)) continue; keys.add(k); out.push(t); i++;
+  }
+  return out;
+}
+
+/* ---------- lygiai ---------- */
+const ART = [
+  `<svg viewBox="0 0 56 56"><g font-family="Grandstander,sans-serif" font-weight="800" text-anchor="middle"><text x="15" y="25" font-size="15" fill="${K}">2</text><text x="40" y="25" font-size="15" fill="${K}">4</text><text x="28" y="47" font-size="17" fill="#ff7a1a">6?</text></g></svg>`,
+  `<svg viewBox="0 0 56 56"><g font-family="Grandstander,sans-serif" font-weight="800" text-anchor="middle"><text x="28" y="22" font-size="14" fill="${K}">390</text><text x="28" y="45" font-size="16" fill="#ff7a1a">400?</text></g></svg>`,
+  `<svg viewBox="0 0 56 56"><path d="M44 16H18l6-6M18 16l6 6" fill="none" stroke="#ff7a1a" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><g font-family="Grandstander,sans-serif" font-weight="800" text-anchor="middle" font-size="14" fill="${K}"><text x="28" y="44">30 20</text></g></svg>`,
+  `<svg viewBox="0 0 56 56"><circle cx="24" cy="24" r="12" fill="#fff" stroke="${K}" stroke-width="3.4"/><path d="M33 33l11 11" stroke="${K}" stroke-width="5" stroke-linecap="round"/><text x="24" y="29.5" text-anchor="middle" font-family="Grandstander,sans-serif" font-weight="800" font-size="14" fill="#ff7a1a">+5</text></svg>`,
+  `<svg viewBox="0 0 56 56"><g stroke="${K}" stroke-width="2.6"><circle cx="16" cy="18" r="6" fill="#ff7a1a"/><circle cx="16" cy="36" r="6" fill="#ff7a1a"/><circle cx="38" cy="18" r="6" fill="#2f8bff"/><circle cx="38" cy="36" r="6" fill="#2f8bff"/><circle cx="27" cy="48" r="5" fill="#fff"/></g></svg>`
+];
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: ART[i] }));
+
+/* ---------- elementai ---------- */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), scene = $("scene"), optsEl = $("opts"), taskEl = $("task");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("note").textContent = T.keys;
+$("how").innerHTML = `<summary>${T.howH}</summary><ol>${T.how.map(x => `<li>${x}</li>`).join("")}</ol>`;
+$("guideBox").innerHTML = MK.guide("");
+const guide = $("guideBox").firstElementChild;
+let coins = Math.max(0, +MK.get(COINS, 0) || 0), outfit = Math.max(0, Math.min(OUTFITS.length - 1, +MK.get(OUTK, 0) || 0));
+if(OUTFITS[outfit].need > coins) outfit = 0;
+
+function heroSvg(){
+  const o = OUTFITS[outfit];
+  return `<svg viewBox="0 0 360 230" aria-label="${T.ariaRunner}" role="img">
+   <rect width="360" height="230" fill="#bfe8ff"/>
+   <circle cx="300" cy="38" r="18" fill="#ffe27a" stroke="${K}" stroke-width="2.4"/>
+   <g fill="#fff" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"><path d="M34 46q0-11 12-11q4-8 14-5q10 0 10 9q8 1 8 7z"/></g>
+   <path d="M0 96q40-24 90-8q50-20 100 2q50-24 100-4q40-12 70 2v40H0z" fill="#8fd07a" stroke="${K}" stroke-width="2.2"/>
+   <rect y="104" width="360" height="126" fill="#7fca6a"/><path d="M0 104H360" stroke="${K}" stroke-width="2.2"/>
+   <path d="M170 104h20l120 126H50z" fill="#e7774e"/><path d="M170 104L50 230M190 104l120 126" stroke="#fff" stroke-width="3"/>
+   <path d="M176.7 104L130 230M183.3 104L230 230" stroke="#fff" stroke-width="2.4" stroke-dasharray="9 9" opacity=".85"/>
+   <g transform="translate(110 66) scale(.39)">${gateSvg().replace('<svg viewBox="0 0 360 230" preserveAspectRatio="none" aria-hidden="true">', "").replace("</svg>", "")}
+     <g font-family="Grandstander,sans-serif" font-weight="800" text-anchor="middle" font-size="50">
+     ${[[60, "30"], [180, "40"], [300, "50"]].map(([x, t]) => `<rect x="${x - 50}" y="24" width="100" height="72" rx="14" fill="#fff" stroke="${K}" stroke-width="6"/><text x="${x}" y="78" fill="${K}">${t}</text>`).join("")}</g></g>
+   <g transform="translate(147 132) scale(.66)">${runnerSvg(o).replace(/<svg[^>]*>/, "").replace("</svg>", "")}</g>
+   ${[[40, 150], [320, 150], [20, 200], [345, 205]].map(([x, y], i) => `<g transform="translate(${x - 24} ${y - 60}) scale(.8)">${TREE.replace(/<svg[^>]*>/, "").replace("</svg>", "")}</g>`).join("")}
+  </svg>`;
+}
+function renderWard(fresh){
+  $("ward").innerHTML = `<h2>${SHIRT}${T.wardrobe}</h2><p>${T.wardrobeP(coins)}</p><div class="outs">${OUTFITS.map((o, i) => {
+    const lock = coins < o.need;
+    return `<button type="button" class="out${i === outfit ? " on" : ""}${lock ? " lock" : ""}${fresh === i ? " new" : ""}" data-o="${i}" aria-pressed="${i === outfit}" ${lock ? `aria-disabled="true"` : ""} aria-label="${T.outfits[i]}${lock ? ". " + T.locked(o.need) : ""}">
+      ${runnerSvg(o, "mini")}${lock ? LOCK : ""}<small>${lock ? `${o.need} ${COIN.replace("<svg", '<svg style="width:11px;height:11px;display:inline;vertical-align:-1px"')}` : T.outfits[i]}</small></button>`;
+  }).join("")}</div>`;
+}
+$("ward").addEventListener("click", e => {
+  const b = e.target.closest(".out"); if(!b || b.classList.contains("lock")) return;
+  MK.unlock(); MK.sfx.tap(); outfit = +b.dataset.o; MK.set(OUTK, outfit); renderWard(); $("heroArt").innerHTML = heroSvg();
+});
+
+function showMenu(fresh){
+  stopLoop(); play.hidden = true; menu.hidden = false;
+  $("heroArt").innerHTML = heroSvg(); renderWard(fresh);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  window.scrollTo(0, 0);
+}
+
+/* ---------- žaidimo būsena ---------- */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, got = 0, dots = null;
+let state = "idle", z = Z_FAR, lane = 1, chosen = false, fastPick = false, tries = 0, disabled = new Set();
+let pauseT = 0, raf = 0, lastT = 0, u = 1, gateEl = null, runnerEl = null, scenery = [];
+const SPEED = (Z_FAR - Z_STOP) / 8.5; /* vartai iki sustojimo taško artėja ~8,5 s */
+
+function buildScene(){
+  scene.innerHTML = bgSvg();
+  scenery = [];
+  for(let i = 0; i < 9; i++){ /* takelių brūkšniai */
+    for(const X of [-LANE / 2, LANE / 2]){ const el = document.createElement("div"); el.className = "obj"; el.innerHTML = DASH; scene.appendChild(el); scenery.push({ el, X, z: 1 + i * 1.5, w: 7, h: 36, loop: 13.5 }); }
+  }
+  for(let i = 0; i < 12; i++){
+    const side = i % 2 ? 1 : -1, tree = i % 3 !== 2;
+    const el = document.createElement("div"); el.className = "obj"; el.innerHTML = tree ? TREE : BUSH; scene.appendChild(el);
+    scenery.push({ el, X: side * (tree ? 290 + (i % 4) * 25 : 240), z: 1.2 + i * 1.1, w: tree ? 110 : 90, h: tree ? 165 : 60, loop: 13.2 });
+  }
+  gateEl = document.createElement("div"); gateEl.className = "gate"; scene.appendChild(gateEl);
+  runnerEl = document.createElement("div"); runnerEl.className = "runner idle"; runnerEl.setAttribute("role", "img"); runnerEl.setAttribute("aria-label", T.ariaRunner);
+  runnerEl.innerHTML = runnerSvg(OUTFITS[outfit]); scene.appendChild(runnerEl);
+  scene.insertAdjacentHTML("beforeend", "");
+  resize(); placeRunner();
+}
+function resize(){ u = scene.clientWidth / VW || 1; place(); }
+window.addEventListener("resize", () => { if(!play.hidden) resize(); });
+function laneX(i, zz){ return 180 + (i - 1) * LANE / zz; }
+function placeRunner(){ runnerEl.style.left = (laneX(lane, 1.0) / VW * 100) + "%"; }
+function setObj(o){
+  const s = 1 / o.z, y = yAt(o.z), x = 180 + o.X * s;
+  o.el.style.width = (o.w * u) + "px"; o.el.style.height = (o.h * u) + "px";
+  o.el.style.transform = `translate(${(x - o.w / 2) * u}px,${(y - o.h) * u}px) scale(${s})`;
+  o.el.style.zIndex = String(Math.round(100 - o.z * 5));
+  o.el.style.opacity = o.z > 11 ? Math.max(0, (13.5 - o.z) / 2.5) : 1;
+}
+function place(){
+  for(const o of scenery) setObj(o);
+  if(gateEl){
+    const s = 1 / z, y = yAt(z), W = 360, H = 230;
+    gateEl.style.width = (W * u) + "px"; gateEl.style.height = (H * u) + "px"; gateEl.style.setProperty("--u", u);
+    gateEl.style.transform = `translate(${(180 - W / 2) * u}px,${(y - H) * u}px) scale(${s})`;
+    gateEl.style.zIndex = z < Z_HIT ? "98" : String(Math.round(100 - z * 5));
+    gateEl.style.opacity = z > 12 ? Math.max(0, (Z_FAR + .5 - z) / 2.5) : z < .75 ? Math.max(0, (z - .5) / .25) : 1;
+  }
+}
+function moveWorld(dz){
+  for(const o of scenery){ o.z -= dz; if(o.z < .55) o.z += o.loop; }
+}
+function loop(t){
+  const dt = Math.min(.05, (t - lastT) / 1000 || 0); lastT = t;
+  let dz = 0;
+  if(state === "run"){
+    dz = SPEED * dt; z -= dz;
+    if(z <= Z_STOP){ dz -= Z_STOP - z; z = Z_STOP; if(!chosen){ setState("wait"); } else setState("go"); }
+  } else if(state === "go"){
+    dz = SPEED * 2.6 * dt; z -= dz;
+    if(z <= Z_HIT){ dz -= Z_HIT - z; z = Z_HIT; hit(); }
+  } else if(state === "pass"){
+    dz = SPEED * 2.2 * dt; z -= dz; if(z < .5){ z = .5; state = "pause"; pauseT = 1.1; }
+  } else if(state === "pause"){
+    dz = SPEED * dt; pauseT -= dt; if(pauseT <= 0) nextGate();
+  } else if(state === "back"){
+    z += SPEED * 2 * dt; if(z >= 2.2){ z = 2.2; setState("retry"); }
+  }
+  if(dz > 0) moveWorld(dz);
+  place();
+  raf = requestAnimationFrame(loop);
+}
+function startLoop(){ cancelAnimationFrame(raf); lastT = performance.now(); raf = requestAnimationFrame(loop); }
+function stopLoop(){ cancelAnimationFrame(raf); raf = 0; state = "idle"; }
+
+function setState(s){
+  state = s;
+  const running = s === "run" || s === "go" || s === "pass" || s === "pause";
+  runnerEl.classList.toggle("idle", !running);
+  optsEl.classList.toggle("wait", s === "wait" || s === "retry");
+  if(s === "wait") MK.say(guide, T.wait);
+  if(s === "retry") MK.say(guide, `${T.again} ${cur.hint}`, "bad");
+}
+
+function start(i){
+  L = i; tasks = makeRound(i); ti = 0; okN = 0; got = 0;
+  menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
+  dots = MK.dots($("dots"), N);
+  updCoins(); buildScene(); lane = 1; placeRunner();
+  loadTask(); z = Z_FAR; place();
+  state = "ready"; runnerEl.classList.add("idle");
+  const b = document.createElement("button"); b.type = "button"; b.className = "mk-btn startbtn"; b.textContent = T.go;
+  b.onclick = () => { MK.unlock(); MK.sfx.whoosh(); b.remove(); setState("run"); MK.say(guide, T.think); };
+  scene.appendChild(b); setTimeout(() => b.focus({ preventScroll: true }), 50);
+  MK.say(guide, T.start);
+  startLoop();
+}
+function updCoins(pop){ const c = $("coinChip"); c.innerHTML = `${COIN}<span>${got}</span>`; c.setAttribute("aria-label", `${T.coins}: ${got}`); if(pop){ c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); } }
+
+function loadTask(){
+  cur = tasks[ti]; dots.cur(ti); chosen = false; fastPick = false; tries = 0; disabled = new Set();
+  const q = cur.kind === "rule" ? T.ruleQ : cur.kind === "miss" ? T.missQ : cur.kind === "par" ? "" : T.next;
+  if(cur.kind === "par") taskEl.innerHTML = `<div class="par">${cur.even ? T.even.replace("LYGINĮ", "<b>LYGINĮ</b>") : T.odd.replace("NELYGINĮ", "<b>NELYGINĮ</b>")}</div>`;
+  else taskEl.innerHTML = `<div class="task-q">${q}</div><div class="seq">${cur.tiles.map((v, i) => `${i ? '<i class="sep"></i>' : ""}<span class="tile${v == null ? " q" : ""}">${v == null ? "?" : v}</span>`).join("")}</div>`;
+  const small = cur.opts.some(o => o.length > 4);
+  gateEl.innerHTML = gateSvg() + cur.opts.map((o, i) => `<button type="button" class="board${small ? " sm" : ""}" data-i="${i}" tabindex="-1" style="left:${(180 + (i - 1) * LANE) / 360 * 100}%" aria-hidden="true">${o}</button>`).join("");
+  optsEl.innerHTML = cur.opts.map((o, i) => `<button type="button" class="opt${small ? " sm" : ""}${i === lane ? " cur" : ""}" data-i="${i}" aria-label="${T.ariaLane(i + 1, o)}">${o}</button>`).join("");
+}
+function choose(i){
+  if(state === "ready"){ const sb = scene.querySelector(".startbtn"); if(sb) sb.click(); }
+  if(!["run", "go", "wait", "retry"].includes(state)) return;
+  if(disabled.has(i) || i < 0 || i > 2) return;
+  MK.unlock(); MK.sfx.tap();
+  if(!chosen && tries === 0 && z > (Z_FAR + Z_STOP) / 2) fastPick = true;
+  chosen = true; lane = i; placeRunner();
+  [...optsEl.children].forEach((b, k) => b.classList.toggle("cur", k === i));
+  if(state === "wait" || state === "retry"){ setState("go"); MK.say(guide, T.think); }
+  else if(state === "run") setState("go");
+}
+function hit(){
+  const ok = lane === cur.ans, board = gateEl.querySelector(`.board[data-i="${lane}"]`);
+  if(ok){
+    board.classList.add("ok");
+    const first = tries === 0, c = first ? 3 + (fastPick ? 1 : 0) : 1;
+    if(first) okN++;
+    got += c; updCoins(true); dots.mark(ti, first);
+    MK.sfx.coins(); burst(c);
+    const tile = taskEl.querySelector(".tile.q"); if(tile){ tile.textContent = cur.val; tile.classList.remove("q"); tile.classList.add("fill"); }
+    MK.say(guide, `${MK.pick(T.good)} ${cur.ok}`);
+    if(first && fastPick) flash(T.fast);
+    runnerEl.classList.remove("jump"); void runnerEl.offsetWidth; runnerEl.classList.add("jump");
+    setState("pass");
+  } else {
+    tries++; disabled.add(lane); board.classList.add("no");
+    setTimeout(() => { board.classList.remove("no"); board.classList.add("off"); }, 460);
+    optsEl.children[lane].classList.add("off"); optsEl.children[lane].classList.remove("cur");
+    MK.sfx.bad(); runnerEl.classList.remove("bump"); void runnerEl.offsetWidth; runnerEl.classList.add("bump");
+    chosen = false; state = "back"; runnerEl.classList.add("idle");
+    /* bėgikė atsistoja į laisvą takelį, bet pasirinkimas lieka vaikui */
+  }
+}
+function burst(n){
+  const x = laneX(lane, 1) / VW * 100;
+  for(let i = 0; i < n; i++){
+    const c = document.createElement("div"); c.className = "coin-f"; c.innerHTML = COIN;
+    c.style.left = `calc(${x}% - 4.5%)`; c.style.top = "58%"; c.style.setProperty("--dx", ((i - (n - 1) / 2) * 40) + "%"); c.style.animationDelay = (i * 70) + "ms";
+    scene.appendChild(c); setTimeout(() => c.remove(), 1000 + i * 70);
+  }
+}
+function flash(t){ const f = document.createElement("div"); f.className = "flash"; f.textContent = t; scene.appendChild(f); setTimeout(() => f.remove(), 1150); }
+function nextGate(){
+  ti++;
+  if(ti >= N){ finish(); return; }
+  loadTask(); z = Z_FAR; setState("run"); MK.say(guide, T.think);
+}
+function finish(){
+  stopLoop(); runnerEl.classList.add("idle");
+  const before = coins; coins += got; MK.set(COINS, coins);
+  const fresh = OUTFITS.findIndex(o => o.need > before && o.need <= coins);
+  const stars = MK.starsFor(okN, N); MK.best(GAME, LEVELS[L].id, stars);
+  MK.result({ stars, title: `${okN} iš ${N}`, text: T.resText(okN, N, got) + (fresh >= 0 ? `<br><b>${T.unlocked(T.outfits[fresh])}</b>` : ""),
+    next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(fresh >= 0 ? fresh : null) });
+}
+
+/* ---------- valdymas ---------- */
+optsEl.addEventListener("click", e => { const b = e.target.closest(".opt"); if(b) choose(+b.dataset.i); });
+scene.addEventListener("click", e => {
+  if(e.target.closest(".startbtn")) return;
+  const b = e.target.closest(".board"); if(b){ choose(+b.dataset.i); return; }
+});
+let sx = null, sy = null;
+scene.addEventListener("pointerdown", e => { sx = e.clientX; sy = e.clientY; });
+scene.addEventListener("pointerup", e => {
+  if(sx == null) return; const dx = e.clientX - sx, dy = e.clientY - sy; sx = null;
+  if(Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy)){ const n = lane + (dx > 0 ? 1 : -1); if(n >= 0 && n <= 2 && !disabled.has(n)) choose(n); else if(n >= 0 && n <= 2 && disabled.has(n)){ const m = n + (dx > 0 ? 1 : -1); if(m >= 0 && m <= 2) choose(m); } }
+});
+document.addEventListener("keydown", e => {
+  if(play.hidden || document.querySelector(".mk-ov")) return;
+  const sb = scene.querySelector(".startbtn");
+  if(sb && (e.key === " " || e.key === "Enter")){ e.preventDefault(); sb.click(); return; }
+  if(e.key === "ArrowLeft"){ e.preventDefault(); let n = lane - 1; while(n >= 0 && disabled.has(n)) n--; if(n >= 0) choose(n); }
+  else if(e.key === "ArrowRight"){ e.preventDefault(); let n = lane + 1; while(n <= 2 && disabled.has(n)) n++; if(n <= 2) choose(n); }
+  else if(e.key === "1" || e.key === "2" || e.key === "3"){ choose(+e.key - 1); }
+  else if((e.key === " " || e.key === "Enter") && !e.target.closest("button")){ e.preventDefault(); if(!disabled.has(lane)) choose(lane); }
+});
+document.addEventListener("visibilitychange", () => { if(document.hidden && state === "run") lastT = performance.now(); });
+
+window.__MK_TEST = { GEN, makeRound, N };
+Object.defineProperty(window, "__cur", { get: () => cur }); Object.defineProperty(window, "__ti", { get: () => ti }); Object.defineProperty(window, "__st", { get: () => state + " z=" + z.toFixed(2) + " lane=" + lane + " ch=" + chosen });
+showMenu();
+})();
+</script>
+</body>
+</html>
