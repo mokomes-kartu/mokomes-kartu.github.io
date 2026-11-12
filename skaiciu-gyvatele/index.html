@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Skaičių gyvatėlė – MokomėsKartu.lt</title>
+<meta name="description" content="5 klasės matematikos žaidimas be skubėjimo: vesk gyvatėlę ir rink kartotinius, daliklius, pirminius skaičius bei skaičius pagal dalumo požymius.">
+<meta name="theme-color" content="#f6f4ff">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<style>
+/* Skaičių gyvatėlė (5 kl.): ėjimais, be laiko spaudimo. Viršuje taisyklė, laukas (canvas), apačioje paaiškinimo juosta ir krypčių mygtukai. */
+body{--paper:#f6f4ff;--grid:#e6e0fb;--soft:#57507a;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#6741d9;--ac-ink:#fff;--ac-soft:#e5dbff}
+html.playing,body.playing{overflow:hidden;height:100%;overscroll-behavior:none}
+body.playing .mk-app{min-height:0;height:100vh;height:100dvh;padding-bottom:10px}
+.mk-lvl{border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink)}
+.mk-lvl-art{border-radius:10px;font:800 19px/1 var(--kid);letter-spacing:-.04em}
+.mk-lvl-t b{font-size:17px;letter-spacing:-.02em}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(30px,8vw,50px)}
+.mk-btn{border-radius:12px;font-size:17px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res .mk-owl{display:none}
+.mk-res h2{font-size:24px;letter-spacing:-.03em}
+.mk-res p{font-size:16px}
+.mk-sec{font-size:16px}
+.errs{width:100%;margin:6px 0 0;padding:10px 12px;border-radius:10px;background:#fff4f1;border:2px dashed #ff8a7a;text-align:left;font:600 14.5px/1.4 var(--body);color:var(--ink)}
+.errs b.h{display:block;font-weight:800;margin-bottom:4px}
+.errs ul{margin:0;padding-left:18px}
+.errs li+li{margin-top:4px}
+.errs.ok{background:#effcf6;border-color:var(--good);text-align:center;font-weight:800}
+.skin-new{display:block;margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--ac-soft);font-weight:800;color:var(--ink)}
+.hero-card{background:#fff;border-radius:18px;padding:8px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink);display:grid;place-items:center}
+.hero-card canvas{display:block;border-radius:10px}
+.mk-hero-art{width:min(420px,100%)}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+.lvl-best{display:block;font:800 12px/1.2 var(--body);color:var(--ac);margin-top:3px}
+/* kolekcija */
+.coll{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;max-width:520px;margin:0 auto}
+.skin{position:relative;border:0;border-radius:12px;background:#fff;padding:6px 2px 7px;cursor:pointer;display:grid;justify-items:center;gap:4px;box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink);font:800 11.5px/1.15 var(--body);color:var(--ink)}
+.skin canvas{display:block;width:100%;max-width:62px;height:auto}
+.skin.sel{background:var(--ac-soft);box-shadow:inset 0 0 0 3px var(--ac),3px 3px 0 var(--ac)}
+.skin.lock{cursor:default;background:#efecf8}
+.skin.lock canvas{filter:grayscale(1);opacity:.45}
+.skin .lk{position:absolute;left:50%;top:13px;width:26px;height:26px;transform:translateX(-50%);display:grid;place-items:center}
+.skin .lk svg{width:24px;height:24px;display:block}
+.skin small{font:700 10px/1.15 var(--body);color:var(--soft);min-height:23px}
+.skin.sel small{color:var(--ac);font-weight:800}
+/* žaidimas */
+#play{position:relative;display:flex;flex-direction:column;flex:1;min-height:0;user-select:none;-webkit-user-select:none}
+.hud{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:stretch;margin:0 0 8px}
+.rule{background:#fff;border-radius:12px;padding:6px 12px 7px;box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink);min-height:64px;display:grid;align-content:center}
+.rule small{font:800 10.5px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+.rule div{font:800 clamp(15px,4.3vw,19px)/1.2 var(--body)}
+.rule b,.rbig b{color:var(--ac);font-family:var(--kid);font-size:1.08em}
+.rule.flash{animation:mkPop .4s cubic-bezier(.2,1.6,.4,1)}
+.pbtn{width:54px;border:0;border-radius:12px;background:#fff;cursor:pointer;display:grid;place-items:center;box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink);padding:0}
+.pbtn svg{width:26px;height:26px;display:block}
+.pbtn:disabled{opacity:.4}
+.stat{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 3px 10px 0}
+.lives{display:inline-flex;gap:3px}
+.lives svg{width:24px;height:22px;display:block}
+.pips{display:inline-flex;gap:3px;align-items:center}
+.pips i{width:9px;height:14px;border-radius:3px;background:#fff;box-shadow:inset 0 0 0 2px #cfc5f1}
+.pips i.on{background:#37b24d;box-shadow:inset 0 0 0 2px var(--ink)}
+.pips i:nth-child(4n+1):not(:first-child){margin-left:6px}
+.stage{position:relative;margin:0 auto;border-radius:14px;overflow:hidden;box-shadow:0 0 0 3px var(--ink),5px 5px 0 3px var(--ink);background:#f7f4ff;flex:none;touch-action:none}
+.stage canvas{display:block;touch-action:none}
+.stage.shake{animation:mkShake .3s}
+.ovl{position:absolute;left:-4px;right:-4px;top:var(--ot,0);bottom:0;z-index:5;display:grid;place-items:start center;align-content:center;padding:8px 6px;background:var(--paper);border-radius:14px;overflow:auto;animation:mkFade .2s}
+.ocard{width:min(340px,100%);background:#fff;border-radius:14px;padding:12px 12px 14px;box-shadow:inset 0 0 0 3px var(--ink),5px 5px 0 var(--ink);text-align:center;display:grid;gap:9px;justify-items:center}
+.ocard>b{font:800 17px/1.25 var(--kid);letter-spacing:-.02em}
+.ocard .rbig{font:800 18px/1.3 var(--body);padding:9px 12px;border-radius:10px;background:var(--ac-soft);width:100%}
+.ocard .hnt{font:600 15px/1.45 var(--body);color:var(--ink);margin:0;text-align:left}
+.ocard .mk-why{margin:0;width:100%}
+.ocard .mk-btn{width:100%}
+.ocard .left{font:700 13px/1.3 var(--body);color:var(--soft)}
+.reason{min-height:36px;margin:6px auto 0;display:grid;align-items:center;text-align:center;font:800 14.5px/1.3 var(--body);color:var(--ink);flex:none;padding:0 4px}
+.reason.ok{color:#2b8a3e}
+.reason.warn{color:#c2410c}
+.dpad{display:grid;grid-template-columns:repeat(4,64px);gap:10px;justify-content:center;margin:8px auto 0;flex:none}
+.dpad button{height:50px;border:0;border-radius:14px;background:#fff;cursor:pointer;display:grid;place-items:center;padding:0;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 var(--ink);touch-action:manipulation}
+.dpad button:active,.dpad button.dn{transform:translateY(3px);box-shadow:inset 0 0 0 2.5px var(--ink),0 1px 0 var(--ink);background:var(--ac-soft)}
+.dpad svg{width:26px;height:26px;display:block}
+.keys{margin:8px auto 0;color:var(--soft);font-size:13px;font-weight:700;text-align:center;display:none}
+@media (hover:hover) and (pointer:fine){.dpad{display:none}.keys{display:block}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art"><div class="hero-card"><canvas id="heroCv" role="img"></canvas></div></div>
+      <h1 id="heroT"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div id="levels"></div>
+    <h2 class="mk-sec" id="collH"></h2><p class="mk-sec-p" id="collP"></p>
+    <div class="coll" id="coll"></div>
+    <div id="learn"></div>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div class="rule" id="ruleBox"><small id="ruleL"></small><div id="rule"></div></div>
+      <button type="button" class="pbtn" id="hintB"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#e5dbff" stroke="#121a33" stroke-width="2"/><path d="M9.2 9.4a2.9 2.9 0 1 1 4.6 2.3c-1 .7-1.8 1.2-1.8 2.5" fill="none" stroke="#121a33" stroke-width="2.3" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.4" fill="#121a33"/></svg></button></div>
+    <div class="stat"><span class="lives" id="lives" role="img"></span><span class="pips" id="pips" role="img"></span></div>
+    <div class="stage" id="stage"><canvas id="cv" role="img"></canvas></div>
+    <div class="reason" id="reason" aria-live="polite"></div>
+    <div class="dpad" id="dpad"></div>
+    <p class="keys" id="keys"></p>
+    <div class="ovl" id="ovl" hidden></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, GAME = "skaiciu-gyvatele", GRADES = [5], SKIN_KEY = "mk-" + GAME + "-gyvate";
+const COLS = 7, ROWS = 9, GOAL = 12, PER = 4, FIELD = 5, INK = "#121a33";
+
+/*LOGIKA-START*/
+/* Grynoji žaidimo matematika (be DOM): taisyklės, skaičių parinkimas, tikrinimas ir paaiškinimų duomenys. */
+const LG = (function(){
+  const shuffle = (a, r) => { a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const gcd = (a, b) => b ? gcd(b, a % b) : a;
+  const isPrime = n => { if(n < 2) return false; for(let d = 2; d * d <= n; d++) if(n % d === 0) return false; return true; };
+  const pick1 = (a, r) => a[Math.floor(r() * a.length)];
+  /* Trys taisyklės iš eilės – nuo lengvesnės iki sudėtingesnės. Dalumo požymiai – tie, kurie nurodyti 5 kl. Bendrojoje programoje: 2, 3, 4, 5, 9, 10, 100. */
+  function makeRules(level, r){
+    r = r || Math.random;
+    if(level === "kartotiniai") return [[3, 4, 6], [7, 8, 9], [12, 15, 16]].map(s => ({ type: "mult", k: pick1(s, r) }));
+    if(level === "dalikliai") return [[12, 18, 20, 24], [30, 36, 40, 42, 45, 48], [60, 72, 84, 90, 96]].map(s => ({ type: "div", N: pick1(s, r) }));
+    if(level === "pirminiai") return [{ type: "prime", max: 50 }, { type: "comp", max: 100 }, { type: "prime", max: 100 }];
+    const a = pick1([2, 5, 10], r), b = pick1([3, 4], r), c = pick1(b === 4 ? [9, 100] : [9, 100, 4], r);
+    return [a, b, c].map(k => ({ type: "dvs", k }));
+  }
+  /* Skaičių, kurie gali atsirasti lauke, rėžiai (1 rodomas tik daliklių lygyje; pirminiuose lygiuose – nuo 2). */
+  function range(rule){
+    if(rule.type === "mult") return [2, rule.k <= 6 ? 60 : rule.k <= 9 ? 99 : 150];
+    if(rule.type === "div") return [1, rule.N + 6];
+    if(rule.type === "dvs") return [100, 999];
+    return [2, rule.max || 60];
+  }
+  function isOk(rule, n){
+    if(rule.type === "mult" || rule.type === "dvs") return n % rule.k === 0;
+    if(rule.type === "div") return rule.N % n === 0;
+    if(rule.type === "prime") return isPrime(n);
+    return n > 3 && !isPrime(n);
+  }
+  /* „Klastingi“ netinkami skaičiai: tie, kurie atrodo panašūs į tinkamus (sprendžia mąstymas, o ne spėjimas). */
+  function isTricky(rule, n){
+    if(rule.type === "mult") return gcd(n, rule.k) > 1 || n % rule.k === 1 || n % rule.k === rule.k - 1;
+    if(rule.type === "div") return n > 1 && n <= rule.N && (gcd(n, rule.N) > 1);
+    if(rule.type === "prime") return n % 2 === 1 && n % 3 !== 0 && n % 5 !== 0;
+    if(rule.type === "comp") return n > 3;
+    if(rule.k === 2 || rule.k === 5 || rule.k === 10) return n % 10 !== 0 || rule.k === 10 ? n % 5 === 0 || n % 2 === 0 : true;
+    if(rule.k === 3) return n % 3 !== 0;
+    if(rule.k === 4) return n % 2 === 0;
+    if(rule.k === 9) return n % 3 === 0;
+    if(rule.k === 100) return n % 10 === 0;
+    return true;
+  }
+  function pickNumber(rule, wantOk, exclude, r){
+    const [a, b] = range(rule), ex = new Set(exclude), c = [], t = [];
+    for(let n = a; n <= b; n++) if(isOk(rule, n) === wantOk && !ex.has(n)){ c.push(n); if(!wantOk && isTricky(rule, n)) t.push(n); }
+    const pool = !wantOk && t.length && r() < 0.65 ? t : c;
+    return pool.length ? pool[Math.floor(r() * pool.length)] : null;
+  }
+  /* Naujas skaičius į lauką: lauke visada lieka bent 2 tinkami ir bent 2 netinkami, tinkamų – ne daugiau kaip 3. */
+  function nextNumber(rule, field, recent, r){
+    r = r || Math.random;
+    const okN = field.filter(n => isOk(rule, n)).length, noN = field.length - okN;
+    const want = okN < 2 ? true : noN < 2 || okN >= 3 ? false : r() < 0.45;
+    let n = pickNumber(rule, want, field.concat(recent || []), r);
+    if(n == null) n = pickNumber(rule, want, field, r);
+    return n;
+  }
+  function fillField(rule, count, r){
+    r = r || Math.random; const f = [];
+    while(f.length < count) f.push(nextNumber(rule, f, [], r));
+    return shuffle(f, r);
+  }
+  /* Paaiškinimo duomenys. Tinkamam: { ok:true, key:"mult"/"dvs4"… }, netinkamam: { ok:false, key, d } */
+  function explain(rule, n){
+    const ok = isOk(rule, n), digits = String(n).split("").map(Number), last = digits[digits.length - 1], ll = n % 100;
+    const smallest = () => { let a = 2; while(n % a) a++; return a; };
+    if(rule.type === "mult") return ok ? { ok, key: "mult", d: { n, k: rule.k, q: n / rule.k } } : { ok, key: "mult", d: { n, k: rule.k, q: Math.floor(n / rule.k), r: n % rule.k } };
+    if(rule.type === "div"){
+      if(ok) return { ok, key: "div", d: { n, N: rule.N, q: rule.N / n } };
+      return n > rule.N ? { ok, key: "divBig", d: { n, N: rule.N } } : { ok, key: "div", d: { n, N: rule.N, q: Math.floor(rule.N / n), r: rule.N % n } };
+    }
+    if(rule.type === "prime"){ if(ok) return { ok, key: "prime", d: { n } }; const a = smallest(); return { ok, key: "prime", d: { n, a, b: n / a } }; }
+    if(rule.type === "comp"){ if(!ok) return { ok, key: "comp", d: { n } }; const a = smallest(); return { ok, key: "comp", d: { n, a, b: n / a } }; }
+    const k = rule.k, base = { n, k, last, ll, digits, s: digits.reduce((x, y) => x + y, 0) };
+    if(k === 3 || k === 9) return { ok, key: "dvsS", d: base };
+    if(k === 4) return { ok, key: "dvs4", d: Object.assign({ q: Math.floor(ll / 4), r: ll % 4 }, base) };
+    return { ok, key: "dvs" + k, d: base };
+  }
+  return { makeRules, range, isOk, isPrime, nextNumber, fillField, explain, isTricky };
+})();
+/*LOGIKA-END*/
+
+const LEVELS = [{ id: "kartotiniai", art: "3×", name: 0 }, { id: "dalikliai", art: "24:", name: 1 }, { id: "pirminiai", art: "17", name: 2 }, { id: "dalumas", art: ":9", name: 3 }]
+  .map((l, i) => Object.assign(l, T.levels[i]));
+const ruleHtml = r => T.rule[r.type](r);
+
+/* ---------- gyvatėlių išvaizda ---------- */
+const SKINS = [
+  { body: "#40c057", dark: "#2f9e44", dot: "#b2f2bb", gap: 0.62 },
+  { body: "#ffd43b", dark: "#f59f00", dot: "#ff922b", gap: 0.5 },
+  { body: "#4dabf7", dark: "#1c7ed6", dot: "#d0ebff", gap: 0.62 },
+  { body: "#f06595", dark: "#c2255c", dot: "#ffdeeb", gap: 0.45 },
+  { body: "#9775fa", dark: "#6741d9", dot: "#e5dbff", gap: 0.62, crown: true }
+];
+const skinSel = () => { const s = MK.get(SKIN_KEY, 0); return s >= 0 && s < SKINS.length ? s : 0; };
+const bestAll = () => MK.get("mk-" + GAME, {});
+const unlocked = i => i === 0 || (bestAll()[LEVELS[i - 1].id] || 0) > 0;
+
+/* ---------- piešimas (canvas) ---------- */
+const FONT = getComputedStyle(document.body).getPropertyValue("--body") || "system-ui,sans-serif";
+function fit(cv, cols, rows, cell){
+  const dpr = Math.min(3, window.devicePixelRatio || 1);
+  cv.width = Math.round(cols * cell * dpr); cv.height = Math.round(rows * cell * dpr);
+  cv.style.width = cols * cell + "px"; cv.style.height = rows * cell + "px";
+  const c = cv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0); return c;
+}
+function rr(c, x, y, w, h, r){ c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+function token(c, x, y, cell, n, scale, bad){
+  const p = 1.5, w = cell - 2 * p - 2, cx = x + cell / 2, cy = y + cell / 2;
+  c.save(); c.translate(cx, cy); c.scale(scale, scale); c.translate(-w / 2 - 1, -w / 2 - 1);
+  rr(c, 2, 3, w, w, cell * 0.24); c.fillStyle = INK; c.fill();
+  rr(c, 0, 0, w, w, cell * 0.24); c.fillStyle = bad ? "#ffb4a2" : "#fff"; c.fill(); c.lineWidth = 2; c.strokeStyle = INK; c.stroke();
+  const fs = n >= 100 ? Math.round(cell * 0.4) : Math.round(cell * 0.5);
+  c.font = `800 ${fs}px ${FONT}`; c.textAlign = "center"; c.textBaseline = "middle"; c.fillStyle = INK; c.fillText(String(n), w / 2, w / 2 + 1, w - 5);
+  c.restore();
+}
+/* pts – taškai pikseliais (nuo galvos), d – galvos kryptis. */
+function drawSnake(c, pts, d, cell, skin, hurt, now){
+  const K = SKINS[skin], w = cell * 0.72, body = hurt ? "#ff8a7a" : K.body, dark = hurt ? "#e8590c" : K.dark;
+  const path = () => { c.beginPath(); c.moveTo(pts[0][0], pts[0][1]); for(let i = 1; i < pts.length; i++) c.lineTo(pts[i][0], pts[i][1]); if(pts.length === 1) c.lineTo(pts[0][0] + 0.01, pts[0][1]); };
+  c.lineJoin = "round"; c.lineCap = "round";
+  path(); c.lineWidth = w + 5; c.strokeStyle = INK; c.stroke();
+  path(); c.lineWidth = w; c.strokeStyle = body; c.stroke();
+  path(); c.lineWidth = w * 0.3; c.strokeStyle = hurt ? "#ffc9c0" : K.dot; c.setLineDash([w * 0.3, w * K.gap]); c.stroke(); c.setLineDash([]);
+  const [hx, hy] = pts[0], r = cell * 0.47, px = -d.y, py = d.x;
+  if(!hurt && Math.sin(now / 260) > 0.35){ c.beginPath(); const tx = hx + d.x * (r + cell * 0.2), ty = hy + d.y * (r + cell * 0.2);
+    c.moveTo(hx + d.x * r * 0.8, hy + d.y * r * 0.8); c.lineTo(tx, ty); c.moveTo(tx, ty); c.lineTo(tx + d.x * 4 + px * 3, ty + d.y * 4 + py * 3); c.moveTo(tx, ty); c.lineTo(tx + d.x * 4 - px * 3, ty + d.y * 4 - py * 3);
+    c.lineWidth = 2.4; c.strokeStyle = "#e03131"; c.stroke(); }
+  c.beginPath(); c.arc(hx, hy, r, 0, 7); c.fillStyle = dark; c.fill(); c.lineWidth = 2.5; c.strokeStyle = INK; c.stroke();
+  for(const s of [1, -1]){
+    const ex = hx + d.x * r * 0.22 + px * r * 0.46 * s, ey = hy + d.y * r * 0.22 + py * r * 0.46 * s;
+    c.beginPath(); c.arc(ex, ey, r * 0.36, 0, 7); c.fillStyle = "#fff"; c.fill(); c.lineWidth = 1.6; c.strokeStyle = INK; c.stroke();
+    if(hurt){ const q = r * 0.2; c.beginPath(); c.moveTo(ex - q, ey - q); c.lineTo(ex + q, ey + q); c.moveTo(ex + q, ey - q); c.lineTo(ex - q, ey + q); c.lineWidth = 2; c.stroke(); }
+    else { c.beginPath(); c.arc(ex + d.x * r * 0.12, ey + d.y * r * 0.12, r * 0.18, 0, 7); c.fillStyle = INK; c.fill(); }
+  }
+  if(K.crown){
+    const cw = r * 1.15, cy = hy - r * 0.78, x0 = hx - cw / 2;
+    c.beginPath(); c.moveTo(x0, cy); c.lineTo(x0 - cw * 0.04, cy - r * 0.62); c.lineTo(x0 + cw * 0.25, cy - r * 0.28); c.lineTo(hx, cy - r * 0.78); c.lineTo(x0 + cw * 0.75, cy - r * 0.28); c.lineTo(x0 + cw * 1.04, cy - r * 0.62); c.lineTo(x0 + cw, cy); c.closePath();
+    c.fillStyle = "#ffd43b"; c.fill(); c.lineWidth = 2; c.strokeStyle = INK; c.stroke();
+  }
+}
+/* S: { cols, rows, segs, prev, dir, items, fx, hurt } ; t – judesio tarp langelių dalis (0–1). */
+function drawScene(c, S, cell, t, now, skin){
+  const W = S.cols * cell, H = S.rows * cell;
+  c.clearRect(0, 0, W, H);
+  for(let y = 0; y < S.rows; y++) for(let x = 0; x < S.cols; x++){ c.fillStyle = (x + y) % 2 ? "#ece6ff" : "#f7f4ff"; c.fillRect(x * cell, y * cell, cell, cell); }
+  for(const it of S.items){ const k = Math.min(1, (now - (it.born || 0)) / 220); token(c, it.x * cell, it.y * cell, cell, it.n, 0.55 + 0.45 * k); }
+  for(const f of S.fx) if(f.eat){ const k = (now - f.born) / f.dur; if(k < 1) token(c, f.x * cell, f.y * cell, cell, f.eat, 1 - k * 0.8, f.bad); }
+  const pts = S.segs.map((s, i) => { const p = S.prev[i] || S.prev[S.prev.length - 1] || s; return [(p.x + (s.x - p.x) * t + 0.5) * cell, (p.y + (s.y - p.y) * t + 0.5) * cell]; });
+  if(pts.length) drawSnake(c, pts, S.dir, cell, skin, S.hurt, now);
+  for(const f of S.fx) if(f.text){ const k = (now - f.born) / 800; if(k < 1){ c.globalAlpha = 1 - k * k; c.font = `800 ${Math.round(cell * 0.46)}px ${FONT}`; c.textAlign = "center"; c.textBaseline = "middle";
+    const x = Math.max(cell * 0.7, Math.min(W - cell * 0.7, (f.x + 0.5) * cell)), y = (f.y + 0.5) * cell - cell * 0.5 - k * cell * 0.9;
+    c.lineWidth = 4; c.strokeStyle = "#fff"; c.strokeText(f.text, x, y); c.fillStyle = "#2b8a3e"; c.fillText(f.text, x, y); c.globalAlpha = 1; } }
+}
+function drawSkinPreview(cv, skin){
+  const cell = 15, c = fit(cv, 6, 2.2, cell), pts = [[4.6, 1.1], [3.6, 1.1], [2.6, 1.1], [1.7, 1.1], [0.8, 1.1]].map(([x, y]) => [x * cell, y * cell]);
+  drawSnake(c, pts, { x: 1, y: 0 }, cell, skin, false, 0);
+}
+
+/* ---------- elementai ---------- */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), stage = $("stage"), cv = $("cv"), ovl = $("ovl"), dpad = $("dpad"), reasonEl = $("reason");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroT").innerHTML = T.heroTitle; $("heroP").textContent = T.hero; $("note").textContent = T.note; $("heroCv").setAttribute("aria-label", T.heroLabel);
+$("collH").textContent = T.collHead; $("collP").textContent = T.collP;
+$("ruleL").textContent = T.ruleLabel; $("hintB").setAttribute("aria-label", T.hintBtn); $("keys").textContent = T.keysHint; cv.setAttribute("aria-label", T.boardLabel);
+const ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l8 10h-5v6H9v-6H4z" fill="#121a33"/></svg>';
+const DIRS = { u: { x: 0, y: -1 }, d: { x: 0, y: 1 }, l: { x: -1, y: 0 }, r: { x: 1, y: 0 } };
+dpad.innerHTML = [["l", -90, T.dpad.left], ["u", 0, T.dpad.up], ["d", 180, T.dpad.down], ["r", 90, T.dpad.right]]
+  .map(([k, a, lab]) => `<button type="button" data-d="${k}" aria-label="${lab}"><span style="display:grid;transform:rotate(${a}deg)">${ARROW}</span></button>`).join("");
+const HEART = on => `<svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 20.5C5 15 1.5 11.5 1.5 7A5.2 5.2 0 0 1 12 4.8 5.2 5.2 0 0 1 22.5 7c0 4.5-3.500 8-10.500 13.500z" fill="${on ? "#fa5252" : "#fff"}" stroke="${on ? INK : "#cfc5f1"}" stroke-width="2" stroke-linejoin="round"/></svg>`;
+const LOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.500" width="14" height="10" rx="2.500" fill="#57507a"/><path d="M8 10.500V8a4 4 0 0 1 8 0v2.500" fill="none" stroke="#57507a" stroke-width="2.600" stroke-linecap="round"/><circle cx="12" cy="15.500" r="1.600" fill="#fff"/></svg>';
+
+function drawHero(){
+  const hc = $("heroCv"), w = Math.min(404, hc.parentElement.clientWidth - 16), cell = Math.floor(w / 9), c = fit(hc, 9, 4, cell);
+  const segs = [[5, 2], [4, 2], [3, 2], [3, 1], [2, 1], [1, 1], [1, 2]].map(([x, y]) => ({ x, y }));
+  drawScene(c, { cols: 9, rows: 4, segs, prev: segs, dir: DIRS.r, fx: [], items: [{ x: 7, y: 2, n: 12 }, { x: 5, y: 0, n: 7 }, { x: 8, y: 0, n: 20 }, { x: 0, y: 3, n: 9 }, { x: 6, y: 3, n: 15 }] }, cell, 1, 1e6, skinSel());
+}
+function drawColl(){
+  const el = $("coll"), best = bestAll(), sel = skinSel();
+  el.innerHTML = SKINS.map((s, i) => { const ok = unlocked(i);
+    return `<button type="button" class="skin${ok ? "" : " lock"}${i === sel ? " sel" : ""}" data-i="${i}" ${ok ? "" : 'aria-disabled="true"'} aria-label="${ok ? T.skinPick(T.skins[i].name) : T.skinLocked(LEVELS[i - 1].name)}"><canvas></canvas>${ok ? "" : `<span class="lk">${LOCK}</span>`}<b>${T.skins[i].name}</b><small>${ok ? (i === sel ? T.skinSel : "") : T.skinLocked(LEVELS[i - 1].name)}</small></button>`; }).join("");
+  el.querySelectorAll(".skin").forEach((b, i) => drawSkinPreview(b.querySelector("canvas"), i));
+}
+$("coll").addEventListener("click", e => { const b = e.target.closest(".skin"); if(!b) return; const i = +b.dataset.i; if(!unlocked(i)) return; MK.unlock(); MK.sfx.tap(); MK.set(SKIN_KEY, i); drawColl(); drawHero(); });
+
+/* ---------- būsena ---------- */
+let lvl = 0, Lv = null, rules = [], ri = 0, rule = null, segs = [], prev = [], dir = DIRS.r, grow = 0, items = [], fx = [], recent = [];
+let phase = "menu", lives = 3, collected = 0, moves = 0, mistakes = [], cell = 40, ctx = null, raf = 0, hurtT = 0, moveAt = 0, moveDur = 120, walk = null, walkTimer = 0, reasonTimer = 0, skin = 0;
+const HOOK = window.__gyv = { LG, get s(){ return { phase, cols: COLS, rows: ROWS, segs: segs.map(s => ({ x: s.x, y: s.y })), dir, grow, lives, collected, moves, level: Lv && Lv.id, rule, ri,
+  items: items.map(it => ({ x: it.x, y: it.y, n: it.n, ok: LG.isOk(rule, it.n) })) }; }, step: d => step(DIRS[d]), tapCell: (x, y) => tapCell(x, y), cell: () => cell };
+const copy = a => a.map(s => ({ x: s.x, y: s.y }));
+
+function layout(){
+  const W = play.clientWidth - 11, top = stage.getBoundingClientRect().top;
+  const ctl = 36 + 6 + (dpad.offsetHeight ? dpad.offsetHeight + 8 : $("keys").offsetHeight + 8);
+  const availH = window.innerHeight - top - ctl - 14;
+  cell = Math.max(24, Math.min(56, Math.floor(W / COLS), Math.floor(availH / ROWS)));
+  ctx = fit(cv, COLS, ROWS, cell); ovl.style.setProperty("--ot", (stage.offsetTop - 6) + "px"); stage.style.width = COLS * cell + "px"; stage.style.height = ROWS * cell + "px";
+}
+function hud(){
+  $("rule").innerHTML = ruleHtml(rule);
+  $("lives").innerHTML = [0, 1, 2].map(i => HEART(i < lives)).join(""); $("lives").setAttribute("aria-label", T.livesLabel(lives));
+  $("pips").innerHTML = Array.from({ length: GOAL }, (_, i) => `<i class="${i < collected ? "on" : ""}"></i>`).join(""); $("pips").setAttribute("aria-label", T.pipsLabel(collected, GOAL));
+  $("hintB").disabled = phase !== "play";
+}
+function say(html, cls, ms){
+  clearTimeout(reasonTimer); reasonEl.className = "reason" + (cls ? " " + cls : ""); reasonEl.innerHTML = html;
+  if(ms) reasonTimer = setTimeout(() => { reasonEl.innerHTML = ""; }, ms);
+}
+function showOvl(html){ ovl.innerHTML = html; ovl.hidden = false; ovl.scrollTop = 0; }
+function hideOvl(){ ovl.hidden = true; ovl.innerHTML = ""; }
+
+/* ---------- laukas ---------- */
+function resetSnake(){
+  const cy = Math.floor(ROWS / 2), cx = Math.floor(COLS / 2);
+  segs = [{ x: cx, y: cy }, { x: cx - 1, y: cy }, { x: cx - 2, y: cy }]; grow = 0; dir = DIRS.r; prev = copy(segs);
+}
+const onSnake = (x, y) => segs.some(s => s.x === x && s.y === y);
+const itemAt = (x, y) => items.findIndex(it => it.x === x && it.y === y);
+/* Ar visi skaičiai pasiekiami iš galvos, neperžengiant kitų skaičių? (Kad niekada neliktų „uždaryto“ skaičiaus.) */
+function unreachable(list){
+  const key = (x, y) => y * COLS + x, seen = new Set([key(segs[0].x, segs[0].y)]), q = [[segs[0].x, segs[0].y]], at = new Set(list.map(it => key(it.x, it.y)));
+  const hit = new Set();
+  while(q.length){
+    const [x, y] = q.shift();
+    for(const d of Object.values(DIRS)){
+      const nx = x + d.x, ny = y + d.y, kk = key(nx, ny);
+      if(!inside(nx, ny) || seen.has(kk)) continue;
+      if(at.has(kk)){ hit.add(kk); continue; }
+      if(occupied(nx, ny, grow === 0)) continue;
+      seen.add(kk); q.push([nx, ny]);
+    }
+  }
+  return list.filter(it => !hit.has(key(it.x, it.y)));
+}
+const allReachable = list => unreachable(list).length === 0;
+/* Judant gyvatėlei, kūnas gali uždaryti skaičių – tokį perkeliame į laisvą pasiekiamą vietą. */
+function fixItems(){
+  const h = segs[0], nb = Object.values(DIRS).map(d => ({ x: h.x + d.x, y: h.y + d.y })).filter(c => inside(c.x, c.y) && !occupied(c.x, c.y, grow === 0));
+  let bad = unreachable(items);
+  /* Jei visi laisvi langeliai šalia galvos užimti skaičiais – tuos skaičius perkeliame (kad kelio neuždarytų klaidingas skaičius). */
+  if(nb.length && nb.every(c => itemAt(c.x, c.y) >= 0)) nb.forEach(c => { const it = items[itemAt(c.x, c.y)]; if(it && !bad.includes(it)) bad.push(it); });
+  if(!bad.length) return;
+  items = items.filter(it => !bad.includes(it));
+  bad.forEach(it => { const c = freeCell(); it.x = c.x; it.y = c.y; it.born = performance.now(); items.push(it); });
+}
+function freeCell(skip){
+  for(let pass = 0; pass < 3; pass++) for(let k = 0; k < 90; k++){
+    const x = MK.rnd(0, COLS - 1), y = MK.rnd(0, ROWS - 1);
+    if(onSnake(x, y) || items.some(it => it !== skip && it.x === x && it.y === y)) continue;
+    if(pass < 2 && Math.abs(x - segs[0].x) + Math.abs(y - segs[0].y) < 3) continue;
+    if(pass < 1 && items.some(it => it !== skip && Math.abs(it.x - x) <= 1 && Math.abs(it.y - y) <= 1)) continue;
+    if(pass < 2 && !allReachable(items.filter(it => it !== skip).concat([{ x, y }]))) continue;
+    return { x, y };
+  }
+  for(let y = 0; y < ROWS; y++) for(let x = 0; x < COLS; x++) if(!onSnake(x, y) && itemAt(x, y) < 0) return { x, y };
+  return { x: 0, y: 0 };
+}
+function addItem(n){ const c = freeCell(); items.push({ x: c.x, y: c.y, n, born: performance.now() }); }
+function newField(){ items = []; LG.fillField(rule, FIELD).forEach(addItem); }
+function replaceItem(){ addItem(LG.nextNumber(rule, items.map(it => it.n), recent)); }
+
+/* ---------- eiga ---------- */
+function showMenu(){
+  phase = "menu"; stopWalk(); cancelAnimationFrame(raf); raf = 0; hideOvl();
+  document.documentElement.classList.remove("playing"); document.body.classList.remove("playing");
+  play.hidden = true; menu.hidden = false;
+  const best = bestAll();
+  MK.levels($("levels"), { game: GAME, levels: LEVELS.map(l => Object.assign({}, l, { sub: l.sub })), onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  drawColl(); drawHero(); window.scrollTo(0, 0);
+}
+function start(i){
+  lvl = i; Lv = LEVELS[i]; rules = LG.makeRules(Lv.id); ri = 0; rule = rules[0]; skin = skinSel();
+  lives = 3; collected = 0; moves = 0; mistakes = []; recent = []; fx = []; segs = []; hurtT = 0; walk = null;
+  menu.hidden = true; play.hidden = false; window.scrollTo(0, 0); say("");
+  document.documentElement.classList.add("playing"); document.body.classList.add("playing");
+  resetSnake(); newField(); hud(); layout();
+  if(!raf){ raf = requestAnimationFrame(frame); }
+  ruleCard(T.startHead, T.go);
+}
+function ruleCard(head, btn){
+  phase = "card"; stopWalk(); hud();
+  showOvl(`<div class="ocard"><b>${head}</b><div class="rbig">${ruleHtml(rule)}</div><p class="hnt">${hintText(rule)}</p><button type="button" class="mk-btn" data-a="go">${btn}</button></div>`);
+  setTimeout(() => { const b = ovl.querySelector("[data-a=go]"); if(b) b.focus({ preventScroll: true }); }, 60);
+}
+const hintText = r => T.hint[r.type](r);
+function resume(){ hideOvl(); fixItems(); phase = "play"; hud(); }
+
+/* ---------- judesys ---------- */
+const occupied = (x, y, tailFree) => segs.some((s, i) => s.x === x && s.y === y && !(tailFree && i === segs.length - 1));
+const inside = (x, y) => x >= 0 && y >= 0 && x < COLS && y < ROWS;
+function bump(msg){
+  stage.classList.remove("shake"); void stage.offsetWidth; stage.classList.add("shake"); MK.sfx.tap(); say(msg, "warn", 2200);
+}
+function step(d, dur){
+  if(phase !== "play") return false;
+  const h = segs[0], nx = h.x + d.x, ny = h.y + d.y;
+  if(!inside(nx, ny)){ dir = d; bump(T.bumpWall); return false; }
+  if(occupied(nx, ny, grow === 0)){ bump(T.bumpSelf); return false; }
+  dir = d; prev = copy(segs); segs.unshift({ x: nx, y: ny });
+  if(grow > 0) grow--; else segs.pop();
+  moves++; moveAt = performance.now(); moveDur = dur || 120;
+  const k = itemAt(nx, ny);
+  if(k >= 0){ const it = items[k]; items.splice(k, 1); stopWalk(); if(LG.isOk(rule, it.n)) collect(it); else wrong(it); }
+  unstick(); fixItems();
+  return true;
+}
+/* Laisvų langelių skaičius, pasiekiamas iš galvos (kūnas – siena; skaičiai praeinami). */
+function freeRoom(){
+  const key = (x, y) => y * COLS + x, seen = new Set([key(segs[0].x, segs[0].y)]), q = [[segs[0].x, segs[0].y]];
+  while(q.length){
+    const [x, y] = q.shift();
+    for(const d of Object.values(DIRS)){
+      const nx = x + d.x, ny = y + d.y, kk = key(nx, ny);
+      if(!inside(nx, ny) || seen.has(kk) || occupied(nx, ny, grow === 0)) continue;
+      seen.add(kk); q.push([nx, ny]);
+    }
+  }
+  return seen.size - 1;
+}
+/* Jei gyvatėlė užsisukusi ir įstrigusi mažoje erdvėje – uodega sutrumpėja, kad galėtų judėti toliau. */
+function unstick(){
+  let cut = 0;
+  while(segs.length > 3 && freeRoom() < 10){ segs.pop(); cut++; }
+  if(cut){ prev = prev.slice(0, segs.length + 1); say(T.shrank, "warn", 3500); }
+}
+function stopWalk(){ walk = null; clearTimeout(walkTimer); }
+/* Kelias iki taikinio (BFS): aplenkia gyvatėlės kūną ir kitus skaičius. */
+function planStep(tx, ty){
+  const h = segs[0], key = (x, y) => y * COLS + x, from = new Map([[key(h.x, h.y), null]]), q = [[h.x, h.y]];
+  const blocked = (x, y) => occupied(x, y, grow === 0) || (itemAt(x, y) >= 0 && !(x === tx && y === ty));
+  while(q.length){
+    const [x, y] = q.shift();
+    if(x === tx && y === ty) break;
+    for(const d of Object.values(DIRS)){
+      const nx = x + d.x, ny = y + d.y, kk = key(nx, ny);
+      if(!inside(nx, ny) || from.has(kk) || blocked(nx, ny)) continue;
+      from.set(kk, [x, y]); q.push([nx, ny]);
+    }
+  }
+  if(!from.has(key(tx, ty))) return null;
+  let cur = [tx, ty], p = from.get(key(tx, ty));
+  while(p && !(p[0] === h.x && p[1] === h.y)){ cur = p; p = from.get(key(p[0], p[1])); }
+  return { x: cur[0] - h.x, y: cur[1] - h.y };
+}
+function walkTick(){
+  if(!walk || phase !== "play") return stopWalk();
+  const d = planStep(walk.x, walk.y);
+  if(!d){ stopWalk(); say(T.blocked, "warn", 3000); return; }
+  if(!step(d, 135)) return stopWalk();
+  if(walk) walkTimer = setTimeout(walkTick, 150);
+}
+function tapCell(x, y){
+  if(phase !== "play" || !inside(x, y)) return;
+  const h = segs[0]; if(x === h.x && y === h.y) return;
+  if(itemAt(x, y) >= 0){ stopWalk(); walk = { x, y }; walkTick(); return; }
+  stopWalk();
+  const dx = x - h.x, dy = y - h.y;
+  step(Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? DIRS.r : DIRS.l) : (dy > 0 ? DIRS.d : DIRS.u));
+}
+function manual(d){ if(phase !== "play") return; stopWalk(); step(d); }
+
+/* ---------- rezultatai ėjimo metu ---------- */
+function collect(it){
+  const now = performance.now(), ex = LG.explain(rule, it.n);
+  collected++; grow++; recent.push(it.n); if(recent.length > 3) recent.shift();
+  fx.push({ x: it.x, y: it.y, eat: it.n, born: now, dur: 280 }, { x: it.x, y: it.y, text: "+1", born: now });
+  say(T.okWhy[ex.key](ex.d), "ok");
+  if(collected >= GOAL){ MK.sfx.good(); hud(); phase = "end"; setTimeout(() => finish(true), 700); return; }
+  if(collected % PER === 0){
+    ri++; rule = rules[ri]; recent = []; MK.sfx.good(); phase = "end"; hud();
+    setTimeout(() => { newField(); $("ruleBox").classList.remove("flash"); void $("ruleBox").offsetWidth; $("ruleBox").classList.add("flash"); say(""); hud(); ruleCard(T.newRuleHead, T.goOn); }, 750);
+    return;
+  }
+  MK.sfx.hop(collected); replaceItem(); hud();
+}
+function wrong(it){
+  lives--; hurtT = performance.now() + 700; stage.classList.remove("shake"); void stage.offsetWidth; stage.classList.add("shake"); MK.sfx.bad();
+  fx.push({ x: it.x, y: it.y, eat: it.n, born: performance.now(), dur: 300, bad: true });
+  const ex = LG.explain(rule, it.n), text = T.why[ex.key](ex.d);
+  mistakes.push({ text });
+  const okNow = items.filter(x => LG.isOk(rule, x.n)).map(x => x.n).sort((a, b) => a - b);
+  phase = "why"; say(""); hud();
+  showOvl(`<div class="ocard">${MK.why({ ok: false, head: T.wrongHead(it.n), body: text, more: hintText(rule) + " " + T.okOnField(okNow), sum: T.hintSum, open: true })}
+    <button type="button" class="mk-btn" data-a="next">${lives > 0 ? T.next : T.results}</button></div>`);
+  setTimeout(() => { const b = ovl.querySelector("[data-a=next]"); if(b) b.focus({ preventScroll: true }); }, 60);
+}
+function afterWhy(){
+  if(phase !== "why") return;
+  if(lives <= 0){ hideOvl(); return finish(false); }
+  replaceItem(); resume();
+}
+function finish(win){
+  phase = "over"; stopWalk(); hideOvl(); hud();
+  const wr = mistakes.length, stars = win ? (wr <= 0 ? 3 : wr === 1 ? 2 : 1) : 0;
+  const before = [1, 2, 3, 4].map(unlocked);
+  if(stars) MK.best(GAME, Lv.id, stars);
+  const nu = lvl + 1 < SKINS.length && !before[lvl] && unlocked(lvl + 1) ? lvl + 1 : -1;
+  const errs = mistakes.length ? `<div class="errs"><b class="h">${T.resErrs}</b><ul>${mistakes.map(m => `<li>${m.text}</li>`).join("")}</ul></div>` : `<div class="errs ok">${T.resClean}</div>`;
+  MK.result({ stars, title: win ? T.winTitle : T.loseTitle,
+    text: `${T.resGot(collected, GOAL)} ${T.resMoves(moves)}${nu >= 0 ? `<span class="skin-new">${T.resNewSkin(T.skins[nu].name)}</span>` : ""}</p>${errs}<p hidden>`,
+    next: win && lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+function frame(ts){
+  raf = requestAnimationFrame(frame);
+  const now = performance.now(); fx = fx.filter(f => now - f.born < 850);
+  drawScene(ctx, { cols: COLS, rows: ROWS, segs, prev, dir, items, fx, hurt: now < hurtT }, cell, Math.min(1, (now - moveAt) / moveDur), now, skin);
+}
+
+/* ---------- valdymas ---------- */
+const KEYS = { ArrowUp: "u", ArrowDown: "d", ArrowLeft: "l", ArrowRight: "r", w: "u", s: "d", a: "l", d: "r", W: "u", S: "d", A: "l", D: "r" };
+window.addEventListener("keydown", e => {
+  if(play.hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+  if(KEYS[e.key]){ if(phase === "play"){ e.preventDefault(); MK.unlock(); manual(DIRS[KEYS[e.key]]); } else if(e.key.startsWith("Arrow") && phase !== "menu") e.preventDefault(); }
+});
+dpad.addEventListener("pointerdown", e => { const b = e.target.closest("[data-d]"); if(!b) return; e.preventDefault(); MK.unlock(); manual(DIRS[b.dataset.d]); b.classList.add("dn"); setTimeout(() => b.classList.remove("dn"), 120); });
+/* Laukas: bakstelėjimas (skaičius – eik iki jo; tuščias langelis – vienas žingsnis ta kryptimi) arba braukimas (vienas žingsnis). */
+let sw = null;
+cv.addEventListener("pointerdown", e => { MK.unlock(); sw = { x: e.clientX, y: e.clientY, moved: false }; });
+cv.addEventListener("pointermove", e => {
+  if(!sw) return; const dx = e.clientX - sw.x, dy = e.clientY - sw.y;
+  if(Math.max(Math.abs(dx), Math.abs(dy)) < 22) return;
+  sw.moved = true; manual(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? DIRS.r : DIRS.l) : (dy > 0 ? DIRS.d : DIRS.u)); sw.x = e.clientX; sw.y = e.clientY;
+});
+cv.addEventListener("pointerup", e => {
+  if(sw && !sw.moved){ const r = cv.getBoundingClientRect(); tapCell(Math.floor((e.clientX - r.left) / cell), Math.floor((e.clientY - r.top) / cell)); }
+  sw = null;
+});
+cv.addEventListener("pointercancel", () => { sw = null; });
+$("hintB").addEventListener("click", () => {
+  if(phase !== "play") return; MK.sfx.tap(); stopWalk(); phase = "hint"; hud();
+  showOvl(`<div class="ocard"><b>${T.hintHead}</b><div class="rbig">${ruleHtml(rule)}</div><p class="hnt">${hintText(rule)}</p><button type="button" class="mk-btn" data-a="close">${T.hintClose}</button></div>`);
+});
+ovl.addEventListener("click", e => {
+  const b = e.target.closest("[data-a]"); if(!b) return; MK.unlock(); MK.sfx.tap();
+  if(b.dataset.a === "next") afterWhy();
+  else if(b.dataset.a === "go" || b.dataset.a === "close") resume();
+});
+window.addEventListener("resize", () => { if(play.hidden) drawHero(); else { layout(); } });
+showMenu();
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if(!menu.hidden) drawHero(); });
+})();
+</script>
+</body>
+</html>
