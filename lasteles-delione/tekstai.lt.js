@@ -27,19 +27,19 @@ window.MK_T = {
   /* vardininkas, galininkas („rodo į ...“), kaip atrodo piešinyje, ką daro */
   parts: {
     nuc:  { n: "Branduolys",        acc: "branduolį",         where: "didelis apvalus violetinis kūnelis",
-            info: "Branduolys saugo paveldimąją informaciją ir valdo ląstelės veiklą." },
+            info: "Branduolys – paveldimos informacijos saugojimo vieta." },
     mem:  { n: "Plazminė membrana", acc: "plazminę membraną", where: "plonas oranžinis sluoksnis, gaubiantis ląstelės vidų",
-            info: "Plazminė membrana skiria ląstelę nuo aplinkos ir reguliuoja, kokios medžiagos į ją patenka ir kokios pasišalina (medžiagų pernaša)." },
+            info: "Plazminė membrana atlieka medžiagų pernašą: per ją medžiagos patenka į ląstelę ir pasišalina iš jos." },
     wall: { n: "Ląstelės sienelė",  acc: "ląstelės sienelę",  where: "storas žalias išorinis sluoksnis",
-            info: "Ląstelės sienelė suteikia augalo ląstelei formą ir tvirtumą. Gyvūninė ląstelė sienelės neturi." },
+            info: "Ląstelės sienelė atlieka apsauginę funkciją. Ji būdinga augalų ląstelėms, gyvūninė ląstelė sienelės neturi." },
     cyto: { n: "Citozolis",         acc: "citozolį",          where: "jis užpildo visą tarpą tarp kitų struktūrų",
             info: "Citozolis – ląstelės užpildas: jame yra kitos ląstelės struktūros." },
     chl:  { n: "Chloroplastas",     acc: "chloroplastą",      where: "žalias ovalus kūnelis",
             info: "Chloroplastuose vyksta fotosintezė. Jų turi augalų ląstelės, o gyvūnų ląstelės neturi." },
     vac:  { n: "Centrinė vakuolė",  acc: "centrinę vakuolę",  where: "didelė šviesiai mėlyna ertmė ląstelės viduryje",
-            info: "Centrinė vakuolė kaupia ląstelines sultis ir padeda palaikyti ląstelės standumą. Ji būdinga augalų ląstelėms." },
+            info: "Centrinėje vakuolėje kaupiamos ląstelinės sultys. Ji būdinga augalų ląstelėms." },
     mit:  { n: "Mitochondrija",     acc: "mitochondriją",     where: "mažas pailgas oranžinis kūnelis",
-            info: "Mitochondrijose vyksta ląstelinis kvėpavimas – taip ląstelė apsirūpina energija." }
+            info: "Mitochondrijose vyksta ląstelinis kvėpavimas." }
   },
 
   /* ---------- 1 lygis ---------- */
@@ -56,11 +56,11 @@ window.MK_T = {
     feats: [
       { t: "Turi chloroplastų",                      a: "p", ex: "Chloroplastų turi augalų ląstelės – juose vyksta fotosintezė. Gyvūnų ląstelės chloroplastų neturi." },
       { t: "Turi ląstelės sienelę",                  a: "p", ex: "Ląstelės sienelę turi augalinė ląstelė. Gyvūninę ląstelę gaubia tik plazminė membrana." },
-      { t: "Turi didelę centrinę vakuolę",           a: "p", ex: "Didelė centrinė vakuolė būdinga augalų ląstelėms: ji kaupia ląstelines sultis ir palaiko standumą." },
+      { t: "Turi didelę centrinę vakuolę",           a: "p", ex: "Didelė centrinė vakuolė būdinga augalų ląstelėms: joje kaupiamos ląstelinės sultys." },
       { t: "Joje vyksta fotosintezė",                a: "p", ex: "Fotosintezė vyksta chloroplastuose, o jų turi tik augalų ląstelės." },
-      { t: "Tvirta sienelė palaiko jos formą",       a: "p", ex: "Sienelė suteikia augalo ląstelei formą ir tvirtumą. Gyvūninė ląstelė sienelės neturi." },
+      { t: "Sienelė atlieka apsauginę funkciją",       a: "p", ex: "Sienelė atlieka apsauginę funkciją. Gyvūninė ląstelė sienelės neturi." },
       { t: "Iš tokių ląstelių sudarytas medžio lapas", a: "p", ex: "Medis – augalas, todėl jo lapai sudaryti iš augalinių ląstelių." },
-      { t: "Turi branduolį",                         a: "b", ex: "Branduolį turi ir augalinė, ir gyvūninė ląstelė – jis saugo paveldimąją informaciją ir valdo ląstelės veiklą." },
+      { t: "Turi branduolį",                         a: "b", ex: "Branduolį turi ir augalinė, ir gyvūninė ląstelė – jame saugoma paveldima informacija." },
       { t: "Turi plazminę membraną",                 a: "b", ex: "Plazminę membraną turi abi ląstelės. Augalinėje ląstelėje ji yra po sienele." },
       { t: "Turi citozolį",                        a: "b", ex: "Citozolis užpildo ir augalinę, ir gyvūninę ląstelę – jame yra kitos struktūros." },
       { t: "Turi mitochondrijų",                     a: "b", ex: "Mitochondrijų turi abi ląstelės – jose vyksta ląstelinis kvėpavimas." },
@@ -96,17 +96,14 @@ window.MK_T = {
     ask: "Paspausk raidę prie tos ląstelės struktūros, kuri atlieka šią funkciją:",
     right: (letter, name) => `Teisingas atsakymas – <b>${letter}</b> (${name}).`,
     funcs: [
-      { part: "nuc",  t: "Saugo paveldimąją informaciją" },
-      { part: "nuc",  t: "Valdo ląstelės veiklą" },
-      { part: "mem",  t: "Skiria ląstelę nuo aplinkos" },
-      { part: "mem",  t: "Reguliuoja, kokios medžiagos patenka į ląstelę ir kokios iš jos pasišalina" },
-      { part: "wall", t: "Suteikia augalo ląstelei formą ir tvirtumą" },
+      { part: "nuc",  t: "Čia saugoma paveldima informacija" },
+      { part: "mem",  t: "Atlieka medžiagų pernašą" },
+      { part: "mem",  t: "Per ją medžiagos patenka į ląstelę ir pasišalina iš jos" },
+      { part: "wall", t: "Atlieka apsauginę funkciją (augalų ląstelėse)" },
       { part: "cyto", t: "Yra ląstelės užpildas – jame išsidėsčiusios kitos struktūros" },
       { part: "chl",  t: "Čia vyksta fotosintezė" },
-      { part: "vac",  t: "Kaupia ląstelines sultis" },
-      { part: "vac",  t: "Padeda palaikyti ląstelės standumą" },
-      { part: "mit",  t: "Čia vyksta ląstelinis kvėpavimas" },
-      { part: "mit",  t: "Aprūpina ląstelę energija" }
+      { part: "vac",  t: "Čia kaupiamos ląstelinės sultys" },
+      { part: "mit",  t: "Čia vyksta ląstelinis kvėpavimas" }
     ]
   },
 
@@ -138,13 +135,13 @@ window.MK_T = {
        <li><b>Chloroplastai</b> – žali ovalūs kūneliai.</li>
        <li><b>Mitochondrijos</b> – maži pailgi kūneliai.</li></ul>` },
     { icon: "f", name: "Ką daro kiekviena struktūra?", level: 2, html:
-      `<ul><li><b>Branduolys</b> saugo paveldimąją informaciją ir valdo ląstelės veiklą.</li>
-       <li><b>Plazminė membrana</b> skiria ląstelę nuo aplinkos ir reguliuoja, kokios medžiagos patenka į ląstelę ir kokios pasišalina.</li>
-       <li><b>Ląstelės sienelė</b> suteikia augalo ląstelei formą ir tvirtumą.</li>
+      `<ul><li><b>Branduolys</b> – paveldimos informacijos saugojimas.</li>
+       <li><b>Plazminė membrana</b> – medžiagų pernaša.</li>
+       <li><b>Ląstelės sienelė</b> – apsauginė funkcija.</li>
        <li><b>Citozolis</b> – ląstelės užpildas: jame yra kitos struktūros.</li>
        <li><b>Chloroplastuose</b> vyksta fotosintezė.</li>
-       <li><b>Centrinė vakuolė</b> kaupia ląstelines sultis ir padeda palaikyti ląstelės standumą.</li>
-       <li><b>Mitochondrijose</b> vyksta ląstelinis kvėpavimas – ląstelė apsirūpina energija.</li></ul>` },
+       <li><b>Centrinė vakuolė</b> – ląstelinių sulčių kaupimas.</li>
+       <li><b>Mitochondrijose</b> vyksta ląstelinis kvėpavimas.</li></ul>` },
     { icon: "e", name: "Dažniausios klaidos", level: 3, html:
       `<ul><li>Gyvūninei ląstelei nupiešiama <b>sienelė</b> arba <b>chloroplastai</b> – jų ten nėra.</li>
        <li>Supainiojama <b>sienelė</b> ir <b>plazminė membrana</b>: sienelė – išorėje ir stora, plazminė membrana – po ja ir plona.</li>
