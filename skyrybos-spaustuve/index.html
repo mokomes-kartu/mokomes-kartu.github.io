@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Skyrybos spaustuvė – MokomėsKartu.lt</title>
+<meta name="description" content="Lietuvių kalbos žaidimas 5–6 klasėms: sudėk kablelius į sakinius, paleisk spaustuvę ir užpildyk knygų lentyną.">
+<meta name="theme-color" content="#f4f6fc">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<style>
+/* Skyrybos spaustuvė: korektoriaus darbo vieta. Sakinys – žodžių raidynai, tarpuose – kablelių lizdai; po „Spausdinti“ rodoma korektūra. */
+body{--paper:#f4f6fc;--grid:#dfe5f6;--soft:#4a5370;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#2b59d9;--ac-ink:#fff;--ac-soft:#dde7ff;--red:#e0422f}
+.mk-ico[data-k="music"]{display:none}
+.mk-lvl{border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink)}
+.mk-lvl-art{border-radius:10px;background:var(--ac-soft)}
+.mk-lvl-art svg{width:50px;height:50px}
+.mk-lvl-t b{font-size:16px;letter-spacing:-.02em}
+.mk-lvl-t small{font-size:13.5px}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(30px,8vw,50px)}
+.mk-hero p{max-width:40ch}
+.mk-btn{border-radius:12px;font-size:17px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res .mk-owl{display:none}
+.mk-res h2{font-size:23px;letter-spacing:-.03em}
+.mk-sec{font-size:16px}
+.mk-hero-art{width:min(440px,100%)}
+.hero-card{background:#fff;border-radius:18px;padding:6px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.hero-card svg{display:block;width:100%;height:auto;border-radius:12px}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+
+/* knygų lentyna */
+.shelf{max-width:520px;margin:0 auto}
+.books{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 8px;padding:14px 10px 10px;background:#fff;border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.bk{display:grid;justify-items:center;gap:4px;text-align:center}
+.bk svg{width:100%;max-width:62px;height:auto;display:block}
+.bk span{font:800 11.5px/1.15 var(--body);color:var(--ink);overflow-wrap:anywhere}
+.bk.lock span{color:var(--soft);font-weight:700}
+.bk.fresh svg{animation:mkPop .6s cubic-bezier(.2,1.6,.4,1)}
+.sbar{height:10px;border-radius:6px;background:#e5eafb;box-shadow:inset 0 0 0 2px var(--ink);margin:10px 0 4px;overflow:hidden}
+.sbar i{display:block;height:100%;background:var(--ac)}
+.stext{margin:0;font:700 14px/1.4 var(--body);color:var(--soft)}
+
+/* žaidimo kortelė */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;background:#fff;font:800 17px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink)}
+.chip small{font:800 11px/1 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.card{background:#fff;border-radius:14px;padding:14px 12px 16px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.chead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.chead small{display:block;font:800 12px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+.mini{width:70px;height:56px;flex:none}
+.mini .platen{transition:transform .12s ease-in;transform-box:fill-box}
+.mini.thud .platen{animation:thud .55s ease-in-out}
+@keyframes thud{35%{transform:translateY(12px)}55%{transform:translateY(12px)}}
+.task{font:700 clamp(15.5px,4.3vw,18px)/1.45 var(--body);margin-top:6px}
+.galwrap{position:relative;margin:12px 0 4px}
+.galley{padding:14px 6px 12px 8px;background:#fffbea;border-radius:10px;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.u{display:inline-flex;align-items:center;white-space:nowrap;margin:5px 0}
+.w{font:800 clamp(17px,5vw,22px)/1 var(--body);padding:9px 8px;background:#fff;border-radius:8px;box-shadow:inset 0 0 0 2px var(--ink),0 3px 0 var(--ink)}
+.g{position:relative;display:grid;place-items:center;width:28px;height:48px;padding:0;border:0;background:transparent;cursor:pointer;color:var(--ink);touch-action:manipulation}
+.g::before{content:"";position:absolute;left:5px;right:5px;top:8px;bottom:8px;border:2px dashed #b6aa7e;border-radius:6px;transition:background .1s}
+.g svg{position:relative;width:14px;height:20px;opacity:0;transform:scale(.4);transition:.12s}
+.g.on::before{border:2.5px solid var(--ink);background:#ffd84d}
+.g.on svg{opacity:1;transform:none}
+.g:not(:disabled):active::before{background:#ffe9a0}
+.g:disabled{cursor:default}
+.g.ok::before{border:2.5px solid #2fb36b;background:#bff0cf}
+.g.ok svg{opacity:1;transform:none}
+.g.miss::before{border:2.5px dashed var(--red);background:#ffe8e3}
+.g.miss svg{opacity:1;transform:none;color:var(--red)}
+.g.extra::before{border:2.5px solid var(--red);background:#ffd5cd}
+.g.extra svg{opacity:1;transform:none;color:var(--red)}
+.g.extra::after{content:"";position:absolute;left:3px;right:3px;top:50%;height:3px;background:var(--red);border-radius:2px;transform:rotate(-38deg)}
+.stamp{position:absolute;right:6px;bottom:-16px;transform:rotate(-7deg);padding:5px 10px;border-radius:6px;font:800 13px/1 var(--kid);letter-spacing:.04em;text-transform:uppercase;background:#fff;animation:mkPop .4s cubic-bezier(.2,1.6,.4,1)}
+.stamp.ok{color:#1f8a52;box-shadow:inset 0 0 0 3px #1f8a52}
+.stamp.bad{color:var(--red);box-shadow:inset 0 0 0 3px var(--red)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin:22px 0 0;font:700 12.5px/1.2 var(--body);color:var(--soft)}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:4px}
+.acts{display:grid;grid-template-columns:auto 1fr;gap:10px;margin-top:16px}
+.hint{margin:8px 0 0;font:700 13.5px/1.4 var(--body);color:var(--soft)}
+.go{width:100%}
+.mk-why-m b{font-weight:800}
+.mk-why-t p b{font-weight:800}
+.cl{display:block;margin-top:2px}
+@media (max-width:380px){.g{width:25px}.w{padding:9px 7px}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1 id="h1"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div id="levels"></div>
+    <div class="shelf" id="shelf"></div>
+    <div id="learn"></div>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><span class="chip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="board"></div>
+    <div id="why"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "skyrybos-spaustuve", GRADES = [5, 6], N = 8, INK = "#121a33";
+const T = window.MK_T, SH = MK.shuffle;
+const $ = id => document.getElementById(id);
+
+/* ---------- piešiniai ---------- */
+const COMMA = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="5" fill="currentColor"/><path d="M16.4 10.5c0 5.2-2.6 8.8-7.2 10.8l-1-2.3c3.1-1.4 4.8-3.5 5-6.4z" fill="currentColor"/></svg>`;
+const commaPath = (fill) => `<circle cx="12" cy="8.5" r="5" fill="${fill}"/><path d="M16.4 10.5c0 5.2-2.6 8.8-7.2 10.8l-1-2.3c3.1-1.4 4.8-3.5 5-6.4z" fill="${fill}"/>`;
+
+/* Spaustuvė su korektore (viršutinis paveikslas) */
+function heroSvg(){
+  return `<svg viewBox="0 0 360 214" role="img" aria-label="Korektorė stovi prie spaustuvės staklių ir laiko kablelio raidyną">
+  <rect width="360" height="214" fill="#e6ecfb"/>
+  <rect y="178" width="360" height="36" fill="#c4d0f0"/><path d="M0 178h360" stroke="${INK}" stroke-width="2.5"/>
+  <rect x="14" y="40" width="112" height="7" rx="2" fill="#a56a3a" stroke="${INK}" stroke-width="2"/>
+  <rect x="20" y="16" width="14" height="24" fill="#e5533d" stroke="${INK}" stroke-width="2"/><rect x="36" y="22" width="12" height="18" fill="#f2a900" stroke="${INK}" stroke-width="2"/><rect x="50" y="12" width="15" height="28" fill="#2f9e6e" stroke="${INK}" stroke-width="2"/><rect x="67" y="19" width="12" height="21" fill="#7a4bd1" stroke="${INK}" stroke-width="2"/><rect x="81" y="14" width="14" height="26" fill="#14899e" stroke="${INK}" stroke-width="2"/>
+  <circle cx="108" cy="30" r="10" fill="#ffd84d" stroke="${INK}" stroke-width="2"/><g transform="translate(101 21) scale(.58)">${commaPath(INK)}</g>
+  <!-- spaustuvės staklės -->
+  <rect x="166" y="150" width="168" height="30" rx="6" fill="#39435f" stroke="${INK}" stroke-width="3"/>
+  <rect x="176" y="178" width="22" height="6" fill="${INK}"/><rect x="302" y="178" width="22" height="6" fill="${INK}"/>
+  <rect x="244" y="157" width="32" height="16" rx="3" fill="#e0422f" stroke="${INK}" stroke-width="2"/><g transform="translate(252 158) scale(.55)">${commaPath("#fff")}</g>
+  <rect x="180" y="72" width="20" height="80" fill="#4a5678" stroke="${INK}" stroke-width="3"/>
+  <rect x="300" y="72" width="20" height="80" fill="#4a5678" stroke="${INK}" stroke-width="3"/>
+  <rect x="172" y="54" width="156" height="24" rx="6" fill="#5b6a94" stroke="${INK}" stroke-width="3"/>
+  <rect x="236" y="26" width="28" height="30" rx="3" fill="#7e8cb3" stroke="${INK}" stroke-width="3"/>
+  <path d="M250 38L312 22" stroke="${INK}" stroke-width="8" stroke-linecap="round"/><path d="M250 38L312 22" stroke="#e0422f" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="314" cy="21" r="8" fill="#e0422f" stroke="${INK}" stroke-width="3"/>
+  <rect x="196" y="92" width="108" height="16" rx="3" fill="#7e8cb3" stroke="${INK}" stroke-width="3"/>
+  <rect x="196" y="126" width="108" height="14" rx="3" fill="#2b3350" stroke="${INK}" stroke-width="3"/>
+  <rect x="206" y="116" width="86" height="11" fill="#fff" stroke="${INK}" stroke-width="2"/>
+  <path d="M212 121h20M238 121h14M258 121h24" stroke="#2b59d9" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M292 118l30 12 0 10-30-4z" fill="#fff" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M298 126l14 6" stroke="#2b59d9" stroke-width="2.4" stroke-linecap="round"/>
+  <!-- korektorė -->
+  <ellipse cx="76" cy="190" rx="12" ry="5" fill="${INK}"/><ellipse cx="100" cy="190" rx="12" ry="5" fill="${INK}"/>
+  <rect x="68" y="152" width="14" height="36" rx="4" fill="#2e3a63" stroke="${INK}" stroke-width="2.5"/>
+  <rect x="92" y="152" width="14" height="36" rx="4" fill="#2e3a63" stroke="${INK}" stroke-width="2.5"/>
+  <path d="M96 110L116 106 132 128" fill="none" stroke="${INK}" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M96 110L116 106 132 128" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="134" cy="131" r="7.5" fill="#f5c9a0" stroke="${INK}" stroke-width="2.5"/>
+  <rect x="64" y="98" width="48" height="62" rx="14" fill="#fff" stroke="${INK}" stroke-width="3"/>
+  <path d="M72 108h32v50q0 4-4 4H76q-4 0-4-4z" fill="#2b59d9" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+  <rect x="80" y="134" width="16" height="14" rx="3" fill="#4d78f0" stroke="${INK}" stroke-width="2"/>
+  <path d="M72 108l8-9M104 108l-8-9" stroke="${INK}" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M70 106L48 120 46 96" fill="none" stroke="${INK}" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M70 106L48 120 46 96" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="26" y="64" width="40" height="40" rx="6" fill="#ffd84d" stroke="${INK}" stroke-width="3" transform="rotate(-8 46 84)"/>
+  <g transform="rotate(-8 46 84)"><g transform="translate(34 70) scale(1.0)">${commaPath(INK)}</g></g>
+  <circle cx="46" cy="102" r="7.5" fill="#f5c9a0" stroke="${INK}" stroke-width="2.5"/>
+  <path d="M60 96c-8 0-12 8-10 16" fill="none" stroke="#7a4b2a" stroke-width="0"/>
+  <circle cx="88" cy="76" r="22" fill="#f5c9a0" stroke="${INK}" stroke-width="3"/>
+  <path d="M66 74c-1-14 8-22 22-22s23 8 22 22c-4-8-10-12-22-12s-18 4-22 12z" fill="#7a4b2a" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M110 70c10 2 14 12 8 22" fill="none" stroke="#7a4b2a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M68 62L72 40H104L108 62Z" fill="#fff" stroke="${INK}" stroke-width="2.8" stroke-linejoin="round"/>
+  <path d="M70 52h36M74 44h28" stroke="#b7c3e8" stroke-width="2" stroke-linecap="round"/><path d="M78 59h6M90 59h10" stroke="#2b59d9" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="80" cy="79" r="2.8" fill="${INK}"/><circle cx="96" cy="79" r="2.8" fill="${INK}"/>
+  <path d="M82 88q6 5 12 0" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="74" cy="86" r="3.6" fill="#ff9aa6" opacity=".7"/><circle cx="102" cy="86" r="3.6" fill="#ff9aa6" opacity=".7"/>
+  <path d="M97 70l5-1" stroke="#2b59d9" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+</svg>`;
+}
+function miniPress(){
+  return `<svg class="mini" id="mini" viewBox="0 0 70 56" aria-hidden="true">
+  <rect x="6" y="40" width="58" height="12" rx="3" fill="#39435f" stroke="${INK}" stroke-width="2.4"/>
+  <rect x="11" y="14" width="8" height="28" fill="#4a5678" stroke="${INK}" stroke-width="2.4"/><rect x="51" y="14" width="8" height="28" fill="#4a5678" stroke="${INK}" stroke-width="2.4"/>
+  <rect x="8" y="6" width="54" height="10" rx="3" fill="#5b6a94" stroke="${INK}" stroke-width="2.4"/>
+  <g class="platen"><rect x="20" y="16" width="30" height="7" rx="2" fill="#7e8cb3" stroke="${INK}" stroke-width="2.2"/></g>
+  <rect x="22" y="32" width="26" height="8" rx="2" fill="#fff" stroke="${INK}" stroke-width="2.2"/><path d="M26 36h8M38 36h6" stroke="#2b59d9" stroke-width="2" stroke-linecap="round"/>
+</svg>`;
+}
+const BOOK_COL = ["#e5533d", "#2b59d9", "#f2a900", "#2f9e6e", "#7a4bd1", "#ee6aa7", "#14899e", "#c9961a"];
+function orn(i){
+  switch(i){
+    case 0: return `<path d="M25 24l3.6 7.6 8.2 1-6 5.7 1.6 8.2-7.4-4.1-7.4 4.1 1.6-8.2-6-5.7 8.2-1z" fill="#fff6c8" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`;
+    case 1: return `<rect x="12" y="22" width="26" height="12" rx="2" fill="#fff" stroke="${INK}" stroke-width="2"/><path d="M16 38h18M16 44h12" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`;
+    case 2: return `<path d="M12 24h26M12 31h26M12 38h14M12 45h18" stroke="#fff" stroke-width="3" stroke-linecap="round"/><rect x="29" y="35" width="9" height="12" fill="#fff" stroke="${INK}" stroke-width="2"/>`;
+    case 3: return `<circle cx="25" cy="36" r="13" fill="#bfe6ff" stroke="${INK}" stroke-width="2.4"/><path d="M17 31q5-5 9-1t1 8-6 5M30 27q5 4 3 9" fill="#6fcf7a" stroke="${INK}" stroke-width="1.6"/>`;
+    case 4: return `<rect x="11" y="23" width="28" height="26" rx="3" fill="#fff" stroke="${INK}" stroke-width="2"/><text x="25" y="43" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="16" fill="${INK}">A–Ž</text>`;
+    case 5: return `<circle cx="25" cy="34" r="9" fill="#ffd84d" stroke="${INK}" stroke-width="2.2"/><path d="M25 18v5M25 45v5M9 34h5M36 34h5M14 23l3 3M36 23l-3 3M14 45l3-3M36 45l-3-3" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>`;
+    case 6: return `<path d="M25 46C12 38 13 24 21 24c3 0 4 2 4 4 0-2 1-4 4-4 8 0 9 14-4 22z" fill="#fff" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`;
+    default: return `<path d="M12 46V28l7 7 6-11 6 11 7-7v18z" fill="#fff6c8" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><circle cx="25" cy="22" r="3" fill="#e0422f" stroke="${INK}" stroke-width="1.6"/>`;
+  }
+}
+function bookSvg(i, locked){
+  if(locked) return `<svg viewBox="0 0 50 66" aria-hidden="true"><rect x="5" y="4" width="40" height="58" rx="4" fill="#e3e7f4" stroke="#b4bcd6" stroke-width="2.5" stroke-dasharray="5 4"/><text x="25" y="42" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="22" fill="#b4bcd6">?</text></svg>`;
+  return `<svg viewBox="0 0 50 66" aria-hidden="true"><rect x="5" y="4" width="40" height="58" rx="4" fill="${BOOK_COL[i]}" stroke="${INK}" stroke-width="2.8"/><rect x="5" y="4" width="8" height="58" rx="3" fill="${INK}" opacity=".25"/>${orn(i)}<path d="M18 12h22" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"/></svg>`;
+}
+const BADGE = ["o", "kad", "!", "kuri", "★"];
+function lvlIcon(i){
+  return `<svg viewBox="0 0 56 56" aria-hidden="true"><rect x="6" y="8" width="44" height="40" rx="8" fill="#fffbea" stroke="${INK}" stroke-width="3"/>
+  <g transform="translate(14 8) scale(1.2)">${commaPath("#2b59d9")}</g>
+  <rect x="30" y="31" width="22" height="18" rx="5" fill="#ffd84d" stroke="${INK}" stroke-width="2.4"/>
+  <text x="41" y="44" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="${BADGE[i].length > 2 ? 10 : 13}" fill="${INK}">${BADGE[i]}</text></svg>`;
+}
+
+/* ---------- lygiai ir sakinių rinkiniai ---------- */
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], sub2: l[1], art: lvlIcon(i) }));
+const parse = text => {
+  const tok = text.split(" "), need = new Set();
+  tok.forEach((t, i) => { if(t.endsWith(",")) need.add(i); });
+  return { text, words: tok.map(t => t.replace(/,$/, "")), need };
+};
+const mkItem = a => Object.assign(parse(a[0]), { rules: a[1] === "none" ? [] : a[1].split(" "), none: a[1] === "none", note: a[2] || "" });
+function seenGet(){ return MK.get("mk-" + GAME + "-matyta", {}); }
+function takeFrom(pool, n, used, seen){
+  const fresh = SH(pool.filter(a => !seen.has(a[0]) && !used.has(a[0])));
+  const rest = SH(pool.filter(a => (seen.has(a[0]) && !used.has(a[0]))));
+  return fresh.concat(rest).slice(0, n);
+}
+function buildRound(lv){
+  const S = T.S, all = seenGet(), seen = new Set(all[lv.id] || []), used = new Set();
+  let picks = [];
+  if(lv.id === "l5"){
+    const plan = [["x6", 3], ["l4", 2], ["l3", 1], ["l2", 1], ["l1", 1]];
+    plan.forEach(([k, n]) => { const got = takeFrom(S[k], n, used, seen); got.forEach(a => used.add(a[0])); picks = picks.concat(got); });
+  } else {
+    picks = takeFrom(S[lv.id], N, used, seen);
+  }
+  /* rinkinyje bent vienas, bet ne daugiau kaip du sakiniai be kablelių */
+  const left = picks.filter(a => a[1] === "none");
+  if(left.length > 2){
+    const other = takeFrom((lv.id === "l5" ? S.x6 : S[lv.id]).filter(a => a[1] !== "none"), left.length - 2, new Set(picks.map(a => a[0])), seen);
+    let k = 0; picks = picks.map(a => (a[1] === "none" && left.indexOf(a) >= 2 && other[k]) ? other[k++] : a);
+  }
+  const keep = (all[lv.id] || []).concat(picks.map(a => a[0]));
+  all[lv.id] = keep.slice(-Math.max(0, (lv.id === "l5" ? 60 : Math.floor(T.S[lv.id].length * 0.7))));
+  MK.set("mk-" + GAME + "-matyta", all);
+  return SH(picks).map(mkItem);
+}
+
+/* ---------- knygų lentyna ---------- */
+const shelfN = () => +MK.get("mk-" + GAME + "-lentyna", 0) || 0;
+const booksOwned = n => T.bookNeed.filter(x => n >= x).length;
+function drawShelf(freshIdx){
+  const n = shelfN(), have = booksOwned(n), nxt = T.bookNeed[have];
+  const prev = have ? T.bookNeed[have - 1] : 0;
+  $("shelf").innerHTML = `<h2 class="mk-sec" style="margin-left:0">${T.shelfTitle}</h2>
+    <div class="books">${T.books.map((b, i) => `<div class="bk${i < have ? "" : " lock"}${i === freshIdx ? " fresh" : ""}">${bookSvg(i, i >= have)}<span>${i < have ? b : T.locked}</span></div>`).join("")}</div>
+    <div class="sbar" aria-hidden="true"><i style="width:${nxt ? Math.round((n - prev) / (nxt - prev) * 100) : 100}%"></i></div>
+    <p class="stext">${T.shelfText(n, nxt ? nxt - n : 0, T.books[have])}</p>`;
+}
+
+/* ---------- elementai ---------- */
+const app = $("app"), menu = $("menu"), play = $("play"), board = $("board"), why = $("why");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("h1").innerHTML = T.h1; $("heroP").textContent = T.hero; $("note").textContent = T.note; $("ptsL").textContent = T.points;
+$("heroArt").innerHTML = `<div class="hero-card">${heroSvg()}</div>`;
+
+let lvl = 0, Lv = null, ti = 0, round = [], cur = null, pts = 0, okN = 0, dots = null, marks = new Set(), tries = 0, locked = false;
+function showMenu(fresh){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); drawShelf(fresh); MK.learn($("learn"), { topics: T.learn, onPlay: start }); window.scrollTo(0, 0); }
+function start(i){
+  lvl = i; Lv = LEVELS[i]; ti = 0; pts = 0; okN = 0; $("pts").textContent = 0; why.innerHTML = "";
+  round = buildRound(Lv); menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), N);
+  next(); window.scrollTo(0, 0);
+}
+function next(){
+  if(ti >= N) return finish();
+  cur = round[ti]; marks = new Set(); tries = 0; locked = false; why.innerHTML = ""; dots.cur(ti); draw();
+}
+function galleyHtml(state){
+  const c = cur, last = c.words.length - 1;
+  return c.words.map((w, i) => {
+    if(i === last) return `<span class="u"><span class="w">${MK.esc(w)}</span></span>`;
+    let cls = "g", pressed = marks.has(i);
+    if(state){
+      const need = c.need.has(i), usr = marks.has(i);
+      cls += need && usr ? " ok" : need ? " miss" : usr ? " extra" : "";
+    } else if(pressed) cls += " on";
+    return `<span class="u"><span class="w">${MK.esc(w)}</span><button type="button" class="${cls}" data-i="${i}" ${state ? "disabled" : ""} aria-pressed="${pressed}" aria-label="${T.gapLabel} „${MK.esc(w)}“">${COMMA}</button></span>`;
+  }).join(" ");
+}
+function draw(state){
+  const stamp = state ? `<div class="stamp ${state}">${state === "ok" ? "Išspausdinta" : "Korektūra"}</div>` : "";
+  const legend = state === "bad" || (state === "ok" && tries > 1) ? `<div class="legend"><span><i style="background:#bff0cf;box-shadow:inset 0 0 0 2px #2fb36b"></i>${T.proofLegend.ok}</span><span><i style="background:#ffe8e3;box-shadow:inset 0 0 0 2px var(--red)"></i>${T.proofLegend.miss}</span><span><i style="background:#ffd5cd;box-shadow:inset 0 0 0 2px var(--red)"></i>${T.proofLegend.extra}</span></div>` : "";
+  board.innerHTML = `<div class="card"><div class="chead"><div><small>${ti + 1} / ${N} · ${Lv.name}</small></div>${miniPress()}</div>
+    <div class="task">${T.task}</div>
+    <div class="galwrap"><div class="galley" id="gal">${galleyHtml(state)}</div>${stamp}</div>${legend}
+    ${state ? "" : `<div class="acts"><button type="button" class="mk-btn alt" id="clr">${T.clear}</button><button type="button" class="mk-btn" id="print">${T.print}</button></div><p class="hint">${T.taskNone}</p>`}</div>`;
+}
+function explain(ok){
+  const c = cur, lines = [...c.need].sort((a, b) => a - b).map(i => `<span class="cl">${T.commaIs(MK.esc(c.words[i]), MK.esc(c.words[i + 1]))}</span>`).join("");
+  const rules = c.none ? `<p>${c.note}</p>` : c.rules.map(r => `<p><b>${T.rules[r].n}.</b> ${T.rules[r].t}</p>`).join("");
+  return MK.why({ ok, head: ok ? T.okHead(MK.praise(), tries === 1 ? 10 : 5) : T.failHead, body: c.none ? "" : lines, more: rules, sum: T.explain, open: !ok || c.none });
+}
+const goBtn = label => `<button type="button" class="mk-btn go" id="go">${label}</button>`;
+function pressAnim(){ const m = $("mini"); if(m){ m.classList.remove("thud"); void m.getBoundingClientRect(); m.classList.add("thud"); } }
+
+board.addEventListener("click", e => {
+  MK.unlock();
+  if(locked) return;
+  const g = e.target.closest(".g");
+  if(g){
+    const i = +g.dataset.i; if(marks.has(i)) marks.delete(i); else marks.add(i);
+    g.classList.toggle("on", marks.has(i)); g.setAttribute("aria-pressed", marks.has(i)); MK.sfx.tap();
+    return;
+  }
+  if(e.target.closest("#clr")){ marks = new Set(); MK.sfx.tap(); why.innerHTML = ""; $("gal").innerHTML = galleyHtml(); return; }
+  if(e.target.closest("#print")) check();
+});
+function check(){
+  tries++;
+  const c = cur, miss = [...c.need].filter(i => !marks.has(i)).length, extra = [...marks].filter(i => !c.need.has(i)).length;
+  pressAnim();
+  if(!miss && !extra){
+    locked = true; dots.mark(ti, tries === 1); MK.sfx.good();
+    if(tries === 1){ okN++; pts += 10; MK.set("mk-" + GAME + "-lentyna", shelfN() + 1); } else pts += 5;
+    $("pts").textContent = pts;
+    draw("ok"); why.innerHTML = explain(true) + goBtn(ti < N - 1 ? T.next : T.results);
+    setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+    return;
+  }
+  MK.sfx.bad();
+  if(tries === 1){
+    why.innerHTML = MK.why({ ok: false, head: T.retryHead, body: T.retryBody(miss, extra) });
+    $("gal").classList.remove("mk-shake"); void $("gal").offsetWidth; $("gal").classList.add("mk-shake");
+    setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+    return;
+  }
+  locked = true; dots.mark(ti, false);
+  draw("bad"); why.innerHTML = explain(false) + goBtn(ti < N - 1 ? T.next : T.results);
+  setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+}
+why.addEventListener("click", e => { if(!e.target.closest("#go")) return; MK.sfx.tap(); ti++; next(); window.scrollTo(0, 0); });
+function finish(){
+  const stars = MK.starsFor(okN, N); MK.best(GAME, Lv.id, stars);
+  const n = shelfN(), have = booksOwned(n), startN = n - okN, had = booksOwned(startN);
+  const book = have > had ? T.books[have - 1] : "";
+  MK.result({ stars, title: T.resTitle(okN, N), text: T.resText(pts, book),
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: () => showMenu(book ? have - 1 : -1) });
+}
+showMenu();
+})();
+</script>
+</body>
+</html>
