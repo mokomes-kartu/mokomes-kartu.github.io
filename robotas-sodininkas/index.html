@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Robotas sodininkas – MokomėsKartu.lt</title>
+<meta name="description" content="5–6 klasių informatikos žaidimas: sudėliok programą iš komandų – komandų seka, kartojimo ir pasirinkimo komandos, paprogramės, programos testavimas ir taisymas.">
+<meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/robotas-sodininkas/tekstai.lt.js"></script>
+<style>
+/* Meniu: robotas sode, kolekcija (sodas + roboto spalvos), lygiai, „Noriu pasimokyti“.
+   Užduotis: sodo žemėlapis → programa iš blokų → „Paleisti“ → robotas vykdo komandas po vieną (vykdomas blokas paryškinamas). */
+body{--ac:#1f9d55;--ac-ink:#fff;--ac-soft:#dcf5e5}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(32px,8.4vw,54px)}
+.mk-hero p{max-width:40ch;font-size:16.5px}
+.hero-art{width:min(100%,480px);border-radius:26px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15)}
+.hero-art svg{display:block;width:100%;height:auto}
+.hero-art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 18px/1.2 var(--kid);display:flex;gap:8px;align-items:center}
+.col h2 svg{width:28px;height:28px;flex:none}
+.col p{margin:4px 0 10px;color:var(--soft);font-weight:700;font-size:14.5px}
+.bed{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px;padding:6px;border-radius:14px;background:#8a5a34;box-shadow:inset 0 0 0 2px #6b4325}
+.bed i{display:block;aspect-ratio:1;border-radius:6px;background:#a8754a}
+.bed i svg{display:block;width:100%;height:100%}
+.bed i.new{animation:mkPop .6s cubic-bezier(.2,1.6,.4,1)}
+.cols{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px;align-items:center}
+.cols b{grid-column:1/-1;font:800 14px/1 var(--body)}
+.cb{width:100%;height:52px;border:0;border-radius:14px;background:#fff;padding:3px;cursor:pointer;box-shadow:inset 0 0 0 2px #cfd6c8;display:grid;place-items:center;position:relative}
+.cb svg{width:40px;height:40px;display:block}
+.cb.on{box-shadow:inset 0 0 0 3px var(--ink)}
+.cb.lock{cursor:default}
+.cb.lock svg{filter:grayscale(1) opacity(.35)}
+.cb.lock::after{content:"🔒";position:absolute;font-size:15px;right:2px;bottom:1px}
+
+/* ---------- žaidimas ---------- */
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.card{width:100%;max-width:600px;margin:0 auto 10px;padding:12px 12px 12px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12)}
+.goal{margin:0 0 8px;font:800 16.5px/1.35 var(--body)}
+.goal small{display:block;font:700 14px/1.35 var(--body);color:var(--soft);margin-top:2px}
+.lim{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font:800 13.5px/1.3 var(--body);background:#fff4d6;box-shadow:inset 0 0 0 2px #e6b84a;margin:0 0 8px}
+.lim.over{background:#ffe6df;box-shadow:inset 0 0 0 2px var(--bad)}
+.lim.fine{background:#e3f7ea;box-shadow:inset 0 0 0 2px var(--good)}
+.tabs{display:flex;gap:6px;margin:0 0 8px}
+.tab{flex:1;min-height:40px;border:0;border-radius:12px;background:#f1f4ee;font:800 15px/1 var(--body);cursor:pointer;box-shadow:inset 0 0 0 2px #cfd6c8;display:flex;align-items:center;justify-content:center;gap:6px}
+.tab.on{background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.tab .st{width:18px;height:18px;border-radius:50%;display:inline-grid;place-items:center;font-size:12px;color:#fff;background:#c3cbbd}
+.tab .st.ok{background:var(--good)}.tab .st.bad{background:var(--bad)}
+.mapw{border-radius:16px;overflow:hidden;box-shadow:0 0 0 2.5px var(--ink);background:#9fd37a;max-width:420px;margin:0 auto}
+.mapw svg{display:block;width:100%;height:auto}
+.bot{transition:transform var(--sp,.38s) cubic-bezier(.45,.05,.4,1)}
+.bot.bump .bb{animation:bump .4s}
+@keyframes bump{40%{transform:translateY(-9px)}}
+.fl .wet{opacity:0;transition:opacity .4s}
+.fl .dry{transition:opacity .4s}
+.fl.on .wet{opacity:1}.fl.on .dry{opacity:0}
+.drop{opacity:0}
+.drop.dgo{animation:drop .6s ease-in}
+@keyframes drop{0%{opacity:1;transform:translateY(-10px)}100%{opacity:0;transform:translateY(8px)}}
+.note{min-height:24px;margin:8px 0 0;text-align:center;font:800 15px/1.35 var(--body)}
+.note.good{color:#1c8a52}.note.warn{color:#b8531a}
+.ctl{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;margin:10px 0 0}
+.ctl .mk-btn{min-height:50px;font-size:19px;padding:8px 14px}
+.sq{width:50px;height:50px;border:0;border-radius:14px;background:#fff;cursor:pointer;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16);display:grid;place-items:center;padding:0}
+.sq svg{width:26px;height:26px}
+.sq.on{background:var(--ac-soft)}
+.sq:active{transform:translateY(3px)}
+.solb{display:flex;width:100%;margin-top:8px;min-height:46px;font-size:17px}
+/* programa */
+.prog{width:100%;max-width:600px;margin:0 auto 10px;padding:10px 10px 12px;border-radius:20px;background:#f7f9fc;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.prog h3{margin:0 2px 6px;font:800 15px/1.2 var(--body);display:flex;align-items:center;gap:8px}
+.prog h3 span{margin-left:auto;color:var(--soft);font-size:13px}
+.prog.p2{background:#fbf6ff}
+.prog .ph{margin:-2px 2px 6px;font:700 13px/1.35 var(--body);color:var(--soft)}
+.lst{display:grid;gap:4px}
+.row{display:flex;align-items:center;gap:8px;min-height:42px;padding:4px 4px 4px 6px;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 2px var(--bc,#9aa6bf),0 2px 0 rgba(18,26,51,.12);cursor:pointer;font:800 15.5px/1.2 var(--body);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.row .ic{width:30px;height:30px;border-radius:9px;background:var(--bg,#e8edf7);display:grid;place-items:center;flex:none}
+.row .ic svg{width:22px;height:22px}
+.row .lb{flex:1;min-width:0}
+.row .x{width:34px;height:34px;border:0;border-radius:10px;background:transparent;cursor:pointer;display:grid;place-items:center;color:#8a93a8;font:800 20px/1 var(--body);flex:none}
+.row .x:active{background:#ffe6df;color:var(--bad)}
+.stp{display:inline-flex;align-items:center;gap:2px;margin-left:6px;vertical-align:middle}
+.stp button{width:32px;height:32px;border:0;border-radius:9px;background:#fff;box-shadow:inset 0 0 0 2px var(--bc);font:800 18px/1 var(--body);cursor:pointer;padding:0}
+.stp output{min-width:26px;text-align:center;font:800 18px/1 var(--kid)}
+.box{border-radius:14px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 2px var(--bc);padding:0 0 5px}
+.box>.row{box-shadow:none;background:var(--bg);border-radius:12px 12px 0 0}
+.kids{display:grid;gap:4px;margin:5px 5px 0 16px;padding-left:8px;border-left:4px solid var(--bc)}
+.els{margin:6px 0 0 8px;font:800 13px/1 var(--body);color:var(--bc2,#555);text-transform:uppercase;letter-spacing:.05em}
+.slot{min-height:34px;border-radius:10px;border:2px dashed #c3cbd9;display:flex;align-items:center;padding:0 10px;font:700 13px/1.2 var(--body);color:#8a93a8;cursor:pointer}
+.slot.cur{border-color:var(--ac);color:var(--ac);background:var(--ac-soft)}
+.caret{height:4px;border-radius:2px;background:var(--ac);margin:-2px 0;box-shadow:0 0 0 2px var(--ac-soft)}
+.row.cur{box-shadow:inset 0 0 0 3px #ffb000,0 0 0 3px #ffe08a}
+.row.err{box-shadow:inset 0 0 0 3px var(--bad),0 0 0 3px #ffc9bd}
+.running .row,.running .slot,.running .stp button{pointer-events:none}
+.running .x,.running .slot,.running .caret{visibility:hidden}
+.k-F{--bc:#3f7fe0;--bg:#e2ecff}.k-L,.k-R{--bc:#7a5be0;--bg:#ece6ff}.k-W{--bc:#16a0c8;--bg:#ddf4fb}
+.k-rep{--bc:#e08a1a;--bg:#fff0d9}.k-if{--bc:#d43f7a;--bg:#ffe3ef;--bc2:#b52e64}.k-P{--bc:#2f9e5b;--bg:#dcf5e5}
+/* paletė */
+.pal{position:sticky;bottom:0;z-index:5;width:100%;max-width:600px;margin:0 auto;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));border-radius:18px 18px 0 0;background:#fff9e6;box-shadow:0 -2px 0 #e7d9ad,0 -10px 18px rgba(255,249,230,.9)}
+.pal h4{margin:0 2px 6px;font:800 12px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.pb{display:flex;flex-wrap:wrap;gap:6px}
+.pk{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:4px 10px 4px 5px;border:0;border-radius:12px;background:#fff;cursor:pointer;font:800 14.5px/1.1 var(--body);box-shadow:inset 0 0 0 2px var(--bc),0 3px 0 rgba(18,26,51,.16);touch-action:manipulation}
+.pk .ic{width:30px;height:30px;border-radius:9px;background:var(--bg);display:grid;place-items:center}
+.pk .ic svg{width:22px;height:22px}
+.pk:active{transform:translateY(2px)}
+.pk[disabled]{opacity:.35;pointer-events:none}
+.running .pk{opacity:.35;pointer-events:none}
+.go{display:flex;width:100%;max-width:600px;margin:4px auto 10px}
+.mk-why{max-width:600px;margin-inline:auto}
+.code{margin:6px 0;padding:8px 10px;border-radius:10px;background:#f3f6fb;font:800 14px/1.5 var(--body);white-space:pre-wrap}
+.fade{animation:mkIn .4s cubic-bezier(.2,1.2,.4,1)}
+@media (max-width:380px){.row{font-size:14.5px}.pk{font-size:13.5px;padding-right:8px}.stp button{width:30px}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="hero-art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="col" id="col"></div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="ptsChip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="stage"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T;
+const GAME = "robotas-sodininkas", GRADES = [5, 6];
+const K = "#121a33";
+const R = MK.rnd, P = MK.pick, SH = MK.shuffle;
+const DX = [0, 1, 0, -1], DY = [-1, 0, 1, 0];
+const key = (x, y) => x + "," + y;
+const C = 40;                                   // langelio dydis SVG vienetais
+const MAXB = 40;                                // daugiausia blokų programoje
+const COLORS = [["#5fd3a6", "#2f9e7a"], ["#ffcf4a", "#d99a00"], ["#6db8ff", "#2f7fd6"], ["#ff7a9e", "#d43f6a"], ["#ffd36b", "#c58a12"]];
+const COLOR_AT = [0, 3, 6, 10, 14];
+const GARDEN_N = 60;
+const FLC = ["#ff6b8a", "#ffb02e", "#7a6bff", "#ff5a3c", "#e84fd0"];
+
+/* ================= programos blokai ================= */
+let uid = 1;
+const nd = (t, o) => Object.assign({ id: uid++, t }, o || {});
+const F = () => nd("F"), Lt = () => nd("L"), Rt = () => nd("R"), Wt = () => nd("W"), Pc = () => nd("P");
+const rep = (n, body) => nd("rep", { n, body });
+const ifn = (c, body, els) => nd("if", { c, body, els: els || [] });
+const tok = s => s.split(" ").filter(Boolean).map(c => ({ F, L: Lt, R: Rt, W: Wt, P: Pc })[c]());
+function count(list){ let n = 0; for(const b of list){ n++; if(b.body) n += count(b.body); if(b.els) n += count(b.els); } return n; }
+function clone(list){ return list.map(b => { const c = nd(b.t, {}); if(b.n != null) c.n = b.n; if(b.c) c.c = b.c; if(b.body) c.body = clone(b.body); if(b.els) c.els = clone(b.els); return c; }); }
+function flat(list, proc, out){         // be sąlygų: F L R W (+ „C“ – sąlygos tikrinimo vieta)
+  out = out || [];
+  for(const b of list){
+    if(b.t === "rep") for(let i = 0; i < b.n; i++) flat(b.body, proc, out);
+    else if(b.t === "P") flat(proc || [], null, out);
+    else if(b.t === "if") out.push("C");
+    else out.push(b.t);
+  }
+  return out;
+}
+const opp = t => t === "L" ? "R" : "L";
+
+/* ================= žemėlapis ================= */
+/* seka → kelias ant begalinės plokštumos → žemėlapis (iki 8 × 8) */
+function trace(seq, d){
+  let x = 0, y = 0; const cells = [[0, 0]], seen = new Set([key(0, 0)]), wat = [], chk = [];
+  for(const c of seq){
+    if(c === "F"){ x += DX[d]; y += DY[d]; const k = key(x, y); if(seen.has(k)) return null; seen.add(k); cells.push([x, y]); }
+    else if(c === "L") d = (d + 3) % 4;
+    else if(c === "R") d = (d + 1) % 4;
+    else if(c === "W"){ const k = key(x, y); if(wat.includes(k) || (x === 0 && y === 0)) return null; wat.push(k); }
+    else if(c === "C") chk.push(key(x, y));
+  }
+  return { cells, wat, chk };
+}
+function mkMap(tr, d0, opt){
+  opt = opt || {};
+  const { cells } = tr; if(cells.length < 2) return null;
+  // kelias neturi liesti savęs (tik gretimi langeliai)
+  for(let i = 0; i < cells.length; i++) for(let j = i + 2; j < cells.length; j++)
+    if(Math.abs(cells[i][0] - cells[j][0]) + Math.abs(cells[i][1] - cells[j][1]) === 1) return null;
+  const xs = cells.map(c => c[0]), ys = cells.map(c => c[1]);
+  const minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys);
+  const bw = maxx - minx + 1, bh = maxy - miny + 1, lim = opt.max || 6;
+  if(bw > lim || bh > lim) return null;
+  const w = Math.max(5, bw + 2), h = Math.max(5, bh + 2);
+  const ox = Math.floor((w - bw) / 2) - minx, oy = Math.floor((h - bh) / 2) - miny;
+  const sh = k => { const [a, b] = k.split(",").map(Number); return key(a + ox, b + oy); };
+  const walk = new Set(cells.map(c => key(c[0] + ox, c[1] + oy)));
+  const last = cells[cells.length - 1];
+  if(tr.wat.includes(key(last[0], last[1]))) return null;   // gėlė ne ant stotelės
+  return { w, h, walk, flowers: new Set(tr.wat.map(sh)), chk: tr.chk.map(sh), start: { x: ox, y: oy, d: d0 }, goal: key(last[0] + ox, last[1] + oy) };
+}
+function addDecoys(m, n){
+  const cand = [];
+  for(let y = 0; y < m.h; y++) for(let x = 0; x < m.w; x++){
+    const k = key(x, y); if(m.walk.has(k)) continue;
+    const nb = [0, 1, 2, 3].map(d => key(x + DX[d], y + DY[d])).filter(q => m.walk.has(q));
+    if(nb.length === 1 && nb[0] !== m.goal) cand.push(k);
+  }
+  const used = [];
+  for(const k of SH(cand)){
+    if(used.length >= n) break;
+    const [x, y] = k.split(",").map(Number);
+    if(used.some(u => { const [a, b] = u.split(",").map(Number); return Math.abs(a - x) + Math.abs(b - y) <= 1; })) continue;
+    used.push(k);
+  }
+  used.forEach(k => m.walk.add(k));
+  return m;
+}
+const ok = (m, x, y) => m.walk.has(key(x, y));
+
+/* ================= vykdytojas ================= */
+/* grąžina žingsnių sąrašą animacijai ir rezultatą: ok | bump | waste | flowers | goal | long */
+function exec(main, proc, m, max){
+  max = max || 400;
+  let x = m.start.x, y = m.start.y, d = m.start.d, steps = 0, res = null, depth = 0;
+  const wet = new Set(), tr = []; let act = 0;          // act – roboto veiksmų (žingsnių) skaičius
+  const done = () => key(x, y) === m.goal && wet.size === m.flowers.size;
+  function list(l){ for(const b of l){ if(res) return; node(b); } }
+  function node(b){
+    if(++steps > max){ res = { r: "long", id: b.id }; return; }
+    switch(b.t){
+      case "F": { const nx = x + DX[d], ny = y + DY[d];
+        if(!ok(m, nx, ny)){ tr.push({ id: b.id, e: "bump", x, y, d }); res = { r: "bump", id: b.id, s: ++act }; return; }
+        act++; x = nx; y = ny; tr.push({ id: b.id, e: "move", x, y, d }); if(done()) res = { r: "ok" }; return; }
+      case "L": act++; d = (d + 3) % 4; tr.push({ id: b.id, e: "turn", x, y, d, s: -1 }); return;
+      case "R": act++; d = (d + 1) % 4; tr.push({ id: b.id, e: "turn", x, y, d, s: 1 }); return;
+      case "W": { const k = key(x, y);
+        act++;
+        if(m.flowers.has(k) && !wet.has(k)){ wet.add(k); tr.push({ id: b.id, e: "water", x, y, d, k }); if(done()) res = { r: "ok" }; return; }
+        tr.push({ id: b.id, e: "waste", x, y, d }); res = { r: "waste", id: b.id, s: act }; return; }
+      case "P": if(depth > 3){ res = { r: "long", id: b.id }; return; } tr.push({ id: b.id, e: "call", x, y, d }); depth++; list(proc || []); depth--; return;
+      case "rep": tr.push({ id: b.id, e: "loop", x, y, d }); for(let i = 0; i < b.n && !res; i++) list(b.body); return;
+      case "if": { const k = key(x, y);
+        const v = b.c === "f" ? m.flowers.has(k) && !wet.has(k) : !ok(m, x + DX[d], y + DY[d]);
+        tr.push({ id: b.id, e: "cond", x, y, d, v }); list(v ? b.body : b.els); return; }
+    }
+  }
+  if(done()) res = { r: "ok" };
+  list(main);
+  if(!res) res = done() ? { r: "ok" } : wet.size < m.flowers.size ? { r: "flowers", n: m.flowers.size - wet.size } : { r: "goal" };
+  return { tr, res, wet };
+}
+const solves = (t, main, proc) => t.maps.every(m => exec(main, proc, m).res.r === "ok");
+/* ar vieno sodo programa „paeiliui“ (be sąlygų) tinka ir kitam – tada užduotis netinka */
+function flatWorksOther(t){
+  for(let a = 0; a < t.maps.length; a++) for(let b = 0; b < t.maps.length; b++){
+    if(a === b) continue;
+    const e = exec(t.sol.main, t.sol.proc, t.maps[a]);
+    const seq = e.tr.filter(s => s.e === "move" || s.e === "turn" || s.e === "water").map(s => nd(s.e === "move" ? "F" : s.e === "water" ? "W" : s.s < 0 ? "L" : "R"));
+    if(exec(seq, null, t.maps[b]).res.r === "ok") return true;
+  }
+  return false;
+}
+
+/* ================= užduočių generatoriai ================= */
+function tryGen(f, n){ for(let i = 0; i < (n || 800); i++){ const t = f(); if(t) return t; } return null; }
+const PAL1 = ["F", "L", "R", "W"], PAL2 = ["F", "L", "R", "W", "rep"], PAL3 = ["F", "L", "R", "W", "rep", "ifF", "ifW"], PAL4 = ["F", "L", "R", "W", "rep", "P"];
+
+/* 1 lygis – komandų seka. Sunkėja: ilgesnis kelias, daugiau posūkių ir gėlių, robotas gali žiūrėti ne į kelią. */
+function t1(i){
+  return tryGen(() => {
+    const segs = Math.min(4, 2 + Math.floor((i + R(0, 2)) / 3)), fl = 1 + (i >= 2) + (i >= 5) + (i >= 7 && R(0, 1));
+    const seq = [];
+    if(i >= 3 && Math.random() < .55) seq.push(P(["L", "R"]));
+    for(let s = 0; s < segs; s++){
+      const len = R(1, i < 3 ? 2 : 3); for(let k = 0; k < len; k++) seq.push("F");
+      if(s < segs - 1) seq.push(P(["L", "R"]));
+    }
+    const fpos = seq.map((c, j) => c === "F" ? j : -1).filter(j => j >= 0);
+    if(fpos.length < fl + 1) return null;
+    SH(fpos).slice(0, fl).sort((a, b) => b - a).forEach(j => seq.splice(j + 1, 0, "W"));
+    if(seq.length < 4 + Math.min(i, 6)) return null;
+    const d0 = R(0, 3), tr = trace(seq, d0); if(!tr) return null;
+    const m = mkMap(tr, d0); if(!m) return null;
+    addDecoys(m, R(1, 2 + (i > 4)));
+    const main = tok(seq.join(" "));
+    return { lvl: 0, maps: [m], sol: { main, proc: [] }, limit: null, best: count(main), pal: PAL1 };
+  });
+}
+
+/* 2 lygis – kartojimo komanda (blokų riba neleidžia rašyti visko paeiliui) */
+function t2(i){
+  const fams = i < 2 ? ["A", "B"] : i < 5 ? ["B", "C", "D", "F"] : ["D", "E", "F", "C"];
+  return tryGen(() => {
+    const f = P(fams), turn = P(["L", "R"]), o = opp(turn); let main;
+    if(f === "A"){ const k = R(1, 2); main = [rep(R(3, 5), tok("F ".repeat(k) + "W"))]; }
+    else if(f === "B"){ const n = R(3, 4); main = [rep(n, Math.random() < .5 ? tok(`F ${turn} F ${o} W`) : tok(`F W ${turn} F ${o}`))]; }
+    else if(f === "C"){ const k = R(2, 3); main = [rep(3, tok("F ".repeat(k) + "W " + turn))]; }
+    else if(f === "D"){
+      const len = R(3, 5); let body;
+      for(let t = 0; t < 30; t++){ body = Array.from({ length: len }, () => P(["F", "F", "F", "L", "R", "W"])); if(body.includes("W") && body.filter(c => c === "F").length >= 2 && body.filter(c => c === "W").length === 1) break; }
+      main = [rep(R(3, 4), tok(body.join(" ")))];
+    }
+    else if(f === "E"){ const k = R(3, 4); main = [rep(R(2, 3), [rep(k, [F()]), Wt(), nd(turn)])]; }
+    else { const a = R(3, 4), b = R(2, 4); main = [rep(a, tok("F W")), nd(turn), rep(b, tok("F W"))]; }
+    if(Math.random() < .3) main.unshift(nd(P(["L", "R"])));
+    const seq = flat(main), c = count(main);
+    if(seq.length < c + 3) return null;
+    const d0 = R(0, 3), tr = trace(seq, d0); if(!tr) return null;
+    const m = mkMap(tr, d0); if(!m) return null;
+    addDecoys(m, R(1, 2));
+    return { lvl: 1, maps: [m], sol: { main, proc: [] }, limit: c, best: c, pal: PAL2 };
+  });
+}
+
+/* 3 lygis – pasirinkimo komanda. Du sodai, viena programa. */
+function corridor(turn, n){
+  const segs = Array.from({ length: n }, (_, j) => R(j === 0 ? 2 : 1, 4));
+  const seq = [];
+  segs.forEach((l, j) => { for(let k = 0; k < l; k++) seq.push("F"); if(j < n - 1) seq.push(turn); });
+  return seq;
+}
+function t3(i){
+  const type = i < 2 ? "flower" : i < 4 ? P(["wall", "flower"]) : P(["wall", "both", "both"]);
+  return tryGen(() => {
+    const turn = P(["L", "R"]);
+    if(type === "flower"){
+      const shape = P(["line", "line", "L", "stair"]), cf = () => ifn("f", [Wt()]);
+      let main;
+      if(shape === "line") main = [rep(R(5, 6), [F(), cf()])];
+      else if(shape === "L") main = [rep(R(3, 4), [F(), cf()]), nd(turn), rep(R(2, 4), [F(), cf()])];
+      else main = [rep(R(3, 4), [F(), nd(turn), F(), nd(opp(turn)), cf()])];
+      const seq = flat(main), d0 = R(0, 3), tr = trace(seq, d0); if(!tr) return null;
+      const m1 = mkMap(tr, d0); if(!m1) return null;
+      const ch = m1.chk.filter(k => k !== m1.goal), nf = ch.length; if(nf < 4) return null;
+      const pickSet = () => new Set(SH(ch).slice(0, R(2, Math.max(2, nf - 2))));
+      const s1 = pickSet(); let s2, t = 0; do{ s2 = pickSet(); t++; }while([...s1].sort().join() === [...s2].sort().join() && t < 20);
+      if([...s1].sort().join() === [...s2].sort().join()) return null;
+      const m2 = Object.assign({}, m1, { walk: new Set(m1.walk), flowers: s2 }); m1.flowers = s1;
+      const tk = { lvl: 2, maps: [m1, m2], sol: { main, proc: [] }, pal: PAL3, kind: type };
+      if(!solves(tk, main) || flatWorksOther(tk)) return null;
+      tk.limit = tk.best = count(main); return tk;
+    }
+    // „wall“ ir „both“: koridorius su vienodais posūkiais
+    const maps = [];
+    for(let g = 0; g < 2; g++){
+      const seq = corridor(turn, R(3, 4)), d0 = R(0, 3), tr = trace(seq, d0); if(!tr) return null;
+      const m = mkMap(tr, d0); if(!m) return null;
+      if(type === "both"){
+        const cand = [...m.walk].filter(k => k !== key(m.start.x, m.start.y) && k !== m.goal);
+        m.flowers = new Set(SH(cand).slice(0, R(2, 3)));
+      }
+      maps.push(m);
+    }
+    if(maps[0].walk.size === maps[1].walk.size && [...maps[0].walk].join() === [...maps[1].walk].join()) return null;
+    const body = type === "wall" ? [ifn("w", [nd(turn)], [F()])] : [ifn("f", [Wt()]), ifn("w", [nd(turn)], [F()])];
+    const probe = [rep(60, body)];
+    for(const m of maps) if(exec(probe, null, m, 2000).res.r !== "ok") return null;
+    // mažiausias kartojimų skaičius, kuris tinka abiem sodams
+    let n = 1; for(; n <= 40; n++){ const mm = [rep(n, clone(body))]; if(maps.every(m => exec(mm, null, m).res.r === "ok")) break; }
+    if(n > 40) return null;
+    const main = [rep(n, body)];
+    const tk = { lvl: 2, maps, sol: { main, proc: [] }, pal: PAL3, kind: type };
+    if(!solves(tk, main) || flatWorksOther(tk)) return null;
+    tk.limit = tk.best = count(main); return tk;
+  });
+}
+
+/* 4 lygis – paprogramė (pasikartojantis gabalas su skirtingais tarpais tarp jų) */
+function t4(i){
+  return tryGen(() => {
+    const turn = P(["L", "R"]);
+    let proc;
+    if(i >= 3 && Math.random() < .45) proc = [rep(R(2, 3), [F()]), Wt(), nd(P(["L", "R"]))];
+    else {
+      const len = R(3, i < 2 ? 4 : 5); let body;
+      for(let t = 0; t < 40; t++){ body = Array.from({ length: len }, () => P(["F", "F", "F", "L", "R", "W"])); if(body.filter(c => c === "W").length === 1 && body.filter(c => c === "F").length >= 2 && body[0] !== "W") break; }
+      proc = tok(body.join(" "));
+    }
+    const conn = () => tok(Array.from({ length: R(1, 2) }, () => P(["F", "L", "R", "F"])).join(" "));
+    const pat = P(i < 2 ? ["3"] : ["3", "3", "2x", "c3"]);
+    let main;
+    if(pat === "3") main = [Pc(), ...conn(), Pc(), ...conn(), Pc()];
+    else if(pat === "2x") main = [Pc(), ...conn(), Pc()];
+    else main = [...conn(), Pc(), ...conn(), Pc(), ...conn(), Pc()];
+    const seq = flat(main, proc), c = count(main) + count(proc);
+    if(seq.length < c + 3) return null;
+    const d0 = R(0, 3), tr = trace(seq, d0); if(!tr) return null;
+    const m = mkMap(tr, d0); if(!m) return null;
+    addDecoys(m, R(0, 2));
+    return { lvl: 3, maps: [m], sol: { main, proc }, limit: c, best: c, pal: PAL4, proc: true };
+  });
+}
+
+/* 5 lygis – rask klaidą: teisingas sprendimas sugadinamas vienoje vietoje */
+function walkAll(list, f, parent){ list.forEach((b, j) => { f(b, list, j); if(b.body) walkAll(b.body, f); if(b.els) walkAll(b.els, f); }); }
+function t5(i){
+  const src = [() => t1(R(3, 6)), () => t2(R(2, 9)), () => t3(R(0, 5)), () => t4(R(0, 5)), () => t2(R(4, 9))][i % 5];
+  return tryGen(() => {
+    const base = src(); if(!base) return null;
+    const main = clone(base.sol.main), proc = clone(base.sol.proc);
+    const muts = [];
+    [main, proc].forEach(L => walkAll(L, (b, list, j) => {
+      if(b.t === "L" || b.t === "R") muts.push({ k: "turn", f: () => { b.t = opp(b.t); } });
+      if(b.t === "rep") muts.push({ k: "count", f: () => { b.n = b.n > 2 && Math.random() < .5 ? b.n - 1 : b.n + (b.n > 2 ? -1 : 1); } });
+      if(b.t === "if" && (b.body.length || b.els.length)) muts.push({ k: "branch", f: () => { const t = b.body; b.body = b.els; b.els = t; } });
+      if(j + 1 < list.length && list[j + 1].t !== b.t && !b.body && !list[j + 1].body) muts.push({ k: "swap", f: () => { const t = list[j]; list[j] = list[j + 1]; list[j + 1] = t; } });
+      if(b.t === "F" && list.some(x => x.t === "W")) muts.push({ k: "move", f: () => { b.t = "W"; } });
+      if(b.t === "W") muts.push({ k: "move", f: () => { b.t = "F"; } });
+    }));
+    if(!muts.length) return null;
+    const mu = P(muts); mu.f();
+    if(solves(base, main, proc)) return null;
+    return Object.assign({}, base, { lvl: 4, pre: { main, proc }, bug: mu.k, limit: base.best, srcLvl: base.lvl });
+  });
+}
+const NTASK = [8, 8, 6, 6, 8];
+const SEEN = {};
+function sig(t){ return t.maps.map(m => [...m.walk].sort().join(";") + "|" + [...m.flowers].sort().join(";") + "|" + m.start.d).join("#"); }
+function genLevel(L){
+  const g = [t1, t2, t3, t4, t5][L], out = [], seen = new Set();
+  for(let i = 0; i < NTASK[L]; i++){
+    let t, tries = 0; do{ t = g(i); tries++; }while((!t || seen.has(sig(t))) && tries < 20);
+    seen.add(sig(t)); out.push(t);
+  }
+  return out;
+}
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: lvlArt(i) }));
+
+/* ================= piešiniai ================= */
+const IC = {
+  F: `<svg viewBox="0 0 24 24"><path d="M12 20V5M6 10.5 12 4.5l6 6" fill="none" stroke="#2a5fc0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  L: `<svg viewBox="0 0 24 24"><path d="M17 20v-6a5 5 0 0 0-5-5H5M9 4.5 4.5 9 9 13.5" fill="none" stroke="#5a3fc0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  R: `<svg viewBox="0 0 24 24"><path d="M7 20v-6a5 5 0 0 1 5-5h7M15 4.5 19.5 9 15 13.5" fill="none" stroke="#5a3fc0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  W: `<svg viewBox="0 0 24 24"><path d="M4 9h10v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" fill="#7fd4ec" stroke="#0e7fa3" stroke-width="2" stroke-linejoin="round"/><path d="M14 11l6-4M14 9.5h0M5 9a4 4 0 0 1 8 0" fill="none" stroke="#0e7fa3" stroke-width="2" stroke-linecap="round"/><path d="M20.5 11.5v2.5M18.5 14v2" stroke="#16a0c8" stroke-width="2" stroke-linecap="round"/></svg>`,
+  rep: `<svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.1-5" fill="none" stroke="#c06f0c" stroke-width="2.8" stroke-linecap="round"/><path d="M18.5 2.8v4.6h-4.6" fill="none" stroke="#c06f0c" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  ifF: `<svg viewBox="0 0 24 24"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="#ffd0e2" stroke="#b52e64" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.2" fill="#ff6b8a"/><circle cx="9.6" cy="11.6" r="2" fill="#ff6b8a"/><circle cx="14.4" cy="11.6" r="2" fill="#ff6b8a"/><circle cx="12" cy="11.4" r="1.4" fill="#ffd34d"/><path d="M12 13.5v3.5" stroke="#2f8a3a" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  ifW: `<svg viewBox="0 0 24 24"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="#ffd0e2" stroke="#b52e64" stroke-width="2" stroke-linejoin="round"/><rect x="7.5" y="9.5" width="9" height="6" rx="2" fill="#3f9e4a" stroke="#1f5e2a" stroke-width="1.4"/><path d="M12 5.5v3" stroke="#b52e64" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  P: `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="4" fill="#bfeccf" stroke="#1f7a43" stroke-width="2"/><path d="M9.5 16V8h3.3a2.4 2.4 0 0 1 0 4.8H9.5" fill="none" stroke="#1f7a43" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+};
+const PK = { F: "F", L: "L", R: "R", W: "W", rep: "rep", ifF: "if", ifW: "if", P: "P" };
+const blockLabel = b => b.t === "rep" ? T.b.repShort : b.t === "if" ? (b.c === "f" ? T.b.ifFlower : T.b.ifWall) : T.b[b.t];
+const blockIcon = b => b.t === "if" ? (b.c === "f" ? IC.ifF : IC.ifW) : IC[b.t];
+
+function lvlArt(i){
+  const a = [
+    `<svg viewBox="0 0 56 56"><rect x="8" y="6" width="40" height="12" rx="4" fill="#e2ecff" stroke="${K}" stroke-width="2.2"/><rect x="8" y="22" width="40" height="12" rx="4" fill="#ece6ff" stroke="${K}" stroke-width="2.2"/><rect x="8" y="38" width="40" height="12" rx="4" fill="#ddf4fb" stroke="${K}" stroke-width="2.2"/><path d="M14 15V9M11.5 11.5 14 9l2.5 2.5M17 31v-3a2 2 0 0 0-2-2h-3.5M13.5 24l-2 2 2 2" fill="none" stroke="${K}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="44" r="2.6" fill="#16a0c8"/><path d="M22 12h18M22 28h14M22 44h16" stroke="${K}" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></svg>`,
+    `<svg viewBox="0 0 56 56"><path d="M44 28a16 16 0 1 1-4.7-11.3" fill="none" stroke="#c06f0c" stroke-width="5" stroke-linecap="round"/><path d="M42 7v10.5H31.5" fill="none" stroke="#c06f0c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><text x="28" y="35.5" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="21" fill="${K}">3</text></svg>`,
+    `<svg viewBox="0 0 56 56"><path d="M28 5 51 28 28 51 5 28Z" fill="#ffd0e2" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/><text x="28" y="37" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="26" fill="#b52e64">?</text></svg>`,
+    `<svg viewBox="0 0 56 56"><rect x="6" y="8" width="44" height="40" rx="9" fill="#bfeccf" stroke="${K}" stroke-width="2.4"/><path d="M22 38V18h7.5a5.6 5.6 0 0 1 0 11.2H22" fill="none" stroke="#1f7a43" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    `<svg viewBox="0 0 56 56"><circle cx="24" cy="24" r="15" fill="#fff" stroke="${K}" stroke-width="3"/><path d="M35 35l12 12" stroke="${K}" stroke-width="5.5" stroke-linecap="round"/><ellipse cx="24" cy="26" rx="5.5" ry="7" fill="#d43f3f"/><circle cx="24" cy="17.5" r="3.2" fill="${K}"/><path d="M18.5 22l-4-2M18.5 28h-4.5M29.5 22l4-2M29.5 28h4.5M22 15l-2-3M26 15l2-3" stroke="${K}" stroke-width="1.6" stroke-linecap="round"/><path d="M24 20v13" stroke="${K}" stroke-width="1.2"/></svg>`
+  ];
+  return a[i];
+}
+/* robotas iš viršaus (žiūri į viršų), centras 0,0 */
+function botTop(col){
+  return `<g class="bb"><rect x="-15" y="-11" width="6" height="22" rx="3" fill="#3a4256"/><rect x="9" y="-11" width="6" height="22" rx="3" fill="#3a4256"/>
+    <path d="M-14-8.5h4M-14-3h4M-14 2.5h4M-14 8h4M10-8.5h4M10-3h4M10 2.5h4M10 8h4" stroke="#6b7590" stroke-width="1.4"/>
+    <rect x="-11" y="-12" width="22" height="24" rx="7" fill="${col[0]}" stroke="${K}" stroke-width="1.8"/>
+    <rect x="-7" y="-14.5" width="14" height="7" rx="3.5" fill="#20283c" stroke="${K}" stroke-width="1.4"/>
+    <circle cx="-3.4" cy="-11" r="1.9" fill="#7ff0ff"/><circle cx="3.4" cy="-11" r="1.9" fill="#7ff0ff"/>
+    <circle cx="0" cy="2" r="5.5" fill="#fff" stroke="${K}" stroke-width="1.4"/><circle cx="0" cy="2" r="2.3" fill="${col[1]}"/>
+    <path d="M-4-16 0-19.5 4-16" fill="none" stroke="${K}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M7.5-2 13-9" stroke="#0e7fa3" stroke-width="2.4" stroke-linecap="round"/><circle cx="13.5" cy="-9.5" r="2" fill="#7fd4ec" stroke="#0e7fa3" stroke-width="1.2"/></g>`;
+}
+/* robotas iš šono – pilnas veikėjas (meniu ir kolekcija) */
+function botSide(col, s){
+  return `<g transform="${s || ""}">
+    <path d="M-18 58h36" stroke="rgba(0,0,0,.18)" stroke-width="6" stroke-linecap="round"/>
+    <rect x="-17" y="40" width="34" height="16" rx="8" fill="#3a4256" stroke="${K}" stroke-width="2.2"/><circle cx="-9" cy="48" r="4" fill="#9aa3b8"/><circle cx="0" cy="48" r="4" fill="#9aa3b8"/><circle cx="9" cy="48" r="4" fill="#9aa3b8"/>
+    <rect x="-4" y="33" width="8" height="8" fill="#9aa3b8" stroke="${K}" stroke-width="2"/>
+    <rect x="-16" y="4" width="32" height="30" rx="9" fill="${col[0]}" stroke="${K}" stroke-width="2.4"/>
+    <rect x="-9" y="12" width="18" height="12" rx="4" fill="#fff" stroke="${K}" stroke-width="2"/><path d="M-5 18h3M2 18h3" stroke="${col[1]}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M-16 16q-10 4-10 14" fill="none" stroke="${K}" stroke-width="4" stroke-linecap="round"/><circle cx="-26" cy="31" r="3.5" fill="${col[1]}" stroke="${K}" stroke-width="2"/>
+    <path d="M16 15q9 1 12 8" fill="none" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+    <path d="M24 20h14l-2 14h-10z" fill="#7fd4ec" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"/><path d="M38 24l9-5" stroke="${K}" stroke-width="3" stroke-linecap="round"/><path d="M27 20q4-7 9 0" fill="none" stroke="${K}" stroke-width="2.2"/>
+    <rect x="-14" y="-22" width="28" height="24" rx="9" fill="${col[0]}" stroke="${K}" stroke-width="2.4"/>
+    <rect x="-10" y="-17" width="20" height="13" rx="5" fill="#20283c"/><circle cx="-4.5" cy="-10.5" r="2.8" fill="#7ff0ff"/><circle cx="4.5" cy="-10.5" r="2.8" fill="#7ff0ff"/><path d="M-3-6.5q3 2 6 0" fill="none" stroke="#7ff0ff" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M0-22v-8" stroke="${K}" stroke-width="2.4"/><circle cx="0" cy="-32" r="3.6" fill="#ff6b6b" stroke="${K}" stroke-width="2"/>
+    <rect x="-18" y="-15" width="4" height="10" rx="2" fill="${col[1]}" stroke="${K}" stroke-width="1.6"/><rect x="14" y="-15" width="4" height="10" rx="2" fill="${col[1]}" stroke="${K}" stroke-width="1.6"/></g>`;
+}
+function flowerSvg(c, wet, s){
+  return wet ? `<g transform="${s || ""}"><path d="M0 12V-1" stroke="#2f8a3a" stroke-width="2.6" stroke-linecap="round"/><path d="M0 7q-7-1-8-6 6 0 8 4M0 5q6-2 8-6-6-1-8 3" fill="#56b85c"/>
+      ${[0, 72, 144, 216, 288].map(a => `<ellipse cx="0" cy="-6.5" rx="3.6" ry="5" fill="${c}" stroke="${K}" stroke-width=".9" transform="translate(0 -3) rotate(${a})"/>`).join("")}<circle cx="0" cy="-3" r="3.2" fill="#ffd34d" stroke="${K}" stroke-width=".9"/></g>`
+    : `<g transform="${s || ""}"><path d="M0 12q0-8 3-12" fill="none" stroke="#8a7a3a" stroke-width="2.4" stroke-linecap="round"/><path d="M1 8q-6 1-8-3" fill="none" stroke="#9a8d4a" stroke-width="2"/>
+      <g transform="translate(4 -1) rotate(35)">${[0, 72, 144, 216, 288].map(a => `<ellipse cx="0" cy="-4.5" rx="2.8" ry="4" fill="#b8975a" stroke="#5e4620" stroke-width="1" transform="rotate(${a})"/>`).join("")}<circle r="2.5" fill="#7a5a2a"/></g></g>`;
+}
+/* sodo žemėlapis */
+function mapSvg(m, col, idp){
+  const W = m.w * C, H = m.h * C; let s = "";
+  s += `<rect width="${W}" height="${H}" fill="#a7d983"/>`;
+  for(let y = 0; y < m.h; y++) for(let x = 0; x < m.w; x++){
+    const k = key(x, y), px = x * C, py = y * C, h = (x * 7 + y * 13) % 5;
+    if(m.walk.has(k)){
+      s += `<rect x="${px + 2}" y="${py + 2}" width="${C - 4}" height="${C - 4}" rx="7" fill="#f2e3bf" stroke="#c9b083" stroke-width="1.6"/>`;
+      s += `<circle cx="${px + 10 + h * 3}" cy="${py + 12 + h}" r="1.6" fill="#d8c59a"/><circle cx="${px + 28 - h}" cy="${py + 28}" r="1.3" fill="#d8c59a"/>`;
+    } else {
+      s += `<rect x="${px + 3}" y="${py + 3}" width="${C - 6}" height="${C - 6}" rx="12" fill="#4fa95a" stroke="#2f7a3a" stroke-width="1.6"/>`;
+      s += `<circle cx="${px + 14}" cy="${py + 15}" r="6" fill="#62bd6a"/><circle cx="${px + 25}" cy="${py + 22}" r="7" fill="#5ab463"/>`;
+      if(h === 2) s += `<circle cx="${px + 13}" cy="${py + 26}" r="2.2" fill="#ff8fa8"/><circle cx="${px + 27}" cy="${py + 13}" r="2.2" fill="#fff"/>`;
+    }
+  }
+  const [gx, gy] = m.goal.split(",").map(Number);
+  s += `<g transform="translate(${gx * C + C / 2} ${gy * C + C / 2})"><rect x="-14" y="-14" width="28" height="28" rx="8" fill="#ffd84a" stroke="${K}" stroke-width="1.8"/><rect x="-10" y="-10" width="20" height="20" rx="5" fill="#fff3b0"/><path d="M2-9-6 1.5h5.5L-2 9 6-1.5H.5Z" fill="#f08a00" stroke="${K}" stroke-width="1.1" stroke-linejoin="round"/></g>`;
+  [...m.flowers].forEach((k, j) => {
+    const [x, y] = k.split(",").map(Number);
+    s += `<g class="fl" id="${idp}f${x}_${y}" transform="translate(${x * C + C / 2} ${y * C + C / 2 + 2})"><g class="dry">${flowerSvg(FLC[j % 5], false)}</g><g class="wet">${flowerSvg(FLC[(x + y) % 5], true)}</g>
+      <g class="drop" id="${idp}d${x}_${y}"><path d="M-6-14q2 4 0 6-2-2 0-6M2-17q2 4 0 6-2-2 0-6M8-13q2 4 0 6-2-2 0-6" fill="#3fb6e0"/></g></g>`;
+  });
+  s += `<g class="bot" id="${idp}bot">${botTop(col)}</g>`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Sodo žemėlapis">${s}</svg>`;
+}
+function heroSvg(col){
+  let fl = "";
+  [[150, 182, 0], [196, 186, 1], [330, 184, 2], [372, 188, 3], [420, 182, 4]].forEach(([x, y, c], j) => fl += flowerSvg(FLC[c], j !== 1, `translate(${x} ${y}) scale(1.9)`));
+  return `<svg viewBox="0 0 480 230" aria-hidden="true">
+    <rect width="480" height="230" fill="#dff3ff"/><circle cx="414" cy="48" r="24" fill="#ffd84a"/><path d="M414 12v-8M414 92v-8M378 48h-8M458 48h-8M389 23l-6-6M445 79l-6-6M439 23l6-6M383 79l6-6" stroke="#ffc21a" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M40 46q14-14 30 0q14-10 24 4H34q-4-6 6-4" fill="#fff"/><path d="M230 34q12-12 26 0q12-8 20 4h-52q-2-5 6-4" fill="#fff"/>
+    <path d="M0 150q120-34 240-8t240-6v94H0z" fill="#8fd16e"/><path d="M0 172h480v58H0z" fill="#79bf5b"/>
+    <path d="M60 230q50-44 120-44h120q70 0 120 44" fill="#f2e3bf" stroke="#c9b083" stroke-width="3"/>
+    <g transform="translate(36 132)"><rect x="0" y="0" width="56" height="46" rx="10" fill="#ffd84a" stroke="${K}" stroke-width="3"/><rect x="9" y="9" width="38" height="28" rx="7" fill="#fff3b0"/><path d="M31 11 19 25h9l-4 11 12-14h-9z" fill="#f08a00" stroke="${K}" stroke-width="2" stroke-linejoin="round"/><path d="M28 46v18" stroke="${K}" stroke-width="4"/></g>
+    ${fl}
+    <g transform="translate(246 128) scale(1.45)">${botSide(col)}</g>
+    <path d="M318 157q2 6 0 9-2-3 0-9M326 162q2 6 0 9-2-3 0-9M311 166q2 6 0 9-2-3 0-9" fill="#3fb6e0"/>
+  </svg>`;
+}
+function gardenSvg(lv, j){ return `<svg viewBox="-14 -20 28 34">${flowerSvg(FLC[(lv * 2 + j) % 5], true, "scale(1.05)")}</svg>`; }
+
+/* ================= meniu ================= */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), stage = $("stage");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("ptsL").textContent = T.pts;
+const GK = "mk-" + GAME + "-sodas", CK = "mk-" + GAME + "-spalva";
+const totalStars = () => Object.values(MK.best(GAME)).filter(x => typeof x === "number").reduce((a, b) => a + b, 0);
+const colIdx = () => { const c = MK.get(CK, 0), s = totalStars(); return s >= COLOR_AT[c] ? c : 0; };
+const robotCol = () => COLORS[colIdx()];
+function renderCol(freshN){
+  const g = MK.get(GK, []), n = g.length, s = totalStars(), ci = colIdx();
+  $("col").innerHTML = `<h2><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29V15" stroke="#2f8a3a" stroke-width="3" stroke-linecap="round"/><path d="M16 22q-8 0-9-7 7 0 9 5" fill="#56b85c" stroke="${K}" stroke-width="1.6"/>${[0, 72, 144, 216, 288].map(a => `<ellipse cx="16" cy="5" rx="3.6" ry="4.8" fill="#ff6b8a" stroke="${K}" stroke-width="1.4" transform="rotate(${a} 16 10)"/>`).join("")}<circle cx="16" cy="10" r="3" fill="#ffd34d" stroke="${K}" stroke-width="1.4"/></svg>${T.gardenH}</h2>
+    <p>${n ? T.gardenP(Math.min(n, GARDEN_N), GARDEN_N) : T.gardenEmpty}</p>
+    <div class="bed">${Array.from({ length: GARDEN_N }, (_, j) => `<i class="${j < n && freshN && j >= n - freshN ? "new" : ""}">${j < n ? gardenSvg(g[j], j) : ""}</i>`).join("")}</div>
+    <div class="cols"><b>${T.colorsH}:</b>${COLORS.map((c, j) => `<button type="button" class="cb${j === ci ? " on" : ""}${s < COLOR_AT[j] ? " lock" : ""}" data-c="${j}" title="${s < COLOR_AT[j] ? T.colorLocked(COLOR_AT[j]) : T.colorNames[j]}" aria-label="${T.colorNames[j]}${s < COLOR_AT[j] ? " – " + T.colorLocked(COLOR_AT[j]) : ""}"><svg viewBox="-30 -36 80 96">${botSide(c)}</svg></button>`).join("")}</div>`;
+  $("col").querySelector(".cols").onclick = e => {
+    const b = e.target.closest(".cb"); if(!b || b.classList.contains("lock")) return;
+    MK.unlock(); MK.sfx.tap(); MK.set(CK, +b.dataset.c); renderCol(); $("heroArt").innerHTML = heroSvg(robotCol());
+  };
+}
+function showMenu(freshN){
+  play.hidden = true; menu.hidden = false;
+  $("heroArt").innerHTML = heroSvg(robotCol()); renderCol(freshN);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, pts = 0, dots = null, planted = 0, starsBefore = 0;
+let prog = { main: [], proc: [] }, cursor = null, runs = 0, running = false, fast = false, solved = false, showed = false, gi = 0, stopReq = false;
+function start(i){
+  L = i; tasks = genLevel(i); ti = 0; okN = 0; pts = 0; planted = 0; starsBefore = totalStars(); $("pts").textContent = 0;
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+function award(n){ pts += n; const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); }
+function show(){
+  cur = tasks[ti]; dots.cur(ti); runs = 0; solved = false; showed = false; gi = 0; running = false;
+  prog = cur.pre ? { main: clone(cur.pre.main), proc: clone(cur.pre.proc) } : { main: [], proc: [] };
+  cursor = { list: prog.main, idx: prog.main.length };
+  const nf = cur.maps[0].flowers.size, two = cur.maps.length > 1;
+  const fl = two ? Math.max(...cur.maps.map(m => m.flowers.size)) : nf;
+  const hasProc = cur.proc || (cur.pre && cur.pre.proc.length) || (cur.sol.proc && cur.sol.proc.length);
+  cur.hasProc = !!hasProc;
+  const pal = cur.pal;
+  stage.innerHTML = `<div class="card fade" id="tcard">
+      <p class="goal">${cur.pre ? T.bugIntro : two ? (fl ? T.goal(2).replace(" (2)", "") : T.goal(0)) : T.goal(nf)}${two ? `<small>${T.goal2}</small>` : ""}</p>
+      <span class="lim" id="lim"></span>
+      ${two ? `<div class="tabs" id="tabs">${cur.maps.map((m, j) => `<button type="button" class="tab${j ? "" : " on"}" data-g="${j}"><span class="st" id="st${j}"></span>${T.garden(j + 1)}</button>`).join("")}</div>` : ""}
+      <div class="mapw" id="mapw"></div>
+      <p class="note" id="note" role="status" aria-live="polite"></p>
+      <div class="ctl"><button type="button" class="mk-btn" id="run">${T.run}</button>
+        <button type="button" class="sq" id="spd" aria-pressed="${fast}" aria-label="${T.speed}" title="${T.speed}"><svg viewBox="0 0 24 24"><path d="M3 6l8 6-8 6zM12 6l8 6-8 6z" fill="${K}"/></svg></button>
+        <button type="button" class="sq" id="clr" aria-label="${cur.pre ? T.reset : T.clear}" title="${cur.pre ? T.reset : T.clear}"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6" fill="none" stroke="${K}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      <div id="solw"></div>
+    </div>
+    <div id="progs"></div>
+    <div id="flow"></div>
+    <div class="pal" id="pal"><h4>${T.palette}</h4><div class="pb">${pal.map(p => {
+      const t = PK[p], lab = p === "ifF" ? T.b.ifShortF : p === "ifW" ? T.b.ifShortW : p === "rep" ? T.b.repShort : T.b[p];
+      return `<button type="button" class="pk k-${t}" data-p="${p}" title="${T.bTip[p] || ""}"><span class="ic">${IC[p]}</span>${lab}</button>`; }).join("")}</div></div>`;
+  $("spd").classList.toggle("on", fast);
+  drawMap(0);
+  renderProg();
+  $("pal").onclick = e => { const b = e.target.closest(".pk"); if(!b || running || solved) return; MK.unlock(); addBlock(b.dataset.p); };
+  $("run").onclick = () => { MK.unlock(); running ? (stopReq = true) : runProg(); };
+  $("spd").onclick = () => { fast = !fast; $("spd").classList.toggle("on", fast); $("spd").setAttribute("aria-pressed", fast); MK.sfx.tap(); };
+  $("clr").onclick = () => { if(running || solved) return; MK.sfx.tap(); prog = cur.pre ? { main: clone(cur.pre.main), proc: clone(cur.pre.proc) } : { main: [], proc: [] }; cursor = { list: prog.main, idx: prog.main.length }; renderProg(); drawMap(gi); note(""); };
+  if(two) $("tabs").onclick = e => { const b = e.target.closest(".tab"); if(!b || running) return; MK.sfx.tap(); drawMap(+b.dataset.g); };
+  window.scrollTo({ top: 0 });
+}
+function drawMap(g){
+  gi = g; const m = cur.maps[g];
+  $("mapw").innerHTML = mapSvg(m, robotCol(), "m");
+  $("mapw").style.maxWidth = Math.min(420, m.w * 56) + "px";
+  const tabs = $("tabs"); if(tabs) [...tabs.children].forEach((b, j) => b.classList.toggle("on", j === g));
+  setBot(m.start.x, m.start.y, m.start.d * 90, true);
+}
+let botAng = 0;
+function setBot(x, y, ang, inst){
+  const b = $("mbot"); if(!b) return; botAng = ang;
+  b.style.setProperty("--sp", inst ? "0s" : (fast ? ".14s" : ".38s"));
+  b.style.transform = `translate(${x * C + C / 2}px, ${y * C + C / 2}px) rotate(${ang}deg)`;
+}
+function note(t, cls){ const n = $("note"); n.className = "note" + (cls ? " " + cls : ""); n.innerHTML = t; }
+
+/* ----- programos redaktorius ----- */
+function findNode(id, lists){
+  let hit = null;
+  const go = (list, owner) => list.forEach((b, j) => { if(hit) return; if(b.id === id) hit = { b, list, j, owner }; if(b.body) go(b.body, owner); if(b.els) go(b.els, owner); });
+  (lists || [prog.main, prog.proc]).forEach(l => go(l, l));
+  return hit;
+}
+function listOwner(list){ // pagrindinė ar paprogramė
+  let r = null; const go = (l, o) => { if(l === list) r = o; l.forEach(b => { if(b.body) go(b.body, o); if(b.els) go(b.els, o); }); };
+  go(prog.main, "main"); go(prog.proc, "proc"); return r;
+}
+function addBlock(p){
+  if(count(prog.main) + count(prog.proc) >= MAXB) return;
+  const owner = listOwner(cursor.list);
+  if(p === "P" && owner === "proc") return;
+  let b;
+  if(p === "rep") b = rep(cur.lvl >= 2 ? 4 : 3, []);
+  else if(p === "ifF") b = ifn("f", []);
+  else if(p === "ifW") b = ifn("w", []);
+  else b = nd(p);
+  cursor.list.splice(cursor.idx, 0, b);
+  MK.sfx.tap();
+  if(b.body) cursor = { list: b.body, idx: 0 }; else cursor = { list: cursor.list, idx: cursor.idx + 1 };
+  renderProg(b.id);
+}
+function rowHtml(b){
+  const del = `<button type="button" class="x" data-del="${b.id}" aria-label="${T.del}">×</button>`;
+  const head = `<div class="row k-${b.t}" data-id="${b.id}"><span class="ic">${blockIcon(b)}</span><span class="lb">${blockLabel(b)}${b.t === "rep" ? `<span class="stp"><button type="button" data-dec="${b.id}" aria-label="−">−</button><output>${b.n}</output><button type="button" data-inc="${b.id}" aria-label="+">+</button></span>` : ""}</span>${del}</div>`;
+  if(b.t === "rep") return `<div class="box k-rep">${head}<div class="kids">${listHtml(b.body)}</div></div>`;
+  if(b.t === "if") return `<div class="box k-if">${head}<div class="kids">${listHtml(b.body)}</div><div class="els">${T.b.els}</div><div class="kids">${listHtml(b.els)}</div></div>`;
+  return head;
+}
+const LREG = new Map(); let lregN = 0;
+function listHtml(list){
+  const lid = "L" + (lregN++); LREG.set(lid, list);
+  let s = "";
+  list.forEach((b, j) => { if(cursor.list === list && cursor.idx === j && j > 0) s += `<div class="caret"></div>`; s += rowHtml(b); });
+  const isCur = cursor.list === list && cursor.idx === list.length;
+  s += `<div class="slot${isCur ? " cur" : ""}" data-l="${lid}">${list.length || isCur ? T.slotIn : T.slotIn}</div>`;
+  if(cursor.list === list && cursor.idx === 0 && list.length) s = `<div class="caret"></div>` + s;
+  return s;
+}
+function renderProg(focusId){
+  LREG.clear(); lregN = 0;
+  const n = count(prog.main) + count(prog.proc), lim = cur.limit;
+  const l = $("lim");
+  if(lim){ l.hidden = false; l.className = "lim" + (n > lim ? " over" : n ? " fine" : ""); l.textContent = `🧩 ${T.limit(lim)} · ${T.used(n, lim)}`; }
+  else { l.hidden = false; l.className = "lim"; l.textContent = `🧩 ${T.used(n)}`; }
+  let h = `<div class="prog" id="pm"><h3>${IC.F.replace("<svg", '<svg width="18" height="18"')}${T.main}</h3><div class="lst">${listHtml(prog.main)}</div></div>`;
+  if(cur.hasProc) h += `<div class="prog p2" id="pp"><h3>${IC.P.replace("<svg", '<svg width="20" height="20"')}${T.proc}</h3><p class="ph">${T.procHint}</p><div class="lst">${listHtml(prog.proc)}</div></div>`;
+  const pg = $("progs"); pg.innerHTML = h; pg.classList.toggle("running", running || solved);
+  pg.onclick = onProgClick;
+  const pal = $("pal"); pal.classList.toggle("running", running || solved);
+  const pb = pal.querySelector('[data-p="P"]'); if(pb) pb.disabled = listOwner(cursor.list) === "proc";
+  if(focusId){ const r = pg.querySelector(`[data-id="${focusId}"]`); if(r && r.scrollIntoView){ const rc = r.getBoundingClientRect(); const pbx = pal.getBoundingClientRect(); if(rc.bottom > pbx.top - 6 || rc.top < 0) r.scrollIntoView({ block: "center", behavior: "smooth" }); } }
+}
+function onProgClick(e){
+  if(running || solved) return;
+  const t = e.target;
+  const del = t.closest("[data-del]"), inc = t.closest("[data-inc]"), dec = t.closest("[data-dec]"), slot = t.closest(".slot"), row = t.closest(".row");
+  if(del){ const f = findNode(+del.dataset.del); if(!f) return; MK.sfx.tap(); f.list.splice(f.j, 1);
+    // jei žymeklis buvo ištrinto bloko viduje – grąžinam po juo
+    if(!listAlive(cursor.list)) cursor = { list: f.list, idx: f.j }; else if(cursor.list === f.list && cursor.idx > f.j) cursor.idx--;
+    renderProg(); return; }
+  if(inc || dec){ const f = findNode(+(inc || dec).dataset[inc ? "inc" : "dec"]); if(!f) return; f.b.n = Math.max(1, Math.min(20, f.b.n + (inc ? 1 : -1))); MK.sfx.tap(); renderProg(); return; }
+  if(slot){ const l = LREG.get(slot.dataset.l); if(l){ cursor = { list: l, idx: l.length }; MK.sfx.tap(); renderProg(); } return; }
+  if(row){ const f = findNode(+row.dataset.id); if(f){ cursor = { list: f.list, idx: f.j + 1 }; MK.sfx.tap(); renderProg(); } }
+}
+function listAlive(list){ let a = false; const go = l => { if(l === list) a = true; l.forEach(b => { if(b.body) go(b.body); if(b.els) go(b.els); }); }; go(prog.main); go(prog.proc); return a; }
+function markRow(id, cls){
+  document.querySelectorAll("#progs .row.cur").forEach(r => r.classList.remove("cur"));
+  if(id == null) return; const r = document.querySelector(`#progs [data-id="${id}"]`); if(r) r.classList.add(cls || "cur");
+}
+
+/* ----- vykdymas ----- */
+function msgFor(res){
+  const r = T.r;
+  return res.r === "bump" ? r.bump(res.s) : res.r === "waste" ? r.waste(res.s) : res.r === "flowers" ? r.flowers(res.n) : res.r === "goal" ? r.goal : r.long;
+}
+async function animate(g, e){
+  const m = cur.maps[g]; drawMap(g); await MK.wait(fast ? 150 : 380);
+  let ang = m.start.d * 90;
+  for(const s of e.tr){
+    if(stopReq) return "stop";
+    markRow(s.id);
+    if(s.e === "move"){ setBot(s.x, s.y, ang); MK.sfx.hop(Math.abs(s.x + s.y)); }
+    else if(s.e === "turn"){ ang += s.s * 90; setBot(s.x, s.y, ang); MK.sfx.tap(); }
+    else if(s.e === "water"){ const [x, y] = s.k.split(","); const f = $(`mf${x}_${y}`), d = $(`md${x}_${y}`); if(d){ d.classList.remove("dgo"); void d.getBBox; d.classList.add("dgo"); } MK.sfx.whoosh(); setTimeout(() => f && f.classList.add("on"), fast ? 120 : 300); }
+    else if(s.e === "bump"){ const b = $("mbot"); b.classList.remove("bump"); void b.getBoundingClientRect(); b.classList.add("bump"); MK.sfx.bad(); }
+    else if(s.e === "waste"){ MK.sfx.bad(); }
+    await MK.wait(s.e === "cond" || s.e === "loop" || s.e === "call" ? (fast ? 90 : 260) : (fast ? 170 : 430));
+  }
+  return "done";
+}
+async function runProg(){
+  if(running || solved) return;
+  const n = count(prog.main) + count(prog.proc);
+  if(!n){ note(T.r.empty, "warn"); MK.sfx.bad(); return; }
+  const usesP = flatHasP(prog.main);
+  if(usesP && !prog.proc.length){ note(T.r.procEmpty, "warn"); MK.sfx.bad(); return; }
+  running = true; stopReq = false; runs++; renderProg(); $("run").textContent = T.stop; note(T.r.tries(runs));
+  let fail = null;
+  for(let g = 0; g < cur.maps.length; g++){
+    const e = exec(prog.main, prog.proc, cur.maps[g]);
+    const st = await animate(g, e);
+    if(st === "stop"){ running = false; $("run").textContent = T.run; markRow(null); renderProg(); note(""); runs--; return; }
+    const sEl = $("st" + g);
+    if(e.res.r !== "ok"){ fail = { g, res: e.res }; if(sEl){ sEl.className = "st bad"; sEl.textContent = "✗"; } break; }
+    if(sEl){ sEl.className = "st ok"; sEl.textContent = "✓"; }
+    if(g < cur.maps.length - 1){ MK.sfx.good(); await MK.wait(700); }
+  }
+  running = false; $("run").textContent = T.run; renderProg();
+  const pre = cur.maps.length > 1 && fail ? T.r.inGarden(fail.g + 1) : "";
+  if(fail){
+    note(pre + msgFor(fail.res), "warn"); if(fail.res.id) markRow(fail.res.id, "err");
+    if(runs >= 3 && !showed && !$("solb")) addSolBtn();
+    return;
+  }
+  if(cur.limit && n > cur.limit){ note(T.r.okLong(n, cur.limit) + " " + T.r.okLongTip[cur.lvl + 1], "warn"); MK.sfx.tap(); if(runs >= 3 && !showed && !$("solb")) addSolBtn(); return; }
+  win(n);
+}
+function flatHasP(list){ return list.some(b => b.t === "P" || (b.body && flatHasP(b.body)) || (b.els && flatHasP(b.els))); }
+function addSolBtn(){
+  const b = document.createElement("button"); b.type = "button"; b.className = "mk-btn alt solb"; b.id = "solb"; b.textContent = T.showSol;
+  b.onclick = () => { if(running) return; MK.sfx.tap(); showed = true; prog = { main: clone(cur.sol.main), proc: clone(cur.sol.proc) }; cursor = { list: prog.main, idx: prog.main.length }; renderProg(); b.remove(); note(T.solShown, "good"); drawMap(0); };
+  $("solw").appendChild(b);
+}
+function progText(list, ind){
+  ind = ind || ""; let s = "";
+  for(const b of list){
+    if(b.t === "rep"){ s += `${ind}${T.b.rep(b.n)}:\n${progText(b.body, ind + "    ")}`; }
+    else if(b.t === "if"){ s += `${ind}${blockLabel(b)}:\n${progText(b.body, ind + "    ") || ind + "    –\n"}${b.els.length ? `${ind}${T.b.els}:\n${progText(b.els, ind + "    ")}` : ""}`; }
+    else s += `${ind}${T.b[b.t]}\n`;
+  }
+  return s;
+}
+function solText(){
+  const s = cur.sol; let t = (cur.hasProc ? `${T.main}:\n` : "") + progText(s.main);
+  if(cur.hasProc) t += `\n${T.proc}:\n${progText(s.proc)}`;
+  return `<div class="code">${MK.esc(t.trimEnd())}</div>`;
+}
+function win(n){
+  solved = true; markRow(null); renderProg(); MK.sfx.good(); $("pal").hidden = true;
+  const good = runs <= 2 && !showed;
+  dots.mark(ti, good); if(good) okN++;
+  const p = showed ? 0 : runs === 1 ? 10 : runs === 2 ? 7 : 4; if(p) award(p);
+  if(!showed){ const g = MK.get(GK, []); if(g.length < 120){ g.push(L); MK.set(GK, g); } planted++; }
+  note(T.r.ok, "good");
+  const lvlTip = T.tip[cur.lvl];
+  const body = showed ? T.wMiss : T.wUsed(n, cur.best);
+  const more = `${T.wSol}${solText()}${cur.bug ? `<p>${T.bugTip[cur.bug]}</p>` : ""}<p>${lvlTip}</p><p>${T.wSame}</p>`;
+  const d = document.createElement("div");
+  d.innerHTML = MK.why({ ok: !showed, head: showed ? T.wMiss.split(" – ")[0] : P(T.wOk), body: showed ? "" : body, more, sum: T.why, open: showed || n > cur.best });
+  $("flow").appendChild(d.firstElementChild);
+  const go = document.createElement("button"); go.type = "button"; go.className = "mk-btn go"; go.textContent = ti < tasks.length - 1 ? T.next : T.finish;
+  go.onclick = () => { MK.sfx.tap(); ti++; ti < tasks.length ? show() : finish(); };
+  $("flow").appendChild(go);
+  const sb = $("solb"); if(sb) sb.remove();
+  setTimeout(() => go.scrollIntoView({ behavior: "smooth", block: "center" }), 250);
+}
+function finish(){
+  const total = tasks.length, stars = MK.starsFor(okN, total); MK.best(GAME, LEVELS[L].id, stars);
+  const s2 = totalStars(); const newC = COLOR_AT.findIndex((t, j) => j > 0 && starsBefore < t && s2 >= t);
+  let txt = T.res(okN, total, pts);
+  if(planted) txt += `<br><b>${T.newFlowers(planted)}</b>`;
+  if(newC > 0) txt += `<br><b>${T.newColor(T.colorNames[newC])}</b>`;
+  MK.result({ stars, title: `${okN} / ${total}`, text: txt,
+    next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(planted) });
+}
+Object.defineProperty(window, "__cur", { get: () => cur });
+window.__MK_TEST = { t1, t2, t3, t4, t5, genLevel, exec, count, flat, solves, clone, get prog(){ return prog; }, set prog(v){ prog = v; cursor = { list: prog.main, idx: prog.main.length }; renderProg(); }, runProg, LEVELS };
+showMenu();
+})();
+</script>
+</body>
+</html>
