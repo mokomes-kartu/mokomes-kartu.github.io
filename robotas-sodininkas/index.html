@@ -6,7 +6,6 @@
 <title>Robotas sodininkas – MokomėsKartu.lt</title>
 <meta name="description" content="5–6 klasių informatikos žaidimas: sudėliok programą iš komandų – komandų seka, kartojimo ir pasirinkimo komandos, paprogramės, programos testavimas ir taisymas.">
 <meta name="theme-color" content="#fff9e6">
-<meta name="robots" content="noindex">
 <link rel="icon" href="/logo/mk-ikona.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -299,18 +298,24 @@ function t1(i){
 
 /* 2 lygis – kartojimo komanda (blokų riba neleidžia rašyti visko paeiliui) */
 function t2(i){
-  const fams = i < 2 ? ["A", "B"] : i < 5 ? ["B", "C", "D", "F"] : ["D", "E", "F", "C"];
+  const fams = i < 2 ? ["A", "B", "D"] : i < 5 ? ["B", "C", "D", "D", "D", "F", "H"] : ["D", "D", "D", "E", "F", "G", "H", "I"];
   return tryGen(() => {
     const f = P(fams), turn = P(["L", "R"]), o = opp(turn); let main;
     if(f === "A"){ const k = R(1, 2); main = [rep(R(3, 5), tok("F ".repeat(k) + "W"))]; }
     else if(f === "B"){ const n = R(3, 4); main = [rep(n, Math.random() < .5 ? tok(`F ${turn} F ${o} W`) : tok(`F W ${turn} F ${o}`))]; }
     else if(f === "C"){ const k = R(2, 3); main = [rep(3, tok("F ".repeat(k) + "W " + turn))]; }
     else if(f === "D"){
-      const len = R(3, 5); let body;
-      for(let t = 0; t < 30; t++){ body = Array.from({ length: len }, () => P(["F", "F", "F", "L", "R", "W"])); if(body.includes("W") && body.filter(c => c === "F").length >= 2 && body.filter(c => c === "W").length === 1) break; }
-      main = [rep(R(3, 4), tok(body.join(" ")))];
+      const len = R(3, i < 5 ? 5 : 7); let body, good = false;
+      for(let t = 0; t < 40 && !good; t++){ body = Array.from({ length: len }, () => P(["F", "F", "F", "L", "R", "W"])); const w = body.filter(c => c === "W").length;
+        good = w >= 1 && w <= (len > 5 ? 2 : 1) && body.filter(c => c === "F").length >= 2 && !/L R|R L|L L L|R R R|W W/.test(body.join(" ")); }
+      if(!good) return null;
+      main = [rep(R(len > 5 ? 2 : 3, 4), tok(body.join(" ")))];
+      if(i >= 3 && Math.random() < .4) main.push(...tok(P(["F", "F W", "L F", "R F", "F F"])));
     }
     else if(f === "E"){ const k = R(3, 4); main = [rep(R(2, 3), [rep(k, [F()]), Wt(), nd(turn)])]; }
+    else if(f === "G"){ const k = R(2, 3); main = [rep(R(2, 3), [rep(k, [F()]), Wt(), nd(turn), F(), nd(o)])]; }
+    else if(f === "H"){ main = [rep(R(2, 3), tok(`F W ${turn} F ${o}`)), ...tok(P(["F", "F F", turn, o + " F"])), rep(R(2, 4), tok(P(["F W", "F F W", `F ${o} F W ${turn}`])))]; }
+    else if(f === "I"){ const k = R(2, 4); main = [rep(2, [rep(k, tok("F W")), nd(turn), F(), nd(turn)])]; }
     else { const a = R(3, 4), b = R(2, 4); main = [rep(a, tok("F W")), nd(turn), rep(b, tok("F W"))]; }
     if(Math.random() < .3) main.unshift(nd(P(["L", "R"])));
     const seq = flat(main), c = count(main);
@@ -322,57 +327,62 @@ function t2(i){
   });
 }
 
-/* 3 lygis – pasirinkimo komanda. Du sodai, viena programa. */
-function corridor(turn, n){
-  const segs = Array.from({ length: n }, (_, j) => R(j === 0 ? 2 : 1, 4));
-  const seq = [];
-  segs.forEach((l, j) => { for(let k = 0; k < l; k++) seq.push("F"); if(j < n - 1) seq.push(turn); });
-  return seq;
+/* 3 lygis – pasirinkimo komanda. Du sodai, viena programa.
+   Programa sudedama iš dalių: FL – gėlių eilė, ST – gėlių laiptai, galinė dalis – koridorius (CO), koridorius su gėlėmis (COF),
+   gėlės kampuose (CW); prieš jas gali būti paprasta įžanga. Sodai skiriasi gėlių vietomis ir koridoriaus forma. */
+function walk2(seq, d){
+  let x = 0, y = 0; const cells = [[0, 0]], seen = new Set([key(0, 0)]), chk = [], cor = [];
+  for(const c of seq){
+    if(c === "F"){ x += DX[d]; y += DY[d]; const k = key(x, y); if(seen.has(k)) return null; seen.add(k); cells.push([x, y]); }
+    else if(c === "L") d = (d + 3) % 4;
+    else if(c === "R") d = (d + 1) % 4;
+    else if(c === "C") chk.push(key(x, y));
+    else if(c === "K") cor.push(key(x, y));
+  }
+  return { cells, wat: [], chk, cor };
 }
 function t3(i){
-  const type = i < 2 ? "flower" : i < 4 ? P(["wall", "flower"]) : P(["wall", "both", "both"]);
   return tryGen(() => {
-    const turn = P(["L", "R"]);
-    if(type === "flower"){
-      const shape = P(["line", "line", "L", "stair"]), cf = () => ifn("f", [Wt()]);
-      let main;
-      if(shape === "line") main = [rep(R(5, 6), [F(), cf()])];
-      else if(shape === "L") main = [rep(R(3, 4), [F(), cf()]), nd(turn), rep(R(2, 4), [F(), cf()])];
-      else main = [rep(R(3, 4), [F(), nd(turn), F(), nd(opp(turn)), cf()])];
-      const seq = flat(main), d0 = R(0, 3), tr = trace(seq, d0); if(!tr) return null;
-      const m1 = mkMap(tr, d0); if(!m1) return null;
-      const ch = m1.chk.filter(k => k !== m1.goal), nf = ch.length; if(nf < 4) return null;
-      const pickSet = () => new Set(SH(ch).slice(0, R(2, Math.max(2, nf - 2))));
-      const s1 = pickSet(); let s2, t = 0; do{ s2 = pickSet(); t++; }while([...s1].sort().join() === [...s2].sort().join() && t < 20);
-      if([...s1].sort().join() === [...s2].sort().join()) return null;
-      const m2 = Object.assign({}, m1, { walk: new Set(m1.walk), flowers: s2 }); m1.flowers = s1;
-      const tk = { lvl: 2, maps: [m1, m2], sol: { main, proc: [] }, pal: PAL3, kind: type };
-      if(!solves(tk, main) || flatWorksOther(tk)) return null;
-      tk.limit = tk.best = count(main); return tk;
-    }
-    // „wall“ ir „both“: koridorius su vienodais posūkiais
+    const T1 = () => P(["L", "R"]);
+    const heads = i < 2 ? [["FL"], ["FL"], ["ST"], ["FL", "FL"]] : i < 4 ? [["FL", "FL"], ["ST"], ["FL", "ST"], ["ST", "FL"], [], ["FL"]] : [["FL"], ["ST"], [], [], ["FL", "FL"], ["FL"]];
+    const head = P(heads);
+    const tail = i < 2 ? null : i < 4 ? P([null, "CO", "CO", "CW"]) : P(["CO", "COF", "COF", "CW", "CW"]);
+    if(!head.length && !tail) return null;
+    const pre = i >= 2 && Math.random() < .4 ? P([["F"], ["F", "F"], [T1(), "F"], ["F", T1(), "F"]]) : [];
+    // bendra abiem sodams dalis
+    const main = pre.map(c => nd(c)), common = pre.slice();
+    head.forEach((h, j) => {
+      if(j || pre.length){ if(j || Math.random() < .6){ const t = T1(); main.push(nd(t)); common.push(t); } }
+      if(h === "FL"){ const a = R(head.length > 1 || tail ? 3 : 5, head.length > 1 || tail ? 4 : 6); main.push(rep(a, [F(), ifn("f", [Wt()])])); for(let k = 0; k < a; k++) common.push("F", "C"); }
+      else { const a = R(3, tail || head.length > 1 ? 3 : 5), t = T1(), o = opp(t), ord = Math.random() < .5; main.push(rep(a, ord ? [F(), nd(t), F(), nd(o), ifn("f", [Wt()])] : [F(), ifn("f", [Wt()]), nd(t), F(), nd(o)]));
+        for(let k = 0; k < a; k++) ord ? common.push("F", t, "F", o, "C") : common.push("F", "C", t, "F", o); }
+    });
+    let ct = null;
+    if(tail){ if(common.length){ const t = T1(); main.push(nd(t)); common.push(t); } ct = T1(); }
     const maps = [];
     for(let g = 0; g < 2; g++){
-      const seq = corridor(turn, R(3, 4)), d0 = R(0, 3), tr = trace(seq, d0); if(!tr) return null;
+      const seq = common.slice(), nF0 = seq.filter(c => c === "F").length;
+      if(tail){ const segs = Array.from({ length: R(3, 4) }, (_, j) => R(j === 0 ? 2 : 1, 3)); segs.forEach((l, j) => { for(let k = 0; k < l; k++) seq.push("F"); if(j < segs.length - 1) seq.push("K", ct); }); }
+      const d0 = R(0, 3), tr = walk2(seq, d0); if(!tr) return null;
       const m = mkMap(tr, d0); if(!m) return null;
-      if(type === "both"){
-        const cand = [...m.walk].filter(k => k !== key(m.start.x, m.start.y) && k !== m.goal);
-        m.flowers = new Set(SH(cand).slice(0, R(2, 3)));
-      }
-      maps.push(m);
+      const ox = m.start.x, oy = m.start.y, sh = k => { const [a, b] = k.split(",").map(Number); return key(a + ox, b + oy); };
+      const fl = new Set(), chk = m.chk.filter(k => k !== m.goal);
+      if(chk.length){ if(chk.length < 3) return null; SH(chk).slice(0, R(1, chk.length - 1)).forEach(k => fl.add(k)); }
+      if(tail === "CW") tr.cor.forEach(k => fl.add(sh(k)));
+      if(tail === "COF"){ const cc = tr.cells.slice(nF0 + 1).map(c => key(c[0] + ox, c[1] + oy)).filter(k => k !== m.goal); SH(cc).slice(0, R(2, 3)).forEach(k => fl.add(k)); }
+      m.flowers = fl; maps.push(m);
     }
-    if(maps[0].walk.size === maps[1].walk.size && [...maps[0].walk].join() === [...maps[1].walk].join()) return null;
-    const body = type === "wall" ? [ifn("w", [nd(turn)], [F()])] : [ifn("f", [Wt()]), ifn("w", [nd(turn)], [F()])];
-    const probe = [rep(60, body)];
-    for(const m of maps) if(exec(probe, null, m, 2000).res.r !== "ok") return null;
-    // mažiausias kartojimų skaičius, kuris tinka abiem sodams
-    let n = 1; for(; n <= 40; n++){ const mm = [rep(n, clone(body))]; if(maps.every(m => exec(mm, null, m).res.r === "ok")) break; }
-    if(n > 40) return null;
-    const main = [rep(n, body)];
-    const tk = { lvl: 2, maps, sol: { main, proc: [] }, pal: PAL3, kind: type };
+    if(tail){
+      const body = () => tail === "CO" ? [ifn("w", [nd(ct)], [F()])] : tail === "CW" ? [ifn("w", [Wt(), nd(ct)], [F()])] : [ifn("f", [Wt()]), ifn("w", [nd(ct)], [F()])];
+      let n = 1, okn = false;
+      for(; n <= 30; n++){ const mm = main.concat([rep(n, body())]); if(maps.every(m => exec(mm, null, m).res.r === "ok")){ okn = true; break; } }
+      if(!okn) return null;
+      main.push(rep(n, body()));
+    }
+    const tk = { lvl: 2, maps, sol: { main, proc: [] }, pal: PAL3, kind: head.join("+") + (tail ? ">" + tail : "") + (pre.length ? "^" : "") };
     if(!solves(tk, main) || flatWorksOther(tk)) return null;
     tk.limit = tk.best = count(main); return tk;
-  });
+  }, 3000);
 }
 
 /* 4 lygis – paprogramė (pasikartojantis gabalas su skirtingais tarpais tarp jų) */
