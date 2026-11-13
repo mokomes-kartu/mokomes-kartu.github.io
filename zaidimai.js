@@ -321,5 +321,39 @@ window.MK_ZAIDIMAI = [
   "desc": "Sudėk kablelius į sakinius, paleisk spaustuvę ir užpildyk knygų lentyną.",
   "url": "/skyrybos-spaustuve/",
   "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMyYjU5ZDkiLz48cmVjdCB4PSIxMiIgeT0iMTAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0NCIgcng9IjciIGZpbGw9IiNmZmZiZWEiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48Y2lyY2xlIGN4PSIzMSIgY3k9IjI2IiByPSI3LjUiIGZpbGw9IiMxMjFhMzMiLz48cGF0aCBkPSJNMzcuNSAyOWMwIDgtMy42IDEzLjQtMTAuNCAxNi40bC0xLjUtMy40YzQuNi0yLjEgNy01LjIgNy4zLTkuNnoiIGZpbGw9IiMxMjFhMzMiLz48cGF0aCBkPSJNMTggNTBoMjgiIHN0cm9rZT0iI2ZmZDg0ZCIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg=="
+ },
+ {
+  "id": "kartografo-ekspedicija",
+  "subject": "geo",
+  "grades": [
+   6,
+   7
+  ],
+  "title": "Kartografo ekspedicija",
+  "desc": "Pasaulio kryptys, mastelis ir koordinatės – pasodink vėliavėles visuose žemynuose.",
+  "url": "/kartografo-ekspedicija/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMwZTg1N2EiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIyMiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNMzIgMTFsNiAyMS02IDIxLTYtMjF6IiBmaWxsPSIjZDk0MDJiIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTMyIDUzbC02LTIxaDEyeiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iMzIiIHI9IjMuNCIgZmlsbD0iI2ZmZDg0ZCIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjEuNiIvPjwvc3ZnPg=="
+ },
+ {
+  "id": "stoties-laikrodis",
+  "subject": "mat",
+  "grades": [
+   3
+  ],
+  "title": "Stoties laikrodis",
+  "desc": "Laikrodis, trukmė, tvarkaraštis ir kalendorius – pakabink vagonus prie traukinio.",
+  "url": "/stoties-laikrodis/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMxYjg0ZDgiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIyMyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjMiLz48ZyBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxwYXRoIGQ9Ik0zMiAxMnY1TTMyIDQ3djVNMTIgMzJoNU00NyAzMmg1Ii8+PC9nPjxwYXRoIGQ9Ik0zMiAzMlYxOU0zMiAzMmwxMCA2IiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMy42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIzIiBmaWxsPSIjZTU1MzNkIi8+PC9zdmc+"
+ },
+ {
+  "id": "meteorologijos-stotis",
+  "subject": "geo",
+  "grades": [
+   6
+  ],
+  "title": "Meteorologijos stotis",
+  "desc": "Skaityk, skaičiuok ir braižyk klimatogramas – įjunk pasaulio stočių tinklą.",
+  "url": "/meteorologijos-stotis/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiNlODU5MGMiLz48cmVjdCB4PSI4IiB5PSI5IiB3aWR0aD0iNDgiIGhlaWdodD0iNDYiIHJ4PSI4IiBmaWxsPSIjZmZmOWYxIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHJlY3QgeD0iMTUiIHk9IjM2IiB3aWR0aD0iNiIgaGVpZ2h0PSIxMiIgZmlsbD0iIzdmYzBlZSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjEuNiIvPjxyZWN0IHg9IjI1IiB5PSIzMCIgd2lkdGg9IjYiIGhlaWdodD0iMTgiIGZpbGw9IiM3ZmMwZWUiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48cmVjdCB4PSIzNSIgeT0iMzgiIHdpZHRoPSI2IiBoZWlnaHQ9IjEwIiBmaWxsPSIjN2ZjMGVlIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHJlY3QgeD0iNDUiIHk9IjMzIiB3aWR0aD0iNSIgaGVpZ2h0PSIxNSIgZmlsbD0iIzdmYzBlZSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjEuNiIvPjxwYXRoIGQ9Ik0xMyAzMHE5LTE0IDE4LTd0MTMtOSA4IDUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2U4NTkwYyIgc3Ryb2tlLXdpZHRoPSIzLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg=="
  }
 ];
