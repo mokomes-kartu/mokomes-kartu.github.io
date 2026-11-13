@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kartografo ekspedicija – MokomėsKartu.lt</title>
+<meta name="description" content="Geografijos žaidimas 6–7 klasėms: pasaulio kryptys, mastelis ir geografinės koordinatės – pasodink vėliavėles visuose žemynuose.">
+<meta name="theme-color" content="#f1f5ec">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<script src="zemelapis.js"></script>
+<style>
+/* Kartografo ekspedicija: popierinis žemėlapis, kompasas, vėliavėlės. */
+body{--paper:#f1f5ec;--grid:#dce8d6;--soft:#4b5a57;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#0e857a;--ac-ink:#fff;--ac-soft:#d6f0eb;--red:#d9402b;--sea:#cfe9f5}
+.mk-ico[data-k="music"]{display:none}
+.mk-lvl{border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink)}
+.mk-lvl-art{border-radius:10px;background:var(--ac-soft)}
+.mk-lvl-art svg{width:50px;height:50px}
+.mk-lvl-t b{font-size:16px;letter-spacing:-.02em}
+.mk-lvl-t small{font-size:13.5px}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(28px,7.6vw,48px)}
+.mk-hero p{max-width:42ch}
+.mk-btn{border-radius:12px;font-size:17px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res .mk-owl{display:none}
+.mk-res h2{font-size:23px;letter-spacing:-.03em}
+.mk-sec{font-size:16px}
+.mk-hero-art{width:min(460px,100%)}
+.hero-card{background:#fff;border-radius:18px;padding:6px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.hero-card svg{display:block;width:100%;height:auto;border-radius:12px}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+
+/* ekspedicijos žemėlapis (vėliavėlės) */
+.shelf{max-width:520px;margin:0 auto}
+.fmap{background:#fff;border-radius:12px;padding:6px;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.fmap svg{display:block;width:100%;height:auto;border-radius:8px}
+.fl{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 10px;margin:10px 2px 0;font:700 12.5px/1.25 var(--body);color:var(--soft)}
+.fl span{display:flex;align-items:center;gap:6px}
+.fl i{width:12px;height:12px;border-radius:3px;flex:none;box-shadow:inset 0 0 0 1.8px var(--ink)}
+.fl .no{opacity:.55}
+.sbar{height:10px;border-radius:6px;background:#dfe9e4;box-shadow:inset 0 0 0 2px var(--ink);margin:10px 0 4px;overflow:hidden}
+.sbar i{display:block;height:100%;background:var(--ac)}
+.stext{margin:0;font:700 14px/1.4 var(--body);color:var(--soft)}
+.fresh{animation:mkPop .7s cubic-bezier(.2,1.6,.4,1);transform-box:fill-box;transform-origin:50% 100%}
+
+/* žaidimo kortelė */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;background:#fff;font:800 17px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink)}
+.chip small{font:800 11px/1 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.card{background:#fff;border-radius:14px;padding:14px 12px 16px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.chead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.chead small{display:block;font:800 12px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+.mini{width:46px;height:46px;flex:none}
+.task{font:700 clamp(15.5px,4.3vw,18px)/1.45 var(--body);margin-top:6px}
+.art{margin:10px 0 4px}
+.art svg{display:block;width:100%;height:auto;max-width:420px;margin:0 auto;border-radius:10px}
+.art svg.dial{max-width:240px}
+.art svg.geo{max-width:520px}
+.opts{display:grid;gap:9px;margin-top:12px}
+.opts.c3{grid-template-columns:repeat(3,1fr)}
+.opts.g2{grid-template-columns:repeat(2,1fr)}
+.opts.g4{grid-template-columns:repeat(4,1fr)}
+.opts.g1{grid-template-columns:1fr}
+.opt{position:relative;min-height:50px;padding:8px 8px;border:0;border-radius:12px;background:#fff;cursor:pointer;font:800 clamp(13px,3.7vw,15.5px)/1.2 var(--body);color:var(--ink);box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 var(--ink);touch-action:manipulation;transition:transform .08s,box-shadow .08s;display:grid;place-items:center;text-align:center;overflow-wrap:anywhere}
+.opt:not(:disabled):active{transform:translateY(3px);box-shadow:inset 0 0 0 2.5px var(--ink),0 1px 0 var(--ink)}
+.opt.big{font:800 22px/1 var(--kid);min-height:54px}
+.opt.wrong{background:#ffe8e3;color:#8c2a1b;box-shadow:inset 0 0 0 2.5px var(--red);opacity:.85}
+.opt.right{background:#c9f2da;box-shadow:inset 0 0 0 3px #1f8a52,0 4px 0 #1f8a52}
+.opt:disabled{cursor:default}
+.opt.rose{background:transparent;box-shadow:none;pointer-events:none;min-height:50px;padding:0}
+.opt.rose svg{width:56px;height:56px}
+.opt small{display:block;font:700 10.5px/1.1 var(--body);color:var(--soft);margin-top:2px}
+.acts{margin-top:14px}
+.go{width:100%}
+.mk-why-m b,.mk-why-t p b{font-weight:800}
+.stamp{display:inline-block;margin-top:6px}
+@media (max-width:380px){.opt{padding:7px 4px}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1 id="h1"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div id="levels"></div>
+    <div class="shelf" id="shelf"></div>
+    <div id="learn"></div>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><span class="chip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="board"></div>
+    <div id="why"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "kartografo-ekspedicija", GRADES = [6, 7], N = 8, INK = "#121a33";
+const T = window.MK_T, G = window.MK_GEO, SH = MK.shuffle, R = MK.rnd, PK = MK.pick;
+const $ = id => document.getElementById(id);
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const mod8 = n => ((n % 8) + 8) % 8;
+const D = i => T.dirs[mod8(i)], DA = i => T.dirsAcc[mod8(i)], DG = i => T.dirsGen[mod8(i)];
+const fmtN = n => String(Math.round(n * 100) / 100).replace(".", ",");
+const fmtM = m => m >= 1000 ? fmtN(m / 1000) + " km" : fmtN(m) + " m";
+const spaced = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const numOf = n => "1 : " + spaced(n);
+const nameOf = m => T.q.scaleName(fmtM(m));
+const FLAGCOL = ["#2b59d9", "#e8772e", "#f2a900", "#d9402b", "#2f9e6e", "#8a4fd0", "#14899e"];
+const FLAGPOS = [[15, 50], [90, 46], [20, 4], [-100, 44], [-58, -13], [134, -25], [30, -80]];
+
+/* ---------- vietų piktogramos (40 × 40) ---------- */
+const ICON = {
+  tent: `<path d="M3 33L20 8l17 25z" fill="#e8772e" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M15 33l5-14 5 14z" fill="#7a3d10" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M20 8V4" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4h6v4h-6" fill="#d9402b" stroke="${INK}" stroke-width="1.6"/>`,
+  lighthouse: `<path d="M13 35l3.5-22h7L27 35z" fill="#fff" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M14.6 24h10.8l.9 6H13.7z" fill="#d9402b"/><rect x="15" y="8" width="10" height="6" rx="1.5" fill="#ffd84d" stroke="${INK}" stroke-width="2"/><path d="M14 8l6-5 6 5z" fill="#d9402b" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><path d="M9 35h22" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`,
+  lake: `<ellipse cx="20" cy="22" rx="16" ry="10" fill="#5bb8e8" stroke="${INK}" stroke-width="2.2"/><path d="M11 21q3-3 6 0t6 0 6 0M14 26q3-2 6 0t5 0" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><path d="M32 12v8M30 14h4" stroke="#2f9e6e" stroke-width="2" stroke-linecap="round"/>`,
+  mountain: `<path d="M2 34L15 9l8 14 5-7 10 18z" fill="#8a93a8" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M15 9l-5 9 3.5-2 2 3 3.5-3z" fill="#fff" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`,
+  cave: `<path d="M3 34Q4 9 20 9t17 25z" fill="#9b8f7a" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 34q0-12 8-12t8 12z" fill="#2b2a33" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><circle cx="17" cy="29" r="1.2" fill="#ffd84d"/><circle cx="23" cy="30" r="1.2" fill="#ffd84d"/>`,
+  bridge: `<path d="M2 18h36v6H2z" fill="#b9854e" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M6 24q3-8 7 0M16 24q4-10 8 0M27 24q3-8 7 0" fill="#5bb8e8" stroke="${INK}" stroke-width="1.8"/><path d="M2 32q4-3 8 0t8 0 8 0 8 0 4-1" fill="none" stroke="#5bb8e8" stroke-width="3" stroke-linecap="round"/><path d="M8 18v-5M20 18v-5M32 18v-5M6 13h28" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`,
+  mill: `<path d="M14 36l2-16h8l2 16z" fill="#e8d9b0" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M14 20l6-6 6 6z" fill="#d9402b" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><circle cx="20" cy="17" r="2" fill="${INK}"/><path d="M20 17L8 6M20 17l12 11M20 17l11-12M20 17L9 28" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><path d="M8 6l3-1M32 28l-3 1M31 5l-1 3M9 28l1-3" stroke="${INK}" stroke-width="3.4" stroke-linecap="round" opacity=".5"/>`,
+  port: `<path d="M3 26h34l-5 8H8z" fill="#8a5a2e" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M20 26V6" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/><path d="M20 7l10 14H20z" fill="#fff" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><path d="M20 10L12 22h8z" fill="#ffd84d" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><path d="M2 36q4-3 8 0t8 0 8 0 8 0" fill="none" stroke="#5bb8e8" stroke-width="2.6" stroke-linecap="round"/>`,
+  well: `<rect x="9" y="22" width="22" height="13" rx="2" fill="#a8a190" stroke="${INK}" stroke-width="2.2"/><path d="M9 28h22M16 22v6M24 28v7" stroke="${INK}" stroke-width="1.6"/><path d="M11 22V10M29 22V10" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><path d="M7 11l13-7 13 7z" fill="#b9854e" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M20 11v8" stroke="${INK}" stroke-width="1.8"/><rect x="18" y="18" width="4" height="4" fill="#8a5a2e" stroke="${INK}" stroke-width="1.4"/>`,
+  fire: `<path d="M8 34l22-6M32 34L10 28" stroke="#8a5a2e" stroke-width="5" stroke-linecap="round"/><path d="M8 34l22-6M32 34L10 28" stroke="${INK}" stroke-width="1.2" stroke-linecap="round" opacity=".5"/><path d="M20 8c2 6 8 8 8 15a8 8 0 0 1-16 0c0-4 3-5 3-9 2 1 3 3 3 5 2-3 3-7 2-11z" fill="#ff8a1f" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><path d="M20 20c1 3 4 4 4 7a4 4 0 0 1-8 0c0-2 2-3 2-5z" fill="#ffd84d"/>`,
+  castle: `<path d="M5 35V15h6v-4h2v4h2v-4h2v4h2v-4h2v4h2v-4h2v4h6v20z" fill="#b8b3c8" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M5 35V13M35 35V13" stroke="${INK}" stroke-width="2.2"/><path d="M15 35v-9a5 5 0 0 1 10 0v9z" fill="#4a3a5e" stroke="${INK}" stroke-width="2"/><path d="M20 11V4l6 2-6 2" fill="#d9402b" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`,
+  ruins: `<path d="M5 35V19l4-3v4l4-4v19zM17 35V12h7v23zM28 35V24l3-2 4 3v10z" fill="#c9c2ae" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M17 20h7M17 27h7" stroke="${INK}" stroke-width="1.5"/><path d="M3 36h34" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><path d="M28 31l3 4" stroke="#2f9e6e" stroke-width="2.2" stroke-linecap="round"/>`,
+  forest: `<path d="M12 35V27M28 35V27M20 35V29" stroke="#7a4b2a" stroke-width="3" stroke-linecap="round"/><path d="M12 8l8 10h-3l6 8H1l6-8H4z" fill="#2f9e6e" stroke="${INK}" stroke-width="2" stroke-linejoin="round" transform="translate(0 2)"/><path d="M30 12l8 10h-3l6 8H19l6-8h-3z" fill="#3fb77f" stroke="${INK}" stroke-width="2" stroke-linejoin="round" transform="translate(-4 0) scale(.9)"/>`,
+  village: `<path d="M3 35V22l9-8 9 8v13z" fill="#f3d9a4" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M1 23l11-10 11 10" fill="#d9402b" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><rect x="9" y="27" width="6" height="8" fill="#7a4b2a" stroke="${INK}" stroke-width="1.6"/><path d="M23 35V25l7-6 8 6v10z" fill="#e7b9a0" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><rect x="28" y="28" width="5" height="7" fill="#7a4b2a" stroke="${INK}" stroke-width="1.6"/>`
+};
+const place = (kind, x, y, s) => `<g transform="translate(${(x - 20 * s).toFixed(1)} ${(y - 20 * s).toFixed(1)}) scale(${s})">${ICON[kind]}</g>`;
+
+/* ---------- kompaso rožė ir ciferblatas ---------- */
+/* o: north – šiaurės rodyklės kampas (° pagal laikrodžio rodyklę nuo viršaus), letters, needle, kid (kampas arba null), kidLabel */
+function dial(o){
+  const cx = 110, cy = 110, r = 86, nth = o.north || 0;
+  let s = `<svg class="dial" viewBox="-18 -18 256 256" role="img" aria-label="Kompaso ciferblatas"><circle cx="${cx}" cy="${cy}" r="100" fill="#fff" stroke="${INK}" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="${r + 6}" fill="#f6f1de" stroke="${INK}" stroke-width="2"/>`;
+  for(let i = 0; i < 24; i++){
+    const a = (i * 15 + nth) * Math.PI / 180, big = i % 3 === 0, r1 = r + 4, r2 = big ? r - 6 : r - 1;
+    s += `<line x1="${(cx + r1 * Math.sin(a)).toFixed(1)}" y1="${(cy - r1 * Math.cos(a)).toFixed(1)}" x2="${(cx + r2 * Math.sin(a)).toFixed(1)}" y2="${(cy - r2 * Math.cos(a)).toFixed(1)}" stroke="${INK}" stroke-width="${big ? 2.4 : 1.2}"/>`;
+  }
+  /* 8 spindulių žvaigždė */
+  for(let k = 0; k < 8 && !o.plain; k++){
+    const a = (k * 45 + nth) * Math.PI / 180, len = k % 2 ? 40 : 64, w = k % 2 ? 7 : 10;
+    const tx = cx + len * Math.sin(a), ty = cy - len * Math.cos(a), bx = Math.cos(a) * w, by = Math.sin(a) * w;
+    s += `<path d="M${(cx - bx).toFixed(1)} ${(cy - by).toFixed(1)}L${tx.toFixed(1)} ${ty.toFixed(1)}L${(cx + bx).toFixed(1)} ${(cy + by).toFixed(1)}z" fill="${k % 2 ? "#f2c75a" : "#e8d9a8"}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`;
+  }
+  if(o.letters){
+    ["Š", "R", "P", "V"].forEach((L, i) => {
+      const a = (i * 90 + nth) * Math.PI / 180, lx = cx + 114 * Math.sin(a), ly = cy - 114 * Math.cos(a);
+      s += `<text x="${lx.toFixed(1)}" y="${(ly + 6).toFixed(1)}" text-anchor="middle" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="19" fill="${i === 0 ? "#d9402b" : INK}">${L}</text>`;
+    });
+  }
+  if(o.needle != null){
+    const a = o.needle * Math.PI / 180, ex = Math.sin(a), ey = -Math.cos(a);
+    const p = (len, w) => `${(cx + len * ex - w * ey).toFixed(1)} ${(cy + len * ey + w * ex).toFixed(1)}`;
+    const q = (len, w) => `${(cx + len * ex + w * ey).toFixed(1)} ${(cy + len * ey - w * ex).toFixed(1)}`;
+    s += `<path d="M${p(0, 9)}L${(cx + 76 * ex).toFixed(1)} ${(cy + 76 * ey).toFixed(1)}L${q(0, 9)}z" fill="#d9402b" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M${p(0, 9)}L${(cx - 76 * ex).toFixed(1)} ${(cy - 76 * ey).toFixed(1)}L${q(0, 9)}z" fill="#fff" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+      <circle cx="${cx}" cy="${cy}" r="6" fill="#ffd84d" stroke="${INK}" stroke-width="2"/>`;
+    s += `<text x="${(cx + 92 * ex).toFixed(1)}" y="${(cy + 92 * ey + 5).toFixed(1)}" text-anchor="middle" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="15" fill="#d9402b" stroke="#fff" stroke-width="4" paint-order="stroke">Š</text>`;
+  }
+  if(o.kid != null){
+    const a = o.kid * Math.PI / 180, ex = Math.sin(a), ey = -Math.cos(a), len = o.needle != null ? 70 : 74;
+    const hx = cx + len * ex, hy = cy + len * ey;
+    s += `<path d="M${cx} ${cy}L${hx.toFixed(1)} ${hy.toFixed(1)}" stroke="${INK}" stroke-width="7" stroke-linecap="round"/>
+      <path d="M${(hx + 12 * ex - 9 * ey).toFixed(1)} ${(hy + 12 * ey + 9 * ex).toFixed(1)}L${(hx + 20 * ex).toFixed(1)} ${(hy + 20 * ey).toFixed(1)}L${(hx + 12 * ex + 9 * ey).toFixed(1)} ${(hy + 12 * ey - 9 * ex).toFixed(1)}z" fill="${INK}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`;
+    /* vaikas iš viršaus: galva su skrybėle */
+    s += `<circle cx="${cx}" cy="${cy}" r="17" fill="#f5c9a0" stroke="${INK}" stroke-width="2.6"/><circle cx="${cx}" cy="${cy}" r="12" fill="#c9a24e" stroke="${INK}" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="5.5" fill="#d9402b" stroke="${INK}" stroke-width="1.6"/>
+      <circle cx="${(cx + 9 * ex).toFixed(1)}" cy="${(cy + 9 * ey).toFixed(1)}" r="3" fill="${INK}"/>`;
+  }
+  return s + `</svg>`;
+}
+const roseMini = () => dial({ north: 0, letters: false }).replace('class="dial"', 'aria-hidden="true"').replace(/<svg /, '<svg ');
+
+/* ---------- salos žemėlapis kryptims ---------- */
+function islandSvg(t){
+  const x0 = 10, y0 = 84, cw = 64, ch = 62;
+  let s = `<svg viewBox="0 0 340 342" role="img" aria-label="Salos žemėlapis su šiaurės rodykle">
+  <rect width="340" height="342" rx="12" fill="#cfe9f5" stroke="${INK}" stroke-width="3"/>
+    <rect x="${x0 - 3}" y="${y0 - 3}" width="${cw * 5 + 6}" height="${ch * 4 + 6}" rx="26" fill="#e6f3cc" stroke="${INK}" stroke-width="2.6"/>
+  <path d="M${x0 + 14} ${y0 + 4}q14 10 28 0M${x0 + 220} ${y0 + ch * 4 - 8}q16 8 32 0" fill="none" stroke="#bcd994" stroke-width="2.4" stroke-linecap="round"/>
+  <text x="14" y="38" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="15" fill="${INK}">Salos žemėlapis</text>
+  <text x="14" y="58" font-family="Manrope,Arial,sans-serif" font-weight="700" font-size="11.5" fill="#4b5a57">${t.north === 0 ? "Šiaurė – ten, kur rodo Š" : "Žiūrėk, kur rodo šiaurės rodyklė Š"}</text>`;
+  /* rožė viršuje dešinėje */
+  const rcx = 290, rcy = 44, nth = t.north;
+  s += `<circle cx="${rcx}" cy="${rcy}" r="34" fill="#fff" stroke="${INK}" stroke-width="2.4"/>`;
+  for(let k = 0; k < 8; k++){
+    const a = (k * 45 + nth) * Math.PI / 180, len = k % 2 ? 17 : 27, w = k % 2 ? 4.4 : 6;
+    const tx = rcx + len * Math.sin(a), ty = rcy - len * Math.cos(a), bx = Math.cos(a) * w, by = Math.sin(a) * w;
+    s += `<path d="M${(rcx - bx).toFixed(1)} ${(rcy - by).toFixed(1)}L${tx.toFixed(1)} ${ty.toFixed(1)}L${(rcx + bx).toFixed(1)} ${(rcy + by).toFixed(1)}z" fill="${k === 0 ? "#d9402b" : k % 2 ? "#f2c75a" : "#e8d9a8"}" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>`;
+  }
+  if(t.north === 0){
+    [["Š", 0], ["R", 90], ["P", 180], ["V", 270]].forEach(([L, ang]) => {
+      const a = ang * Math.PI / 180;
+      s += `<text x="${(rcx + 44 * Math.sin(a) * 0.9).toFixed(1)}" y="${(rcy - 44 * Math.cos(a) * 0.9 + 5).toFixed(1)}" text-anchor="middle" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="13" fill="${L === "Š" ? "#d9402b" : INK}" stroke="#fff" stroke-width="3" paint-order="stroke">${L}</text>`;
+    });
+  } else {
+    const a = nth * Math.PI / 180;
+    s += `<text x="${(rcx + 44 * Math.sin(a) * 0.9).toFixed(1)}" y="${(rcy - 44 * Math.cos(a) * 0.9 + 5).toFixed(1)}" text-anchor="middle" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="14" fill="#d9402b" stroke="#fff" stroke-width="3" paint-order="stroke">Š</text>`;
+  }
+  /* vietos */
+  t.items.forEach(it => {
+    const cx = x0 + it.c * cw + cw / 2 + it.jx, top = y0 + it.r * ch;
+    s += place(it.kind, cx, top + 24, 0.95);
+    s += `<text x="${cx.toFixed(1)}" y="${top + 55}" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="11" fill="${INK}" stroke="#e6f3cc" stroke-width="3" paint-order="stroke">${MK.esc(it.nom)}</text>`;
+  });
+  return s + `</svg>`;
+}
+
+/* ---------- liniuotė ---------- */
+function rulerSvg(t){
+  const U = Math.min(62, 290 / (t.d + 1)), th = t.ang * Math.PI / 180, L = t.d * U;
+  const ax = 24, ay = 88 - L * Math.sin(th) / 2;
+  const bx = ax + L * Math.cos(th), by = ay + L * Math.sin(th);
+  let s = `<svg viewBox="0 0 340 170" role="img" aria-label="Žemėlapis su liniuote">
+  <rect width="340" height="170" rx="12" fill="#f6edcf" stroke="${INK}" stroke-width="3"/>
+  <path d="M0 40H340M0 80H340M0 120H340M60 0V170M120 0V170M180 0V170M240 0V170M300 0V170" stroke="#e5d7a8" stroke-width="1.2"/>
+  <g transform="translate(${ax} ${ay.toFixed(1)}) rotate(${t.ang})">
+    <path d="M0 0H${L.toFixed(1)}" stroke="#d9402b" stroke-width="2.6" stroke-dasharray="2 6" stroke-linecap="round"/>
+    <rect x="-8" y="2" width="${((t.d + 1) * U + 8).toFixed(1)}" height="28" rx="3" fill="#ffe27a" stroke="${INK}" stroke-width="2.2"/>`;
+  for(let k = 0; k <= (t.d + 1) * 2; k++){
+    const x = k * U / 2, long = k % 2 === 0;
+    s += `<path d="M${x} 2v${long ? 12 : 7}" stroke="${INK}" stroke-width="${long ? 2 : 1.4}"/>`;
+    if(long) s += `<text x="${x}" y="27" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="11" fill="${INK}">${k / 2}</text>`;
+  }
+  s += `<text x="${((t.d + 1) * U - 4).toFixed(1)}" y="12" text-anchor="end" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="9" fill="#7a5a00">cm</text>
+    <path d="M${L.toFixed(1)} -6V30" stroke="#d9402b" stroke-width="1.6"/></g>`;
+  s += place(t.A.kind, ax, ay - 22, .8) + place(t.B.kind, bx, by - 22, .8);
+  s += `<circle cx="${ax}" cy="${ay.toFixed(1)}" r="4.4" fill="#d9402b" stroke="${INK}" stroke-width="1.8"/><circle cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" r="4.4" fill="#d9402b" stroke="${INK}" stroke-width="1.8"/>`;
+  const lab = (x, y, txt) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="11" fill="${INK}" stroke="#f6edcf" stroke-width="3" paint-order="stroke">${MK.esc(txt)}</text>`;
+  s += lab(ax, ay - 40, cap(t.A.nom)) + lab(bx, by - 40, cap(t.B.nom));
+  return s + `</svg>`;
+}
+function barSvg(t){
+  const U = 40, x0 = 30, lx = x0 + t.k * U;
+  let s = `<svg viewBox="0 0 340 170" role="img" aria-label="Žemėlapis su linijiniu masteliu">
+  <rect width="340" height="170" rx="12" fill="#f6edcf" stroke="${INK}" stroke-width="3"/>
+  <path d="M0 36H340M0 72H340M60 0V170M120 0V170M180 0V170M240 0V170M300 0V170" stroke="#e5d7a8" stroke-width="1.2"/>`;
+  s += place(t.A.kind, x0, 38, .85) + place(t.B.kind, lx, 38, .85);
+  const lab = (x, txt) => `<text x="${x.toFixed(1)}" y="12" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="11" fill="${INK}" stroke="#f6edcf" stroke-width="3" paint-order="stroke">${MK.esc(txt)}</text>`;
+  s += lab(x0, cap(t.A.nom)) + lab(lx, cap(t.B.nom));
+  s += `<path d="M${x0} 62V108M${lx} 62V108" stroke="#d9402b" stroke-width="2" stroke-dasharray="3 4"/><circle cx="${x0}" cy="62" r="4" fill="#d9402b" stroke="${INK}" stroke-width="1.6"/><circle cx="${lx}" cy="62" r="4" fill="#d9402b" stroke="${INK}" stroke-width="1.6"/>`;
+  for(let i = 0; i < 7; i++) s += `<rect x="${x0 + i * U}" y="108" width="${U}" height="12" fill="${i % 2 ? "#fff" : INK}" stroke="${INK}" stroke-width="2"/>`;
+  for(let i = 0; i <= 7; i++) s += `<path d="M${x0 + i * U} 108v-8" stroke="${INK}" stroke-width="1.6"/><text x="${x0 + i * U}" y="140" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="12" fill="${INK}">${fmtN(i * t.unitKm)}</text>`;
+  s += `<text x="${x0 + 7 * U + 20}" y="140" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="12" fill="#4b5a57">${T.barKm}</text>`;
+  return s + `</svg>`;
+}
+
+/* ---------- geografinis žemėlapis (langas pagal ilgumos ir platumos ribas) ---------- */
+const WIN = {
+  eur:   { lon: [-25, 45],  lat: [34, 72], step: 10 },
+  afr:   { lon: [-20, 55],  lat: [-37, 38], step: 10 },
+  samer: { lon: [-85, -30], lat: [-45, 15], step: 10 },
+  namer: { lon: [-165, -50], lat: [10, 75], step: 10, lab: 20 },
+  aus:   { lon: [100, 180], lat: [-50, 10], step: 10 },
+  asia:  { lon: [25, 150],  lat: [-12, 62], step: 10, lab: 20 },
+  world: { lon: [-180, 180], lat: [-62, 82], step: 30, lab: 30, labLon: 60, world: true }
+};
+const REG = ["eur", "afr", "samer", "namer", "aus", "asia"];
+const winOf = k => { const w = WIN[k]; return Object.assign({ lab: w.lab || w.step, key: k }, w); };
+const inWin = (w, lat, lon, m) => lat >= w.lat[0] + m && lat <= w.lat[1] - m && lon >= w.lon[0] + m && lon <= w.lon[1] - m;
+const inPoly = (poly, lon, lat) => { let c = false; for(let i = 0, j = poly.length - 1; i < poly.length; j = i++){ const a = poly[i], b = poly[j]; if((a[1] > lat) !== (b[1] > lat) && lon < (b[0] - a[0]) * (lat - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
+const landKey = (lon, lat) => { for(const k in G.land){ if(k === "antarktida") continue; if(inPoly(G.land[k], lon, lat)){ for(const w in G.water) if(inPoly(G.water[w], lon, lat)) return null; return k; } } return null; };
+const isLand = (lon, lat) => !!landKey(lon, lat);
+
+function geoSvg(w, o){
+  o = o || {};
+  const W = 340, pL = 32, pR = 8, pT = 8, pB = 22, dLon = w.lon[1] - w.lon[0], dLat = w.lat[1] - w.lat[0];
+  const S = (W - pL - pR) / dLon, H = pT + dLat * S + pB, mw = W - pL - pR, mh = dLat * S;
+  const X = lon => pL + (lon - w.lon[0]) * S, Y = lat => pT + (w.lat[1] - lat) * S;
+  const id = "c" + Math.random().toString(36).slice(2, 8);
+  const ptsOf = poly => poly.map(p => X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1)).join(" ");
+  let s = `<svg class="geo" viewBox="0 0 ${W} ${H.toFixed(1)}" role="img" aria-label="Geografinis žemėlapis su tinkleliu"><defs><clipPath id="${id}"><rect x="${pL}" y="${pT}" width="${mw}" height="${mh.toFixed(1)}"/></clipPath></defs>
+  <rect x="${pL}" y="${pT}" width="${mw}" height="${mh.toFixed(1)}" fill="#cfe9f5"/><g clip-path="url(#${id})">`;
+  for(const k in G.land) s += `<polygon points="${ptsOf(G.land[k])}" fill="#efe3b8" stroke="#8a7a45" stroke-width="1" stroke-linejoin="round"/>`;
+  for(const k in G.water) s += `<polygon points="${ptsOf(G.water[k])}" fill="#cfe9f5" stroke="#8a7a45" stroke-width="1" stroke-linejoin="round"/>`;
+  const gl = (v, lat) => lat ? `<line x1="${pL}" x2="${W - pR}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"` : `<line y1="${pT}" y2="${(pT + mh).toFixed(1)}" x1="${X(v).toFixed(1)}" x2="${X(v).toFixed(1)}"`;
+  const first = (a, st) => Math.ceil(a / st) * st;
+  for(let v = first(w.lat[0], w.step); v <= w.lat[1]; v += w.step){ const em = o.emph && v === 0; s += gl(v, true) + ` stroke="${em ? "#e8772e" : "#ffffff"}" stroke-width="${em ? 2.8 : 1.1}" opacity="${em ? 1 : .9}"/>`; }
+  for(let v = first(w.lon[0], w.step); v <= w.lon[1]; v += w.step){ const em = o.emph && v === 0; s += gl(v, false) + ` stroke="${em ? "#e8772e" : "#ffffff"}" stroke-width="${em ? 2.8 : 1.1}" opacity="${em ? 1 : .9}"/>`; }
+  (o.lines || []).forEach(l => {
+    const lat = l.type === "lat";
+    s += (lat ? gl(l.v, true) : gl(l.v, false)) + ` stroke="${l.col}" stroke-width="3.4" stroke-linecap="round"/>`;
+  });
+  (o.cities || []).forEach(c => {
+    s += `<circle cx="${X(c.lon).toFixed(1)}" cy="${Y(c.lat).toFixed(1)}" r="3.6" fill="${c.col || "#d9402b"}" stroke="${INK}" stroke-width="1.6"/><text x="${(X(c.lon) + 5).toFixed(1)}" y="${(Y(c.lat) - 4).toFixed(1)}" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="10.5" fill="${INK}" stroke="#fff" stroke-width="3" paint-order="stroke">${MK.esc(c.name)}</text>`;
+  });
+  (o.marks || []).forEach(m => {
+    const x = X(m.lon).toFixed(1), y = Y(m.lat).toFixed(1);
+    s += m.letter
+      ? `<circle cx="${x}" cy="${y}" r="8.4" fill="${m.col}" stroke="${INK}" stroke-width="2"/><text x="${x}" y="${(Y(m.lat) + 4.2).toFixed(1)}" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="11.5" fill="#fff">${m.letter}</text>`
+      : `<circle cx="${x}" cy="${y}" r="6.2" fill="#d9402b" stroke="#fff" stroke-width="2.4"/><circle cx="${x}" cy="${y}" r="6.2" fill="none" stroke="${INK}" stroke-width="1.6"/>`;
+  });
+  s += `</g><rect x="${pL}" y="${pT}" width="${mw}" height="${mh.toFixed(1)}" fill="none" stroke="${INK}" stroke-width="2.4"/>`;
+  const t = (x, y, a, txt, cl) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${a}" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="9.5" fill="${cl || INK}">${txt}</text>`;
+  for(let v = first(w.lat[0], w.lab); v <= w.lat[1]; v += w.lab) s += t(pL - 3, Y(v) + 3.4, "end", T.axisLat(v), v === 0 && o.emph ? "#c25a10" : INK);
+  for(let v = first(w.lon[0], w.labLon || w.lab); v <= w.lon[1]; v += (w.labLon || w.lab)) s += t(X(v), pT + mh + 13, "middle", T.axisLon(v), v === 0 && o.emph ? "#c25a10" : INK);
+  (o.lines || []).forEach(l => {
+    const lat = l.type === "lat", x = lat ? pL + 9 : X(l.v), y = lat ? Y(l.v) : pT + 9;
+    s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="8.4" fill="${l.col}" stroke="${INK}" stroke-width="2"/><text x="${x.toFixed(1)}" y="${(y + 4.2).toFixed(1)}" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="11.5" fill="#fff">${l.letter}</text>`;
+  });
+  return s + `</svg><div class="axl" style="font:700 11.5px/1.3 var(--body);color:var(--soft);text-align:center;margin-top:2px">${T.axisLegend}</div>`;
+}
+const LCOL = ["#e8772e", "#2b8fd9", "#8a4fd0", "#2f9e6e"];
+
+/* ---------- užduočių gamyba ---------- */
+const mk = (o) => Object.assign({ kind: "list2" }, o);
+const pickN = (arr, n) => SH(arr).slice(0, n);
+const uniq = (arr, f) => { const seen = new Set(), out = []; arr.forEach(x => { const k = f(x); if(!seen.has(k)){ seen.add(k); out.push(x); } }); return out; };
+
+/* kryptys */
+function compassOpts(){ return [0, 1, 2, 3, 4, 5, 6, 7].map(i => ({ v: i, label: cap(T.dirs[i]) })); }
+function genDirmap(rot){
+  const COLS = 5, ROWS = 4, vec = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]];
+  const northIdx = rot ? PK([1, 2, 3, 4, 5, 6, 7]) : 0;
+  let a, b, sIdx, k;
+  for(let g = 0; g < 200; g++){
+    sIdx = R(0, 7); k = R(1, 3); a = { c: R(0, COLS - 1), r: R(0, ROWS - 1) };
+    b = { c: a.c + vec[sIdx][0] * k, r: a.r + vec[sIdx][1] * k };
+    if(b.c >= 0 && b.c < COLS && b.r >= 0 && b.r < ROWS) break;
+  }
+  const ans = mod8(sIdx - northIdx);
+  const kinds = SH(T.places);
+  const cells = []; for(let c = 0; c < COLS; c++) for(let r = 0; r < ROWS; r++) if(!(c === a.c && r === a.r) && !(c === b.c && r === b.r)) cells.push({ c, r });
+  const others = pickN(cells, 6);
+  const items = [a, b].concat(others).map((p, i) => ({ c: p.c, r: p.r, kind: kinds[i][0], nom: kinds[i][1], gen: kinds[i][2], jx: R(-3, 3) }));
+  const A = items[0], B = items[1];
+  const tsk = mk({
+    kind: "compass", cat: "dirmap", key: `dm|${A.kind}|${B.kind}|${northIdx}|${sIdx}`,
+    text: T.q.dirmap(A.gen, B.nom), north: northIdx * 45, items,
+    opts: compassOpts(), ans, hint: T.hint.dirmap,
+    expl: T.ex.dirmap(!rot, cap(B.nom), A.gen, DG(ans)) + (rot ? " " + T.ex.dirmapRot(T.screenDirs[northIdx]) : ""),
+    rule: "dirs"
+  });
+  tsk.art = islandSvg(tsk); return tsk;
+}
+function genTurn(){
+  const h0 = R(0, 7), step = PK([1, 2, 3, 4]), cw = step === 4 ? true : Math.random() < .5;
+  const res = mod8(h0 + (cw ? step : -step));
+  const seq = Array.from({ length: step + 1 }, (_, i) => D(h0 + (cw ? i : -i))).join(" → ");
+  const tsk = mk({ kind: "compass", cat: "turn", key: `tn|${h0}|${step}|${cw}`, text: T.q.turn(DA(h0), step * 45, cw), opts: compassOpts(), ans: res, hint: T.hint.turn,
+    expl: T.ex.turn(cw, step * 45, seq, DA(res)), rule: "dirs" });
+  tsk.art = dial({ north: 0, letters: true, kid: h0 * 45 }); return tsk;
+}
+function genNeedle(){
+  const nu = R(0, 7), be = R(0, 7), res = mod8(be - nu);
+  const tsk = mk({ kind: "compass", cat: "needle", key: `nd|${nu}|${be}`, text: T.q.needle, opts: compassOpts(), ans: res, hint: T.hint.needle,
+    expl: T.ex.needle(DA(res)), rule: "dirs" });
+  tsk.art = dial({ north: 0, needle: nu * 45, kid: be * 45, plain: true }); return tsk;
+}
+function genHands(){
+  const f = R(0, 7), part = PK(["right", "left", "back"]);
+  const res = mod8(f + (part === "right" ? 2 : part === "left" ? -2 : 4));
+  const tsk = mk({ kind: "compass", cat: "hands", key: `hd|${f}|${part}`, text: T.q.hands[part](DA(f)), opts: compassOpts(), ans: res, hint: T.hint.hands,
+    expl: T.ex.hands(DA(f), part, D(res)), rule: "dirs" });
+  tsk.art = dial({ north: 0, letters: true, kid: f * 45 }); return tsk;
+}
+function genSun(){
+  const i = R(0, T.q.sun.length - 1), s = T.q.sun[i];
+  const tsk = mk({ kind: "compass", cat: "sun", key: "sn|" + i, text: s[0], opts: compassOpts(), ans: s[1], hint: T.hint.sun, expl: s[2], rule: "dirs" });
+  tsk.art = dial({ north: 0, letters: true }); return tsk;
+}
+function genOpp(){
+  const d = R(0, 7), walk = Math.random() < .5, res = mod8(d + 4);
+  const tsk = mk({ kind: "compass", cat: "opp", key: `op|${d}|${walk}`, text: walk ? T.q.oppWalk(DA(d)) : T.q.opp(D(d)), opts: compassOpts(), ans: res, hint: T.hint.opp,
+    expl: T.ex.opp(D(d), D(res)), rule: "dirs" });
+  tsk.art = dial({ north: 0, letters: true }); return tsk;
+}
+
+/* mastelis */
+const SC = [10000, 20000, 25000, 50000, 100000, 200000, 500000, 1000000];
+function distOpts(real, extras){
+  const cands = uniq([real].concat(extras).filter(x => x > 0 && isFinite(x)), x => fmtM(x));
+  const wrong = cands.filter(x => x !== real).slice(0, 3);
+  return SH([real].concat(wrong)).map(x => ({ v: fmtM(x), label: fmtM(x) }));
+}
+function genRuler(){
+  const n = PK(SC), m = n / 100, numeric = Math.random() < .5;
+  const d = PK([1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7]);
+  let ang = PK([-25, -15, -10, 0, 0, 10, 15, 25]); if(Math.min(62, 290 / (d + 1)) * d * Math.abs(Math.sin(ang * Math.PI / 180)) > 60) ang = 0;
+  const pl = pickN(T.places, 2), A = { kind: pl[0][0], nom: pl[0][1], gen: pl[0][2] }, B = { kind: pl[1][0], nom: pl[1][1], gen: pl[1][2] };
+  const real = d * m;
+  const wrong = SH([(d + 1) * m, (d - 1) * m, (d + 0.5) * m, (d - 0.5) * m]).slice(0, 2).concat([real * 10, real / 10]);
+  const scaleTxt = numeric ? numOf(n) : nameOf(m);
+  const tsk = mk({ cat: "ruler", key: `rl|${n}|${d}|${numeric}`, text: T.q.ruler(scaleTxt, A.gen, B.gen), opts: distOpts(real, wrong), ans: fmtM(real), hint: T.hint.ruler,
+    expl: (numeric ? T.ex.rulerNum(numOf(n), fmtM(m)) + " " : "") + T.ex.ruler(T.unitCm(d), numeric ? numOf(n) : nameOf(m), fmtM(m), fmtM(real)), rule: "scale", A, B, d, ang });
+  tsk.art = rulerSvg(tsk); return tsk;
+}
+function genNum2Real(){
+  const n = PK(SC), m = n / 100, tsk = mk({ cat: "conv", key: "n2r|" + n, text: T.q.num2real(numOf(n)),
+    opts: distOpts(m, [m * 10, m / 10, m * 100, m / 100]), ans: fmtM(m), hint: T.hint.conv, expl: T.ex.num2real(numOf(n), fmtM(m)), rule: "scale" });
+  tsk.art = ""; return tsk;
+}
+function genName2Num(){
+  const n = PK(SC), m = n / 100;
+  const cands = uniq([n, n * 10, n / 10, n * 100, n / 100].filter(x => x >= 1000), x => x);
+  const wrong = SH(cands.filter(x => x !== n)).slice(0, 3);
+  const tsk = mk({ cat: "conv", key: "nm2n|" + n, text: T.q.name2num(nameOf(m)), opts: SH([n].concat(wrong)).map(x => ({ v: x, label: numOf(x) })), ans: n, hint: T.hint.conv,
+    expl: T.ex.name2num(nameOf(m), numOf(n)), rule: "scale" });
+  tsk.art = ""; return tsk;
+}
+function genCalc(){
+  const n = PK(SC), m = n / 100, cm = PK([2, 2.5, 3, 4, 4.5, 6, 8, 12]), numeric = Math.random() < .5, real = cm * m;
+  const tsk = mk({ cat: "ruler", key: `cl|${n}|${cm}|${numeric}`, text: T.q.calc(numeric ? numOf(n) : nameOf(m), T.unitCm(cm)),
+    opts: distOpts(real, [real * 10, real / 10, (cm + 1) * m, (cm - 1) * m]), ans: fmtM(real), hint: T.hint.ruler,
+    expl: (numeric ? T.ex.rulerNum(numOf(n), fmtM(m)) + " " : "") + T.ex.calc(T.unitCm(cm), fmtM(m), fmtM(real)), rule: "scale" });
+  tsk.art = ""; return tsk;
+}
+function genReal2Map(){
+  const n = PK(SC.slice(1, 7)), m = n / 100, cm = PK([1.5, 2, 2.5, 3, 4, 5, 6, 7.5, 8]), real = cm * m, numeric = Math.random() < .5;
+  const cand = uniq([cm * 10, cm / 10, cm + 1, cm - 1, cm * 2, cm + 2].filter(x => x > 0 && x !== cm), x => x);
+  const wrong = SH(cand).slice(0, 3);
+  const tsk = mk({ cat: "real2map", key: `r2m|${n}|${cm}|${numeric}`, text: T.q.real2map(numeric ? numOf(n) : nameOf(m), fmtM(real)),
+    opts: SH([cm].concat(wrong)).map(x => ({ v: x, label: T.unitCm(x) })), ans: cm, hint: T.hint.real2map, expl: T.ex.real2map(fmtM(real), fmtM(m), T.unitCm(cm)), rule: "scale" });
+  tsk.art = ""; return tsk;
+}
+function genBar(){
+  const unitKm = PK([1, 2, 5, 10, 20, 50]), k = PK([1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5]), real = k * unitKm * 1000;
+  const pl = pickN(T.places, 2), A = { kind: pl[0][0], nom: pl[0][1], gen: pl[0][2] }, B = { kind: pl[1][0], nom: pl[1][1], gen: pl[1][2] };
+  const tsk = mk({ cat: "bar", key: `br|${unitKm}|${k}`, text: T.q.bar(A.gen, B.gen), opts: distOpts(real, [real * 10, real / 10, (k + 1) * unitKm * 1000, (k - 0.5) * unitKm * 1000, k * 1000]), ans: fmtM(real),
+    hint: T.hint.bar, expl: T.ex.bar(fmtN(k), fmtM(unitKm * 1000), fmtM(real)), rule: "scale", A, B, k, unitKm });
+  tsk.art = barSvg(tsk); return tsk;
+}
+function genCmp(){
+  for(let g = 0; g < 100; g++){
+    const pair = pickN(SC.slice(0, 7), 2).sort((a, b) => a - b), n1 = pair[0], n2 = pair[1];
+    const real = PK([5, 10, 12, 20, 25, 40, 50]) * 1000, c1 = real * 100 / n1, c2 = real * 100 / n2;
+    if(c1 > 60 || c2 < 0.2 || c1 === c2) continue;
+    const first = Math.random() < .5 ? n1 : n2, second = first === n1 ? n2 : n1;
+    const tsk = mk({ cat: "cmp", key: `cp|${n1}|${n2}|${real}`, kind: "list1", text: T.q.cmp(numOf(first), numOf(second), fmtM(real)),
+      opts: [{ v: first, label: numOf(first) }, { v: second, label: numOf(second) }], ans: n1, hint: T.hint.cmp,
+      expl: T.ex.cmp(numOf(n1), T.unitCm(fmtN(c1)), numOf(n2), T.unitCm(fmtN(c2))), rule: "scale" });
+    tsk.art = ""; return tsk;
+  }
+}
+
+/* koordinatės */
+const round5 = v => Math.round(v / 5) * 5;
+const cityList = G.cities.map(c => ({ name: c[0], lat: c[1], lon: c[2], rl: round5(c[1]), ro: round5(c[2]) }));
+const cityWin = c => { for(const k of REG){ if(inWin(WIN[k], c.lat, c.lon, 2)) return k; } return "asia"; };
+const coordTxt = (la, lo) => T.coord(la, lo);
+function coordOpts(lat, lon){
+  const far = (x, y) => Math.abs(x.la - y.la) >= 15 || Math.abs(x.lo - y.lo) >= 15 || Math.sign(x.la) !== Math.sign(y.la) && Math.abs(x.la - y.la) >= 10 || Math.sign(x.lo) !== Math.sign(y.lo) && Math.abs(x.lo - y.lo) >= 10;
+  const base = { la: lat, lo: lon }, c = [{ la: -lat, lo: lon }, { la: lat, lo: -lon }, { la: -lat, lo: -lon }, { la: lat + 20, lo: lon }, { la: lat - 20, lo: lon }, { la: lat, lo: lon + 20 }, { la: lat, lo: lon - 20 }, { la: lat + 15, lo: lon - 15 }, { la: lat - 15, lo: lon + 15 }, { la: lon, lo: lat }]
+    .filter(x => Math.abs(x.la) <= 90 && Math.abs(x.lo) <= 180 && far(x, base));
+  const u = uniq(c, x => x.la + "|" + x.lo);
+  /* pirmenybė – pusrutulio klaidos */
+  const pr = SH(u.filter(x => Math.sign(x.la) !== Math.sign(lat) || Math.sign(x.lo) !== Math.sign(lon))), rest = SH(u.filter(x => !pr.includes(x)));
+  const wrong = pr.slice(0, 2).concat(rest, pr.slice(2)).slice(0, 3);
+  return SH([base].concat(wrong)).map(x => ({ v: x.la + "|" + x.lo, label: coordTxt(x.la, x.lo) }));
+}
+function genCity2Coord(){
+  const c = PK(cityList), wk = cityWin(c), w = winOf(wk);
+  const tsk = mk({ cat: "coord", key: "c2c|" + c.name, text: T.q.city2coord(c.name), opts: coordOpts(c.rl, c.ro), ans: c.rl + "|" + c.ro, hint: T.hint.coord,
+    expl: T.ex.city2coord(c.name, T.coord(c.rl, c.ro).split(", ")[0], T.coord(c.rl, c.ro).split(", ")[1]), rule: "coord" });
+  tsk.art = geoSvg(w, { marks: [{ lat: c.lat, lon: c.lon }] }); return tsk;
+}
+function genCoord2City(){
+  for(let g = 0; g < 400; g++){
+    const wk = PK(REG), w = winOf(wk), here = cityList.filter(c => cityWin(c) === wk && inWin(w, c.lat, c.lon, 3));
+    if(here.length < 4) continue;
+    const four = pickN(here, 4);
+    let okSep = true; for(let i = 0; i < 4; i++) for(let j = i + 1; j < 4; j++) if(Math.max(Math.abs(four[i].rl - four[j].rl), Math.abs(four[i].ro - four[j].ro)) < 10) okSep = false;
+    if(!okSep) continue;
+    const t = four[0];
+    const tsk = mk({ cat: "coord", key: "k2c|" + t.name + "|" + wk, text: T.q.coord2city(coordTxt(t.rl, t.ro)), opts: SH(four).map(c => ({ v: c.name, label: c.name })), ans: t.name, hint: T.hint.coord,
+      expl: T.ex.coord2city(t.name, coordTxt(t.rl, t.ro)), rule: "coord" });
+    tsk.art = geoSvg(w, { cities: four.map(c => ({ name: c.name, lat: c.lat, lon: c.lon })) }); return tsk;
+  }
+  return genCity2Coord();
+}
+function gridPoints(w, wantLand){
+  const st = w.lab, out = [];
+  for(let la = Math.ceil((w.lat[0] + 3) / st) * st; la <= w.lat[1] - 3; la += st) for(let lo = Math.ceil((w.lon[0] + 3) / st) * st; lo <= w.lon[1] - 3; lo += st){
+    if(la === 0 && lo === 0) continue;
+    if(!wantLand || isLand(lo, la)) out.push({ la, lo });
+  }
+  return out;
+}
+function genPt2Coord(){
+  const wk = PK(REG), w = winOf(wk); let pts = gridPoints(w, true); if(pts.length < 4) pts = gridPoints(w, false);
+  const p = PK(pts);
+  const tsk = mk({ cat: "coord", key: `p2c|${wk}|${p.la}|${p.lo}`, text: T.q.pt2coord, opts: coordOpts(p.la, p.lo), ans: p.la + "|" + p.lo, hint: T.hint.coord,
+    expl: T.ex.pt2coord(coordTxt(p.la, p.lo), ""), rule: "coord" });
+  tsk.art = geoSvg(w, { marks: [{ lat: p.la, lon: p.lo }] }); return tsk;
+}
+function genCoord2Pt(){
+  for(let g = 0; g < 300; g++){
+    const wk = PK(REG), w = winOf(wk), all = gridPoints(w, false), st = w.lab;
+    const t = PK(gridPoints(w, true).length ? gridPoints(w, true) : all);
+    const same = all.filter(p => p !== t && (p.la === t.la || p.lo === t.lo) && Math.max(Math.abs(p.la - t.la), Math.abs(p.lo - t.lo)) >= st);
+    const diff = all.filter(p => p.la !== t.la && p.lo !== t.lo);
+    if(same.length < 2 || !diff.length) continue;
+    const dec = pickN(same.filter(p => p.la === t.la), 1).concat(pickN(same.filter(p => p.lo === t.lo), 1));
+    if(dec.length < 2) continue;
+    dec.push(PK(diff));
+    const four = SH([t].concat(dec)), letters = ["A", "B", "C", "D"];
+    const marks = four.map((p, i) => ({ lat: p.la, lon: p.lo, letter: letters[i], col: LCOL[i] }));
+    const ans = letters[four.indexOf(t)];
+    const tsk = mk({ cat: "coord", kind: "g4", key: `k2p|${wk}|${t.la}|${t.lo}`, text: T.q.coord2pt(coordTxt(t.la, t.lo)), opts: letters.map(L => ({ v: L, label: L })), ans, hint: T.hint.coord,
+      expl: T.ex.coord2pt(coordTxt(t.la, t.lo), ans), rule: "coord" });
+    tsk.art = geoSvg(w, { marks }); return tsk;
+  }
+  return genPt2Coord();
+}
+function genHemi(){
+  let la, lo, lk;
+  for(let g = 0; g < 500; g++){
+    la = R(-45, 70); lo = R(-165, 165);
+    if(Math.abs(la) < 8 || Math.abs(lo) < 12 || Math.abs(Math.abs(lo) - 180) < 8) continue;
+    lk = landKey(lo, la); if(lk && T.hemiLoc[lk]) break;
+  }
+  const ans = (la > 0 ? 0 : 2) + (lo > 0 ? 0 : 1);
+  const tsk = mk({ cat: "hemi", key: `hm|${la}|${lo}`, text: T.q.hemi, opts: T.hemiOpts.map((t, i) => ({ v: i, label: t })), ans, hint: T.hint.hemi,
+    expl: T.ex.hemi(la, lo, T.hemiLoc[lk]), rule: "grid" });
+  tsk.art = geoSvg(winOf("world"), { emph: true, marks: [{ lat: la, lon: lo }] }); return tsk;
+}
+function genLines(){
+  const eq = Math.random() < .5, lats = [-60, -30, 30, 60], lons = [-120, -60, 60, 120];
+  const target = eq ? { type: "lat", v: 0 } : { type: "lon", v: 0 };
+  const pool = eq ? SH(lats.map(v => ({ type: "lat", v })).concat(lons.map(v => ({ type: "lon", v })))) : SH(lons.map(v => ({ type: "lon", v })).concat(lats.map(v => ({ type: "lat", v }))));
+  const picked = [target].concat(pool.slice(0, 3)), mixed = picked.some(l => l.type === "lat") && picked.some(l => l.type === "lon") ? picked : [target, pool[0], pool[1], pool.find(l => l.type !== target.type) || pool[2]];
+  const four = SH(mixed), letters = ["A", "B", "C", "D"];
+  const lines = four.map((l, i) => Object.assign({ letter: letters[i], col: LCOL[i] }, l));
+  const ans = lines.find(l => l.type === target.type && l.v === 0).letter;
+  const tsk = mk({ cat: "lines", kind: "g4", key: `ln|${eq}|${lines.map(l => l.type + l.v).join(",")}`, text: eq ? T.q.eq : T.q.prime, opts: letters.map(L => ({ v: L, label: L })), ans, hint: T.hint.lines,
+    expl: eq ? T.ex.eq : T.ex.prime, rule: "grid" });
+  tsk.art = geoSvg(winOf("world"), { lines }); return tsk;
+}
+function genConcept(){
+  const i = R(0, T.q.concept.length - 1), c = T.q.concept[i];
+  const tsk = mk({ cat: "concept", kind: c[1].length === 3 ? "list1" : "g2", key: "cn|" + i, text: c[0], opts: SH(c[1].map((l, j) => ({ v: j, label: l }))), ans: c[2], hint: T.hint.concept, expl: c[3], rule: "grid" });
+  tsk.art = geoSvg(winOf("world"), { emph: true }); return tsk;
+}
+
+/* raundo planai */
+const PLAN = [
+  [[() => genDirmap(false), 2], [() => genDirmap(true), 2], [genTurn, 1], [genNeedle, 1], [genHands, 1], [() => PK([genSun, genOpp, genHands])(), 1]],
+  [[genRuler, 2], [genCalc, 1], [() => PK([genNum2Real, genName2Num, genCalc, genCalc])(), 2], [genReal2Map, 1], [genBar, 1], [genCmp, 1]],
+  [[genCity2Coord, 2], [genCoord2City, 1], [genPt2Coord, 1], [genCoord2Pt, 1], [genHemi, 1], [genLines, 1], [genConcept, 1]],
+  [[() => genDirmap(true), 1], [() => PK([genNeedle, genTurn])(), 1], [genRuler, 1], [() => PK([genBar, genReal2Map, genCalc])(), 1], [genCity2Coord, 1], [genCoord2Pt, 1], [() => PK([genHemi, genPt2Coord])(), 1], [() => PK([genLines, genConcept])(), 1]]
+];
+function seenGet(){ return MK.get("mk-" + GAME + "-matyta", {}); }
+function buildRound(lv){
+  const all = seenGet(), seen = new Set(all[lv.id] || []), used = new Set(), list = [];
+  PLAN[lvl].forEach(([f, n]) => { for(let i = 0; i < n; i++){
+    let t; for(let g = 0; g < 12; g++){ t = f(); if(!used.has(t.key) && !seen.has(t.key)) break; }
+    used.add(t.key); list.push(t);
+  } });
+  const keep = (all[lv.id] || []).concat([...used]); all[lv.id] = keep.slice(-120); MK.set("mk-" + GAME + "-matyta", all);
+  return SH(list);
+}
+
+/* ---------- piešiniai: antraštė, lygių piktogramos, vėliavėlės ---------- */
+function explorerSvg(){
+  const land = Object.keys(G.land).map(k => `<polygon points="${G.land[k].map(p => ((p[0] + 180)).toFixed(1) + "," + (22 + (82 - p[1]) * 1).toFixed(1)).join(" ")}" fill="#efe3b8" stroke="#a4905a" stroke-width="1" stroke-linejoin="round"/>`).join("");
+  const water = Object.keys(G.water).map(k => `<polygon points="${G.water[k].map(p => ((p[0] + 180)).toFixed(1) + "," + (22 + (82 - p[1]) * 1).toFixed(1)).join(" ")}" fill="#cfe9f5" stroke="#a4905a" stroke-width="1"/>`).join("");
+  const flag = (x, y, c) => `<path d="M${x} ${y}v-22" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/><path d="M${x} ${y - 22}l15 5-15 6z" fill="${c}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>`;
+  return `<svg viewBox="0 0 360 214" role="img" aria-label="Kartografas su kompasu stovi ant pasaulio žemėlapio">
+  <rect width="360" height="214" fill="#cfe9f5"/>
+  <path d="M0 22H360M0 62H360M0 102H360M0 142H360M0 182H360M30 0V214M90 0V214M150 0V214M210 0V214M270 0V214M330 0V214" stroke="#fff" stroke-width="1.2" opacity=".9"/>
+  ${land}${water}
+  <path d="M205 49Q225 70 206 95T258 84T309 70" fill="none" stroke="#d9402b" stroke-width="2.6" stroke-dasharray="2 6" stroke-linecap="round"/>
+  ${flag(206, 95, "#2b59d9")}${flag(258, 84, "#e8772e")}${flag(309, 70, "#2f9e6e")}
+  <path d="M199 43l12 12m0-12l-12 12" stroke="#d9402b" stroke-width="3.6" stroke-linecap="round"/>
+  <!-- kartografas -->
+  <ellipse cx="86" cy="204" rx="34" ry="6" fill="${INK}" opacity=".22"/>
+  <ellipse cx="74" cy="199" rx="13" ry="6" fill="#6b3f1d" stroke="${INK}" stroke-width="2.4"/><ellipse cx="100" cy="199" rx="13" ry="6" fill="#6b3f1d" stroke="${INK}" stroke-width="2.4"/>
+  <rect x="68" y="156" width="14" height="40" rx="5" fill="#3d5a80" stroke="${INK}" stroke-width="2.6"/><rect x="92" y="156" width="14" height="40" rx="5" fill="#3d5a80" stroke="${INK}" stroke-width="2.6"/>
+  <rect x="46" y="108" width="28" height="46" rx="9" fill="#e8772e" stroke="${INK}" stroke-width="2.8"/><path d="M52 118h16M52 128h16" stroke="${INK}" stroke-width="2" opacity=".5"/>
+  <rect x="62" y="104" width="50" height="58" rx="14" fill="#d9c68f" stroke="${INK}" stroke-width="3"/>
+  <rect x="72" y="134" width="14" height="13" rx="3" fill="#c3ad6e" stroke="${INK}" stroke-width="2"/><rect x="90" y="134" width="14" height="13" rx="3" fill="#c3ad6e" stroke="${INK}" stroke-width="2"/>
+  <path d="M72 106l16 12 16-12" fill="#d9402b" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M106 112L128 98 138 86" fill="none" stroke="${INK}" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><path d="M106 112L128 98 138 86" fill="none" stroke="#d9c68f" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="148" cy="76" r="19" fill="#fff" stroke="${INK}" stroke-width="3"/><circle cx="148" cy="76" r="14" fill="#f6f1de" stroke="#d9a21b" stroke-width="3"/>
+  <path d="M148 76L156 62" stroke="#d9402b" stroke-width="4" stroke-linecap="round"/><path d="M148 76L140 90" stroke="${INK}" stroke-width="3.4" stroke-linecap="round"/><circle cx="148" cy="76" r="2.4" fill="#ffd84d" stroke="${INK}" stroke-width="1"/>
+  <circle cx="139" cy="88" r="7" fill="#f5c9a0" stroke="${INK}" stroke-width="2.4"/>
+  <path d="M66 112L52 142" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round"/><path d="M66 112L52 142" fill="none" stroke="#d9c68f" stroke-width="8" stroke-linecap="round"/>
+  <g transform="rotate(-14 46 148)"><rect x="30" y="140" width="34" height="12" rx="6" fill="#f6edcf" stroke="${INK}" stroke-width="2.4"/><path d="M36 146h22" stroke="#d9402b" stroke-width="2" stroke-linecap="round"/></g>
+  <circle cx="50" cy="146" r="7" fill="#f5c9a0" stroke="${INK}" stroke-width="2.4"/>
+  <circle cx="88" cy="76" r="22" fill="#f5c9a0" stroke="${INK}" stroke-width="3"/>
+  <path d="M66 74c0-8 4-12 8-14l8 6 6-2 6 2 8-6c4 2 8 6 8 14-6-5-10-6-16-6s-14 1-20 6z" fill="#7a4b2a" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+  <ellipse cx="88" cy="60" rx="34" ry="8" fill="#c9a24e" stroke="${INK}" stroke-width="3"/>
+  <path d="M68 59c0-18 8-26 20-26s20 8 20 26z" fill="#d9b45f" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><path d="M68.5 55h39" stroke="#d9402b" stroke-width="5"/>
+  <circle cx="79" cy="79" r="2.8" fill="${INK}"/><circle cx="97" cy="79" r="2.8" fill="${INK}"/>
+  <path d="M81 88q7 6 14 0" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="71" cy="85" r="3.8" fill="#ff9aa6" opacity=".7"/><circle cx="105" cy="85" r="3.8" fill="#ff9aa6" opacity=".7"/>
+</svg>`;
+}
+const LVLART = [
+  `<svg viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="22" fill="#fff" stroke="${INK}" stroke-width="3"/><path d="M28 9l5 19-5 19-5-19z" fill="#d9402b" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M28 47l-5-19h10z" fill="#fff" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><circle cx="28" cy="28" r="3" fill="#ffd84d" stroke="${INK}" stroke-width="1.6"/></svg>`,
+  `<svg viewBox="0 0 56 56" aria-hidden="true"><rect x="4" y="19" width="48" height="18" rx="3" fill="#ffe27a" stroke="${INK}" stroke-width="3" transform="rotate(-18 28 28)"/><g transform="rotate(-18 28 28)" stroke="${INK}" stroke-width="2"><path d="M10 19v8M17 19v5M24 19v8M31 19v5M38 19v8M45 19v5"/></g><circle cx="12" cy="40" r="4.4" fill="#d9402b" stroke="${INK}" stroke-width="2"/><circle cx="44" cy="14" r="4.4" fill="#d9402b" stroke="${INK}" stroke-width="2"/></svg>`,
+  `<svg viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="22" fill="#5bb8e8" stroke="${INK}" stroke-width="3"/><path d="M14 20q8-6 13 2t-1 12-9 6q-7-10-3-20zM34 14q10 2 12 14-6 0-9 6t-6-4q-3-8 3-16z" fill="#efe3b8" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M6 28h44M28 6v44" stroke="#fff" stroke-width="1.8"/><ellipse cx="28" cy="28" rx="11" ry="22" fill="none" stroke="#fff" stroke-width="1.6"/></svg>`,
+  `<svg viewBox="0 0 56 56" aria-hidden="true"><rect x="9" y="8" width="38" height="40" rx="5" fill="#f6edcf" stroke="${INK}" stroke-width="3"/><path d="M16 18h24M16 26h24M16 34h14" stroke="#c9b87a" stroke-width="2.4" stroke-linecap="round"/><path d="M36 30l3.2 6.4 7 1-5.1 5 1.2 7-6.3-3.3-6.3 3.3 1.2-7-5.1-5 7-1z" fill="#ffd84d" stroke="${INK}" stroke-width="2" stroke-linejoin="round" transform="translate(-4 -6) scale(.9)"/></svg>`
+];
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: LVLART[i] }));
+function flagSvg(c, size){ return `<svg viewBox="0 0 24 30" width="${size}" height="${size * 1.25}" aria-hidden="true"><path d="M5 28V3" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><path d="M5 3l16 5.5L5 14z" fill="${c}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><ellipse cx="5" cy="28" rx="5" ry="1.8" fill="${INK}" opacity=".25"/></svg>`; }
+
+/* ---------- vėliavėlės (ilgalaikis tikslas) ---------- */
+const flagN = () => +MK.get("mk-" + GAME + "-vlk", 0) || 0;
+const flagsOwned = n => T.flagNeed.filter(x => n >= x).length;
+function drawFlags(freshIdx){
+  const n = flagN(), have = flagsOwned(n), nxt = T.flagNeed[have], prev = have ? T.flagNeed[have - 1] : 0;
+  const polys = Object.keys(G.land).map(k => `<polygon points="${G.land[k].map(p => (p[0] + 180).toFixed(1) + "," + (84 - p[1]).toFixed(1)).join(" ")}" fill="#efe3b8" stroke="#a4905a" stroke-width="1" stroke-linejoin="round"/>`).join("") +
+    Object.keys(G.water).map(k => `<polygon points="${G.water[k].map(p => (p[0] + 180).toFixed(1) + "," + (84 - p[1]).toFixed(1)).join(" ")}" fill="#cfe9f5" stroke="#a4905a" stroke-width="1"/>`).join("");
+  const pins = FLAGPOS.map((p, i) => {
+    const x = (p[0] + 180).toFixed(1), y = (84 - p[1]).toFixed(1);
+    return i < have
+      ? `<g class="${i === freshIdx ? "fresh" : ""}"><path d="M${x} ${y}v-24" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><path d="M${x} ${y - 24}l17 6-17 6.5z" fill="${FLAGCOL[i]}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><circle cx="${x}" cy="${y}" r="2.6" fill="${INK}"/></g>`
+      : `<circle cx="${x}" cy="${y}" r="7" fill="#fff" stroke="#8a9390" stroke-width="2" stroke-dasharray="3 3"/><text x="${x}" y="${(+y + 4.5).toFixed(1)}" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="12" fill="#8a9390">?</text>`;
+  }).join("");
+  const sea = `<rect width="360" height="168" fill="#cfe9f5"/><path d="M0 84H360M180 0V168" stroke="#fff" stroke-width="1.4" opacity=".9"/>`;
+  $("shelf").innerHTML = `<h2 class="mk-sec" style="margin-left:0">${T.flagsTitle}</h2>
+    <div class="fmap"><svg viewBox="0 0 360 168" role="img" aria-label="Pasaulio žemėlapis su pasodintomis vėliavėlėmis">${sea}${polys}${pins}</svg>
+    <div class="fl">${T.flags.map((f, i) => `<span class="${i < have ? "" : "no"}"><i style="background:${i < have ? FLAGCOL[i] : "#fff"}"></i>${i < have ? f : T.locked}</span>`).join("")}</div></div>
+    <div class="sbar" aria-hidden="true"><i style="width:${nxt ? Math.round((n - prev) / (nxt - prev) * 100) : 100}%"></i></div>
+    <p class="stext">${T.flagsText(n, nxt ? nxt - n : 0, T.flags[have])}</p>`;
+}
+
+/* ---------- elementai ---------- */
+const app = $("app"), menu = $("menu"), play = $("play"), board = $("board"), why = $("why");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("h1").innerHTML = T.h1; $("heroP").textContent = T.hero; $("note").textContent = T.note; $("ptsL").textContent = T.points;
+$("heroArt").innerHTML = `<div class="hero-card">${explorerSvg()}</div>`;
+
+let lvl = 0, Lv = null, ti = 0, round = [], cur = null, pts = 0, okN = 0, dots = null, tries = 0, locked = false, wrongSet = new Set();
+function showMenu(fresh){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); drawFlags(fresh); MK.learn($("learn"), { topics: T.learn, onPlay: start }); window.scrollTo(0, 0); }
+function start(i){
+  lvl = i; Lv = LEVELS[i]; ti = 0; pts = 0; okN = 0; $("pts").textContent = 0; why.innerHTML = "";
+  round = buildRound(Lv); menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), N);
+  next(); window.scrollTo(0, 0);
+}
+function next(){
+  if(ti >= N) return finish();
+  cur = round[ti]; tries = 0; locked = false; wrongSet = new Set(); why.innerHTML = ""; dots.cur(ti); draw();
+}
+const ROSECELL = `<div class="opt rose" aria-hidden="true">${dial({ north: 0, letters: false }).replace('class="dial"', '')}</div>`;
+function optsHtml(){
+  const c = cur;
+  const btn = o => `<button type="button" class="opt${c.kind === "g4" ? " big" : ""}" data-v="${MK.esc(o.v)}">${MK.esc(o.label)}</button>`;
+  if(c.kind === "compass"){
+    const by = {}; c.opts.forEach(o => by[o.v] = o);
+    const order = [7, 0, 1, 6, "c", 2, 5, 4, 3];
+    return `<div class="opts c3" id="opts">${order.map(k => k === "c" ? ROSECELL : btn(by[k])).join("")}</div>`;
+  }
+  const cls = c.kind === "g4" ? "g4" : c.kind === "list1" ? "g1" : "g2";
+  return `<div class="opts ${cls}" id="opts">${c.opts.map(btn).join("")}</div>`;
+}
+function draw(){
+  const c = cur;
+  board.innerHTML = `<div class="card"><div class="chead"><div><small>${ti + 1} / ${N} · ${Lv.name}</small></div><svg class="mini" viewBox="-18 -18 256 256" aria-hidden="true">${dial({ north: 0, needle: 45 }).replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</svg></div>
+    <div class="task">${MK.esc(c.text)}</div><div class="art">${c.art || ""}</div>${optsHtml()}</div>`;
+}
+const same = (a, b) => String(a) === String(b);
+function explain(ok){
+  const c = cur;
+  return MK.why({ ok, head: ok ? T.okHead(MK.praise(), tries === 1 ? 10 : 5) : T.failHead, body: c.expl, more: T.learn[{ dirs: 0, scale: 1, coord: 2, grid: 3 }[c.rule]].html, sum: T.rule, open: false });
+}
+const goBtn = label => `<button type="button" class="mk-btn go" id="go">${label}</button>`;
+board.addEventListener("click", e => {
+  MK.unlock();
+  const b = e.target.closest(".opt"); if(!b || locked || b.disabled || b.classList.contains("rose")) return;
+  const v = b.dataset.v; tries++;
+  if(same(v, cur.ans)){
+    locked = true; b.classList.add("right"); dots.mark(ti, tries === 1); MK.sfx.good();
+    if(tries === 1){ okN++; pts += 10; MK.set("mk-" + GAME + "-vlk", flagN() + 1); } else pts += 5;
+    $("pts").textContent = pts;
+    board.querySelectorAll(".opt").forEach(x => x.disabled = true);
+    why.innerHTML = explain(true) + goBtn(ti < N - 1 ? T.next : T.results);
+    setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+    return;
+  }
+  MK.sfx.bad(); b.classList.add("wrong"); b.disabled = true;
+  if(tries === 1){
+    why.innerHTML = MK.why({ ok: false, head: T.retryHead, body: cur.hint });
+    setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+    return;
+  }
+  locked = true; dots.mark(ti, false);
+  board.querySelectorAll(".opt").forEach(x => { x.disabled = true; if(same(x.dataset.v, cur.ans)) x.classList.add("right"); });
+  why.innerHTML = explain(false) + goBtn(ti < N - 1 ? T.next : T.results);
+  setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+});
+why.addEventListener("click", e => { if(!e.target.closest("#go")) return; MK.sfx.tap(); ti++; next(); window.scrollTo(0, 0); });
+function finish(){
+  const stars = MK.starsFor(okN, N); MK.best(GAME, Lv.id, stars);
+  const n = flagN(), have = flagsOwned(n), startN = n - okN, had = flagsOwned(startN);
+  const flag = have > had ? T.flags[have - 1] : "";
+  MK.result({ stars, title: T.resTitle(okN, N), text: T.resText(pts, flag),
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: () => showMenu(flag ? have - 1 : -1) });
+}
+window.__mk = { PLAN, gens: { genDirmap, genTurn, genNeedle, genHands, genSun, genOpp, genRuler, genNum2Real, genName2Num, genCalc, genReal2Map, genBar, genCmp, genCity2Coord, genCoord2City, genPt2Coord, genCoord2Pt, genHemi, genLines, genConcept }, landKey };
+showMenu();
+})();
+</script>
+</body>
+</html>
