@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Stoties laikrodis – MokomėsKartu.lt</title>
+<meta name="description" content="3 klasės matematikos žaidimas: skaityk laikrodį, skaičiuok trukmę pagal tvarkaraštį ir kalendorių, smulkink sekundes, minutes ir valandas.">
+<meta name="theme-color" content="#fff9e6">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/stoties-laikrodis/tekstai.lt.js"></script>
+<style>
+/* Meniu: stoties vaizdas su tikru dabartiniu laiku, „Mano traukinys“ (vagonai už bilietus), lygiai, „Kaip žaisti?“.
+   Žaidimas: užduoties kortelė, scena (laikrodis / lenta / kalendorius), atsakymai, pelėdžiuko paaiškinimas. */
+body{--ac:#1b84d8;--ac-ink:#fff;--ac-soft:#d9eefc}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px}
+.mk-hero p{font-size:17px}
+.hero-art{width:min(100%,480px);border-radius:26px;overflow:hidden;box-shadow:inset 0 0 0 3px var(--ink),0 6px 0 rgba(18,26,51,.15);position:relative}
+.hero-art svg{display:block;width:100%;height:auto}
+.hero-art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.train{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.train h2{margin:0;font:800 18px/1.2 var(--kid);display:flex;align-items:center;gap:8px}
+.train h2 svg{width:28px;height:28px;flex:none}
+.train p{margin:4px 0 10px;color:var(--soft);font-weight:700;font-size:14.5px}
+.wgs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.wg{position:relative;display:grid;justify-items:center;gap:2px;padding:6px 2px 5px;border-radius:14px;background:#f3f9ff;box-shadow:inset 0 0 0 2px #cfe3f4}
+.wg svg{width:100%;max-width:62px;height:auto;display:block}
+.wg small{font:800 10.5px/1.15 var(--body);color:var(--soft);text-align:center;min-height:2.3em;display:flex;align-items:center}
+.wg.lock svg{filter:grayscale(1);opacity:.3}
+.wg .lk{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:24px;height:24px}
+.wg.new{animation:mkPop .5s cubic-bezier(.2,1.6,.4,1);box-shadow:inset 0 0 0 3px var(--ac)}
+.how{max-width:520px;margin:16px auto 0;padding:10px 14px;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2px var(--ink)}
+.how summary{cursor:pointer;font:800 16px/1.2 var(--kid);list-style:none;min-height:36px;display:flex;align-items:center;gap:6px}
+.how summary::-webkit-details-marker{display:none}
+.how summary::before{content:"▸";color:var(--ac);transition:transform .15s}
+.how[open] summary::before{transform:rotate(90deg)}
+.how ol{margin:4px 0 4px;padding-left:22px;font-weight:600}
+.how li{margin:4px 0}
+.note{max-width:520px;margin:10px auto 0;color:var(--soft);font-size:13px;font-weight:600;text-align:center}
+@media (hover:none){.note{display:none}}
+
+/* ---------- žaidimas ---------- */
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px 0 8px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/1 var(--kid);white-space:nowrap}
+.chip svg{width:24px;height:24px}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.qcard{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;width:100%;max-width:560px;margin:0 auto 8px;padding:10px 12px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12)}
+.qic{width:48px;height:48px;border-radius:14px;background:var(--ac-soft);display:grid;place-items:center}
+.qic svg{width:36px;height:36px;display:block}
+.qt{font:800 clamp(16px,4.5vw,19px)/1.3 var(--kid)}
+.qt b{color:var(--ac);white-space:nowrap}
+.stage{width:100%;max-width:560px;margin:0 auto;display:grid;justify-items:center;gap:8px;padding:6px 0}
+.stage:empty{display:none}
+.clock{display:block;width:min(64vw,250px);height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+.clock.mini{width:min(38vw,150px)}
+.clock.drag{cursor:grab}
+.pair{display:flex;gap:12px;justify-content:center;width:100%}
+.pair figure{margin:0;display:grid;justify-items:center;gap:2px}
+.pair figcaption{font:800 14px/1 var(--kid);color:var(--soft)}
+.legend{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;font:700 12.5px/1.2 var(--body);color:var(--soft)}
+.legend i{display:inline-block;width:18px;height:6px;border-radius:3px;vertical-align:middle;margin-right:5px}
+.ctl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:min(100%,360px)}
+.ctl button{min-height:44px;border:0;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 rgba(18,26,51,.16);font:800 15px/1 var(--kid);cursor:pointer;touch-action:manipulation}
+.ctl button:active{transform:translateY(2px)}
+.hint0{margin:0;text-align:center;color:var(--soft);font-weight:700;font-size:13.5px}
+/* lenta */
+.bd{width:100%;border-collapse:separate;border-spacing:0;border-radius:16px;overflow:hidden;background:#17254d;color:#ffd23f;font:800 clamp(15px,4.3vw,19px)/1.2 var(--kid);box-shadow:inset 0 0 0 3px var(--ink),0 4px 0 rgba(18,26,51,.2);border:3px solid var(--ink)}
+.bd caption{caption-side:top;background:#ffd23f;color:var(--ink);font:800 14px/1 var(--kid);padding:6px;letter-spacing:.08em;text-transform:uppercase}
+.bd th{font:700 11.5px/1 var(--body);color:#9fb4e8;text-transform:uppercase;letter-spacing:.06em;padding:7px 6px 3px;text-align:left}
+.bd td{padding:7px 6px;border-top:1.5px dashed rgba(255,210,63,.28);white-space:nowrap}
+.bd td:nth-child(3),.bd td:nth-child(4),.bd th:nth-child(3),.bd th:nth-child(4){text-align:right}
+.bd td:first-child{color:#fff}
+/* kalendorius */
+.cal{width:min(100%,360px);border-collapse:separate;border-spacing:3px;background:#fff;border-radius:16px;padding:4px 6px 8px;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.14);table-layout:fixed}
+.cal caption{font:800 18px/1.1 var(--kid);padding:8px 0 4px}
+.cal th{font:800 12.5px/1 var(--body);color:var(--soft);padding:3px 0}
+.cal th.we{color:#d6402e}
+.cal td{height:34px;text-align:center;border-radius:10px;font:800 16px/1 var(--kid);background:#f4f8fc}
+.cal td.we{background:#fdeeea}
+.cal td.e{background:none}
+.cal td.m1{background:var(--ac);color:#fff;box-shadow:0 0 0 2px var(--ink)}
+.cal td.m2{background:#ff7a1a;color:#fff;box-shadow:0 0 0 2px var(--ink)}
+/* atsakymai */
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;max-width:560px;margin:8px auto 0}
+.opts.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.opt{min-height:60px;border:0;border-radius:18px;background:#fff;cursor:pointer;font:800 clamp(17px,5vw,22px)/1.15 var(--kid);color:var(--ink);padding:6px 8px;display:grid;place-items:center;
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.18);transition:transform .1s;touch-action:manipulation}
+.opt:active{transform:translateY(3px)}
+.opt.sm{font-size:clamp(14px,3.9vw,17px)}
+.opt.clk{padding:4px}
+.opt.clk svg{width:min(34vw,128px);height:auto;display:block}
+.opt.off{opacity:.38;pointer-events:none;box-shadow:inset 0 0 0 2.5px #b9b2a0}
+.opt.ok{background:#c9f5d6;box-shadow:inset 0 0 0 3.5px var(--good),0 5px 0 rgba(18,26,51,.18)}
+.opt.no{animation:mkShake .45s}
+.go{display:flex;justify-content:center;margin:10px 0 0}
+.go .mk-btn{min-width:60%}
+.note2{margin:8px auto 0;max-width:560px;padding:8px 12px;border-radius:14px;background:#fff4d6;box-shadow:inset 0 0 0 2px #e8c35a;font:700 15px/1.4 var(--body)}
+.fb{width:100%;max-width:560px;margin:4px auto 0}
+.fb .mk-why{margin:6px 0}
+@media (prefers-reduced-motion:reduce){.wg.new{animation:none}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="hero-art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="train" id="train"></div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+    <details class="how" id="how"></details>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="tkChip"></span></div>
+    <div class="qcard"><span class="qic" id="qic"></span><div class="qt" id="qt"></div></div>
+    <div class="stage" id="stage"></div>
+    <div class="opts" id="opts"></div>
+    <div class="go" id="go"></div>
+    <div class="fb" id="fb"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T;
+const GAME = "stoties-laikrodis", GRADES = [3], N = 8, N_EXAM = 10;
+const TK = "mk-" + GAME + "-bilietai", SEEN = "mk-" + GAME + "-matyta";
+const K = "#121a33";
+const NEED = [0, 8, 20, 36, 56, 82, 114, 150];
+const R = MK.rnd, pick = MK.pick, shuffle = MK.shuffle;
+const pad = n => String(n).padStart(2, "0");
+const fmtT = m => `${Math.floor(m / 60)}:${pad(m % 60)}`;
+const fmtD = m => m < 60 ? `${m} min` : m % 60 === 0 ? `${m / 60} val.` : `${Math.floor(m / 60)} val. ${m % 60} min`;
+const mod = (a, n) => ((a % n) + n) % n;
+const many = (n, one, few, lots) => { const d = n % 10, h = n % 100; return d === 1 && h !== 11 ? one : d >= 2 && (h < 10 || h >= 20) ? few : lots; };
+
+/* ================= piešiniai ================= */
+const S = `stroke="${K}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+function clockSvg(h, m, o){
+  o = o || {};
+  const hr = (mod(h, 12) + m / 60) * 30, mn = m * 6;
+  let ticks = "", nums = "";
+  for(let i = 0; i < 60; i++){
+    const a = i * 6 * Math.PI / 180, big = i % 5 === 0, r1 = big ? 78 : 83, r2 = 88;
+    if(o.mini && !big) continue;
+    ticks += `<line x1="${100 + r1 * Math.sin(a)}" y1="${100 - r1 * Math.cos(a)}" x2="${100 + r2 * Math.sin(a)}" y2="${100 - r2 * Math.cos(a)}" stroke="${K}" stroke-width="${big ? 3.2 : 1.4}" stroke-linecap="round"/>`;
+  }
+  for(let i = 1; i <= 12; i++){
+    if(o.mini && i % 3) continue;
+    const a = i * 30 * Math.PI / 180, r = 62;
+    nums += `<text x="${100 + r * Math.sin(a)}" y="${100 - r * Math.cos(a) + 8}" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="${o.mini ? 26 : 23}" fill="${K}">${i}</text>`;
+  }
+  const ghost = o.ghost ? `<g opacity=".4" stroke-dasharray="5 5"><line x1="100" y1="100" x2="100" y2="30" stroke="#ff5a36" stroke-width="5" stroke-linecap="round" transform="rotate(${o.ghost.m * 6} 100 100)"/><line x1="100" y1="100" x2="100" y2="54" stroke="#1d2c5e" stroke-width="8" stroke-linecap="round" transform="rotate(${(mod(o.ghost.h, 12) + o.ghost.m / 60) * 30} 100 100)"/></g>` : "";
+  return `<svg viewBox="0 0 200 200" class="clock ${o.cls || ""}" ${o.id ? `id="${o.id}"` : ""} role="img" aria-label="${o.aria || "Laikrodis"}">
+  <circle cx="100" cy="100" r="96" fill="#fff" stroke="${K}" stroke-width="5"/><circle cx="100" cy="100" r="90" fill="#f2f9ff"/>
+  ${ticks}${nums}${ghost}
+  <g class="hH" transform="rotate(${hr} 100 100)"><line x1="100" y1="112" x2="100" y2="52" stroke="${K}" stroke-width="10.5" stroke-linecap="round"/><line x1="100" y1="112" x2="100" y2="52" stroke="#1d2c5e" stroke-width="7.5" stroke-linecap="round"/></g>
+  <g class="mH" transform="rotate(${mn} 100 100)"><line x1="100" y1="116" x2="100" y2="26" stroke="${K}" stroke-width="7.5" stroke-linecap="round"/><line x1="100" y1="116" x2="100" y2="26" stroke="#ff5a36" stroke-width="4.6" stroke-linecap="round"/>${o.drag ? `<circle cx="100" cy="26" r="9" fill="#ffc61a" stroke="${K}" stroke-width="2.4"/>` : ""}</g>
+  <circle cx="100" cy="100" r="7.5" fill="#ffc61a" stroke="${K}" stroke-width="2.4"/></svg>`;
+}
+const ICONS = {
+  train: `<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="6" width="22" height="16" rx="5" fill="#2f8bff" ${S}/><rect x="9" y="10" width="6" height="6" rx="1.5" fill="#fff" stroke="${K}" stroke-width="1.8"/><rect x="17" y="10" width="6" height="6" rx="1.5" fill="#fff" stroke="${K}" stroke-width="1.8"/><circle cx="11" cy="25" r="3" fill="#ffc61a" ${S}/><circle cx="21" cy="25" r="3" fill="#ffc61a" ${S}/></svg>`,
+  bus: `<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="7" width="26" height="16" rx="4" fill="#ffc61a" ${S}/><rect x="6" y="10" width="5" height="5" rx="1" fill="#fff" stroke="${K}" stroke-width="1.8"/><rect x="13" y="10" width="5" height="5" rx="1" fill="#fff" stroke="${K}" stroke-width="1.8"/><rect x="20" y="10" width="6" height="5" rx="1" fill="#fff" stroke="${K}" stroke-width="1.8"/><circle cx="9" cy="24" r="3" fill="#555" ${S}/><circle cx="23" cy="24" r="3" fill="#555" ${S}/></svg>`,
+  boat: `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4v16M16 5l9 13H16" fill="#fff" ${S}/><path d="M4 21h24l-4 6H8z" fill="#ef3b4f" ${S}/><path d="M2 29q3-2 6 0t6 0 6 0 6 0" fill="none" stroke="#2f8bff" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+  film: `<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="12" width="24" height="15" rx="2.5" fill="#fff" ${S}/><path d="M4 12l3-7 5 2-3 5M13 8l5 2-3 5M21 10l5 2" fill="#121a33" stroke="${K}" stroke-width="2" stroke-linejoin="round"/><path d="M13 17l7 4-7 4z" fill="#ef3b4f"/></svg>`,
+  note: `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M12 24V7l14-3v17" fill="none" ${S}/><circle cx="9" cy="24" r="4" fill="#8b5cf6" ${S}/><circle cx="23" cy="21" r="4" fill="#8b5cf6" ${S}/></svg>`,
+  pot: `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 14h22l-2 12H7z" fill="#f4a63c" ${S}/><path d="M5 14q0-6 11-6t11 6z" fill="#ffd89a" ${S}/><path d="M12 5q2-2 0-4M18 5q2-2 0-4" fill="none" stroke="#9aa" stroke-width="2" stroke-linecap="round"/></svg>`,
+  ball: `<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="#fff" ${S}/><path d="M16 10l5 3.5-2 5.5h-6l-2-5.5z" fill="${K}"/><path d="M16 10V4M21 13.5l6-2M19 19l4 5M13 19l-4 5M11 13.5l-6-2" stroke="${K}" stroke-width="2" stroke-linecap="round"/></svg>`,
+  book: `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 7q7-3 13 1v19q-6-4-13-1z" fill="#fff" ${S}/><path d="M29 7q-7-3-13 1v19q6-4 13-1z" fill="#ffd0d6" ${S}/><path d="M7 12q3-1 6 1M7 17q3-1 6 1M19 13q3-2 6-1M19 18q3-2 6-1" stroke="${K}" stroke-width="1.6" stroke-linecap="round" opacity=".5"/></svg>`,
+  brush: `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M22 4l6 6-12 12-6-6z" fill="#e0a66b" ${S}/><path d="M10 16l6 6q-1 6-8 6q2-4-1-6q2-3 3-6z" fill="#ef3b4f" ${S}/></svg>`,
+  cal: `<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="6" width="24" height="22" rx="4" fill="#fff" ${S}/><path d="M4 12h24" stroke="${K}" stroke-width="2.4"/><rect x="4" y="6" width="24" height="6" rx="3" fill="#ef3b4f" ${S}/><path d="M10 3v5M22 3v5" ${S}/><circle cx="11" cy="19" r="2" fill="${K}"/><circle cx="16" cy="19" r="2" fill="${K}"/><circle cx="21" cy="19" r="2" fill="${K}"/><circle cx="11" cy="24" r="2" fill="${K}"/><circle cx="16" cy="24" r="2" fill="#ef3b4f"/></svg>`,
+  clock: `<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="#fff" ${S}/><path d="M16 9v7l5 3" fill="none" ${S}/></svg>`,
+  sand: `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 4h16M8 28h16M10 4q0 9 6 12-6 3-6 12M22 4q0 9-6 12 6 3 6 12" fill="none" ${S}/><path d="M12 24q4-4 8 0v3H12z" fill="#ffc61a"/></svg>`
+};
+const LOCK = `<svg class="lk" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="#fff" stroke="${K}" stroke-width="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="${K}" stroke-width="2"/><circle cx="12" cy="15.5" r="1.6" fill="${K}"/></svg>`;
+const TICKET = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v3.2a2 2 0 0 0 0 3.6V17H3v-3.2a2 2 0 0 0 0-3.6z" fill="#ffc61a" stroke="${K}" stroke-width="2" stroke-linejoin="round"/><path d="M14 8v8" stroke="${K}" stroke-width="1.8" stroke-dasharray="2 2"/></svg>`;
+const WHEEL = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r || 5.5}" fill="#3a3f55" ${S} stroke-width="2"/><circle cx="${x}" cy="${y}" r="1.8" fill="#ffc61a"/>`;
+/* vagonai: viewBox 64×44; 0 – garvežys */
+function wagonSvg(i){
+  const body = (c, extra) => `<path d="M2 30h60" stroke="${K}" stroke-width="2.6" stroke-linecap="round"/><rect x="4" y="9" width="56" height="25" rx="4" fill="${c}" ${S}/>${extra}${WHEEL(16, 37)}${WHEEL(48, 37)}`;
+  const parts = [
+    `<path d="M2 32h60" stroke="${K}" stroke-width="2.6"/><rect x="6" y="14" width="34" height="19" rx="9" fill="#2f8bff" ${S}/><rect x="36" y="6" width="22" height="28" rx="3" fill="#ef3b4f" ${S}/><rect x="40" y="10" width="13" height="11" rx="2" fill="#fff" stroke="${K}" stroke-width="2"/><rect x="12" y="4" width="8" height="12" rx="2" fill="#555d78" ${S}/><path d="M10 4h12" stroke="${K}" stroke-width="3" stroke-linecap="round"/><path d="M2 34l5-5v5z" fill="#ffc61a" ${S}/><circle cx="8" cy="23" r="3" fill="#ffe27a" stroke="${K}" stroke-width="1.8"/>${WHEEL(16, 37, 6)}${WHEEL(30, 37, 5)}${WHEEL(48, 37, 6.5)}`,
+    body("#ef3b4f", `<rect x="18" y="14" width="28" height="16" rx="2" fill="#fff" stroke="${K}" stroke-width="2.2"/><path d="M18 14l14 9 14-9" fill="none" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"/>`),
+    body("#3fae5a", `<circle cx="20" cy="22" r="6" fill="#ef3b4f" stroke="${K}" stroke-width="2"/><circle cx="33" cy="25" r="6" fill="#ffd23f" stroke="${K}" stroke-width="2"/><circle cx="45" cy="21" r="6" fill="#ef3b4f" stroke="${K}" stroke-width="2"/><path d="M20 16q1-3 3-3M45 15q1-3 3-3" stroke="#2c7a3b" stroke-width="2" fill="none" stroke-linecap="round"/>`),
+    body("#2f8bff", `<rect x="10" y="18" width="12" height="12" rx="2" fill="#ffd23f" stroke="${K}" stroke-width="2"/><rect x="24" y="18" width="12" height="12" rx="2" fill="#ef3b4f" stroke="${K}" stroke-width="2"/><rect x="17" y="6" width="12" height="12" rx="2" fill="#7bd13a" stroke="${K}" stroke-width="2"/><circle cx="48" cy="25" r="6" fill="#fff" stroke="${K}" stroke-width="2"/>`),
+    body("#8b5cf6", `<rect x="12" y="14" width="8" height="16" rx="1.5" fill="#ffd23f" stroke="${K}" stroke-width="2"/><rect x="21" y="12" width="8" height="18" rx="1.5" fill="#fff" stroke="${K}" stroke-width="2"/><rect x="30" y="15" width="8" height="15" rx="1.5" fill="#ef3b4f" stroke="${K}" stroke-width="2"/><rect x="39" y="13" width="8" height="17" rx="1.5" fill="#5ee0c8" stroke="${K}" stroke-width="2"/>`),
+    body("#fff", `<path d="M4 9h56v6H4z" fill="#ef3b4f"/><path d="M12 9v6M20 9v6M28 9v6M36 9v6M44 9v6M52 9v6" stroke="#fff" stroke-width="3"/><path d="M32 17l3 6 7 1-5 4 1.5 7L32 31l-6.5 4 1.5-7-5-4 7-1z" fill="#ffc61a" stroke="${K}" stroke-width="2" stroke-linejoin="round"/>`),
+    body("#bfe8ff", `<rect x="9" y="13" width="14" height="17" rx="2.5" fill="#e8f7ff" stroke="${K}" stroke-width="2"/><rect x="25" y="13" width="14" height="17" rx="2.5" fill="#e8f7ff" stroke="${K}" stroke-width="2"/><rect x="41" y="13" width="14" height="17" rx="2.5" fill="#e8f7ff" stroke="${K}" stroke-width="2"/><path d="M11 16l5 0M27 16l5 0M43 16l5 0" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`),
+    body("#ffc61a", `<rect x="8" y="13" width="48" height="17" rx="3" fill="#ffe27a" stroke="${K}" stroke-width="2.2"/><path d="M32 15l3 5 5 1-4 4 1 5-5-3-5 3 1-5-4-4 5-1z" fill="#fff" stroke="${K}" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 14l6 0M44 28l6 0" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`)
+  ];
+  return `<svg viewBox="0 0 64 44" aria-hidden="true">${parts[i]}</svg>`;
+}
+/* Stoties viršininkas: pilnas žmogeliukas (viewBox 60×110) */
+function chiefSvg(){
+  const skin = "#f2c29b";
+  return `<g>
+  <ellipse cx="30" cy="108" rx="18" ry="3.5" fill="#000" opacity=".15"/>
+  <path d="M23 70v34M37 70v34" stroke="#2a3558" stroke-width="9" stroke-linecap="round"/><path d="M17 106h12M31 106h12" stroke="${K}" stroke-width="5" stroke-linecap="round"/>
+  <path d="M16 40q14-9 28 0l3 36H13z" fill="#2f4fb8" ${S}/><path d="M30 40v36" stroke="${K}" stroke-width="2"/><circle cx="25" cy="50" r="1.8" fill="#ffc61a"/><circle cx="25" cy="58" r="1.8" fill="#ffc61a"/><circle cx="25" cy="66" r="1.8" fill="#ffc61a"/>
+  <path d="M44 44l10-18" stroke="#2f4fb8" stroke-width="9" stroke-linecap="round"/><circle cx="55" cy="24" r="5" fill="${skin}" ${S} stroke-width="2"/><path d="M56 22V6" stroke="#8a5a33" stroke-width="2.6" stroke-linecap="round"/><path d="M56 6l12 4-12 5z" fill="#7bd13a" ${S} stroke-width="2"/>
+  <path d="M16 44l-6 20" stroke="#2f4fb8" stroke-width="9" stroke-linecap="round"/><circle cx="9" cy="67" r="5" fill="${skin}" ${S} stroke-width="2"/>
+  <rect x="26" y="33" width="8" height="9" rx="3" fill="${skin}" stroke="${K}" stroke-width="2"/>
+  <circle cx="30" cy="26" r="13" fill="${skin}" ${S}/><circle cx="25.5" cy="26" r="1.8" fill="${K}"/><circle cx="34.5" cy="26" r="1.8" fill="${K}"/><path d="M26 32q4 3 8 0" fill="none" stroke="${K}" stroke-width="2" stroke-linecap="round"/><circle cx="21.5" cy="30" r="2.6" fill="#ff8aa0" opacity=".55"/><circle cx="38.5" cy="30" r="2.6" fill="#ff8aa0" opacity=".55"/>
+  <path d="M16 20q14-16 28 0z" fill="#ef3b4f" ${S}/><path d="M14 21h32" stroke="${K}" stroke-width="4" stroke-linecap="round"/><circle cx="30" cy="14" r="2.6" fill="#ffc61a" stroke="${K}" stroke-width="1.6"/>
+  </g>`;
+}
+const wagonInner = i => wagonSvg(i).replace(/<svg[^>]*>/, "").replace("</svg>", "");
+function heroSvg(count){
+  const now = new Date(), hh = now.getHours(), mm = now.getMinutes();
+  const hrA = (mod(hh, 12) + mm / 60) * 30, mnA = mm * 6;
+  const wag = Math.min(7, Math.max(0, count));
+  let tr = "";
+  for(let k = wag; k >= 1; k--) tr += `<g transform="translate(${296 - 36 * k + 4} 128) scale(.55)">${wagonInner(k)}</g>`;
+  tr += `<g transform="translate(300 118) scale(.82)">${wagonInner(0)}</g>`;
+  let couple = ""; for(let k = 1; k <= wag; k++) couple += `<path d="M${296 - 36 * k + 36} 152h4" stroke="${K}" stroke-width="2.4"/>`;
+  return `<svg viewBox="0 0 360 190" role="img" aria-label="Geležinkelio stotis">
+  <rect width="360" height="190" fill="#bfe8ff"/>
+  <circle cx="318" cy="28" r="15" fill="#ffe27a" stroke="${K}" stroke-width="2.4"/>
+  <g fill="#fff" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"><path d="M200 36q0-9 10-9q4-7 12-4q8 0 8 7q7 1 7 6z"/><path d="M62 24q0-8 9-8q3-6 11-3q7 0 7 6q6 1 6 5z" opacity=".9"/></g>
+  <path d="M0 96q50-26 110-8q60-24 120 0q60-22 130-2v52H0z" fill="#8fd07a" stroke="${K}" stroke-width="2.2"/>
+  <rect x="8" y="64" width="130" height="62" rx="4" fill="#ffd9a8" ${S}/>
+  <path d="M2 66l73-34 73 34z" fill="#c8553d" ${S}/>
+  <rect x="20" y="80" width="26" height="22" rx="3" fill="#fff" stroke="${K}" stroke-width="2.2"/><path d="M33 80v22M20 91h26" stroke="${K}" stroke-width="1.8"/>
+  <rect x="100" y="80" width="26" height="22" rx="3" fill="#fff" stroke="${K}" stroke-width="2.2"/><path d="M113 80v22M100 91h26" stroke="${K}" stroke-width="1.8"/>
+  <path d="M62 126V105a13 13 0 0 1 26 0v21z" fill="#7a4b2a" ${S}/><circle cx="83" cy="111" r="2" fill="#ffc61a"/>
+  <circle cx="75" cy="56" r="19" fill="#fff" ${S} stroke-width="3"/>
+  <g stroke="${K}" stroke-linecap="round" stroke-width="2.2">${[0, 90, 180, 270].map(a => `<line x1="75" y1="${56 - 15}" x2="75" y2="${56 - 12}" transform="rotate(${a} 75 56)"/>`).join("")}</g>
+  <g transform="translate(75 56)"><line x1="0" y1="0" x2="0" y2="-8" stroke="#1d2c5e" stroke-width="3.6" stroke-linecap="round" transform="rotate(${hrA})"/><line x1="0" y1="0" x2="0" y2="-13" stroke="#ff5a36" stroke-width="2.4" stroke-linecap="round" transform="rotate(${mnA})"/><circle r="2.4" fill="#ffc61a" stroke="${K}" stroke-width="1.2"/></g>
+  <rect x="0" y="124" width="360" height="12" fill="#cfc7b8" stroke="${K}" stroke-width="2.4"/>
+  <rect x="0" y="136" width="360" height="54" fill="#8d8575"/><path d="M0 136H360" stroke="${K}" stroke-width="2.4"/>
+  <path d="M0 160H360M0 174H360" stroke="#d9d3c6" stroke-width="5"/><path d="M0 160H360M0 174H360" stroke="${K}" stroke-width="1.4"/>
+  <g stroke="#6b4a2f" stroke-width="4">${Array.from({ length: 19 }, (_, i) => `<line x1="${6 + i * 19}" y1="157" x2="${6 + i * 19}" y2="177"/>`).join("")}</g>
+  <g transform="translate(142 22) scale(.98)">${chiefSvg()}</g>
+  ${tr.replace(/translate\((\d+) 128\)/g, "translate($1 124)")}${couple}
+  </svg>`;
+}
+const clockSvgStr = clockSvg;
+
+/* ================= užduočių generatoriai ================= */
+const NAMES = T.names;
+const nm2 = () => { const a = pick(NAMES); let b = pick(NAMES); while(b === a) b = pick(NAMES); return [a, b]; };
+const stepT = (lo, hi, step) => R(lo * 60 / step, hi * 60 / step) * step; /* minutės nuo vidurnakčio */
+/* atsakymų parinkimas: teisingas + 3 skirtingos (pirma tikėtinos klaidos, tada užpildas) */
+function build(correct, mist, filler, fmt, valid){
+  valid = valid || (v => true);
+  const lab = fmt(correct), seen = new Set([lab]), out = [];
+  const take = list => { for(const v of list){ if(out.length >= 3) return; if(!valid(v) || v === correct) continue; const l = fmt(v); if(seen.has(l)) continue; seen.add(l); out.push(v); } };
+  const m = shuffle(mist.filter(x => x != null)); take(m.slice(0, 2)); take(shuffle(filler)); take(m.slice(2));
+  let g = 0; while(out.length < 3 && g++ < 60) take([correct + R(-12, 12) * (R(0, 1) ? 5 : 1)]);
+  const all = shuffle([correct].concat(out));
+  return { opts: all.map(fmt), ans: all.indexOf(correct) };
+}
+const around = (c, steps) => steps.flatMap(s => [c + s, c - s]);
+
+function explainDur(a, b){
+  if(Math.floor(a / 60) === Math.floor(b / 60)) return T.explain.durSame(fmtT(a), fmtT(b), fmtD(b - a));
+  const parts = []; let cur = a;
+  if(a % 60){ const nx = Math.ceil(a / 60) * 60; parts.push(`${nx - a} min (iki ${fmtT(nx)})`); cur = nx; }
+  const hs = Math.floor((b - cur) / 60); if(hs > 0){ parts.push(`${hs} val.`); cur += hs * 60; }
+  if(b - cur > 0) parts.push(`${b - cur} min`);
+  return T.explain.dur(parts, fmtD(b - a));
+}
+function explainAdd(a, d){
+  const hs = Math.floor(d / 60), r = d % 60, steps = []; let cur = a;
+  if(hs){ steps.push(`${fmtT(a)} + ${hs} val. = ${fmtT(a + hs * 60)}.`); cur = a + hs * 60; }
+  if(r){
+    const nx = Math.ceil(cur / 60) * 60;
+    if(cur % 60 && cur % 60 + r > 60) steps.push(`${fmtT(cur)} + ${r} min: iki ${fmtT(nx)} yra ${nx - cur} min, dar ${r - (nx - cur)} min → ${fmtT(cur + r)}.`);
+    else steps.push(`${fmtT(cur)} + ${r} min = ${fmtT(cur + r)}.`);
+  }
+  return T.explain.add(steps);
+}
+function explainSub(e, d){
+  const hs = Math.floor(d / 60), r = d % 60, steps = []; let cur = e;
+  if(hs){ steps.push(`${fmtT(e)} − ${hs} val. = ${fmtT(e - hs * 60)}.`); cur = e - hs * 60; }
+  if(r){
+    const pv = Math.floor(cur / 60) * 60;
+    if(cur % 60 < r && cur % 60) steps.push(`${fmtT(cur)} − ${r} min: iki ${fmtT(pv)} yra ${cur - pv} min, dar ${r - (cur - pv)} min → ${fmtT(cur - r)}.`);
+    else steps.push(`${fmtT(cur)} − ${r} min = ${fmtT(cur - r)}.`);
+  }
+  return T.explain.sub(steps);
+}
+const qhtml = s => s.replace(/(\d{1,2}:\d{2})/g, "<b>$1</b>").replace(/(\d+ val\. \d+ min|\d+ val\.|\d+ min \d+ s|\d+ min|\d+ s)(?![\w])/g, "<b>$1</b>");
+
+const G = {};
+/* ---------- 1 lygis ---------- */
+G.read = d => {
+  const h = R(1, 12), five = d < .5 || R(0, 2) === 0, m = five ? 5 * R(0, 11) : R(0, 59);
+  const sw = (m % 5 === 0) ? `${(m / 5) || 12}:${pad((h % 12) * 5)}` : null;
+  const f = v => `${Math.floor(v / 60) || 12}:${pad(v % 60)}`, val = h * 60 % 720 + m; /* 12:xx → 0 */
+  const hv = (h % 12) * 60 + m;
+  const cands = [];
+  const mist = [];
+  const fmtV = v => { const x = mod(v, 720), hh = Math.floor(x / 60) || 12; return `${hh}:${pad(x % 60)}`; };
+  const swapV = (m % 5 === 0) ? ((m / 5) % 12) * 60 + (h % 12) * 5 : null;
+  const o = build(hv, [swapV, hv + 60, hv - 60, five ? hv + 5 : hv + 1, five ? hv - 5 : hv - 1, hv + 10], around(hv, [5, 10, 15, 30]).concat(around(hv, [60, 120])), fmtV, v => true);
+  const q = pick(T.places);
+  return { key: `read${h}:${m}`, ic: "clock", q: five ? T.readQ(q) : T.readQmin(q), stage: clockSvg(h, m, { aria: "Laikrodis" }) + `<div class="legend"><span><i style="background:#1d2c5e"></i>${T.shortHand}</span><span><i style="background:#ff5a36"></i>${T.longHand}</span></div>`, mode: "choice", opts: o.opts, ans: o.ans,
+    hint: swapV != null ? T.explain.swap : T.explain.read(h, m), why: T.explain.read(h, m), raw: { h, m, ans: fmtV(hv) } };
+};
+G.which = d => {
+  const h = R(1, 12), m = 5 * R(0, 11), hv = (h % 12) * 60 + m;
+  const swapV = ((m / 5) % 12) * 60 + (h % 12) * 5;
+  const vals = [hv];
+  const cands = shuffle([swapV, hv + 60, hv - 60, hv + 5 * R(1, 3), hv - 5 * R(1, 3), hv + 30, hv + 15]);
+  const label = v => `${Math.floor(mod(v, 720) / 60) || 12}:${pad(mod(v, 720) % 60)}`;
+  const seen = new Set([label(hv)]), out = [];
+  if(swapV !== hv) { out.push(swapV); seen.add(label(swapV)); }
+  for(const v of cands){ if(out.length >= 3) break; if(seen.has(label(v))) continue; seen.add(label(v)); out.push(v); }
+  const all = shuffle([hv].concat(out)), t = label(hv);
+  return { key: `wh${t}`, ic: "clock", q: qhtml(T.whichQ(t)), stage: "", mode: "choice", cls: "clk", opts: all.map(v => clockSvg(Math.floor(mod(v, 720) / 60), mod(v, 720) % 60, { cls: "", aria: "Laikrodis" })), ans: all.indexOf(hv),
+    hint: T.explain.swap, why: T.explain.read(h, m), raw: { h, m, ans: all.indexOf(hv) } };
+};
+function setTask(h12, m, what, label, whyExtra, key){
+  const target = (h12 % 12) * 60 + m;
+  let sh = mod(h12 + R(1, 4) * (R(0, 1) ? 1 : -1), 12), sm = 5 * R(0, 11); if(sm === m) sm = mod(sm + 25, 60);
+  return { key, ic: "clock", q: qhtml(label), stage: "set", mode: "set", target, start: (sh % 12) * 60 + sm, hint: null, why: (whyExtra || "") + " " + T.explain.set(h12 || 12, m), raw: { h: h12, m }, tgtH: h12, tgtM: m };
+}
+G.set = d => { const h = R(1, 12), m = d < .4 ? 5 * R(0, 11) : R(0, 3) ? 5 * R(0, 11) : R(0, 59); return setTask(h, m, "", T.setQ(pick(T.setWhat), `${h}:${pad(m)}`), "", `set${h}:${m}`); };
+G.set24 = d => { const h = R(13, 21), m = 5 * R(0, 11); return setTask(h % 12, m, "", T.h24Q(pick(T.setWhat), `${h}:${pad(m)}`), T.explain.h24(h), `s24${h}:${m}`); };
+G.conv24 = d => {
+  const h = R(13, 21), m = 5 * R(0, 11), c = h - 12, f = v => `${v}:${pad(m)}`;
+  const o = build(c, [h - 10, h - 13, h - 11, c + 2], [c + 1, c - 1, c + 3, c - 2], f, v => v >= 1 && v <= 12);
+  return { key: `c24${h}:${m}`, ic: "clock", q: qhtml(T.conv24Q(pick(T.setWhat), `${h}:${pad(m)}`)), stage: "", mode: "choice", opts: o.opts, ans: o.ans, hint: T.explain.h24(h), why: T.explain.h24(h), raw: { h, m, ans: f(c) } };
+};
+/* ---------- 2 lygis ---------- */
+const durFmt = v => fmtD(v);
+function durOpts(a, b){
+  const dur = b - a, bm = b % 60, am = a % 60;
+  const borrow = Math.abs(bm - am) + 60 * (Math.floor(b / 60) - Math.floor(a / 60));
+  return build(dur, [borrow !== dur ? borrow : null, dur + 60, dur - 60, dur + 10, dur - 10], around(dur, [5, 15, 20, 30, 45]), durFmt, v => v > 0 && v <= 600);
+}
+G.dur2c = d => {
+  const a = stepT(7, 16, 5), dur = 5 * R(2, d < .5 ? 18 : 34), b = a + dur, sc = pick(T.durClocksScen), nmx = pick(NAMES);
+  const o = durOpts(a, b);
+  const stage = `<div class="pair"><figure>${clockSvg(Math.floor(a / 60), a % 60, { cls: "mini", aria: "Pradžia" })}<figcaption>${T.clockStart}</figcaption></figure><figure>${clockSvg(Math.floor(b / 60), b % 60, { cls: "mini", aria: "Pabaiga" })}<figcaption>${T.clockEnd}</figcaption></figure></div>`;
+  return { key: `d2c${a}-${b}`, ic: sc.ic, q: sc.q(), stage, mode: "choice", opts: o.opts, ans: o.ans, hint: "Suskaičiuok: nuo pradžios laikrodžio iki pabaigos laikrodžio.", why: explainDur(a, b), raw: { a, b, ans: dur }, clocks: true, q2: sc };
+};
+G.durD = d => {
+  const hard = d >= .35, a = hard ? stepT(7, 17, 1) : stepT(7, 17, 5), dur = hard ? R(8, d < .7 ? 95 : 190) : 5 * R(2, 22), b = a + dur, sc = pick(T.durScen), nmx = pick(NAMES);
+  const o = durOpts(a, b);
+  return { key: `dd${a}-${b}`, ic: sc.ic, q: qhtml(sc.q(fmtT(a), fmtT(b), nmx)), stage: "", mode: "choice", opts: o.opts, ans: o.ans, hint: "Skaičiuok per pilną valandą: iki artimiausios pilnos valandos, tada dar kiek liko.", why: explainDur(a, b), raw: { a, b, ans: dur } };
+};
+G.left = d => {
+  const now = d < .5 ? stepT(8, 15, 5) : stepT(8, 15, 1), gap = d < .5 ? 5 * R(2, 14) : R(7, 78), t = now + gap, sc = pick(T.leftScen);
+  const o = durOpts(now, t);
+  const stage = clockSvg(Math.floor(now / 60), now % 60, { cls: "mini", aria: "Laikrodis dabar" });
+  return { key: `lf${now}-${t}`, ic: sc.ic, q: qhtml(sc.q(fmtT(now), fmtT(t))), stage: d < .5 ? stage : "", mode: "choice", opts: o.opts, ans: o.ans, hint: "Skaičiuok nuo dabartinio laiko iki nurodyto.", why: explainDur(now, t), raw: { a: now, b: t, ans: gap } };
+};
+G.cmp = d => {
+  const [n1, n2] = nm2(), a1 = stepT(7, 12, 5), a2 = stepT(12, 17, 5), d1 = 5 * R(4, 28), eq = R(0, 4) === 0, d2 = eq ? d1 : mod(d1 + 5 * R(-5, 5), 150) + 20 + (R(0, 1) ? 5 : 0);
+  const D2 = eq ? d1 : (d2 === d1 ? d1 + 5 : d2);
+  const b1 = a1 + d1, b2 = a2 + D2, ans = d1 > D2 ? 0 : d1 < D2 ? 1 : 2;
+  return { key: `cmp${a1}-${b1}-${a2}-${b2}`, ic: "train", q: qhtml(T.cmpQ(n1, fmtT(a1), fmtT(b1), n2, fmtT(a2), fmtT(b2))), stage: "", mode: "choice", opts: [n1, n2, T.cmpEq], ans, c3: true,
+    hint: "Pirma suskaičiuok, kiek laiko keliavo kiekvienas, tada palygink.", why: `${n1}: ${fmtD(d1)}. ${n2}: ${fmtD(D2)}. ${explainDur(a1, b1)}`, raw: { d1, d2: D2, ans } };
+};
+/* ---------- 3 lygis ---------- */
+function endOpts(e, a, d){ return build(e, [e + 10, e - 10, e + 60, e - 60, a - d >= 360 ? a - d : null, e + 5, e - 5], around(e, [15, 20, 30]), fmtT, v => v >= 360 && v < 1440); }
+G.endD = d => {
+  const a = d < .5 ? stepT(7, 16, 5) : stepT(7, 16, 1), dur = d < .4 ? 5 * R(3, 16) : R(12, d < .7 ? 100 : 200), e = a + dur, sc = pick(T.endScen), nx = pick(NAMES);
+  const o = endOpts(e, a, dur);
+  return { key: `ed${a}+${dur}`, ic: sc.ic, q: qhtml(sc.q(fmtT(a), fmtD(dur), nx)), stage: "", mode: "choice", opts: o.opts, ans: o.ans, hint: "Pridėk trukmę prie pradžios laiko. Valandas ir minutes pridėk atskirai.", why: explainAdd(a, dur), raw: { a, dur, ans: e } };
+};
+G.endSet = d => {
+  const a = stepT(7, 16, 5), dur = 5 * R(3, d < .5 ? 14 : 28), e = a + dur, sc = pick(T.endScen), nx = pick(NAMES);
+  const tg = { key: `es${a}+${dur}`, ic: sc.ic, q: qhtml(sc.q(fmtT(a), fmtD(dur), nx)) + " <br>Pasuk rodykles į atsakymą.", stage: "set", mode: "set", target: mod(e, 720), start: mod(a, 720), hint: null, why: explainAdd(a, dur) + " " + T.explain.set(Math.floor(e / 60) % 12 || 12, e % 60), raw: { a, dur, ans: e }, tgtH: Math.floor(e / 60), tgtM: e % 60 };
+  return tg;
+};
+G.startD = d => {
+  const e = d < .5 ? stepT(9, 18, 5) : stepT(9, 18, 1), dur = d < .4 ? 5 * R(3, 16) : R(12, d < .7 ? 100 : 200), a = e - dur, sc = pick(T.startScen);
+  const o = build(a, [a + 10, a - 10, a + 60, a - 60, e + dur < 1440 ? e + dur : null, a + 5, a - 5], around(a, [15, 20, 30]), fmtT, v => v >= 360 && v < 1440);
+  return { key: `sd${e}-${dur}`, ic: sc.ic, q: qhtml(sc.q(fmtT(e), fmtD(dur))), stage: "", mode: "choice", opts: o.opts, ans: o.ans, hint: "Atimk trukmę nuo pabaigos laiko. Valandas ir minutes atimk atskirai.", why: explainSub(e, dur), raw: { e, dur, ans: a } };
+};
+G.two = d => {
+  const a = stepT(7, 14, 5), p = 5 * R(3, 14), s = 5 * R(1, 6), r = 5 * R(2, 12), tot = p + s + r, e = a + tot, sc = pick(T.twoScen);
+  const o = build(e, [a + p + r, e - s, e + 10, e - 10, e + 60, e - 60], around(e, [5, 15, 20]), fmtT, v => v >= 360 && v < 1440);
+  return { key: `tw${a}-${p}-${s}-${r}`, ic: sc.ic, q: qhtml(sc.q(fmtT(a), fmtD(p), fmtD(s), fmtD(r))), stage: "", mode: "choice", opts: o.opts, ans: o.ans, hint: "Pirma sudėk visas trukmes (ir stovėjimą!), tada pridėk prie pradžios.", why: T.explain.two(fmtD(tot), [fmtD(p), fmtD(s), fmtD(r)]) + " " + explainAdd(a, tot), raw: { a, parts: [p, s, r], ans: e } };
+};
+G.ready = d => {
+  const t = stepT(8, 18, 5), w = 5 * R(2, 8), r = 5 * R(2, 9), tot = w + r, a = t - tot, sc = pick(T.readyScen);
+  const o = build(a, [t - w, t - r, a + 10, a - 10, a + 60, a - 60, t + tot], around(a, [5, 15, 20]), fmtT, v => v >= 300 && v < 1440);
+  return { key: `rd${t}-${w}-${r}`, ic: sc.ic, q: qhtml(sc.q(fmtT(t), fmtD(w), fmtD(r))), stage: "", mode: "choice", opts: o.opts, ans: o.ans, hint: "Pirma sudėk visą laiką, kurio reikia, tada atimk iš pradžios laiko.", why: T.explain.ready(fmtD(tot), [fmtD(w), fmtD(r)]) + " " + explainSub(t, tot), raw: { t, parts: [w, r], ans: a } };
+};
+/* ---------- 4 lygis: tvarkaraštis ---------- */
+function makeBoard(){
+  const k = 5, nrs = shuffle(Array.from({ length: 80 }, (_, i) => i + 11)).slice(0, k).sort((x, y) => x - y), tos = shuffle(T.stations).slice(0, k);
+  let t = stepT(7, 13, 5); const rows = [];
+  for(let i = 0; i < k; i++){ const dur = 5 * R(5, 25); rows.push({ nr: nrs[i], to: tos[i], dep: t, dur, arr: t + dur }); t += 5 * R(4, 11); }
+  return rows;
+}
+function boardHtml(rows){
+  return `<table class="bd"><caption>${T.boardH}</caption><thead><tr><th>${T.boardNr}</th><th>${T.boardTo}</th><th>${T.boardDep}</th><th>${T.boardArr}</th></tr></thead><tbody>${rows.map(r => `<tr><td>${r.nr}</td><td>${r.to}</td><td>${fmtT(r.dep)}</td><td>${fmtT(r.arr)}</td></tr>`).join("")}</tbody></table>`;
+}
+const lbl = r => T.trainLabel(r.nr, r.to);
+function trainOpts(rows, correctIdx, extra){
+  const others = shuffle(rows.map((r, i) => i).filter(i => i !== correctIdx)), idx = shuffle([correctIdx].concat((extra || []).filter(i => i !== correctIdx && i != null).concat(others)).filter((v, i, a) => a.indexOf(v) === i).slice(0, 4));
+  if(!idx.includes(correctIdx)) idx[0] = correctIdx;
+  const arr = shuffle(idx);
+  return { opts: arr.map(i => lbl(rows[i])), ans: arr.indexOf(correctIdx) };
+}
+G.bFirst = d => {
+  const rows = makeBoard(), i = R(0, 3), now = i === 0 ? rows[0].dep - 5 * R(1, 7) : rows[i].dep - R(3, Math.min(20, rows[i].dep - rows[i - 1].dep - 3)), nx = pick(NAMES);
+  const o = trainOpts(rows, i, [i - 1 >= 0 ? i - 1 : null, i + 1]);
+  return { key: `bf${rows[0].dep}-${now}`, ic: "train", q: qhtml(T.boardFirstQ(nx, fmtT(now))), stage: boardHtml(rows), mode: "choice", cls: "sm", opts: o.opts, ans: o.ans, hint: T.explain.boardFirst, why: `${fmtT(now)} → ${fmtT(rows[i].dep)}: ${T.trainLabel(rows[i].nr, rows[i].to)}. ${T.explain.boardFirst}`, raw: { rows, now, ans: i } };
+};
+G.bWait = d => {
+  const rows = makeBoard(), i = R(0, 3), now = i === 0 ? rows[0].dep - 5 * R(1, 7) : rows[i].dep - R(3, Math.min(25, rows[i].dep - rows[i - 1].dep - 3)), nx = pick(NAMES), w = rows[i].dep - now;
+  const o = build(w, [i > 0 ? now - rows[i - 1].dep : null, i < 4 ? rows[i + 1].dep - now : null, w + 10, w - 10], around(w, [5, 15, 20]), durFmt, v => v > 0);
+  return { key: `bw${rows[0].dep}-${now}`, ic: "clock", q: qhtml(T.boardWaitQ(nx, fmtT(now))), stage: boardHtml(rows), mode: "choice", opts: o.opts, ans: o.ans, hint: "Pirma rask pirmą traukinį po tavo atėjimo, tada skaičiuok laukimą.", why: `${T.explain.boardFirst} ${explainDur(now, rows[i].dep)}`, raw: { rows, now, ans: w } };
+};
+G.bExt = d => {
+  let rows, mn, mx;
+  do { rows = makeBoard(); const ds = rows.map(r => r.dur), a = Math.min(...ds), b = Math.max(...ds); mn = ds.indexOf(a); mx = ds.indexOf(b); } while(rows.filter(r => r.dur === rows[mn].dur).length > 1 || rows.filter(r => r.dur === rows[mx].dur).length > 1);
+  const short = R(0, 1) === 0, i = short ? mn : mx, o = trainOpts(rows, i, [short ? mx : mn]);
+  return { key: `be${rows[0].dep}-${short}-${rows[0].nr}`, ic: "train", q: short ? T.boardShortQ : T.boardLongQ, stage: boardHtml(rows), mode: "choice", cls: "sm", opts: o.opts, ans: o.ans, hint: T.explain.boardShort, why: `${T.explain.boardShort} ` + rows.map(r => `Nr. ${r.nr}: ${fmtD(r.dur)}`).join("; ") + ".", raw: { rows, ans: i, short } };
+};
+G.bDur = d => {
+  const rows = makeBoard(), i = R(0, 4), r = rows[i], o = durOpts(r.dep, r.arr);
+  return { key: `bd${rows[0].dep}-${r.nr}-${r.arr}`, ic: "clock", q: qhtml(T.boardDurQ(r.nr, r.to)), stage: boardHtml(rows), mode: "choice", opts: o.opts, ans: o.ans, hint: "Kelionės trukmė = atvykimo laikas − išvykimo laikas.", why: explainDur(r.dep, r.arr), raw: { rows, i, ans: r.dur } };
+};
+G.bBoth = d => {
+  for(let tries = 0; tries < 80; tries++){
+    const rows = makeBoard(), t = R(0, 3), early = rows[t].dep - (t > 0 ? 5 * R(0, Math.min(2, Math.floor((rows[t].dep - rows[t - 1].dep) / 5) - 1)) : 5 * R(0, 3)), late = rows[t].arr + 5 * R(0, 4);
+    const fit = rows.map((r, i) => r.dep >= early && r.arr <= late ? i : -1).filter(i => i >= 0);
+    if(fit.length !== 1 || fit[0] !== t) continue;
+    const nx = pick(NAMES), almost = rows.map((r, i) => (r.dep >= early) !== (r.arr <= late) ? i : -1).filter(i => i >= 0);
+    const o = trainOpts(rows, t, almost);
+    return { key: `bb${rows[0].dep}-${early}-${late}`, ic: "train", q: qhtml(T.boardBothQ(nx, fmtT(early), fmtT(late))), stage: boardHtml(rows), mode: "choice", cls: "sm", opts: o.opts, ans: o.ans, hint: T.explain.boardBoth, why: `${T.trainLabel(rows[t].nr, rows[t].to)}: išvyksta ${fmtT(rows[t].dep)} (nevėliau nei ${fmtT(early)}) ir atvyksta ${fmtT(rows[t].arr)} (ne vėliau nei ${fmtT(late)}). ${T.explain.boardBoth}`, raw: { rows, early, late, ans: t } };
+  }
+  return G.bFirst(d);
+};
+G.bHome = d => {
+  const rows = makeBoard(), i = R(0, 4), r = rows[i], w = 5 * R(2, 8), a = r.dep - w, nx = pick(NAMES);
+  const o = build(a, [r.dep + w, a + 5, a - 5, a + 10, a - 10, a + 60], around(a, [15, 20]), fmtT, v => v >= 300);
+  return { key: `bh${rows[0].dep}-${r.nr}-${w}`, ic: "train", q: qhtml(T.boardHomeQ(nx, r.nr, fmtD(w))), stage: boardHtml(rows), mode: "choice", opts: o.opts, ans: o.ans, hint: "Reikia išeiti anksčiau, todėl nuo išvykimo laiko ATIMK kelio trukmę.", why: explainSub(r.dep, w), raw: { rows, i, w, ans: a } };
+};
+G.bAfter = d => {
+  const rows = makeBoard(), i = R(0, 4), r = rows[i], gap = 5 * R(2, 11), bus = r.arr + gap, nx = pick(NAMES);
+  const o = build(gap, [bus - r.dep > 0 ? bus - r.dep : null, gap + 10, gap - 10], around(gap, [5, 15, 20]), durFmt, v => v > 0);
+  return { key: `ba${rows[0].dep}-${r.nr}-${gap}`, ic: "bus", q: qhtml(T.boardAfterQ(nx, r.nr, fmtT(bus))), stage: boardHtml(rows), mode: "choice", opts: o.opts, ans: o.ans, hint: "Atvykimo laikas yra stulpelyje „Atvyksta“.", why: explainDur(r.arr, bus), raw: { rows, i, ans: gap } };
+};
+/* ---------- 5 lygis: vienetai ---------- */
+G.unitFit = d => {
+  const it = pick(T.unitFit), keys = ["s", "min", "val"];
+  return { key: `uf${it[0]}`, ic: "sand", q: it[0], stage: "", mode: "choice", c3: true, opts: keys.map(k => T.unitNames[k]), ans: keys.indexOf(it[1]),
+    hint: "Pagalvok, ar tai labai trumpas, vidutinis ar ilgas laikas.", why: { s: "Tai labai trumpas laikas – jį matuojame sekundėmis (s).", min: "Tai kelios ar keliolika minučių – matuojame minutėmis (min).", val: "Tai ilgas laikas – matuojame valandomis (val.)." }[it[1]] + " " + T.explain.min60, raw: { ans: it[1] } };
+};
+G.toSec = d => {
+  const m = R(1, d < .5 ? 4 : 9), s = 5 * R(1, 11), tot = m * 60 + s, sc = pick(T.secScen), f = v => `${v} s`;
+  const o = build(tot, [m * 100 + s, m * 60, m + s, m * 10 + s, tot + 60, tot - 60], around(tot, [10, 20, 30]), f, v => v > 0);
+  return { key: `ts${m}-${s}`, ic: "sand", q: qhtml(T.toSecQ(`${sc} ${m} min ${s} s.`)), stage: "", mode: "choice", opts: o.opts, ans: o.ans, hint: "1 min = 60 s. Minutes padaugink iš 60 ir pridėk sekundes.", why: `${m} min = ${m} · 60 = ${m * 60} s. ${m * 60} + ${s} = ${tot} s.`, raw: { m, s, ans: tot } };
+};
+G.toMinSec = d => {
+  const m = R(1, 9), s = 5 * R(1, 11), tot = m * 60 + s, sc = pick(T.secScen), f = v => `${Math.floor(v / 60)} min ${v % 60} s`;
+  const hx = [tot + 40, tot - 40, tot + 25, tot - 25, tot + 30, tot - 30];
+  const o = build(tot, [Math.floor(tot / 100) * 60 + tot % 100 < 600 && tot % 100 < 60 ? Math.floor(tot / 100) * 60 + tot % 100 : null, (m + 1) * 60 + s, (m - 1) * 60 + s, m * 60 + (s + 10 < 60 ? s + 10 : s - 10)], hx, f, v => v > 0 && v % 60 !== 0 && v !== tot);
+  return { key: `tms${tot}`, ic: "sand", q: qhtml(T.toMinSecQ(`${sc} ${tot} s.`)), stage: "", mode: "choice", opts: o.opts, ans: o.ans, hint: "Kiek pilnų minučių (po 60 s) telpa? Likusios – sekundės.", why: `${tot} s = ${m * 60} s + ${s} s = ${m} min ${s} s (nes 1 min = 60 s).`, raw: { tot, ans: tot } };
+};
+G.toMin = d => {
+  const h = R(1, d < .5 ? 2 : 4), mi = 5 * R(1, 11), tot = h * 60 + mi, sc = pick(T.minScen), f = v => `${v} min`;
+  const o = build(tot, [h * 100 + mi, h + mi, h * 60, tot + 60, tot - 60], around(tot, [10, 20, 30]), f, v => v > 0);
+  return { key: `tm${h}-${mi}`, ic: "sand", q: qhtml(T.toMinQ(`${sc} ${h} val. ${mi} min.`)), stage: "", mode: "choice", opts: o.opts, ans: o.ans, hint: "1 val. = 60 min. Valandas padaugink iš 60 ir pridėk minutes.", why: `${h} val. = ${h} · 60 = ${h * 60} min. ${h * 60} + ${mi} = ${tot} min.`, raw: { h, mi, ans: tot } };
+};
+G.toHourMin = d => {
+  const h = R(1, 4), mi = 5 * R(1, 11), tot = h * 60 + mi, sc = pick(T.minScen), f = v => `${Math.floor(v / 60)} val. ${v % 60} min`;
+  const o = build(tot, [Math.floor(tot / 100) * 60 + tot % 100 < 60 * 12 && tot % 100 < 60 ? Math.floor(tot / 100) * 60 + tot % 100 : null, (h + 1) * 60 + mi, (h - 1) * 60 + mi, h * 60 + (mi + 10 < 60 ? mi + 10 : mi - 10)], [tot + 20, tot - 20, tot + 15, tot - 15], f, v => v > 0 && v % 60 !== 0 && v !== tot);
+  return { key: `thm${tot}`, ic: "sand", q: qhtml(T.toHourMinQ(`${sc} ${tot} min.`)), stage: "", mode: "choice", opts: o.opts, ans: o.ans, hint: "Kiek pilnų valandų (po 60 min) telpa? Likusios – minutės.", why: `${tot} min = ${h * 60} min + ${mi} min = ${h} val. ${mi} min (nes 1 val. = 60 min).`, raw: { tot, ans: tot } };
+};
+G.whole = d => {
+  const kinds = [
+    () => { const k = R(1, 9); return { t: `${k} min = ? s`, v: k * 60, f: v => `${v} s`, w: `${k} · 60 = ${k * 60}`, m: [k * 100, k * 10, k * 30] }; },
+    () => { const k = R(2, 9); return { t: `${k * 60} s = ? min`, v: k, f: v => `${v} min`, w: `${k * 60} : 60 = ${k}`, m: [k * 6, k + 1, k * 10] }; },
+    () => { const k = R(1, 6); return { t: `${k} val. = ? min`, v: k * 60, f: v => `${v} min`, w: `${k} · 60 = ${k * 60}`, m: [k * 100, k * 10, k * 30] }; },
+    () => { const k = R(2, 6); return { t: `${k * 60} min = ? val.`, v: k, f: v => `${v} val.`, w: `${k * 60} : 60 = ${k}`, m: [k * 6, k + 1, k * 10] }; },
+    () => { const k = R(1, 3); return { t: `${k} val. = ? s`, v: k * 3600, f: v => `${v} s`, w: `${k} val. = ${k * 60} min, o ${k * 60} min = ${k * 60} · 60 = ${k * 3600} s`, m: [k * 360, k * 6000, k * 600] }; },
+    () => { const k = R(1, 4); return { t: `${k} min 30 s = ? s`, v: k * 60 + 30, f: v => `${v} s`, w: `${k} · 60 = ${k * 60}, ${k * 60} + 30 = ${k * 60 + 30}`, m: [k * 100 + 30, k * 60, k + 30] }; }
+  ];
+  const it = pick(kinds)();
+  const o = build(it.v, it.m, [it.v + 10, it.v - 10, it.v * 2, Math.round(it.v / 2)], it.f, v => v > 0 && Number.isInteger(v));
+  return { key: `wh${it.t}`, ic: "sand", q: qhtml(it.t.replace("?", "<b>?</b>")), stage: "", mode: "choice", opts: o.opts, ans: o.ans, hint: T.explain.min60, why: `${T.explain.min60} ${it.w}.`, raw: { t: it.t, ans: it.v } };
+};
+G.cmpU = d => {
+  const type = R(0, 1), eq = R(0, 5) === 0;
+  let A, B, sa, sb;
+  if(type === 0){ const m = R(1, 5), s = 5 * R(1, 11), tot = m * 60 + s; A = `${m} min ${s} s`; sa = tot; const off = eq ? 0 : (R(0, 1) ? 1 : -1) * 5 * R(1, 6); sb = tot + off; B = `${sb} s`; }
+  else { const h = R(1, 3), mi = 5 * R(1, 11), tot = h * 60 + mi; A = `${h} val. ${mi} min`; sa = tot; const off = eq ? 0 : (R(0, 1) ? 1 : -1) * 5 * R(1, 8); sb = tot + off; B = `${sb} min`; }
+  const sw = R(0, 1) === 1; const [X, Y, sx, sy] = sw ? [B, A, sb, sa] : [A, B, sa, sb];
+  const ans = sx > sy ? 0 : sx < sy ? 1 : 2, unit = type === 0 ? "s" : "min";
+  return { key: `cu${X}|${Y}`, ic: "sand", q: qhtml(T.cmpUnitQ(X, Y)), stage: "", mode: "choice", c3: true, opts: [X, Y, T.cmpEq], ans, hint: "Abu dydžius užrašyk tais pačiais vienetais ir palygink.", why: `${type === 0 ? "Pirma pakeisk į sekundes" : "Pirma pakeisk į minutes"}: ${A} = ${sa} ${unit}. Palyginame: ${sa} ${unit} ir ${sb} ${unit}.`, raw: { sa, sb, sx, sy, ans } };
+};
+/* ---------- 6 lygis: kalendorius ---------- */
+const YEAR = 2027;
+const mlen = m => new Date(Date.UTC(YEAR, m + 1, 0)).getUTCDate();
+const wdOf = (m, d) => mod(new Date(Date.UTC(YEAR, m, d)).getUTCDay() + 6, 7); /* 0=pirmadienis */
+function calHtml(m, marks){
+  const first = wdOf(m, 1), len = mlen(m);
+  let rows = "", d = 1;
+  for(let r = 0; r < 6 && d <= len; r++){
+    let tr = "";
+    for(let c = 0; c < 7; c++){
+      if((r === 0 && c < first) || d > len){ tr += `<td class="e"></td>`; continue; }
+      tr += `<td class="${c > 4 ? "we " : ""}${marks && marks[d] ? marks[d] : ""}">${d}</td>`; d++;
+    }
+    rows += `<tr>${tr}</tr>`;
+  }
+  return `<table class="cal"><caption>${T.monthsNom[m]} ${YEAR} m.</caption><thead><tr>${T.wdShort.map((w, i) => `<th class="${i > 4 ? "we" : ""}">${w}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+const wdOpts = (c, extra) => { const o = build(c, extra, [c + 1, c - 1, c + 2, c - 2, c + 3], v => T.weekdays[mod(v, 7)], v => true); return o; };
+G.calWd = d => {
+  const m = R(0, 11), len = mlen(m), dd = R(1, len), c = wdOf(m, dd), o = wdOpts(c, [c + 1, c - 1]);
+  const mod7 = new Set(), arr = (() => { const x = []; for(let v = c; x.length < 4; v++) x.push(v); return x; })();
+  /* wdOpts naudoja mod 7 etiketes; ans pagal etiketę */
+  const labels = T.weekdays; const opts = o.opts, ans = o.ans;
+  return { key: `cw${m}-${dd}`, ic: "cal", q: qhtml(T.calWdQ(T.months[m], dd)), stage: calHtml(m, { [dd]: "m1" }), mode: "choice", cls: "sm", opts, ans, hint: "Pažiūrėk, kuriame stulpelyje yra pažymėta diena, ir perskaityk stulpelio viršų.", why: `${dd} d. yra stulpelyje „${T.wdShort[c]}“ – tai ${T.weekdays[c]}.`, raw: { m, d: dd, ans: T.weekdays[c] } };
+};
+G.calBetween = d => {
+  const m = R(0, 11), len = mlen(m), a = R(1, Math.max(2, len - 12)), diff = R(3, Math.min(20, len - a)), b = a + diff, f = v => `${v} d.`;
+  const o = build(diff, [diff + 1, diff - 1, a + b, b], [diff + 2, diff - 2, diff + 7, diff - 7], f, v => v > 0);
+  return { key: `cb${m}-${a}-${b}`, ic: "cal", q: qhtml(T.calBetweenQ(T.months[m], a, T.months[m], b)), stage: calHtml(m, { [a]: "m1", [b]: "m2" }), mode: "choice", opts: o.opts, ans: o.ans, hint: T.explain.cal, why: `${T.explain.cal} ${b} − ${a} = ${diff}.`, raw: { a, b, ans: diff } };
+};
+G.calWeeks = d => {
+  const m = R(0, 11), len = mlen(m), w = R(1, 3), dd = R(1, Math.max(1, len - 7 * w)), e = dd + 7 * w, f = v => T.date(m, v);
+  const o = build(e, [dd + w, e + 1, e - 1, dd + 7 * (w + 1) <= len ? dd + 7 * (w + 1) : null, dd + 7 * (w - 1) > 0 ? dd + 7 * (w - 1) : null], [e + 2, e - 2, e + 7, e - 7], f, v => v >= 1 && v <= len);
+  return { key: `cwk${m}-${dd}-${w}`, ic: "cal", q: qhtml(T.calWeeksQ(T.months[m], dd, w)), stage: calHtml(m, { [dd]: "m1" }), mode: "choice", cls: "sm", opts: o.opts, ans: o.ans, hint: T.explain.weekAdd, why: `${T.explain.weekAdd} ${dd} + ${7 * w} = ${e}.`, raw: { dd, w, ans: e } };
+};
+G.calCount = d => {
+  const m = R(0, 11), len = mlen(m), wd = R(0, 6), days = []; for(let x = 1; x <= len; x++) if(wdOf(m, x) === wd) days.push(x);
+  const c = days.length, o = build(c, [c + 1, c - 1], [c + 2, c - 2, 3, 6], String, v => v >= 3 && v <= 6);
+  const mk = {}; days.forEach(x => mk[x] = "m1");
+  return { key: `cc${m}-${wd}`, ic: "cal", q: qhtml(T.calCountQ(T.weekdaysPl[wd])), stage: calHtml(m, null), mode: "choice", opts: o.opts, ans: o.ans, hint: "Suskaičiuok tos savaitės dienos stulpelį kalendoriuje.", why: `${T.weekdaysPl[wd]} šį mėnesį: ${days.join(", ")}. Iš viso ${c}.`, raw: { m, wd, ans: c } };
+};
+G.calLeft = d => {
+  const m = R(0, 11), len = mlen(m), dd = R(3, len - 4), left = len - dd, f = v => `${v} d.`;
+  const o = build(left, [left + 1, left - 1, len, dd], [left + 2, left - 2, left + 7], f, v => v > 0);
+  return { key: `cl${m}-${dd}`, ic: "cal", q: qhtml(T.calLeftQ(T.months[m], dd, len)), stage: calHtml(m, { [dd]: "m1", [len]: "m2" }), mode: "choice", opts: o.opts, ans: o.ans, hint: T.explain.left, why: `${T.explain.left} ${len} − ${dd} = ${left}.`, raw: { len, dd, ans: left } };
+};
+G.calCross = d => {
+  const m = R(0, 11), len = mlen(m), dd = R(len - 8, len - 2), n = R(len - dd + 1, len - dd + 9), x = dd + n - len, nm = (m + 1) % 12, f = v => T.date(nm, v);
+  const o = build(x, [x + 1, x - 1, n], [x + 2, x - 2, x + 7], f, v => v >= 1 && v <= 28);
+  return { key: `cx${m}-${dd}-${n}`, ic: "cal", q: qhtml(T.calCrossQ(T.months[m], dd, n, len)), stage: "", mode: "choice", cls: "sm", opts: o.opts, ans: o.ans, hint: T.explain.cross, why: `${dd} + ${n} = ${dd + n}. ${dd + n} > ${len}, todėl ${dd + n} − ${len} = ${x}. Tai ${T.date(nm, x)}`, raw: { len, dd, n, ans: x } };
+};
+G.calWdPlus = d => {
+  const wd = R(0, 6), n = R(2, 30), nn = n % 7 === 0 ? n + 1 : n, a = mod(wd + nn, 7), q7 = Math.floor(nn / 7), r = nn % 7;
+  const o = build(a, [mod(wd + q7, 7), mod(wd + r + 1, 7), mod(wd + r - 1, 7), mod(a + 1, 7), mod(a - 1, 7)], [mod(a + 2, 7), mod(a - 2, 7), mod(a + 3, 7)], v => T.weekdays[mod(v, 7)], v => true);
+  return { key: `cwp${wd}-${nn}`, ic: "cal", q: qhtml(T.calWdPlusQ(T.weekdays[wd], nn)), stage: "", mode: "choice", cls: "sm", opts: o.opts, ans: o.ans, hint: T.explain.wdMod, why: `${T.explain.wdMod} ${nn} = ${q7 * 7}${r ? " + " + r : ""}. Po ${q7 * 7} d. – vėl ${T.weekdays[wd]}, dar ${r} ${many(r, "diena", "dienos", "dienų")} → ${T.weekdays[a]}.`, raw: { wd, n: nn, ans: a } };
+};
+
+const POOLS = [
+  ["read", "read", "read", "which", "which", "set", "set", "set24", "conv24"],
+  ["dur2c", "dur2c", "durD", "durD", "durD", "left", "left", "cmp"],
+  ["endD", "endD", "endSet", "startD", "startD", "two", "ready", "ready"],
+  ["bFirst", "bFirst", "bWait", "bExt", "bExt", "bDur", "bBoth", "bBoth", "bHome", "bAfter"],
+  ["unitFit", "unitFit", "toSec", "toMinSec", "toMin", "toHourMin", "whole", "whole", "cmpU"],
+  ["calWd", "calWd", "calBetween", "calWeeks", "calCount", "calLeft", "calCross", "calWdPlus"]
+];
+POOLS.push(POOLS.flat().filter((v, i, a) => a.indexOf(v) === i));
+
+function planFor(L, n){
+  const pool = POOLS[L], base = [];
+  const uniq = pool.filter((v, i, a) => a.indexOf(v) === i);
+  while(base.length < n) base.push(...shuffle(uniq).slice(0, Math.min(uniq.length, n - base.length)));
+  for(let i = 1; i < base.length; i++) if(base[i] === base[i - 1]){ const j = base.findIndex((v, k) => k > i && v !== base[i] && v !== base[i - 1]); if(j > 0) [base[i], base[j]] = [base[j], base[i]]; }
+  return base;
+}
+function makeRound(L){
+  const n = L === 6 ? N_EXAM : N, seen = new Set(MK.get(SEEN, [])), used = new Set(), plan = planFor(L, n), out = [];
+  plan.forEach((g, i) => {
+    const d = L === 6 ? Math.min(1, .35 + i / (n - 1) * .65) : i / (n - 1);
+    let t, tries = 0;
+    do { t = G[g](d); t.g = g; tries++; } while((seen.has(t.key) || used.has(t.key)) && tries < 30);
+    used.add(t.key); out.push(t);
+  });
+  const hist = Array.from(used).concat(MK.get(SEEN, [])).slice(-220); MK.set(SEEN, hist);
+  return out;
+}
+
+/* ================= vartotojo sąsaja ================= */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), stageEl = $("stage"), optsEl = $("opts"), goEl = $("go"), fbEl = $("fb");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("note").textContent = T.keys;
+$("how").innerHTML = `<summary>${T.howH}</summary><ol>${T.how.map(x => `<li>${x}</li>`).join("")}</ol>`;
+let tickets = Math.max(0, +MK.get(TK, 0) || 0);
+const wagonsNow = () => NEED.filter(n => tickets >= n).length - 1;
+
+const LART = ["🕒", "", "", "", "", "", ""];
+const LEVEL_ART = [
+  `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#fff" ${S}/><path d="M20 9v11l7 4" fill="none" ${S} stroke="#ff5a36" stroke-width="3"/><circle cx="20" cy="20" r="2.6" fill="#ffc61a" stroke="${K}" stroke-width="1.6"/></svg>`,
+  `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 25h30" ${S}/><path d="M8 25V14M32 25V14" ${S}/><path d="M8 17h24" stroke="#ff5a36" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 6"/><circle cx="8" cy="12" r="4" fill="#fff" ${S}/><circle cx="32" cy="12" r="4" fill="#ffc61a" ${S}/><rect x="11" y="28" width="18" height="6" rx="3" fill="#2f8bff" ${S}/></svg>`,
+  `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="16" cy="22" r="12" fill="#fff" ${S}/><path d="M16 14v8l5 3" fill="none" ${S}/><path d="M29 9l7 5-7 5" fill="none" stroke="#2fb36b" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="7" width="32" height="26" rx="4" fill="#17254d" ${S}/><path d="M9 14h8M9 20h8M9 26h8M22 14h9M22 20h9M22 26h9" stroke="#ffd23f" stroke-width="3" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M11 5h18M11 35h18M13 5q0 12 7 15-7 3-7 15M27 5q0 12-7 15 7 3 7 15" fill="none" ${S}/><path d="M15 31q5-5 10 0v4H15z" fill="#ffc61a"/></svg>`,
+  `<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="8" width="30" height="27" rx="4" fill="#fff" ${S}/><rect x="5" y="8" width="30" height="8" rx="4" fill="#ef3b4f" ${S}/><path d="M12 4v7M28 4v7" ${S}/><path d="M11 22h4M18 22h4M25 22h4M11 29h4M18 29h4" stroke="${K}" stroke-width="3" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 4l4.5 10 11 1-8.3 7.2 2.6 10.8L20 27.4 10.2 33l2.6-10.8L4.5 15l11-1z" fill="#ffc61a" ${S}/></svg>`
+];
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: LEVEL_ART[i] }));
+
+function renderTrain(fresh){
+  $("train").innerHTML = `<h2>${wagonSvg(0)}${T.trainH}</h2><p>${T.trainP(tickets)}</p><div class="wgs">${T.wagons.map((nm, i) => {
+    const lock = tickets < NEED[i];
+    return `<div class="wg${lock ? " lock" : ""}${fresh === i ? " new" : ""}">${wagonSvg(i)}${lock ? LOCK : ""}<small>${lock ? `${NEED[i]} ${TICKET.replace("<svg", '<svg style="width:12px;height:12px;display:inline;vertical-align:-2px"')}` : nm}</small></div>`;
+  }).join("")}</div>`;
+}
+function showMenu(fresh){
+  play.hidden = true; menu.hidden = false;
+  $("heroArt").innerHTML = heroSvg(wagonsNow()); renderTrain(fresh);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.topics, onPlay: start });
+  window.scrollTo(0, 0);
+}
+
+/* ---------- žaidimo būsena ---------- */
+let L = 0, round = [], ti = 0, cur = null, okN = 0, got = 0, dots = null, tries = 0, clk = null, answered = false;
+$("tkChip").innerHTML = "";
+function chip(){ $("tkChip").innerHTML = `${TICKET}<span id="tkN">${got}</span>`; }
+
+function start(l){
+  L = l; round = makeRound(L); ti = 0; okN = 0; got = 0;
+  menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
+  dots = MK.dots($("dots"), round.length); chip();
+  loadTask();
+}
+function loadTask(){
+  cur = round[ti]; tries = 0; answered = false; clk = null;
+  dots.cur(ti); fbEl.innerHTML = ""; goEl.innerHTML = ""; optsEl.innerHTML = "";
+  $("qic").innerHTML = ICONS[cur.ic] || ICONS.clock; $("qt").innerHTML = cur.q;
+  if(cur.mode === "set"){
+    stageEl.innerHTML = clockSvg(0, 0, { cls: "drag", drag: true, id: "setClk", aria: T.dragAria }) + `<div class="legend"><span><i style="background:#1d2c5e"></i>${T.shortHand}</span><span><i style="background:#ff5a36"></i>${T.longHand}</span></div>` +
+      `<div class="ctl"><button type="button" data-d="-60">${T.hourMinus}</button><button type="button" data-d="60">${T.hourPlus}</button><button type="button" data-d="-1">${T.minMinus}</button><button type="button" data-d="1">${T.minPlus}</button></div><p class="hint0">${T.setHint0}</p>`;
+    clk = { total: cur.start, el: $("setClk") }; drawClk(); bindClk();
+    goEl.innerHTML = `<button type="button" class="mk-btn" id="chk">${T.check}</button>`;
+  } else {
+    stageEl.innerHTML = cur.stage || "";
+    optsEl.className = "opts" + (cur.c3 || cur.opts.length === 3 ? " c3" : "");
+    optsEl.innerHTML = cur.opts.map((o, i) => `<button type="button" class="opt${cur.cls === "clk" ? " clk" : ""}${cur.cls === "sm" || (cur.opts.some(x => String(x).length > 14) && cur.cls !== "clk") ? " sm" : ""}" data-i="${i}">${o}</button>`).join("");
+    if(cur.c3 || cur.opts.length === 3) optsEl.classList.add("c3");
+    if(cur.cls === "sm" || cur.cls === "clk" || cur.opts.some(x => String(x).length > 14)) optsEl.classList.remove("c3"), (cur.opts.length === 3 && cur.c3) && optsEl.classList.add("c3");
+  }
+}
+/* laikrodžio valdymas */
+function drawClk(){
+  const t = mod(clk.total, 720), h = t / 60, m = t % 60;
+  clk.el.querySelector(".hH").setAttribute("transform", `rotate(${(Math.floor(h) % 12 + (m / 60)) * 30} 100 100)`);
+  clk.el.querySelector(".mH").setAttribute("transform", `rotate(${m * 6} 100 100)`);
+}
+function bindClk(){
+  const el = clk.el; let prev = null, active = false;
+  const mm = e => { const r = el.getBoundingClientRect(), dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2); let a = Math.atan2(dx, -dy) * 180 / Math.PI; if(a < 0) a += 360; return Math.round(a / 6) % 60; };
+  const move = e => {
+    if(!active || answered) return; const m = mm(e), t = mod(clk.total, 720);
+    if(prev == null) prev = t % 60;
+    let hh = Math.floor(t / 60);
+    if(prev > 45 && m < 15) hh++; else if(prev < 15 && m > 45) hh--;
+    prev = m; clk.total = mod(hh * 60 + m, 720); drawClk();
+  };
+  el.addEventListener("pointerdown", e => { if(answered) return; active = true; prev = mod(clk.total, 720) % 60; try{ el.setPointerCapture(e.pointerId); }catch(_){} MK.unlock(); move(e); e.preventDefault(); });
+  el.addEventListener("pointermove", move);
+  const end = () => { if(active){ active = false; MK.sfx.tap(); } };
+  el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+}
+stageEl.addEventListener("click", e => {
+  const b = e.target.closest(".ctl button"); if(!b || !clk || answered) return;
+  MK.unlock(); MK.sfx.tap(); clk.total = mod(clk.total + +b.dataset.d, 720); drawClk();
+});
+optsEl.addEventListener("click", e => { const b = e.target.closest(".opt"); if(b && !answered) pickOpt(+b.dataset.i, b); });
+goEl.addEventListener("click", e => {
+  if(e.target.closest("#chk")) checkSet();
+  else if(e.target.closest("#nextBtn")) next();
+});
+document.addEventListener("keydown", e => {
+  if(play.hidden || document.querySelector(".mk-ov")) return;
+  if(clk && !answered){
+    const k = { ArrowLeft: -1, ArrowDown: -1, ArrowRight: 1, ArrowUp: 1 }[e.key];
+    if(k){ e.preventDefault(); clk.total = mod(clk.total + k * (e.shiftKey ? 60 : 1), 720); drawClk(); }
+  }
+});
+
+function fb(ok, body){
+  fbEl.innerHTML = MK.why({ ok, head: ok ? MK.praise() : T.bad, body });
+}
+function finishTask(ok, firstTry){
+  answered = true;
+  dots.mark(ti, ok && firstTry);
+  const pts = ok ? (firstTry ? 2 : 1) : 0;
+  if(ok && firstTry) okN++;
+  got += pts; chip(); if(pts){ const c = $("tkChip"); c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); }
+  goEl.innerHTML = `<button type="button" class="mk-btn" id="nextBtn">${ti >= round.length - 1 ? "Baigti" : T.nextBtn}</button>`;
+  setTimeout(() => { const b = $("nextBtn"); if(b) b.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, 80);
+}
+function pickOpt(i, btn){
+  MK.unlock();
+  tries++;
+  if(i === cur.ans){
+    btn.classList.add("ok"); MK.sfx.good(); optsEl.querySelectorAll(".opt").forEach(b => { if(b !== btn) b.classList.add("off"); });
+    fb(true, cur.why); finishTask(true, tries === 1);
+  } else {
+    btn.classList.add("off", "no"); MK.sfx.bad();
+    if(tries >= 2){
+      optsEl.querySelectorAll(".opt").forEach(b => { if(+b.dataset.i === cur.ans) b.classList.add("ok"); else b.classList.add("off"); });
+      fb(false, cur.why); finishTask(false, false);
+    } else {
+      fbEl.innerHTML = `<div class="note2">${T.tryAgain}<br>${cur.hint}</div>`;
+    }
+  }
+}
+function checkSet(){
+  MK.unlock(); tries++;
+  const t = mod(clk.total, 720), ok = t === mod(cur.target, 720);
+  if(ok){ MK.sfx.good(); fb(true, cur.why); finishTask(true, tries === 1); return; }
+  MK.sfx.bad(); clk.el.classList.remove("mk-shake"); void clk.el.getBoundingClientRect(); clk.el.classList.add("mk-shake");
+  const th = Math.floor(mod(cur.target, 720) / 60), tm = mod(cur.target, 720) % 60, ch = Math.floor(t / 60), cm = t % 60;
+  if(tries >= 2){
+    const g = clockSvg(th, tm, { cls: "drag", ghost: { h: th, m: tm }, aria: "Teisingas laikas" });
+    stageEl.innerHTML = clockSvg(Math.floor(mod(cur.target, 720) / 60), tm, { aria: "Teisingas laikrodis" });
+    fb(false, cur.why); finishTask(false, false); return;
+  }
+  let hint;
+  if(ch !== th && cm !== tm) hint = "Pasitikrink ir trumpąją (valandų), ir ilgąją (minučių) rodyklę.";
+  else if(ch !== th) hint = "Minutės geros, bet trumpoji rodyklė rodo ne tą valandą. Naudok „± val.“ mygtukus.";
+  else { const q = Math.floor(tm / 5), r = tm % 5; hint = `Valanda gera, bet ilgoji (minučių) rodyklė rodo ne tą vietą. Ji turi rodyti ${tm === 0 ? "ties 12" : r === 0 ? `ties skaičiumi ${q} (${tm} min)` : `už skaičiaus ${q || 12} dar ${r} ${many(r, "brūkšnelį", "brūkšnelius", "brūkšnelių")} (${tm} min)`}.`; }
+  fbEl.innerHTML = `<div class="note2">${T.tryAgain}<br>${hint}</div>`;
+}
+function next(){
+  ti++;
+  if(ti >= round.length){ finish(); return; }
+  loadTask(); window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function finish(){
+  const before = tickets; tickets += got; MK.set(TK, tickets);
+  const fresh = NEED.findIndex((n, i) => n > before && n <= tickets);
+  const stars = MK.starsFor(okN, round.length); MK.best(GAME, LEVELS[L].id, stars);
+  MK.result({ stars, title: T.resTitle(okN, round.length), text: T.resText(okN, round.length, got) + (fresh >= 0 ? `<br><b>${T.unlocked(T.wagons[fresh])}</b>` : ""),
+    next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(fresh >= 0 ? fresh : null) });
+}
+
+window.__GT = { G, POOLS, makeRound, planFor, fmtT, fmtD, YEAR, mlen, wdOf, N, N_EXAM };
+Object.defineProperty(window, "__cur", { get: () => cur });
+showMenu();
+})();
+</script>
+</body>
+</html>
