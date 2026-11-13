@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Grafikų pilotas – MokomėsKartu.lt</title>
+<meta name="description" content="10 klasės matematikos žaidimas: tiesinė funkcija y = kx + b ir parabolė y = a(x − m)² + n – apskaičiuok koeficientus ir nuvesk zondą pro visus švyturius.">
+<meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/grafiku-pilotas/tekstai.lt.js"></script>
+<style>
+/* Meniu: pilotė su planšete, žvaigždėlapis (kolekcija), lygiai, „Noriu pasimokyti“.
+   Užduotis: koordinačių plokštuma su švyturiais ir asteroidais → koeficientų nustatymas → „Leisti zondą“ → skrydis grafiku → paaiškinimas → „Toliau“. */
+body{--ac:#5b4ce0;--ac-ink:#fff;--ac-soft:#e7e3ff}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(32px,8.4vw,54px)}
+.mk-hero p{max-width:42ch;font-size:16.5px}
+.hero-art{width:min(100%,480px);border-radius:26px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15)}
+.hero-art svg{display:block;width:100%;height:auto}
+.hero-art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 18px/1.2 var(--kid);display:flex;gap:8px;align-items:center}
+.col h2 svg{width:28px;height:28px;flex:none}
+.col p{margin:4px 0 10px;color:var(--soft);font-weight:700;font-size:14.5px}
+.sky{display:block;width:100%;height:auto;border-radius:14px;background:#eef1ff;box-shadow:inset 0 0 0 2px #c9c3f5}
+.sky .lit{animation:mkPop .6s cubic-bezier(.2,1.6,.4,1);transform-box:fill-box;transform-origin:center}
+/* žaidimas */
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.card{width:100%;max-width:600px;margin:0 auto 10px;padding:12px 12px 14px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12)}
+.goal{margin:0 0 8px;font:700 15.5px/1.45 var(--body)}
+.goal b{font-weight:800}
+.planew{max-width:440px;margin:0 auto;border-radius:16px;overflow:hidden;box-shadow:0 0 0 2.5px var(--ink)}
+.planew svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.eq{margin:10px 0 8px;text-align:center;font:800 clamp(24px,7vw,32px)/1.2 var(--kid);color:var(--ink);min-height:40px;white-space:nowrap}
+.eq .v{color:var(--ac)}
+.prm{display:grid;gap:8px}
+.pr{display:grid;grid-template-columns:44px 52px minmax(0,1fr) 52px;align-items:center;gap:8px}
+.pr b{font:800 22px/1 var(--kid);text-align:center;font-style:italic}
+.pr button{width:52px;height:52px;border:0;border-radius:16px;background:#fff;cursor:pointer;font:800 28px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.2);touch-action:manipulation;padding:0}
+.pr button:active{transform:translateY(3px)}
+.pr button[disabled]{opacity:.35}
+.pr output{display:block;text-align:center;font:800 26px/52px var(--kid);height:52px;border-radius:14px;background:var(--ac-soft)}
+.pr.fix output{background:#f1f3f8;color:var(--soft)}
+.note{min-height:24px;margin:10px 0 0;text-align:center;font:800 15.5px/1.35 var(--body)}
+.note.good{color:#1c8a52}.note.warn{color:#b8531a}
+.bigbtn{display:flex;width:100%;min-height:56px;margin-top:10px;font-size:20px}
+.trs{display:block;text-align:center;color:var(--soft);font:800 13.5px/1.2 var(--body);margin-top:6px}
+.ans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.a{min-height:56px;padding:8px 6px;border:0;border-radius:14px;background:#fff;cursor:pointer;font:800 clamp(17px,5vw,21px)/1.2 var(--kid);color:var(--ink);white-space:nowrap;
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16);touch-action:manipulation}
+.a:active{transform:translateY(3px)}
+.a.ok{background:#dff7e6;box-shadow:inset 0 0 0 3.5px var(--good),0 4px 0 rgba(18,26,51,.16)}
+.a.no{background:#ffe6df;box-shadow:inset 0 0 0 3.5px var(--bad),0 4px 0 rgba(18,26,51,.16)}
+.ans.done .a{pointer-events:none}
+.ans.done .a:not(.ok):not(.no){opacity:.5}
+.go{display:flex;width:100%;max-width:600px;margin:4px auto 0}
+.mk-why{max-width:600px;margin-inline:auto}
+.mk-why-m p{margin:4px 0}
+.fade{animation:mkIn .4s cubic-bezier(.2,1.2,.4,1)}
+.bc .ring{animation:pul 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pul{50%{transform:scale(1.25);opacity:.4}}
+.bc.got .ring{animation:none;opacity:0}
+.bc.got .core{fill:#2fb36b}
+.boom{animation:boom .6s ease-out forwards;transform-box:fill-box;transform-origin:center}
+@keyframes boom{0%{transform:scale(.2);opacity:1}100%{transform:scale(1.6);opacity:0}}
+@media (max-width:370px){.pr{grid-template-columns:36px 48px minmax(0,1fr) 48px;gap:6px}.pr button{width:48px;height:48px}.pr output{height:48px;line-height:48px}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="hero-art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="col" id="col"></div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="ptsChip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="stage"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, nf = T.nf, pt = T.pt;
+const GAME = "grafiku-pilotas", GRADES = [10];
+const K = "#121a33";
+const R = MK.rnd, P = MK.pick, SH = MK.shuffle;
+const LIM = 7, U = 24, SZ = 2 * LIM * U;          // plokštuma −7…7
+const X = x => (x + LIM) * U, Y = y => (LIM - y) * U;
+const KV = Array.from({ length: 17 }, (_, i) => -4 + i * 0.5);
+const BV = Array.from({ length: 15 }, (_, i) => i - 7);
+const AV = [-3, -2, -1, -0.5, 0.5, 1, 2, 3];
+const MV = Array.from({ length: 13 }, (_, i) => i - 6);
+const NSTAR = 40;
+const MS = "−";
+
+/* ================= funkcijos ================= */
+const fval = (f, x) => f.t === "par" ? f.a * (x - f.m) * (x - f.m) + f.n : f.k * x + f.b;
+const near = (a, b) => Math.abs(a - b) < 1e-9;
+function coefTxt(c, first){ // koeficientas prie x
+  if(near(c, 1)) return first ? "" : "+ ";
+  if(near(c, -1)) return first ? MS : MS + " ";
+  return first ? nf(c) : (c < 0 ? MS + " " + nf(-c) : "+ " + nf(c));
+}
+function constTxt(c){ return near(c, 0) ? "" : c < 0 ? ` ${MS} ${nf(-c)}` : ` + ${nf(c)}`; }
+function fmt(f){
+  if(f.t === "par"){
+    const a = near(f.a, 1) ? "" : near(f.a, -1) ? MS : nf(f.a);
+    const sq = near(f.m, 0) ? "x²" : `(x ${f.m > 0 ? MS : "+"} ${nf(Math.abs(f.m))})²`;
+    return `y = ${a}${sq}${constTxt(f.n)}`;
+  }
+  if(near(f.k, 0)) return `y = ${nf(f.b)}`;
+  return `y = ${coefTxt(f.k, true)}x${constTxt(f.b)}`;
+}
+/* skrydis: taškai, surinkti švyturiai, atsitrenkimas */
+function fly(f, task){
+  const pts = [], got = new Set(); let crash = null;
+  const ast = task.ast;
+  for(let i = 0; i <= 1440; i++){
+    const x = -7.2 + i * 0.01, y = fval(f, x);
+    pts.push([x, y]);
+    if(Math.abs(y) <= LIM + .5){
+      for(const [ax, ay] of ast){ if(Math.hypot(x - ax, y - ay) < 0.5){ crash = { x, y, i, a: [ax, ay] }; break; } }
+      if(crash) break;
+    }
+  }
+  task.beacons.forEach(([bx, by], j) => { if((!crash || bx <= crash.x) && Math.abs(fval(f, bx) - by) < 0.06) got.add(j); });
+  return { pts, got, crash, ok: !crash && got.size === task.beacons.length };
+}
+function distTo(f, px, py){ let d = 1e9; for(let x = -7.5; x <= 7.5; x += 0.02){ const y = fval(f, x); d = Math.min(d, Math.hypot(x - px, y - py)); } return d; }
+
+/* ================= užduočių generatoriai ================= */
+const inR = y => Math.abs(y) <= 6 && Number.isInteger(y);
+function placeAst(task, wrongs, extra){
+  const ast = [], f = task.f, bs = task.beacons;
+  const ok = (x, y) => Math.abs(x) <= 6.5 && Math.abs(y) <= 6.5 && distTo(f, x, y) >= 0.95 && bs.every(([a, b]) => Math.hypot(a - x, b - y) >= 1.1) && ast.every(([a, b]) => Math.hypot(a - x, b - y) >= 1.4)
+    && (!task.old || distTo(task.old, x, y) >= 0.6);
+  for(const g of SH(wrongs)){
+    if(ast.length >= 3) break;
+    const xs = SH(Array.from({ length: 27 }, (_, i) => -6.5 + i * 0.5));
+    for(const x of xs){ const y = fval(g, x); if(ok(x, y)){ ast.push([x, Math.round(y * 2) / 2 === y ? y : Math.round(y * 10) / 10]); break; } }
+  }
+  for(let t = 0; t < 60 && ast.length < 3 + (extra || 0); t++){ const x = R(-12, 12) / 2, y = R(-12, 12) / 2; if(ok(x, y)) ast.push([x, y]); }
+  return ast;
+}
+function finalize(task, wrongs){
+  task.ast = placeAst(task, wrongs, task.type === "mc" ? 0 : 1);
+  if(!fly(task.f, task).ok) return null;
+  // klaidinga trasa neturi surinkti visų švyturių be asteroidų (kitaip užduotis dviprasmiška)
+  return task;
+}
+function genK(i){
+  for(let t = 0; t < 500; t++){
+    const half = i >= 3 && Math.random() < .6, k = half ? P(KV.filter(v => !Number.isInteger(v))) : P([-3, -2, -1, 1, 2, 3, 4, -4].slice(0, i < 2 ? 6 : 8));
+    const b = R(-4, 4);
+    const xs = SH([-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]).filter(x => inR(k * x + b) && Math.abs(x) >= 2);
+    if(!xs.length) continue;
+    const n = i >= 4 && xs.length > 1 ? 2 : 1;
+    const bx = xs.slice(0, n);
+    const task = { type: "k", f: { t: "lin", k, b }, fix: { b }, beacons: bx.map(x => [x, k * x + b]) };
+    const wr = [{ t: "lin", k: -k, b }, { t: "lin", k: k + .5, b }, { t: "lin", k: k - .5, b }, { t: "lin", k: near(k, 0) ? 1 : 1 / k, b }];
+    const [x0, y0] = task.beacons[0];
+    task.why = { body: T.wK(x0, y0, b, k), more: `<p>${T.tipK}</p><p>${T.tipB}</p>` };
+    if(finalize(task, wr)) return task;
+  }
+}
+function lineThrough2(i, allowZero){
+  for(let t = 0; t < 500; t++){
+    const half = i >= 3 && Math.random() < .55, k = half ? P(KV.filter(v => !Number.isInteger(v))) : P([-3, -2, -1, 1, 2, 3]);
+    const b = R(-5, 5);
+    const xs = SH([-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]).filter(x => inR(k * x + b) && (allowZero || x !== 0));
+    if(xs.length < 2) continue;
+    const x1 = xs[0], x2 = xs.find(x => Math.abs(x - x1) >= 2); if(x2 == null) continue;
+    const [a1, a2] = x1 < x2 ? [x1, x2] : [x2, x1];
+    return { k, b, p1: [a1, k * a1 + b], p2: [a2, k * a2 + b] };
+  }
+}
+function genKB(i){
+  for(let t = 0; t < 300; t++){
+    const L = lineThrough2(i, i < 2); if(!L) continue;
+    const { k, b, p1, p2 } = L;
+    const task = { type: "kb", f: { t: "lin", k, b }, beacons: [p1, p2] };
+    const wr = [{ t: "lin", k: -k, b }, { t: "lin", k, b: -b }, { t: "lin", k: 1 / k, b }, { t: "lin", k, b: b + 1 }, { t: "lin", k: k + .5, b }];
+    task.why = { body: T.wKb(p1[0], p1[1], p2[0], p2[1], k, b), more: `<p>${T.tipK}</p><p>${T.tipB}</p>` };
+    if(finalize(task, wr.filter(w => isFinite(w.k)))) return task;
+  }
+}
+function genMC(i){
+  for(let t = 0; t < 300; t++){
+    const L = lineThrough2(i + 2, true); if(!L) continue;
+    const { k, b } = L, f = { t: "lin", k, b };
+    const cands = [{ t: "lin", k: -k, b }, { t: "lin", k, b: -b }, { t: "lin", k: 1 / k, b }, { t: "lin", k: -1 / k, b }, { t: "lin", k, b: b + P([-2, -1, 1, 2]) }, { t: "lin", k: k + P([-1, 1]), b }]
+      .filter(w => KV.some(v => near(v, w.k)) && Math.abs(w.b) <= 7 && !(near(w.k, k) && near(w.b, b)));
+    const uniq = []; for(const c of SH(cands)) if(!uniq.some(u => near(u.k, c.k) && near(u.b, c.b))) uniq.push(c);
+    if(uniq.length < 3) continue;
+    const opts = SH([f, ...uniq.slice(0, 3)]);
+    const task = { type: "mc", f, beacons: [], opts, right: opts.indexOf(f) };
+    // du gerai matomi taškai su sveikomis koordinatėmis (rodomi kaip švyturiai)
+    task.beacons = [L.p1, L.p2];
+    task.why = { body: T.wKb(L.p1[0], L.p1[1], L.p2[0], L.p2[1], k, b), more: `<p>${T.wMC}</p><p>${T.tipK}</p>` };
+    if(finalize(task, [])) return task;
+  }
+}
+function genPara(i){
+  for(let t = 0; t < 400; t++){
+    const k = P([-2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 3, -3]), c = R(-4, 4);
+    const xs = SH([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]);
+    for(const x of xs){
+      const y = R(-6, 6), b = y - k * x;
+      if(!Number.isInteger(b) || Math.abs(b) > 6 || b === c || Math.abs(y - (k * x + c)) < 2) continue;
+      const task = { type: "para", f: { t: "lin", k, b }, old: { t: "lin", k, b: c }, beacons: [[x, y]] };
+      const wr = [{ t: "lin", k: -k, b }, { t: "lin", k, b: c }, { t: "lin", k: -1 / k, b: y + x / k }];
+      task.why = { body: T.wPara(k, x, y, b), more: `<p>${T.tipK}</p>` };
+      if(finalize(task, wr)) return task;
+    }
+  }
+}
+function genPar(i){
+  for(let t = 0; t < 500; t++){
+    const a = i < 2 ? P([1, -1, 2, -2]) : P(AV), m = R(-4, 4), n = R(-5, 5);
+    const ds = SH([1, 2, 3, -1, -2, -3]).filter(d => { const y = a * d * d + n; return inR(y) && Math.abs(m + d) <= 6; });
+    if(!ds.length) continue;
+    const d = ds[0];
+    if(Number.isInteger(a) && Math.abs(d) === 1 && i >= 3) continue;   // vėliau – sunkesni taškai
+    const f = { t: "par", a, m, n }, beacons = [[m, n], [m + d, a * d * d + n]];
+    if(i < 2 && inR(a * d * d + n) && Math.abs(m - d) <= 6) beacons.push([m - d, a * d * d + n]);
+    const task = { type: "par", f, beacons };
+    const wr = [{ t: "par", a, m: -m, n }, { t: "par", a: -a, m, n }, { t: "par", a, m, n: -n }, { t: "par", a: a * 2, m, n }];
+    task.why = { body: T.wPar(m, n, m + d, a * d * d + n, a), more: `<p>${T.tipMN}</p><p>${T.tipA}</p>` };
+    if(finalize(task, wr.filter(w => !(near(w.a, a) && near(w.m, m) && near(w.n, n))))) return task;
+  }
+}
+function genPar3(i){
+  for(let t = 0; t < 800; t++){
+    const a = P([1, -1, 2, -2, 0.5, -0.5]), m = R(-3, 3), n = R(-5, 5), d = R(1, 3), e = P([1, 2, 3, -1, -2, -3].filter(v => Math.abs(v) !== d));
+    const y1 = a * d * d + n, y3 = a * e * e + n;
+    if(!inR(y1) || !inR(y3) || Math.abs(m - d) > 6 || Math.abs(m + d) > 6 || Math.abs(m + e) > 6) continue;
+    const f = { t: "par", a, m, n }, beacons = [[m - d, y1], [m + d, y1], [m + e, y3]];
+    const task = { type: "par3", f, beacons };
+    const wr = [{ t: "par", a: -a, m, n }, { t: "par", a, m: -m, n }, { t: "par", a, m, n: y1 }];
+    task.why = { body: T.wPar3(m - d, m + d, y1, m) + "<br>" + T.wPar3b(m + d, y1, m + e, y3, m, a, n), more: `<p>${T.tipMN}</p><p>${T.tipA}</p>` };
+    if(finalize(task, wr)) return task;
+  }
+}
+const LV = [
+  () => Array.from({ length: 8 }, (_, i) => genK(i)),
+  () => Array.from({ length: 8 }, (_, i) => i < 6 ? genKB(i) : genPara(i)),
+  () => Array.from({ length: 8 }, (_, i) => genMC(i)),
+  () => Array.from({ length: 8 }, (_, i) => i < 6 ? genPar(i) : genPar3(i)),
+  () => SH([genKB(4), genKB(5), genPara(4), genMC(4), genMC(5), genK(5), genPar(3), genPar(4), genPar3(5), P([genKB, genPar])(5)])
+];
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: lvlArt(i) }));
+
+/* ================= piešiniai ================= */
+function lvlArt(i){
+  const ax = `<path d="M6 46h44M28 50V6" stroke="${K}" stroke-width="2.2" stroke-linecap="round" opacity=".5"/>`;
+  const st = (x, y) => `<circle cx="${x}" cy="${y}" r="4.2" fill="#ffd84a" stroke="${K}" stroke-width="1.8"/>`;
+  const a = [
+    `${ax}<path d="M8 40 48 12" stroke="#5b4ce0" stroke-width="4" stroke-linecap="round"/><path d="M28 26h12v-8.5" fill="none" stroke="#e8604b" stroke-width="2.4" stroke-dasharray="3 3"/>${st(40, 17.6)}`,
+    `${ax}<path d="M8 44 48 14" stroke="#5b4ce0" stroke-width="4" stroke-linecap="round"/>${st(16, 38)}${st(40, 20)}`,
+    `${ax}<path d="M8 12 48 42" stroke="#5b4ce0" stroke-width="4" stroke-linecap="round"/><text x="44" y="22" text-anchor="middle" font-family="Grandstander,Comic Sans MS,sans-serif" font-weight="800" font-size="20" fill="#e8604b">?</text>`,
+    `${ax}<path d="M10 10Q28 70 46 10" fill="none" stroke="#5b4ce0" stroke-width="4" stroke-linecap="round"/>${st(28, 40)}${st(40, 22)}`,
+    `<circle cx="28" cy="30" r="15" fill="#ffd84a" stroke="${K}" stroke-width="2.4"/><path d="M20 6l8 9 8-9" fill="#e8604b" stroke="${K}" stroke-width="2" stroke-linejoin="round"/><path d="M28 21.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.2-4.1 5.8-.8z" fill="#fff" stroke="${K}" stroke-width="1.4" stroke-linejoin="round"/>`
+  ];
+  return `<svg viewBox="0 0 56 56">${a[i]}</svg>`;
+}
+function rocket(){
+  return `<g class="rk"><path d="M-12 0q4-7 14-7l8 7-8 7q-10 0-14-7z" fill="#fff" stroke="${K}" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 0 2-7q6 2 8 7z" fill="#e8604b"/><path d="M10 0 2 7q6-2 8-7z" fill="#e8604b"/>
+    <circle cx="0" cy="0" r="2.6" fill="#7fd4ec" stroke="${K}" stroke-width="1.3"/><path d="M-8-5-12-10h5l3 4M-8 5-12 10h5l3-4" fill="#5b4ce0" stroke="${K}" stroke-width="1.3" stroke-linejoin="round"/>
+    <path d="M-12 0q-6-3-11 0 5 3 11 0z" fill="#ffb02e"/></g>`;
+}
+function asteroid(x, y, j){
+  const r = 0.42 * U, pts = Array.from({ length: 8 }, (_, i) => { const a = i / 8 * Math.PI * 2, rr = r * (0.82 + ((j * 7 + i * 13) % 5) * 0.06); return `${(X(x) + Math.cos(a) * rr).toFixed(1)},${(Y(y) + Math.sin(a) * rr).toFixed(1)}`; }).join(" ");
+  return `<g><polygon points="${pts}" fill="#a39a8f" stroke="${K}" stroke-width="1.8" stroke-linejoin="round"/><circle cx="${X(x) - 3}" cy="${Y(y) - 2}" r="2.6" fill="#8a8176"/><circle cx="${X(x) + 3.5}" cy="${Y(y) + 3}" r="1.8" fill="#8a8176"/></g>`;
+}
+function planeSvg(task, opts){
+  opts = opts || {};
+  let s = `<rect width="${SZ}" height="${SZ}" fill="#f7f8ff"/>`;
+  for(let v = -LIM + 1; v < LIM; v++){
+    s += `<path d="M${X(v)} 0V${SZ}M0 ${Y(v)}H${SZ}" stroke="${v % 2 ? "#eceffa" : "#dde2f3"}" stroke-width="1"/>`;
+  }
+  s += `<path d="M0 ${Y(0)}H${SZ}M${X(0)} 0V${SZ}" stroke="${K}" stroke-width="1.8"/>`;
+  s += `<path d="M${SZ - 7} ${Y(0) - 5}l7 5-7 5M${X(0) - 5} 7l5-7 5 7" fill="none" stroke="${K}" stroke-width="1.8"/>`;
+  s += `<text x="${SZ - 10}" y="${Y(0) + 16}" font-size="12" font-weight="800" font-style="italic" fill="${K}">x</text><text x="${X(0) + 8}" y="13" font-size="12" font-weight="800" font-style="italic" fill="${K}">y</text>`;
+  for(let v = -6; v <= 6; v += 2){ if(!v) continue;
+    s += `<text x="${X(v)}" y="${Y(0) + 14}" text-anchor="middle" font-size="10" font-weight="700" fill="#6a7088">${v < 0 ? MS + -v : v}</text>`;
+    s += `<text x="${X(0) - 5}" y="${Y(v) + 3.5}" text-anchor="end" font-size="10" font-weight="700" fill="#6a7088">${v < 0 ? MS + -v : v}</text>`; }
+  s += `<text x="${X(0) - 5}" y="${Y(0) + 14}" text-anchor="end" font-size="10" font-weight="700" fill="#6a7088">0</text>`;
+  if(task.old) s += `<path d="${pathD(task.old)}" fill="none" stroke="#9aa3b8" stroke-width="2.6" stroke-dasharray="7 6"/><text x="${X(-6.6)}" y="${Math.max(14, Math.min(SZ - 6, Y(fval(task.old, -6.6)) - 8))}" font-size="10.5" font-weight="800" fill="#7b8399">${T.oldRoute}</text>`;
+  if(opts.show) s += `<path d="${pathD(opts.show)}" fill="none" stroke="#5b4ce0" stroke-width="3" stroke-linecap="round"/>`;
+  s += `<g id="ghosts"></g>`;
+  task.ast.forEach(([x, y], j) => s += asteroid(x, y, j));
+  task.beacons.forEach(([x, y], j) => {
+    let lx = X(x) + (x > 4 ? -8 : 8), anc = x > 4 ? "end" : "start", ly = Y(y) + (y > 5 ? 16 : -9);
+    const nb = task.beacons.find(([x2, y2], j2) => j2 !== j && Math.abs(y2 - y) < 1.6 && Math.abs(x2 - x) < 4);
+    if(nb){   // kaimyninis švyturys – užrašai į skirtingas puses
+      if(nb[0] > x && x > -4.5){ lx = X(x) - 10; anc = "end"; ly = Y(y) + 4; }
+      else if(nb[0] < x && x < 4.5){ lx = X(x) + 10; anc = "start"; ly = Y(y) + 4; }
+      else ly = Y(y) + 20;
+    }
+    s += `<g class="bc" id="bc${j}"><circle class="ring" cx="${X(x)}" cy="${Y(y)}" r="10" fill="#ffd84a" opacity=".55"/><circle class="core" cx="${X(x)}" cy="${Y(y)}" r="6.5" fill="#ffd84a" stroke="${K}" stroke-width="1.8"/>
+      <text x="${lx}" y="${ly}" text-anchor="${anc}" font-size="11" font-weight="800" fill="${K}" paint-order="stroke" stroke="#f7f8ff" stroke-width="3.5">${pt(x, y)}</text></g>`;
+  });
+  s += `<path id="trail" d="" fill="none" stroke="#5b4ce0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  s += `<g id="probe" transform="translate(-40 -40)">${rocket()}</g><g id="fxl"></g>`;
+  return `<svg viewBox="0 0 ${SZ} ${SZ}" role="img" aria-label="Koordinačių plokštuma" font-family="Manrope,system-ui,sans-serif">${s}</svg>`;
+}
+function pathD(f, upto){
+  let d = "", pen = false;
+  for(let i = 0; i <= 1440; i++){
+    const x = -7.2 + i * 0.01; if(upto != null && x > upto) break;
+    const y = fval(f, x);
+    if(Math.abs(y) > LIM + 1){ pen = false; continue; }
+    d += (pen ? "L" : "M") + X(x).toFixed(1) + " " + Y(y).toFixed(1); pen = true;
+  }
+  return d;
+}
+function pilot(s){
+  return `<g transform="${s}">
+    <path d="M-20 118h40" stroke="rgba(0,0,0,.15)" stroke-width="7" stroke-linecap="round"/>
+    <rect x="-24" y="34" width="14" height="40" rx="6" fill="#c9cfe0" stroke="${K}" stroke-width="2.4"/>
+    <path d="M-12 74h10l1 34h-12z" fill="#fff" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/><path d="M2 74h10l1 34H1z" fill="#fff" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M-15 106h17v10h-19q0-6 2-10zM0 106h17q2 4 2 10H0z" fill="#5b4ce0" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M-16 36q0-8 10-8h12q10 0 10 8v40h-32z" fill="#fff" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/>
+    <rect x="-8" y="44" width="16" height="11" rx="3" fill="#e7e3ff" stroke="${K}" stroke-width="2"/><circle cx="-3" cy="49.5" r="2" fill="#e8604b"/><circle cx="3" cy="49.5" r="2" fill="#2fb36b"/>
+    <path d="M-16 66h32" stroke="#5b4ce0" stroke-width="4"/>
+    <path d="M-16 38q-12 10-8 26" fill="none" stroke="${K}" stroke-width="11" stroke-linecap="round"/><path d="M-16 38q-12 10-8 26" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round"/>
+    <path d="M16 38q14 4 20 14" fill="none" stroke="${K}" stroke-width="11" stroke-linecap="round"/><path d="M16 38q14 4 20 14" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round"/>
+    <g transform="translate(40 42) rotate(-14)"><rect x="-4" y="-14" width="30" height="24" rx="4" fill="#20283c" stroke="${K}" stroke-width="2"/><path d="M0 4q6-14 12-2t11-12" fill="none" stroke="#7ff0ff" stroke-width="2.2" stroke-linecap="round"/></g>
+    <circle cx="36" cy="54" r="5" fill="#5b4ce0" stroke="${K}" stroke-width="2"/><circle cx="-24" cy="64" r="5" fill="#5b4ce0" stroke="${K}" stroke-width="2"/>
+    <circle cx="0" cy="8" r="22" fill="#fff" stroke="${K}" stroke-width="2.6"/>
+    <path d="M-15 4q0-12 15-12t15 12v6q0 10-15 10t-15-10z" fill="#2c3550"/>
+    <path d="M-10 0q4-6 12-6" fill="none" stroke="#9fe8ff" stroke-width="2.6" stroke-linecap="round" opacity=".8"/>
+    <circle cx="-5" cy="8" r="2" fill="#fff"/><circle cx="6" cy="8" r="2" fill="#fff"/><path d="M-3 14q3 2.5 7 0" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+    <circle cx="-22" cy="8" r="4" fill="#e8604b" stroke="${K}" stroke-width="2"/></g>`;
+}
+function heroSvg(){
+  let g = "";
+  for(let x = 20; x < 480; x += 26) g += `<path d="M${x} 0V230" stroke="#e3e6fb"/>`;
+  for(let y = 10; y < 230; y += 26) g += `<path d="M0 ${y}H480" stroke="#e3e6fb"/>`;
+  let d = ""; for(let x = 170; x <= 460; x += 5){ const y = 40 + 0.0047 * (x - 330) * (x - 330); d += (x === 170 ? "M" : "L") + x + " " + y.toFixed(1); }
+  const bx = [[200, 40 + 0.0047 * 130 * 130], [330, 40], [420, 40 + 0.0047 * 90 * 90]];
+  return `<svg viewBox="0 0 480 230" aria-hidden="true"><rect width="480" height="230" fill="#f4f3ff"/>${g}
+    <path d="M150 196H470M170 226V14" stroke="${K}" stroke-width="2.2" opacity=".55"/>
+    <circle cx="80" cy="40" r="3" fill="#ffd84a"/><circle cx="440" cy="190" r="2.5" fill="#ffd84a"/><circle cx="120" cy="22" r="2" fill="#5b4ce0"/>
+    <circle cx="440" cy="40" r="20" fill="#ffb3a6" stroke="${K}" stroke-width="2.2"/><path d="M418 46q22-14 46-6" fill="none" stroke="${K}" stroke-width="2.2"/><circle cx="433" cy="34" r="3.5" fill="#f08a7a"/>
+    <path d="${d}" fill="none" stroke="#5b4ce0" stroke-width="3.4" stroke-dasharray="2 9" stroke-linecap="round"/>
+    ${bx.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="12" fill="#ffd84a" opacity=".45"/><circle cx="${x}" cy="${y}" r="7.5" fill="#ffd84a" stroke="${K}" stroke-width="2"/>`).join("")}
+    <g transform="translate(374 52.4) rotate(26) scale(1.5)">${rocket()}</g>
+    <g transform="translate(250 130)">${asteroid(-6.7, 5.9, 2)}</g><g transform="translate(120 40)">${asteroid(-6.7, 5.9, 5)}</g>
+    ${pilot("translate(78 92) scale(1.05)")}
+  </svg>`;
+}
+/* žvaigždėlapis: originalus žvaigždynas iš parabolės ir tiesės taškų */
+const SKY = (() => {
+  const p = [];
+  for(let i = 0; i < 22; i++){ const x = 18 + i * 13.5, t = (x - 160) / 142; p.push([x, 22 + 96 * t * t]); }
+  for(let i = 0; i < 18; i++){ const x = 30 + i * 15.5; p.push([x, 128 - x * 0.36]); }
+  return p;
+})();
+function skySvg(n, fresh){
+  let s = "";
+  const seg = (a, b) => { for(let i = a; i < b - 1; i++) if(i + 1 < n) s += `<path d="M${SKY[i][0]} ${SKY[i][1]}L${SKY[i + 1][0]} ${SKY[i + 1][1]}" stroke="#8d80f0" stroke-width="1.6"/>`; };
+  seg(0, 22); seg(22, 40);
+  SKY.forEach(([x, y], i) => {
+    const on = i < n, nw = on && fresh && i >= n - fresh;
+    s += on ? `<path class="${nw ? "lit" : ""}" d="M${x} ${y - 6}l1.8 3.9 4.2.5-3.1 2.9.8 4.2-3.7-2.1-3.7 2.1.8-4.2-3.1-2.9 4.2-.5z" fill="#ffc61a" stroke="${K}" stroke-width=".9"/>` : `<circle cx="${x}" cy="${y}" r="2.2" fill="#c9c3f5"/>`;
+  });
+  return `<svg class="sky" viewBox="0 0 320 136" role="img" aria-label="${T.mapH}">${s}</svg>`;
+}
+
+/* ================= meniu ================= */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), stage = $("stage");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("ptsL").textContent = T.pts;
+const SK = "mk-" + GAME + "-zvaigzdes";
+const rank = n => T.ranks[n >= 40 ? 4 : n >= 28 ? 3 : n >= 16 ? 2 : n >= 8 ? 1 : 0];
+function renderCol(fresh){
+  const n = Math.min(NSTAR, MK.get(SK, 0));
+  $("col").innerHTML = `<h2><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l3.8 8.2 9 1-6.7 6.1 1.9 8.8L16 22.6l-8 4.5 1.9-8.8-6.7-6.1 9-1z" fill="#ffc61a" stroke="${K}" stroke-width="2" stroke-linejoin="round"/></svg>${T.mapH}</h2>
+    <p>${n ? T.mapP(n, NSTAR, rank(n)) : T.mapEmpty}</p>${skySvg(n, fresh)}`;
+}
+function showMenu(fresh){
+  play.hidden = true; menu.hidden = false;
+  $("heroArt").innerHTML = heroSvg(); renderCol(fresh);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, pts = 0, dots = null, lit = 0, par = {}, tries = 0, busy = false, done = false;
+function start(i){
+  L = i; tasks = LV[i](); ti = 0; okN = 0; pts = 0; lit = 0; $("pts").textContent = 0;
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+function award(n){ pts += n; const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); }
+const PDEF = { k: { v: KV, d: 1 }, b: { v: BV, d: 0 }, a: { v: AV, d: 1 }, m: { v: MV, d: 0 }, n: { v: MV, d: 0 } };
+function curF(){ return cur.f.t === "par" ? { t: "par", a: par.a, m: par.m, n: par.n } : { t: "lin", k: par.k, b: cur.fix ? cur.fix.b : par.b }; }
+function show(){
+  cur = tasks[ti]; dots.cur(ti); tries = 0; busy = false; done = false;
+  window.scrollTo({ top: 0 });
+  const goal = cur.type === "k" ? T.goalK(cur.fix.b) : cur.type === "kb" ? T.goalLine : cur.type === "para" ? T.goalPara(fmt(cur.old)) : cur.type === "mc" ? T.goalMC : cur.type === "par3" ? T.goalPar + " " + T.goalPar3 : T.goalPar;
+  if(cur.type === "mc"){
+    stage.innerHTML = `<div class="card fade"><p class="goal">${goal}</p><div class="planew" id="pw">${planeSvg(cur, { show: cur.f })}</div>
+      <div class="ans" id="ans">${cur.opts.map((o, i) => `<button type="button" class="a" data-i="${i}">${fmt(o)}</button>`).join("")}</div><p class="note" id="note" role="status" aria-live="polite"></p></div><div id="flow"></div>`;
+    $("ans").onclick = e => { const b = e.target.closest(".a"); if(b) answerMC(+b.dataset.i, b); };
+    return;
+  }
+  const keys = cur.f.t === "par" ? ["a", "m", "n"] : ["k", "b"];
+  par = {}; keys.forEach(k => par[k] = PDEF[k].d);
+  if(cur.fix) par.b = cur.fix.b;
+  stage.innerHTML = `<div class="card fade"><p class="goal">${goal}</p><div class="planew" id="pw">${planeSvg(cur)}</div>
+    <div class="eq" id="eq"></div>
+    <div class="prm" id="prm">${keys.map(k => `<div class="pr${cur.fix && k === "b" ? " fix" : ""}" data-k="${k}"><b>${k}</b><button type="button" data-d="-1" aria-label="${k} −"${cur.fix && k === "b" ? " disabled" : ""}>−</button><output id="o_${k}"></output><button type="button" data-d="1" aria-label="${k} +"${cur.fix && k === "b" ? " disabled" : ""}>+</button></div>`).join("")}</div>
+    <p class="note" id="note" role="status" aria-live="polite"></p>
+    <button type="button" class="mk-btn bigbtn" id="go">${T.launch}</button><span class="trs" id="trs">${T.tries(3)}</span></div><div id="flow"></div>`;
+  upd();
+  $("prm").onclick = e => {
+    const b = e.target.closest("button[data-d]"); if(!b || busy || done) return;
+    const k = b.closest(".pr").dataset.k; if(cur.fix && k === "b") return;
+    const vs = PDEF[k].v, j = vs.findIndex(v => near(v, par[k])), nj = Math.max(0, Math.min(vs.length - 1, j + +b.dataset.d));
+    par[k] = vs[nj]; MK.unlock(); MK.sfx.tap(); upd();
+  };
+  $("go").onclick = launch;
+}
+function upd(){
+  Object.keys(par).forEach(k => { const o = $("o_" + k); if(o) o.textContent = nf(par[k]); });
+  $("eq").innerHTML = MK.esc(fmt(curF()));
+  $("prm").querySelectorAll(".pr").forEach(r => { const k = r.dataset.k; if(cur.fix && k === "b") return; const vs = PDEF[k].v, j = vs.findIndex(v => near(v, par[k])); const [m, p] = r.querySelectorAll("button"); m.disabled = j <= 0; p.disabled = j >= vs.length - 1; });
+}
+function note(t, c){ const n = $("note"); n.className = "note" + (c ? " " + c : ""); n.innerHTML = t; }
+async function animateFly(f, res){
+  const trail = $("trail"), probe = $("probe"), n = res.crash ? res.crash.i : res.pts.length - 1;
+  cur.beacons.forEach((_, j) => $("bc" + j).classList.remove("got"));
+  const t0 = performance.now(), dur = 2300 * n / 1440 + 200;
+  const got = new Set();
+  await new Promise(resolve => {
+    function frame(now){
+      const i = Math.max(0, Math.min(n, Math.floor((now - t0) / dur * n)));
+      const [x, y] = res.pts[i];
+      trail.setAttribute("d", pathD(f, x));
+      const [x2, y2] = res.pts[Math.min(res.pts.length - 1, i + 3)];
+      const ang = Math.atan2(-(y2 - y) , (x2 - x)) * 180 / Math.PI;
+      if(Math.abs(y) <= LIM + .6) probe.setAttribute("transform", `translate(${X(x).toFixed(1)} ${Y(y).toFixed(1)}) rotate(${ang.toFixed(1)})`);
+      else probe.setAttribute("transform", "translate(-40 -40)");
+      cur.beacons.forEach(([bx], j) => { if(res.got.has(j) && x >= bx && !got.has(j)){ got.add(j); $("bc" + j).classList.add("got"); MK.sfx.star(got.size); } });
+      if(i < n) requestAnimationFrame(frame); else resolve();
+    }
+    requestAnimationFrame(frame);
+  });
+  if(res.crash){
+    const [ax, ay] = res.crash.a;
+    $("fxl").innerHTML = `<g class="boom"><circle cx="${X(res.crash.x)}" cy="${Y(res.crash.y)}" r="16" fill="#ffb02e"/><circle cx="${X(res.crash.x)}" cy="${Y(res.crash.y)}" r="9" fill="#ff6b4a"/></g>`;
+    probe.setAttribute("transform", "translate(-40 -40)"); MK.sfx.dig();
+    await MK.wait(500); $("fxl").innerHTML = "";
+  }
+}
+async function launch(){
+  if(busy || done) return; busy = true; MK.unlock(); tries++;
+  $("go").disabled = true; note("");
+  const f = curF(), res = fly(f, cur);
+  MK.sfx.whoosh();
+  await animateFly(f, res);
+  if(res.ok){
+    done = true; note(T.res.ok, "good"); MK.sfx.good();
+    const good = tries <= 2; dots.mark(ti, good); if(good){ okN++; lit++; }
+    award([0, 10, 6, 3][tries]); finishTask(true);
+  } else {
+    // nepavykęs bandymas paliekamas kaip šešėlis
+    $("ghosts").insertAdjacentHTML("beforeend", `<path d="${pathD(f, res.crash ? res.crash.x : null)}" fill="none" stroke="#e8604b" stroke-width="2" stroke-dasharray="5 5" opacity=".7"/>`);
+    $("trail").setAttribute("d", "");
+    const miss = cur.beacons.map((b, j) => j).filter(j => !res.got.has(j)).sort((a, b) => cur.beacons[a][0] - cur.beacons[b][0])[0];
+    const msg = res.crash ? T.res.crash : T.res.miss(pt(...cur.beacons[miss]));
+    MK.sfx.bad();
+    if(tries >= 3){
+      done = true; note(msg + " " + T.res.last, "warn"); dots.mark(ti, false);
+      $("trail").setAttribute("d", pathD(cur.f)); finishTask(false);
+    } else { note(msg, "warn"); $("trs").textContent = T.tries(3 - tries); $("go").disabled = false; }
+  }
+  busy = false;
+}
+function finishTask(ok){
+  $("go") && ($("go").hidden = true); $("trs") && ($("trs").hidden = true);
+  $("prm") && $("prm").querySelectorAll("button").forEach(b => b.disabled = true);
+  whyNext(ok);
+}
+function whyNext(ok){
+  const d = document.createElement("div");
+  d.innerHTML = MK.why({ ok, head: ok ? P(T.ok) : T.bad, body: (ok ? "" : T.wAns(fmt(cur.f)) + "<br>") + cur.why.body, more: cur.why.more, sum: T.why, open: !ok });
+  $("flow").appendChild(d.firstElementChild);
+  const go = document.createElement("button"); go.type = "button"; go.className = "mk-btn go"; go.textContent = ti < tasks.length - 1 ? T.next : T.finish;
+  go.onclick = () => { MK.sfx.tap(); ti++; ti < tasks.length ? show() : finish(); };
+  $("flow").appendChild(go); setTimeout(() => go.scrollIntoView({ behavior: "smooth", block: "nearest" }), 150);
+}
+async function answerMC(i, btn){
+  const ans = $("ans"); if(ans.classList.contains("done")) return;
+  ans.classList.add("done"); MK.unlock();
+  const ok = i === cur.right;
+  btn.classList.add(ok ? "ok" : "no"); if(!ok) ans.children[cur.right].classList.add("ok");
+  if(!ok) $("ghosts").insertAdjacentHTML("beforeend", `<path d="${pathD(cur.opts[i])}" fill="none" stroke="#e8604b" stroke-width="2.4" stroke-dasharray="6 5"/>`);
+  dots.mark(ti, ok);
+  if(ok){ okN++; lit++; award(10); MK.sfx.good(); note(T.res.ok, "good"); } else MK.sfx.bad();
+  const res = fly(cur.f, cur); MK.sfx.whoosh(); await animateFly(cur.f, res);
+  whyNext(ok);
+}
+function finish(){
+  const total = tasks.length, stars = MK.starsFor(okN, total); MK.best(GAME, LEVELS[L].id, stars);
+  const before = Math.min(NSTAR, MK.get(SK, 0)), after = Math.min(NSTAR, before + lit); MK.set(SK, before + lit);
+  const fresh = after - before;
+  MK.result({ stars, title: `${okN} / ${total}`, text: T.res2(okN, total, pts) + (fresh ? `<br><b>${T.newStars(fresh)}</b>` : ""),
+    next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(fresh) });
+}
+Object.defineProperty(window, "__cur", { get: () => cur });
+window.__MK_TEST = { LV, fly, fval, fmt, genK, genKB, genMC, genPara, genPar, genPar3, setPar(o){ Object.assign(par, o); upd(); }, launch };
+showMenu();
+})();
+</script>
+</body>
+</html>
