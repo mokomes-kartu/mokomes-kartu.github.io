@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Slibino sala – MokomėsKartu.lt</title>
+<meta name="description" content="3D matematikos nuotykis: keliauk po salą, rask penkis paslėptus kristalus ir nugalėk slibinus spręsdamas 5 klasės užduotis.">
+<meta name="theme-color" content="#eaf5ff">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<script src="uzduotys.js"></script>
+<style>
+body{--paper:#eef6ff;--grid:#d9e8f7;--soft:#4a5a70;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#d8443a;--ac-ink:#fff;--ac-soft:#ffe1dc;--sea:#2f8fd0}
+.mk-ico[data-k="music"]{display:none}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(32px,8.5vw,54px)}
+.mk-hero p{max-width:42ch}
+.mk-hero-art{width:min(520px,100%)}
+.mk-btn{border-radius:12px;font-size:18px}
+.hero-card{background:#fff;border-radius:18px;padding:6px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.hero-card svg{display:block;width:100%;height:auto;border-radius:12px}
+.wrap{max-width:560px;margin:0 auto;width:100%}
+.starts{display:grid;gap:10px;margin:4px 0 6px}
+.starts .mk-btn{width:100%}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:14px 0 4px}
+.seg{display:inline-flex;border-radius:10px;box-shadow:inset 0 0 0 2.5px var(--ink);overflow:hidden;background:#fff}
+.seg button{border:0;background:transparent;padding:10px 16px;font:800 15px/1 var(--body);cursor:pointer;min-height:44px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.small{color:var(--soft);font-size:13.5px;font-weight:700;margin:4px 0 0}
+.card{background:#fff;border-radius:14px;padding:12px 14px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink);margin-top:14px}
+.card h2{margin:0 0 8px;font:800 16px/1.2 var(--kid)}
+.gems{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center}
+.gems div{display:grid;justify-items:center;gap:3px;font:800 11px/1.15 var(--body);color:var(--soft)}
+.gems svg{width:36px;height:44px}
+.gems .on{color:var(--ink)}
+.drg{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;font:700 14px/1.3 var(--body)}
+.drg span{display:inline-flex;align-items:center;gap:6px}
+.drg i{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--ink)}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font:600 14px/1.35 var(--body)}
+.keys b{font-weight:800;white-space:nowrap}
+.note{max-width:560px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+.mk-learn ul{margin:6px 0;padding-left:20px}
+
+/* ===== žaidimas ===== */
+#game{position:fixed;inset:0;z-index:30;background:#9fd3f2;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+#game canvas{display:block;width:100%;height:100%}
+.hud{position:absolute;pointer-events:none;z-index:2}
+.hbtn{pointer-events:auto;display:grid;place-items:center;min-width:46px;height:46px;padding:0 10px;border:0;border-radius:12px;background:rgba(255,255,255,.92);color:var(--ink);
+  font:800 13px/1 var(--body);box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 rgba(18,26,51,.35);cursor:pointer}
+.hbtn svg{width:24px;height:24px}
+#hudL{left:max(10px,env(safe-area-inset-left));top:max(10px,env(safe-area-inset-top));display:flex;gap:8px;align-items:center}
+#hudR{right:max(10px,env(safe-area-inset-right));top:max(10px,env(safe-area-inset-top));display:flex;gap:8px}
+#hgems{display:flex;gap:3px;padding:6px 8px;border-radius:12px;background:rgba(255,255,255,.85);box-shadow:inset 0 0 0 2.5px var(--ink)}
+#hgems svg{width:20px;height:26px;display:block}
+#compass{left:50%;top:max(10px,env(safe-area-inset-top));transform:translateX(-50%);width:min(240px,34vw);height:30px;border-radius:10px;background:rgba(255,255,255,.85);box-shadow:inset 0 0 0 2.5px var(--ink);overflow:hidden}
+#compass span{position:absolute;top:0;height:100%;display:grid;place-items:center;transform:translateX(-50%);font:800 13px/1 var(--kid);color:var(--soft)}
+#compass span.m{font-size:15px;color:var(--ink)}
+#compass span.n{color:#d8443a}
+#compass::after{content:"";position:absolute;left:50%;top:0;width:2px;height:7px;background:var(--ink);transform:translateX(-50%)}
+#cross{left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#fff;box-shadow:0 0 0 1.5px rgba(18,26,51,.6)}
+#prompt{left:50%;bottom:24px;transform:translateX(-50%);padding:9px 14px;border-radius:12px;background:rgba(255,255,255,.95);font:800 15px/1.2 var(--body);box-shadow:inset 0 0 0 2.5px var(--ink);white-space:nowrap}
+#prompt kbd{display:inline-block;min-width:22px;padding:2px 6px;margin-right:6px;border-radius:6px;background:var(--ink);color:#fff;font:800 13px/1.2 var(--body);text-align:center}
+#toast{left:50%;top:64px;transform:translateX(-50%);max-width:min(92vw,520px);padding:10px 16px;border-radius:12px;background:rgba(18,26,51,.88);color:#fff;font:800 15px/1.35 var(--body);text-align:center;opacity:0;transition:opacity .3s}
+#toast.on{opacity:1}
+#hint{left:50%;top:50%;transform:translate(-50%,-50%);padding:12px 18px;border-radius:12px;background:rgba(255,255,255,.95);box-shadow:inset 0 0 0 2.5px var(--ink);font:800 15px/1.3 var(--body);text-align:center}
+#vign{position:absolute;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity .25s;background:radial-gradient(ellipse at center,transparent 45%,rgba(255,90,20,.65))}
+#vign.on{opacity:1}
+#dark{position:absolute;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity .6s;background:radial-gradient(ellipse at center,transparent 30%,rgba(10,6,20,.55))}
+
+/* lietimo valdymas */
+#touch{position:absolute;inset:0;z-index:2;display:none}
+.touch #touch{display:block}
+#joyZone{position:absolute;left:0;top:70px;bottom:0;width:45%}
+#lookZone{position:absolute;right:0;top:70px;bottom:0;width:55%}
+#joyBase{position:absolute;width:128px;height:128px;margin:-64px 0 0 -64px;border-radius:50%;background:rgba(255,255,255,.28);box-shadow:inset 0 0 0 3px rgba(255,255,255,.85);display:none}
+#joyKnob{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:inset 0 0 0 3px var(--ink)}
+#joyHint{position:absolute;left:max(24px,env(safe-area-inset-left));bottom:28px;width:110px;height:110px;border-radius:50%;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7);display:grid;place-items:center;color:#fff;font:800 12px/1.2 var(--body);text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+#btns{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));width:210px;height:200px}
+.tb{position:absolute;display:grid;place-items:center;align-content:center;gap:1px;border:0;border-radius:50%;background:rgba(255,255,255,.88);color:var(--ink);box-shadow:inset 0 0 0 3px var(--ink),0 4px 0 rgba(18,26,51,.35);font:800 10.5px/1 var(--body);touch-action:none}
+.tb svg{width:24px;height:24px}
+.tb.on{background:#ffd84d}
+.tb.big{width:84px;height:84px;right:0;bottom:0;background:#ffd84d;font-size:11px}
+.tb.big svg{width:30px;height:30px}
+.tb.big.ready{animation:mkPulse 1s infinite}
+#bJump{width:62px;height:62px;right:98px;bottom:2px}
+#bCrouch{width:62px;height:62px;right:84px;bottom:76px}
+#bDig{width:62px;height:62px;right:12px;bottom:98px}
+.tb:active{transform:translateY(2px)}
+
+/* langai */
+.ov{position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));background:rgba(18,26,51,.38)}
+.ov[hidden]{display:none}
+.pan{position:relative;width:min(600px,100%);max-height:100%;overflow:auto;-webkit-overflow-scrolling:touch;background:#fff;border-radius:16px;padding:14px 14px 16px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 rgba(18,26,51,.5);font:600 15.5px/1.5 var(--body);touch-action:pan-y}
+.pan h2{margin:0 40px 8px 0;font:800 18px/1.2 var(--kid);letter-spacing:-.02em}
+.pan .x{position:absolute;right:10px;top:10px;width:40px;height:40px;border:0;border-radius:10px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 18px/1 var(--body);cursor:pointer}
+.pan .mk-guide{margin:4px 0 8px}
+.pan .mk-bubble{font:700 15px/1.45 var(--body)}
+.pan .mk-btn{width:100%;margin-top:10px}
+.dls{display:flex;gap:6px;align-items:center;margin:0 0 8px}
+.dl{width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);display:grid;place-items:center;font:800 13px/1 var(--body)}
+.dl.ok{background:#7ee08a}
+.tq{font:700 clamp(16px,4.4vw,19px)/1.45 var(--body);margin:2px 0 8px}
+.tq .fig{display:block;width:min(240px,70%);height:auto;margin:6px auto 0}
+.tq .mk-fr,.opts .mk-fr,.mk-why .mk-fr{font-size:.92em}
+.ans{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;margin:6px 0 8px;padding:6px 12px;border-radius:10px;background:#fffbea;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 26px/1 var(--kid)}
+.ans .cur{width:3px;height:28px;background:var(--ink);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.ans.bad{background:#ffe3dc}
+.ans.ok{background:#d9f7df}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.pad button,.opts button{min-height:48px;border:0;border-radius:10px;background:#fff;font:800 20px/1 var(--body);box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 var(--ink);cursor:pointer;touch-action:manipulation;color:var(--ink)}
+.pad button:active,.opts button:active{transform:translateY(2px);box-shadow:inset 0 0 0 2.5px var(--ink),0 1px 0 var(--ink)}
+.pad .go{background:var(--ac);color:#fff;font-size:15px;grid-row:span 2}
+.pad .bs{font-size:18px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opts button{font-size:19px;min-height:54px;padding:6px}
+.opts button.ok{background:#7ee08a}
+.opts button.no{background:#ffb4a2}
+.opts button:disabled,.pad button:disabled{cursor:default}
+.pan .mk-why{margin:10px 0 0}
+@media (orientation:landscape) and (max-height:560px){
+  .pan{width:min(860px,100%);padding:10px 12px 12px}
+  .tgrid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px;align-items:start}
+  .pad button{min-height:42px}
+  .opts button{min-height:46px}
+  .ans{min-height:44px;margin-top:0}
+}
+/* kova: langas šone, kad matytųsi slibinas */
+#tp.fight{place-items:end center;background:transparent}
+#tp.fight .pan{max-height:62%}
+@media (orientation:landscape){ #tp.fight{place-items:center end} #tp.fight .pan{width:min(500px,56%);max-height:100%} }
+#fhud{left:max(10px,env(safe-area-inset-left));top:64px;display:grid;gap:6px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.9);box-shadow:inset 0 0 0 2.5px var(--ink);font:800 12.5px/1.2 var(--body)}
+#fhud .bar{display:flex;gap:3px}
+#fhud .bar i{width:16px;height:16px;border-radius:4px;background:#e6e1d6;box-shadow:inset 0 0 0 2px var(--ink)}
+#fhud .bar.hp i.on{background:#d8443a}
+#fhud .bar.sh i.on{background:#2f9bff}
+/* žemėlapis */
+#mapC{display:block;width:100%;height:auto;max-height:70vh;aspect-ratio:1;object-fit:contain;border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink);background:#e9dfc4;margin:0 auto}
+@media (orientation:landscape) and (max-height:560px){ #mapC{max-height:calc(100vh - 120px);width:auto} }
+.notes{display:grid;gap:8px}
+.notes details{border-radius:10px;padding:4px 12px;box-shadow:inset 0 0 0 2px var(--ink)}
+.notes summary{cursor:pointer;font-weight:800;min-height:40px;display:flex;align-items:center}
+.notes p{margin:4px 0 10px}
+.mrow{display:grid;gap:8px}
+#loading{position:absolute;inset:0;z-index:9;display:grid;place-items:center;background:#eaf5ff;font:800 18px/1.3 var(--kid);color:var(--ink)}
+#rot{position:absolute;left:10px;right:10px;top:110px;z-index:3;margin:0 auto;max-width:360px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.95);box-shadow:inset 0 0 0 2.5px var(--ink);font:800 14px/1.35 var(--body);text-align:center;display:none}
+@media (orientation:portrait){ .touch #rot.show{display:block} }
+@media (max-width:620px){ #compass{top:calc(max(10px,env(safe-area-inset-top)) + 54px)} #fhud{top:104px} #toast{top:100px} }
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art"><div class="hero-card" id="heroArt"></div></div>
+      <h1 id="h1"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="wrap">
+      <div class="starts" id="starts"></div>
+      <div class="row"><b id="qL"></b><div class="seg" id="qSeg"></div></div>
+      <p class="small" id="qN"></p>
+      <div class="card"><h2 id="collT"></h2><div class="gems" id="mGems"></div><div class="drg" id="mDrg"></div></div>
+      <div class="card"><h2 id="ctrlT"></h2><div class="keys" id="ctrlK"></div><p class="small" id="ctrlTip"></p></div>
+      <div id="learn"></div>
+      <p class="note" id="note"></p>
+    </div>
+  </section>
+</div>
+
+<div id="game" hidden>
+  <div id="view"></div>
+  <div id="vign"></div><div id="dark"></div>
+  <div id="touch">
+    <div id="joyZone"><div id="joyHint"></div><div id="joyBase"><div id="joyKnob"></div></div></div>
+    <div id="lookZone"></div>
+    <div id="btns">
+      <button type="button" class="tb" id="bDig"></button>
+      <button type="button" class="tb" id="bCrouch"></button>
+      <button type="button" class="tb" id="bJump"></button>
+      <button type="button" class="tb big" id="bAct"></button>
+    </div>
+  </div>
+  <div class="hud" id="hudL"><button type="button" class="hbtn" id="hMenu"></button><div id="hgems"></div></div>
+  <div class="hud" id="compass"></div>
+  <div class="hud" id="hudR"><button type="button" class="hbtn" id="hMap"></button><button type="button" class="hbtn" id="hNotes"></button></div>
+  <div class="hud" id="cross"></div>
+  <div class="hud" id="prompt" hidden></div>
+  <div class="hud" id="toast"></div>
+  <div class="hud" id="hint" hidden></div>
+  <div class="hud" id="fhud" hidden></div>
+  <div id="rot"></div>
+  <div class="ov" id="dlg" hidden><div class="pan" id="dlgP"></div></div>
+  <div class="ov" id="tp" hidden><div class="pan" id="tpP"></div></div>
+  <div class="ov" id="mapOv" hidden><div class="pan"><button type="button" class="x" data-close aria-label="Uždaryti">✕</button><h2 id="mapT"></h2><canvas id="mapC" width="512" height="512"></canvas><p class="small" id="mapN"></p></div></div>
+  <div class="ov" id="notesOv" hidden><div class="pan" id="notesP"></div></div>
+  <div class="ov" id="pauseOv" hidden><div class="pan" id="pauseP"></div></div>
+  <div id="loading"></div>
+</div>
+<script type="module" src="zaidimas.js"></script>
+</body>
+</html>
