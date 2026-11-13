@@ -4,9 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Grafikų pilotas – MokomėsKartu.lt</title>
-<meta name="description" content="10 klasės matematikos žaidimas: tiesinė funkcija y = kx + b ir parabolė y = a(x − m)² + n – apskaičiuok koeficientus ir nuvesk zondą pro visus švyturius.">
+<meta name="description" content="10 klasės matematikos žaidimas: tiesinė ir kvadratinė funkcijos – 18 užduočių tipų: koeficientai, lentelės, tekstiniai uždaviniai, susikirtimas, grafikų transformacijos, lygtis iš grafiko, parabolės viršūnė ir nuliai.">
 <meta name="theme-color" content="#fff9e6">
-<meta name="robots" content="noindex">
 <link rel="icon" href="/logo/mk-ikona.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,6 +69,17 @@ body{--ac:#5b4ce0;--ac-ink:#fff;--ac-soft:#e7e3ff}
 @keyframes pul{50%{transform:scale(1.25);opacity:.4}}
 .bc.got .ring{animation:none;opacity:0}
 .bc.got .core{fill:#2fb36b}
+.bc.hid{opacity:0;transition:opacity .35s}
+.bc.hid.got,.bc.hid.show{opacity:1}
+.vt{border-collapse:collapse;margin:0 auto 10px;font:800 17px/1 var(--kid)}
+.vt th,.vt td{border:2px solid var(--ink);padding:8px 10px;text-align:center;min-width:38px;background:#fff}
+.vt th{background:var(--ac-soft);font-style:italic}
+.goal small{display:block;margin-top:4px;color:var(--soft);font-weight:700;font-size:14px}
+.ans.let .a{font-size:24px}
+.lgd{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;margin:0 0 8px;font:800 15px/1.2 var(--body)}
+.lgd span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.lgd i{display:inline-block;width:26px;border-top:3px dashed}
+.ans.sign .a{font-size:clamp(16px,4.6vw,19px)}
 .boom{animation:boom .6s ease-out forwards;transform-box:fill-box;transform-origin:center}
 @keyframes boom{0%{transform:scale(.2);opacity:1}100%{transform:scale(1.6);opacity:0}}
 @media (max-width:370px){.pr{grid-template-columns:36px 48px minmax(0,1fr) 48px;gap:6px}.pr button{width:48px;height:48px}.pr output{height:48px;line-height:48px}}
@@ -107,6 +117,7 @@ const AV = [-3, -2, -1, -0.5, 0.5, 1, 2, 3];
 const MV = Array.from({ length: 13 }, (_, i) => i - 6);
 const NSTAR = 40;
 const MS = "−";
+const OC = ["#8a93b8", "#c9874a"];
 
 /* ================= funkcijos ================= */
 const fval = (f, x) => f.t === "par" ? f.a * (x - f.m) * (x - f.m) + f.n : f.k * x + f.b;
@@ -143,12 +154,40 @@ function fly(f, task){
 }
 function distTo(f, px, py){ let d = 1e9; for(let x = -7.5; x <= 7.5; x += 0.02){ const y = fval(f, x); d = Math.min(d, Math.hypot(x - px, y - py)); } return d; }
 
-/* ================= užduočių generatoriai ================= */
+/* ================= užduočių generatoriai =================
+   20 užduočių tipų (18 skirtingų + 2 variantai). mode: set – koeficientai nustatomi mygtukais;
+   mc – grafikas → lygtis; mcg – lygtis → vienas iš 4 grafikų; sign – koeficientų ženklai.
+   hid – paslėptų švyturių indeksai, olds – senosios (brūkšninės) trasos. */
 const inR = y => Math.abs(y) <= 6 && Number.isInteger(y);
+const lin = (k, b) => ({ t: "lin", k, b }), parab = (a, m, n) => ({ t: "par", a, m, n });
+const KI = [-3, -2, -1, 1, 2, 3], KH = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5];
+const XS = [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6];
+const pickK = (i, hard) => hard || (i >= 3 && Math.random() < .5) ? P(KH) : P(KI);
+const rhs = f => fmt(f).replace(/^y = /, "");
+const inV = (vs, v) => vs.some(x => near(x, v));
+function validF(f){ return f.t === "lin" ? inV(KV, f.k) && inV(BV, f.b) : inV(AV, f.a) && inV(MV, f.m) && inV(MV, f.n); }
+const same = (f, g) => f.t === g.t && (f.t === "lin" ? near(f.k, g.k) && near(f.b, g.b) : near(f.a, g.a) && near(f.m, g.m) && near(f.n, g.n));
+function ptsOn(f, xs){ return xs.map(x => [x, fval(f, x)]).filter(([, y]) => inR(Math.round(y * 1e6) / 1e6)).map(([x, y]) => [x, Math.round(y)]); }
+function addHidden(task, n, xs){
+  const cand = SH(ptsOn(task.f, xs || XS)).filter(([x, y]) => task.beacons.every(([a, b]) => Math.abs(a - x) >= 1 && Math.hypot(a - x, b - y) >= 1.5));
+  const add = [];
+  for(const p of cand){ if(add.length >= n) break; if(add.every(([a]) => Math.abs(a - p[0]) >= 1.5)) add.push(p); }
+  task.hid = task.hid || [];
+  add.forEach(p => { task.hid.push(task.beacons.length); task.beacons.push(p); });
+  return add.length;
+}
+/* ar švyturius atitinka tik viena galima koeficientų trejetas/pora */
+function unique(task){
+  const f = task.f, bs = task.beacons, fix = task.fix || {};
+  let cnt = 0;
+  if(f.t === "lin"){ for(const k of fix.k != null ? [fix.k] : KV) for(const b of fix.b != null ? [fix.b] : BV) if(bs.every(([x, y]) => Math.abs(k * x + b - y) < 1e-9)) cnt++; }
+  else for(const a of AV) for(const m of MV) for(const n of MV) if(bs.every(([x, y]) => Math.abs(a * (x - m) * (x - m) + n - y) < 1e-9)) cnt++;
+  return cnt === 1;
+}
 function placeAst(task, wrongs, extra){
-  const ast = [], f = task.f, bs = task.beacons;
+  const ast = [], f = task.f, bs = task.beacons, olds = task.olds || [];
   const ok = (x, y) => Math.abs(x) <= 6.5 && Math.abs(y) <= 6.5 && distTo(f, x, y) >= 0.95 && bs.every(([a, b]) => Math.hypot(a - x, b - y) >= 1.1) && ast.every(([a, b]) => Math.hypot(a - x, b - y) >= 1.4)
-    && (!task.old || distTo(task.old, x, y) >= 0.6);
+    && olds.every(o => distTo(o.f, x, y) >= 0.6);
   for(const g of SH(wrongs)){
     if(ast.length >= 3) break;
     const xs = SH(Array.from({ length: 27 }, (_, i) => -6.5 + i * 0.5));
@@ -158,111 +197,244 @@ function placeAst(task, wrongs, extra){
   return ast;
 }
 function finalize(task, wrongs){
-  task.ast = placeAst(task, wrongs, task.type === "mc" ? 0 : 1);
+  if(!validF(task.f)) return null;
+  task.hid = task.hid || []; task.olds = task.olds || [];
+  const wr = (wrongs || []).filter(w => isFinite(w.t === "lin" ? w.k + w.b : w.a + w.m + w.n) && !same(w, task.f));
+  task.ast = task.mode === "mcg" || task.mode === "sign" ? [] : placeAst(task, wr, task.mode === "set" ? 1 : 0);
   if(!fly(task.f, task).ok) return null;
-  // klaidinga trasa neturi surinkti visų švyturių be asteroidų (kitaip užduotis dviprasmiška)
+  if(task.mode === "set" && !unique(task)) return null;
   return task;
 }
-function genK(i){
-  for(let t = 0; t < 500; t++){
-    const half = i >= 3 && Math.random() < .6, k = half ? P(KV.filter(v => !Number.isInteger(v))) : P([-3, -2, -1, 1, 2, 3, 4, -4].slice(0, i < 2 ? 6 : 8));
-    const b = R(-4, 4);
-    const xs = SH([-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]).filter(x => inR(k * x + b) && Math.abs(x) >= 2);
-    if(!xs.length) continue;
-    const n = i >= 4 && xs.length > 1 ? 2 : 1;
-    const bx = xs.slice(0, n);
-    const task = { type: "k", f: { t: "lin", k, b }, fix: { b }, beacons: bx.map(x => [x, k * x + b]) };
-    const wr = [{ t: "lin", k: -k, b }, { t: "lin", k: k + .5, b }, { t: "lin", k: k - .5, b }, { t: "lin", k: near(k, 0) ? 1 : 1 / k, b }];
-    const [x0, y0] = task.beacons[0];
-    task.why = { body: T.wK(x0, y0, b, k), more: `<p>${T.tipK}</p><p>${T.tipB}</p>` };
-    if(finalize(task, wr)) return task;
-  }
-}
+function tryG(f, n){ for(let t = 0; t < (n || 600); t++){ const r = f(); if(r) return r; } return null; }
+
+/* ---- tiesinė funkcija ---- */
+function genK(i){ return tryG(() => {
+  const k = i >= 3 && Math.random() < .6 ? P(KH) : P([-3, -2, -1, 1, 2, 3, 4, -4].slice(0, i < 2 ? 6 : 8)), b = R(-4, 4), f = lin(k, b);
+  const xs = SH(ptsOn(f, XS.filter(x => Math.abs(x) >= 2)));
+  if(!xs.length) return null;
+  const task = { type: "k", mode: "set", f, fix: { b }, beacons: xs.slice(0, i >= 4 && xs.length > 1 ? 2 : 1), goal: T.goalK(b) };
+  const [x0, y0] = task.beacons[0];
+  task.why = { body: T.wK(x0, y0, b, k), more: `<p>${T.tipK}</p><p>${T.tipB}</p>` };
+  return finalize(task, [lin(-k, b), lin(k + .5, b), lin(k - .5, b), lin(1 / k, b)]);
+}); }
+function genKpt(i){ return tryG(() => {
+  const k = pickK(i), b = R(-6, 6), f = lin(k, b);
+  const c = SH(ptsOn(f, XS.filter(x => x !== 0)));
+  if(!c.length) return null;
+  const [x, y] = c[0];
+  const task = { type: "kpt", mode: "set", f, fix: { k }, beacons: [[x, y]], goal: T.goalKpt(k) };
+  task.why = { body: T.wKpt(k, x, y, b), more: `<p>${T.tipB}</p>` };
+  return finalize(task, [lin(k, -b), lin(k, y + k * x), lin(k, b + 1), lin(k, b - 1)]);
+}); }
+function genTable(i){ return tryG(() => {
+  const k = pickK(i), b = R(-5, 5), f = lin(k, b), step = i >= 4 ? P([1, 2]) : 1, x0 = R(-3, 1);
+  const xs = [0, 1, 2, 3].map(j => x0 + j * step);
+  if(i < 2 && !xs.includes(0)) return null;
+  const ys = xs.map(x => k * x + b); if(ys.some(y => !Number.isInteger(y) || Math.abs(y) > 15)) return null;
+  const task = { type: "table", mode: "set", f, beacons: [], table: xs.map((x, j) => [x, ys[j]]), goal: T.goalTable };
+  if(addHidden(task, 3, XS.filter(x => !xs.includes(x))) < 2) return null;
+  task.why = { body: T.wTable(xs[0], ys[0], xs[1], ys[1], k, b), more: `<p>${T.tipK}</p><p>${T.tipB}</p>` };
+  return finalize(task, [lin(-k, b), lin(k, -b), lin(k, ys[0]), lin(k, b + k)]);
+}); }
+function genWord(i){ return tryG(() => {
+  const c = P(T.words), b = R(c.b[0], c.b[1]), k = P(c.k), f = lin(k, b);
+  const task = { type: "word", mode: "set", f, beacons: [], goal: T.goalWord(c.t(b, k), c.xy) };
+  if(addHidden(task, 3, [1, 2, 3, 4, 5, 6]) < 2) return null;
+  task.why = { body: T.wWord(b, k), more: `<p>${T.tipK}</p><p>${T.tipB}</p>` };
+  return finalize(task, [lin(-k, b), lin(b, k), lin(k, -b)]);
+}); }
 function lineThrough2(i, allowZero){
-  for(let t = 0; t < 500; t++){
-    const half = i >= 3 && Math.random() < .55, k = half ? P(KV.filter(v => !Number.isInteger(v))) : P([-3, -2, -1, 1, 2, 3]);
-    const b = R(-5, 5);
-    const xs = SH([-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]).filter(x => inR(k * x + b) && (allowZero || x !== 0));
-    if(xs.length < 2) continue;
-    const x1 = xs[0], x2 = xs.find(x => Math.abs(x - x1) >= 2); if(x2 == null) continue;
-    const [a1, a2] = x1 < x2 ? [x1, x2] : [x2, x1];
-    return { k, b, p1: [a1, k * a1 + b], p2: [a2, k * a2 + b] };
-  }
+  return tryG(() => {
+    const k = pickK(i), b = R(-5, 5), f = lin(k, b);
+    const xs = SH(ptsOn(f, XS.filter(x => allowZero || x !== 0)));
+    if(xs.length < 2) return null;
+    const p1 = xs[0], p2 = xs.find(p => Math.abs(p[0] - p1[0]) >= 2); if(!p2) return null;
+    const [a1, a2] = p1[0] < p2[0] ? [p1, p2] : [p2, p1];
+    return { k, b, p1: a1, p2: a2 };
+  }, 300);
 }
-function genKB(i){
-  for(let t = 0; t < 300; t++){
-    const L = lineThrough2(i, i < 2); if(!L) continue;
-    const { k, b, p1, p2 } = L;
-    const task = { type: "kb", f: { t: "lin", k, b }, beacons: [p1, p2] };
-    const wr = [{ t: "lin", k: -k, b }, { t: "lin", k, b: -b }, { t: "lin", k: 1 / k, b }, { t: "lin", k, b: b + 1 }, { t: "lin", k: k + .5, b }];
-    task.why = { body: T.wKb(p1[0], p1[1], p2[0], p2[1], k, b), more: `<p>${T.tipK}</p><p>${T.tipB}</p>` };
-    if(finalize(task, wr.filter(w => isFinite(w.k)))) return task;
-  }
+function genKB(i){ return tryG(() => {
+  const L = lineThrough2(i, i < 2); if(!L) return null;
+  const { k, b, p1, p2 } = L;
+  const task = { type: "kb", mode: "set", f: lin(k, b), beacons: [p1, p2], goal: T.goalLine };
+  task.why = { body: T.wKb(p1[0], p1[1], p2[0], p2[1], k, b), more: `<p>${T.tipK}</p><p>${T.tipB}</p>` };
+  return finalize(task, [lin(-k, b), lin(k, -b), lin(1 / k, b), lin(k, b + 1), lin(k + .5, b)]);
+}, 200); }
+function genAxes(i){ return tryG(() => {
+  const nz = [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6], p = P(nz), q = P(nz), k = -q / p;
+  if(!inV(KV, k)) return null;
+  const task = { type: "axes", mode: "set", f: lin(k, q), beacons: [[p, 0], [0, q]], goal: T.goalAxes(p, q) };
+  task.why = { body: T.wAxes(p, q, k), more: `<p>${T.tipB}</p><p>${T.tipK}</p>` };
+  return finalize(task, [lin(q / p, q), lin(k, -q), lin(-p / q, q), lin(-k, -q)]);
+}); }
+function genPara(i){ return tryG(() => {
+  const k = P([-2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 3, -3]), c = R(-4, 4), x = P([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]), y = R(-6, 6), b = y - k * x;
+  if(!Number.isInteger(b) || Math.abs(b) > 6 || b === c || Math.abs(y - (k * x + c)) < 2) return null;
+  const old = lin(k, c), task = { type: "para", mode: "set", f: lin(k, b), olds: [{ f: old }], beacons: [[x, y]], goal: T.goalPara(fmt(old)) };
+  if(!addHidden(task, 1)) return null;
+  task.why = { body: T.wPara(k, x, y, b), more: `<p>${T.tipK}</p>` };
+  return finalize(task, [lin(-k, b), lin(k, c), lin(-1 / k, y + x / k)]);
+}); }
+function genInter(i){ return tryG(() => {
+  const xi = R(-4, 4), yi = R(-4, 4), k1 = P(KI), k2 = P(KI.concat(KH)), k = P(KI.concat(KH));
+  if(near(k1, k2) || near(k, k1) || near(k, k2)) return null;
+  const b1 = yi - k1 * xi, b2 = yi - k2 * xi, b = yi - k * xi;
+  if([b1, b2, b].some(v => !Number.isInteger(v) || Math.abs(v) > 6)) return null;
+  const f = lin(k, b), o1 = lin(k1, b1), o2 = lin(k2, b2);
+  const vis = SH(ptsOn(f, XS)).filter(([x, y]) => Math.abs(x - xi) >= 2 && Math.abs(fval(o1, x) - y) > 0.8 && Math.abs(fval(o2, x) - y) > 0.8);
+  if(!vis.length) return null;
+  const task = { type: "inter", mode: "set", f, beacons: [[xi, yi], vis[0]], hid: [0], olds: [{ f: o1 }, { f: o2 }], goal: T.goalInter(fmt(o1), fmt(o2)) };
+  const [p1, p2] = vis[0][0] < xi ? [vis[0], [xi, yi]] : [[xi, yi], vis[0]];
+  task.why = { body: T.wInter(rhs(o1), rhs(o2), k1, b1, k2, b2, xi, yi) + "<br>" + T.wKb(p1[0], p1[1], p2[0], p2[1], k, b), more: `<p>${T.tipK}</p>` };
+  return finalize(task, [lin(k, b + 1), lin(-k, b), lin(k1, b1 + 2)]);
+}); }
+function genLShift(i){ return tryG(() => {
+  const k0 = P(i >= 3 ? KI.concat(KH) : KI), b0 = R(-4, 4), kind = P(["y", "y", "x", "x", "flip"]), s = P([-3, -2, -1, 1, 2, 3, 4]);
+  let k = k0, b = b0, desc, why;
+  const old = lin(k0, b0);
+  if(kind === "y"){ b = b0 + s; desc = T.shift(0, s); }
+  else if(kind === "x"){ b = b0 - k0 * s; desc = T.shift(s, 0); }
+  else { if(b0 === 0) return null; k = -k0; b = -b0; desc = T.flip; }
+  if(!Number.isInteger(b) || Math.abs(b) > 6) return null;
+  const f = lin(k, b);
+  if(kind === "y") why = T.wShiftY(b0, s, b, k);
+  else if(kind === "x"){ const kc = near(k0, 1) ? "" : near(k0, -1) ? MS : nf(k0); why = T.wShiftX(`y = ${kc}(x ${s > 0 ? MS : "+"} ${Math.abs(s)})${constTxt(b0)} = ${rhs(f)}`, k, b); }
+  else why = T.wFlip(rhs(old), rhs(f));
+  const task = { type: "lshift", mode: "set", f, beacons: [], olds: [{ f: old }], goal: T.goalShift(fmt(old), desc) };
+  if(addHidden(task, 3) < 2) return null;
+  task.why = { body: why, more: `<p>${T.tipShift}</p>` };
+  return finalize(task, kind === "x" ? [lin(k0, b0 + k0 * s), lin(k0, b0 + s), lin(k0, b0 - s)] : kind === "flip" ? [lin(-k0, b0), lin(k0, -b0)] : [lin(k0, b0 - s), old]);
+}); }
+
+/* ---- grafikų skaitymas ---- */
+function mcOpts(task, f, cands){
+  const uniq = []; for(const c of SH(cands)) if(validF(c) && !same(c, f) && !uniq.some(u => same(u, c))) uniq.push(c);
+  if(uniq.length < 3) return false;
+  task.optF = SH([f, ...uniq.slice(0, 3)]); task.right = task.optF.indexOf(f);
+  return true;
 }
-function genMC(i){
-  for(let t = 0; t < 300; t++){
-    const L = lineThrough2(i + 2, true); if(!L) continue;
-    const { k, b } = L, f = { t: "lin", k, b };
-    const cands = [{ t: "lin", k: -k, b }, { t: "lin", k, b: -b }, { t: "lin", k: 1 / k, b }, { t: "lin", k: -1 / k, b }, { t: "lin", k, b: b + P([-2, -1, 1, 2]) }, { t: "lin", k: k + P([-1, 1]), b }]
-      .filter(w => KV.some(v => near(v, w.k)) && Math.abs(w.b) <= 7 && !(near(w.k, k) && near(w.b, b)));
-    const uniq = []; for(const c of SH(cands)) if(!uniq.some(u => near(u.k, c.k) && near(u.b, c.b))) uniq.push(c);
-    if(uniq.length < 3) continue;
-    const opts = SH([f, ...uniq.slice(0, 3)]);
-    const task = { type: "mc", f, beacons: [], opts, right: opts.indexOf(f) };
-    // du gerai matomi taškai su sveikomis koordinatėmis (rodomi kaip švyturiai)
-    task.beacons = [L.p1, L.p2];
-    task.why = { body: T.wKb(L.p1[0], L.p1[1], L.p2[0], L.p2[1], k, b), more: `<p>${T.wMC}</p><p>${T.tipK}</p>` };
-    if(finalize(task, [])) return task;
+function genMC(i){ return tryG(() => {
+  const L = lineThrough2(i + 2, true); if(!L) return null;
+  const { k, b } = L, f = lin(k, b);
+  const task = { type: "mc", mode: "mc", f, beacons: [L.p1, L.p2], goal: T.goalMC };
+  if(!mcOpts(task, f, [lin(-k, b), lin(k, -b), lin(1 / k, b), lin(-1 / k, b), lin(k, b + P([-2, -1, 1, 2])), lin(k + P([-1, 1]), b)])) return null;
+  task.optL = task.optF.map(fmt);
+  task.why = { body: T.wKb(L.p1[0], L.p1[1], L.p2[0], L.p2[1], k, b), more: `<p>${T.wMC}</p><p>${T.tipK}</p>` };
+  return finalize(task, []);
+}, 200); }
+function genParMC(i){ return tryG(() => {
+  const a = P(i < 2 ? [1, -1, 2, -2] : AV), m = R(-4, 4), n = R(-4, 4), f = parab(a, m, n);
+  if(m === 0 && n === 0) return null;
+  const p = SH(ptsOn(f, XS.filter(x => x !== m && Math.abs(x - m) <= 3)))[0]; if(!p) return null;
+  const task = { type: "parMC", mode: "mc", f, beacons: [[m, n], p], goal: T.goalParMC };
+  if(!mcOpts(task, f, [parab(a, -m, n), parab(a, m, -n), parab(-a, m, n), parab(2 * a, m, n), parab(a / 2, m, n), parab(a, n, m)])) return null;
+  task.optL = task.optF.map(fmt);
+  task.why = { body: T.wPar(m, n, p[0], p[1], a), more: `<p>${T.tipMN}</p><p>${T.tipA}</p>` };
+  return finalize(task, []);
+}); }
+function graphsApart(fs){
+  for(let i = 0; i < fs.length; i++) for(let j = i + 1; j < fs.length; j++){
+    let far = 0; for(let x = -6; x <= 6; x += 0.5){ const a = fval(fs[i], x), b = fval(fs[j], x); if((Math.abs(a) <= 6.5 || Math.abs(b) <= 6.5) && Math.abs(a - b) > 1.2) far++; }
+    if(far < 4) return false;
   }
+  return true;
 }
-function genPara(i){
-  for(let t = 0; t < 400; t++){
-    const k = P([-2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 3, -3]), c = R(-4, 4);
-    const xs = SH([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]);
-    for(const x of xs){
-      const y = R(-6, 6), b = y - k * x;
-      if(!Number.isInteger(b) || Math.abs(b) > 6 || b === c || Math.abs(y - (k * x + c)) < 2) continue;
-      const task = { type: "para", f: { t: "lin", k, b }, old: { t: "lin", k, b: c }, beacons: [[x, y]] };
-      const wr = [{ t: "lin", k: -k, b }, { t: "lin", k, b: c }, { t: "lin", k: -1 / k, b: y + x / k }];
-      task.why = { body: T.wPara(k, x, y, b), more: `<p>${T.tipK}</p>` };
-      if(finalize(task, wr)) return task;
-    }
-  }
+function genMCG(i, kind){ return tryG(() => {
+  let f, cands;
+  if(kind === "lin"){ const k = pickK(i + 2), b = P([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]); f = lin(k, b); cands = [lin(-k, b), lin(k, -b), lin(-k, -b), lin(1 / k, b), lin(k, b + P([-3, 3]))]; }
+  else { const a = P(AV), m = P([-3, -2, -1, 1, 2, 3]), n = P([-4, -3, -2, -1, 1, 2, 3, 4]); f = parab(a, m, n); cands = [parab(a, -m, n), parab(-a, m, n), parab(a, m, -n), parab(a, -m, -n)]; }
+  const task = { type: kind === "lin" ? "mcgL" : "mcgP", mode: "mcg", f, beacons: [], goal: T.goalMCG(fmt(f)) };
+  if(!mcOpts(task, f, cands) || !graphsApart(task.optF)) return null;
+  task.optL = ["A", "B", "C", "D"];
+  task.why = { body: kind === "lin" ? T.wMCGL(f.k, f.b) : T.wMCGP(f.a, f.m, f.n), more: `<p>${kind === "lin" ? T.tipK : T.tipA}</p><p>${kind === "lin" ? T.tipB : T.tipMN}</p>` };
+  return finalize(task, []);
+}); }
+function genSign(i, kind){ return tryG(() => {
+  let f, right, why;
+  if(kind === "lin"){ const k = pickK(i), b = P([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]); f = lin(k, b); right = (k > 0 ? 0 : 2) + (b > 0 ? 0 : 1); why = T.wSignL(k, b); }
+  else { const a = P(AV), m = R(-3, 3), n = P([-4, -3, -2, -1, 1, 2, 3, 4]); f = parab(a, m, n); right = (a > 0 ? 0 : 2) + (n > 0 ? 0 : 1); why = T.wSignP(a, n); }
+  const task = { type: kind === "lin" ? "signL" : "signP", mode: "sign", f, beacons: [], optL: kind === "lin" ? T.signL : T.signP, right, goal: kind === "lin" ? T.goalSignL : T.goalSignP };
+  task.why = { body: why, more: `<p>${kind === "lin" ? T.tipK + " " + T.tipB : T.tipA + " " + T.tipMN}</p>` };
+  return finalize(task, []);
+}); }
+
+/* ---- parabolė ---- */
+function genPar(i){ return tryG(() => {
+  const a = i < 2 ? P([1, -1, 2, -2]) : P(AV), m = R(-4, 4), n = R(-5, 5), f = parab(a, m, n);
+  const ds = SH([1, 2, 3, -1, -2, -3]).filter(d => inR(a * d * d + n) && Math.abs(m + d) <= 6);
+  if(!ds.length) return null;
+  const d = ds[0];
+  if(Number.isInteger(a) && Math.abs(d) === 1 && i >= 3) return null;
+  const task = { type: "par", mode: "set", f, beacons: [[m, n], [m + d, a * d * d + n]], goal: T.goalPar };
+  if(!addHidden(task, 1)) return null;
+  task.why = { body: T.wPar(m, n, m + d, a * d * d + n, a), more: `<p>${T.tipMN}</p><p>${T.tipA}</p>` };
+  return finalize(task, [parab(a, -m, n), parab(-a, m, n), parab(a, m, -n), parab(a * 2, m, n)]);
+}); }
+function genPar3(i){ return tryG(() => {
+  const a = P([1, -1, 2, -2, 0.5, -0.5]), m = R(-3, 3), n = R(-5, 5), d = R(1, 3), e = P([1, 2, 3, -1, -2, -3].filter(v => Math.abs(v) !== d));
+  const y1 = a * d * d + n, y3 = a * e * e + n;
+  if(!inR(y1) || !inR(y3) || Math.abs(m - d) > 6 || Math.abs(m + d) > 6 || Math.abs(m + e) > 6) return null;
+  const f = parab(a, m, n), task = { type: "par3", mode: "set", f, beacons: [[m - d, y1], [m + d, y1], [m + e, y3]], goal: T.goalPar3 };
+  task.why = { body: T.wPar3(m - d, m + d, y1, m) + "<br>" + T.wPar3b(m + d, y1, m + e, y3, m, a, n), more: `<p>${T.tipMN}</p><p>${T.tipA}</p>` };
+  return finalize(task, [parab(-a, m, n), parab(a, -m, n), parab(a, m, y1)]);
+}, 1000); }
+function genRoots(i){ return tryG(() => {
+  const a = P(i < 2 ? [1, -1, 2, -2] : AV), m = R(-3, 3), d = R(1, 3), x1 = m - d, x2 = m + d, n = -a * d * d;
+  if(!Number.isInteger(n) || Math.abs(n) > 6 || Math.abs(x1) > 6 || Math.abs(x2) > 6) return null;
+  const f = parab(a, m, n);
+  const third = SH(ptsOn(f, XS.filter(x => x !== x1 && x !== x2 && x !== m))).sort((p, q) => (p[0] === 0 ? 0 : 1) - (q[0] === 0 ? 0 : 1))[0];
+  if(!third) return null;
+  const task = { type: "roots", mode: "set", f, beacons: [[x1, 0], [x2, 0], third], goal: T.goalRoots };
+  task.why = { body: T.wRoots(x1, x2, m) + "<br>" + T.wPar3b(x2, 0, third[0], third[1], m, a, n), more: `<p>${T.tipMN}</p><p>${T.tipA}</p>` };
+  return finalize(task, [parab(a, -m, n), parab(-a, m, n), parab(a, m, -n)]);
+}); }
+function genPTrans(i){ return tryG(() => {
+  const a0 = P([1, -1, 0.5, 2, -2, -0.5]), m0 = R(-2, 2), n0 = R(-3, 3), kind = P(["x", "y", "xy", "xy", "flip", "stretch"]);
+  let a = a0, m = m0, n = n0, dx = 0, dy = 0, desc, why;
+  const old = parab(a0, m0, n0);
+  if(kind === "x" || kind === "xy") dx = P([-3, -2, -1, 1, 2, 3]);
+  if(kind === "y" || kind === "xy") dy = P([-3, -2, -1, 1, 2, 3]);
+  if(kind === "flip"){ if(n0 === 0) return null; a = -a0; n = -n0; desc = T.flip; }
+  else if(kind === "stretch"){ a = 2 * a0; n = 2 * n0; desc = T.stretch; }
+  else { m = m0 + dx; n = n0 + dy; desc = T.shift(dx, dy); }
+  const f = parab(a, m, n);
+  if(!validF(f) || same(f, old)) return null;
+  why = kind === "flip" ? T.wFlip(rhs(old), rhs(f)) + "<br>" + T.wParams(a, m, n) : kind === "stretch" ? T.wStretch(rhs(old), rhs(f)) + "<br>" + T.wParams(a, m, n) : T.wPShift(m0, dx, m, n0, dy, n, a);
+  const task = { type: "ptrans", mode: "set", f, beacons: [], olds: [{ f: old }], goal: T.goalShift(fmt(old), desc) };
+  if(addHidden(task, 3) < 3) return null;
+  task.why = { body: why, more: `<p>${T.tipShift}</p><p>${T.tipMN}</p>` };
+  return finalize(task, [parab(a, m0 - dx, n), parab(a, m, n0 - dy), old, parab(-a, m, n)]);
+}); }
+function fmtStd(a, B, C){
+  let s = `y = ${near(a, 1) ? "" : near(a, -1) ? MS : nf(a)}x²`;
+  if(!near(B, 0)) s += ` ${B < 0 ? MS : "+"} ${near(Math.abs(B), 1) ? "" : nf(Math.abs(B))}x`;
+  return s + constTxt(C);
 }
-function genPar(i){
-  for(let t = 0; t < 500; t++){
-    const a = i < 2 ? P([1, -1, 2, -2]) : P(AV), m = R(-4, 4), n = R(-5, 5);
-    const ds = SH([1, 2, 3, -1, -2, -3]).filter(d => { const y = a * d * d + n; return inR(y) && Math.abs(m + d) <= 6; });
-    if(!ds.length) continue;
-    const d = ds[0];
-    if(Number.isInteger(a) && Math.abs(d) === 1 && i >= 3) continue;   // vėliau – sunkesni taškai
-    const f = { t: "par", a, m, n }, beacons = [[m, n], [m + d, a * d * d + n]];
-    if(i < 2 && inR(a * d * d + n) && Math.abs(m - d) <= 6) beacons.push([m - d, a * d * d + n]);
-    const task = { type: "par", f, beacons };
-    const wr = [{ t: "par", a, m: -m, n }, { t: "par", a: -a, m, n }, { t: "par", a, m, n: -n }, { t: "par", a: a * 2, m, n }];
-    task.why = { body: T.wPar(m, n, m + d, a * d * d + n, a), more: `<p>${T.tipMN}</p><p>${T.tipA}</p>` };
-    if(finalize(task, wr.filter(w => !(near(w.a, a) && near(w.m, m) && near(w.n, n))))) return task;
-  }
-}
-function genPar3(i){
-  for(let t = 0; t < 800; t++){
-    const a = P([1, -1, 2, -2, 0.5, -0.5]), m = R(-3, 3), n = R(-5, 5), d = R(1, 3), e = P([1, 2, 3, -1, -2, -3].filter(v => Math.abs(v) !== d));
-    const y1 = a * d * d + n, y3 = a * e * e + n;
-    if(!inR(y1) || !inR(y3) || Math.abs(m - d) > 6 || Math.abs(m + d) > 6 || Math.abs(m + e) > 6) continue;
-    const f = { t: "par", a, m, n }, beacons = [[m - d, y1], [m + d, y1], [m + e, y3]];
-    const task = { type: "par3", f, beacons };
-    const wr = [{ t: "par", a: -a, m, n }, { t: "par", a, m: -m, n }, { t: "par", a, m, n: y1 }];
-    task.why = { body: T.wPar3(m - d, m + d, y1, m) + "<br>" + T.wPar3b(m + d, y1, m + e, y3, m, a, n), more: `<p>${T.tipMN}</p><p>${T.tipA}</p>` };
-    if(finalize(task, wr)) return task;
-  }
-}
-const LV = [
-  () => Array.from({ length: 8 }, (_, i) => genK(i)),
-  () => Array.from({ length: 8 }, (_, i) => i < 6 ? genKB(i) : genPara(i)),
-  () => Array.from({ length: 8 }, (_, i) => genMC(i)),
-  () => Array.from({ length: 8 }, (_, i) => i < 6 ? genPar(i) : genPar3(i)),
-  () => SH([genKB(4), genKB(5), genPara(4), genMC(4), genMC(5), genK(5), genPar(3), genPar(4), genPar3(5), P([genKB, genPar])(5)])
+function genPStd(i){ return tryG(() => {
+  const a = P(i < 2 ? [1, -1] : [1, -1, 2, -2]), m = P([-3, -2, -1, 1, 2, 3]), n = R(-5, 5), B = -2 * a * m, Cc = a * m * m + n;
+  const f = parab(a, m, n), task = { type: "pstd", mode: "set", f, beacons: [], goal: T.goalStd(fmtStd(a, B, Cc)) };
+  if(addHidden(task, 3) < 3) return null;
+  task.why = { body: T.wStd(a, B, m, n), more: `<p>${T.tipStd}</p><p>${T.tipMN}</p>` };
+  return finalize(task, [parab(a, -m, n), parab(a, m, Cc), parab(a, m, -n)]);
+}); }
+
+const TYPES = {
+  k: genK, kpt: genKpt, table: genTable, word: genWord,
+  kb: genKB, axes: genAxes, para: genPara, inter: genInter, lshift: genLShift,
+  signL: i => genSign(i, "lin"), mc: genMC, mcgL: i => genMCG(i, "lin"), parMC: genParMC, signP: i => genSign(i, "par"), mcgP: i => genMCG(i, "par"),
+  par: genPar, roots: genRoots, ptrans: genPTrans, pstd: genPStd, par3: genPar3
+};
+const LVT = [
+  ["k", "kpt", "table", "word", "k", "kpt", "table", "word"],
+  ["kb", "axes", "para", "inter", "lshift", "kb", "axes", "para", "inter", "lshift"],
+  ["signL", "mc", "mcgL", "parMC", "signP", "mcgP", "mc", "parMC"],
+  ["par", "roots", "ptrans", "pstd", "par3", "par", "roots", "ptrans", "pstd", "par3"]
 ];
+function genRound(L){
+  const list = L < 4 ? LVT[L].map((t, i) => [t, i]) : SH(Object.keys(TYPES).filter(t => !["k", "signL", "signP"].includes(t))).slice(0, 10).map(t => [t, R(4, 7)]);
+  return list.map(([t, i]) => TYPES[t](i));
+}
+const LV = [0, 1, 2, 3, 4].map(L => () => genRound(L));
 const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: lvlArt(i) }));
 
 /* ================= piešiniai ================= */
@@ -300,8 +472,17 @@ function planeSvg(task, opts){
     s += `<text x="${X(v)}" y="${Y(0) + 14}" text-anchor="middle" font-size="10" font-weight="700" fill="#6a7088">${v < 0 ? MS + -v : v}</text>`;
     s += `<text x="${X(0) - 5}" y="${Y(v) + 3.5}" text-anchor="end" font-size="10" font-weight="700" fill="#6a7088">${v < 0 ? MS + -v : v}</text>`; }
   s += `<text x="${X(0) - 5}" y="${Y(0) + 14}" text-anchor="end" font-size="10" font-weight="700" fill="#6a7088">0</text>`;
-  if(task.old) s += `<path d="${pathD(task.old)}" fill="none" stroke="#9aa3b8" stroke-width="2.6" stroke-dasharray="7 6"/><text x="${X(-6.6)}" y="${Math.max(14, Math.min(SZ - 6, Y(fval(task.old, -6.6)) - 8))}" font-size="10.5" font-weight="800" fill="#7b8399">${T.oldRoute}</text>`;
-  if(opts.show) s += `<path d="${pathD(opts.show)}" fill="none" stroke="#5b4ce0" stroke-width="3" stroke-linecap="round"/>`;
+  const used = [];
+  (task.olds || []).forEach((o, j) => {
+    s += `<path d="${pathD(o.f)}" fill="none" stroke="${OC[j]}" stroke-width="2.6" stroke-dasharray="7 6"/>`;
+    if(task.olds.length > 1) return;   // kelios senosios trasos – lygtys rodomos legendoje virš plokštumos
+    const lp = labelPos(o.f, j ? 1 : -1, used, 5.2); if(!lp) return; used.push(lp);
+    const [x, y] = lp, anc = x < 0 ? "start" : "end";
+    s += `<text x="${X(x)}" y="${Y(y) + (y > 4.5 ? 18 : -9)}" text-anchor="${anc}" font-size="11" font-weight="800" fill="#6b7390" paint-order="stroke" stroke="#f7f8ff" stroke-width="4">${MK.esc(fmt(o.f))}</text>`;
+  });
+  (opts.show || []).forEach(g => { s += `<path d="${pathD(g.f)}" fill="none" stroke="${g.col}" stroke-width="${g.lab ? 2.6 : 3}" stroke-linecap="round"/>`; });
+  (opts.show || []).forEach((g, j) => { if(!g.lab) return; const lp = labelPos(g.f, j % 2 ? 1 : -1, used, 5.4, opts.show.map(h => h.f)); if(!lp) return; used.push(lp);
+    s += `<g><circle cx="${X(lp[0])}" cy="${Y(lp[1])}" r="10.5" fill="#fff" stroke="${g.col}" stroke-width="2.6"/><text x="${X(lp[0])}" y="${Y(lp[1]) + 4.5}" text-anchor="middle" font-size="13" font-weight="800" fill="${g.col}">${g.lab}</text></g>`; });
   s += `<g id="ghosts"></g>`;
   task.ast.forEach(([x, y], j) => s += asteroid(x, y, j));
   task.beacons.forEach(([x, y], j) => {
@@ -312,12 +493,24 @@ function planeSvg(task, opts){
       else if(nb[0] < x && x < 4.5){ lx = X(x) + 10; anc = "start"; ly = Y(y) + 4; }
       else ly = Y(y) + 20;
     }
-    s += `<g class="bc" id="bc${j}"><circle class="ring" cx="${X(x)}" cy="${Y(y)}" r="10" fill="#ffd84a" opacity=".55"/><circle class="core" cx="${X(x)}" cy="${Y(y)}" r="6.5" fill="#ffd84a" stroke="${K}" stroke-width="1.8"/>
+    s += `<g class="bc${(task.hid || []).includes(j) ? " hid" : ""}" id="bc${j}"><circle class="ring" cx="${X(x)}" cy="${Y(y)}" r="10" fill="#ffd84a" opacity=".55"/><circle class="core" cx="${X(x)}" cy="${Y(y)}" r="6.5" fill="#ffd84a" stroke="${K}" stroke-width="1.8"/>
       <text x="${lx}" y="${ly}" text-anchor="${anc}" font-size="11" font-weight="800" fill="${K}" paint-order="stroke" stroke="#f7f8ff" stroke-width="3.5">${pt(x, y)}</text></g>`;
   });
   s += `<path id="trail" d="" fill="none" stroke="#5b4ce0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`;
   s += `<g id="probe" transform="translate(-40 -40)">${rocket()}</g><g id="fxl"></g>`;
   return `<svg viewBox="0 0 ${SZ} ${SZ}" role="img" aria-label="Koordinačių plokštuma" font-family="Manrope,system-ui,sans-serif">${s}</svg>`;
+}
+/* vieta užrašui ant grafiko: nuo pasirinkto krašto į vidų, toli nuo kitų užrašų ir kitų grafikų */
+function labelPos(f, side, used, lim, others){
+  const xs = []; for(let x = 6.2; x >= 0.4; x -= 0.3) xs.push(side * x); for(let x = 0.4; x <= 6.2; x += 0.3) xs.push(-side * x);
+  for(const x of xs){
+    const y = fval(f, x); if(Math.abs(y) > lim) continue;
+    if(used.some(([a, b]) => Math.hypot(a - x, b - y) < 2.2)) continue;
+    if(others && others.some(g => g !== f && Math.abs(fval(g, x) - y) < 1.1)) continue;
+    if(Math.abs(x) < 0.7 || Math.abs(y) < 0.6) continue;
+    return [x, y];
+  }
+  return null;
 }
 function pathD(f, upto){
   let d = "", pen = false;
@@ -412,29 +605,34 @@ function start(i){
 }
 function award(n){ pts += n; const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); }
 const PDEF = { k: { v: KV, d: 1 }, b: { v: BV, d: 0 }, a: { v: AV, d: 1 }, m: { v: MV, d: 0 }, n: { v: MV, d: 0 } };
-function curF(){ return cur.f.t === "par" ? { t: "par", a: par.a, m: par.m, n: par.n } : { t: "lin", k: par.k, b: cur.fix ? cur.fix.b : par.b }; }
+const fixed = k => cur.fix && cur.fix[k] != null;
+const pv = k => fixed(k) ? cur.fix[k] : par[k];
+function curF(){ return cur.f.t === "par" ? { t: "par", a: pv("a"), m: pv("m"), n: pv("n") } : { t: "lin", k: pv("k"), b: pv("b") }; }
+const GC = ["#5b4ce0", "#e8604b", "#1f9d55", "#d98a00"];
+const legendHtml = olds => olds.length > 1 ? `<div class="lgd">${olds.map((o, j) => `<span><i style="border-color:${OC[j]}"></i>${MK.esc(fmt(o.f))}</span>`).join("")}</div>` : "";
+const tableHtml = tb => `<table class="vt"><tr><th>x</th>${tb.map(([x]) => `<td>${nf(x)}</td>`).join("")}</tr><tr><th>y</th>${tb.map(([, y]) => `<td>${nf(y)}</td>`).join("")}</tr></table>`;
 function show(){
   cur = tasks[ti]; dots.cur(ti); tries = 0; busy = false; done = false;
   window.scrollTo({ top: 0 });
-  const goal = cur.type === "k" ? T.goalK(cur.fix.b) : cur.type === "kb" ? T.goalLine : cur.type === "para" ? T.goalPara(fmt(cur.old)) : cur.type === "mc" ? T.goalMC : cur.type === "par3" ? T.goalPar + " " + T.goalPar3 : T.goalPar;
-  if(cur.type === "mc"){
-    stage.innerHTML = `<div class="card fade"><p class="goal">${goal}</p><div class="planew" id="pw">${planeSvg(cur, { show: cur.f })}</div>
-      <div class="ans" id="ans">${cur.opts.map((o, i) => `<button type="button" class="a" data-i="${i}">${fmt(o)}</button>`).join("")}</div><p class="note" id="note" role="status" aria-live="polite"></p></div><div id="flow"></div>`;
+  const head = `<p class="goal">${cur.goal}</p>${cur.table ? tableHtml(cur.table) : ""}${legendHtml(cur.olds)}`;
+  if(cur.mode !== "set"){
+    const showL = cur.mode === "mcg" ? cur.optF.map((f, i) => ({ f, col: GC[i], lab: cur.optL[i] })) : [{ f: cur.f, col: "#5b4ce0" }];
+    stage.innerHTML = `<div class="card fade">${head}<div class="planew" id="pw">${planeSvg(cur, { show: showL })}</div>
+      <div class="ans${cur.mode === "mcg" ? " let" : cur.mode === "sign" ? " sign" : ""}" id="ans">${cur.optL.map((o, i) => `<button type="button" class="a" data-i="${i}"${cur.mode === "mcg" ? ` style="color:${GC[i]}"` : ""}>${o}</button>`).join("")}</div><p class="note" id="note" role="status" aria-live="polite"></p></div><div id="flow"></div>`;
     $("ans").onclick = e => { const b = e.target.closest(".a"); if(b) answerMC(+b.dataset.i, b); };
     return;
   }
   const keys = cur.f.t === "par" ? ["a", "m", "n"] : ["k", "b"];
-  par = {}; keys.forEach(k => par[k] = PDEF[k].d);
-  if(cur.fix) par.b = cur.fix.b;
-  stage.innerHTML = `<div class="card fade"><p class="goal">${goal}</p><div class="planew" id="pw">${planeSvg(cur)}</div>
+  par = {}; keys.forEach(k => par[k] = fixed(k) ? cur.fix[k] : PDEF[k].d);
+  stage.innerHTML = `<div class="card fade">${head}<div class="planew" id="pw">${planeSvg(cur)}</div>
     <div class="eq" id="eq"></div>
-    <div class="prm" id="prm">${keys.map(k => `<div class="pr${cur.fix && k === "b" ? " fix" : ""}" data-k="${k}"><b>${k}</b><button type="button" data-d="-1" aria-label="${k} −"${cur.fix && k === "b" ? " disabled" : ""}>−</button><output id="o_${k}"></output><button type="button" data-d="1" aria-label="${k} +"${cur.fix && k === "b" ? " disabled" : ""}>+</button></div>`).join("")}</div>
+    <div class="prm" id="prm">${keys.map(k => `<div class="pr${fixed(k) ? " fix" : ""}" data-k="${k}"><b>${k}</b><button type="button" data-d="-1" aria-label="${k} −"${fixed(k) ? " disabled" : ""}>−</button><output id="o_${k}"></output><button type="button" data-d="1" aria-label="${k} +"${fixed(k) ? " disabled" : ""}>+</button></div>`).join("")}</div>
     <p class="note" id="note" role="status" aria-live="polite"></p>
     <button type="button" class="mk-btn bigbtn" id="go">${T.launch}</button><span class="trs" id="trs">${T.tries(3)}</span></div><div id="flow"></div>`;
   upd();
   $("prm").onclick = e => {
     const b = e.target.closest("button[data-d]"); if(!b || busy || done) return;
-    const k = b.closest(".pr").dataset.k; if(cur.fix && k === "b") return;
+    const k = b.closest(".pr").dataset.k; if(fixed(k)) return;
     const vs = PDEF[k].v, j = vs.findIndex(v => near(v, par[k])), nj = Math.max(0, Math.min(vs.length - 1, j + +b.dataset.d));
     par[k] = vs[nj]; MK.unlock(); MK.sfx.tap(); upd();
   };
@@ -443,7 +641,7 @@ function show(){
 function upd(){
   Object.keys(par).forEach(k => { const o = $("o_" + k); if(o) o.textContent = nf(par[k]); });
   $("eq").innerHTML = MK.esc(fmt(curF()));
-  $("prm").querySelectorAll(".pr").forEach(r => { const k = r.dataset.k; if(cur.fix && k === "b") return; const vs = PDEF[k].v, j = vs.findIndex(v => near(v, par[k])); const [m, p] = r.querySelectorAll("button"); m.disabled = j <= 0; p.disabled = j >= vs.length - 1; });
+  $("prm").querySelectorAll(".pr").forEach(r => { const k = r.dataset.k; if(fixed(k)) return; const vs = PDEF[k].v, j = vs.findIndex(v => near(v, par[k])); const [m, p] = r.querySelectorAll("button"); m.disabled = j <= 0; p.disabled = j >= vs.length - 1; });
 }
 function note(t, c){ const n = $("note"); n.className = "note" + (c ? " " + c : ""); n.innerHTML = t; }
 async function animateFly(f, res){
@@ -487,7 +685,7 @@ async function launch(){
     $("ghosts").insertAdjacentHTML("beforeend", `<path d="${pathD(f, res.crash ? res.crash.x : null)}" fill="none" stroke="#e8604b" stroke-width="2" stroke-dasharray="5 5" opacity=".7"/>`);
     $("trail").setAttribute("d", "");
     const miss = cur.beacons.map((b, j) => j).filter(j => !res.got.has(j)).sort((a, b) => cur.beacons[a][0] - cur.beacons[b][0])[0];
-    const msg = res.crash ? T.res.crash : T.res.miss(pt(...cur.beacons[miss]));
+    const msg = res.crash ? T.res.crash : cur.hid.includes(miss) ? T.res.missHid : T.res.miss(pt(...cur.beacons[miss]));
     MK.sfx.bad();
     if(tries >= 3){
       done = true; note(msg + " " + T.res.last, "warn"); dots.mark(ti, false);
@@ -499,6 +697,7 @@ async function launch(){
 function finishTask(ok){
   $("go") && ($("go").hidden = true); $("trs") && ($("trs").hidden = true);
   $("prm") && $("prm").querySelectorAll("button").forEach(b => b.disabled = true);
+  document.querySelectorAll(".bc.hid").forEach(b => b.classList.add("show"));
   whyNext(ok);
 }
 function whyNext(ok){
@@ -514,9 +713,10 @@ async function answerMC(i, btn){
   ans.classList.add("done"); MK.unlock();
   const ok = i === cur.right;
   btn.classList.add(ok ? "ok" : "no"); if(!ok) ans.children[cur.right].classList.add("ok");
-  if(!ok) $("ghosts").insertAdjacentHTML("beforeend", `<path d="${pathD(cur.opts[i])}" fill="none" stroke="#e8604b" stroke-width="2.4" stroke-dasharray="6 5"/>`);
+  if(!ok && cur.mode === "mc") $("ghosts").insertAdjacentHTML("beforeend", `<path d="${pathD(cur.optF[i])}" fill="none" stroke="#e8604b" stroke-width="2.4" stroke-dasharray="6 5"/>`);
   dots.mark(ti, ok);
-  if(ok){ okN++; lit++; award(10); MK.sfx.good(); note(T.res.ok, "good"); } else MK.sfx.bad();
+  if(ok){ okN++; lit++; award(10); MK.sfx.good(); note(P(T.ok), "good"); } else MK.sfx.bad();
+  if(cur.mode === "mcg"){ $("trail").setAttribute("stroke", GC[cur.right]); $("trail").setAttribute("stroke-width", "5"); }
   const res = fly(cur.f, cur); MK.sfx.whoosh(); await animateFly(cur.f, res);
   whyNext(ok);
 }
@@ -528,7 +728,7 @@ function finish(){
     next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(fresh) });
 }
 Object.defineProperty(window, "__cur", { get: () => cur });
-window.__MK_TEST = { LV, fly, fval, fmt, genK, genKB, genMC, genPara, genPar, genPar3, setPar(o){ Object.assign(par, o); upd(); }, launch };
+window.__MK_TEST = { LV, TYPES, fly, fval, fmt, unique, validF, setPar(o){ Object.assign(par, o); upd(); }, launch, showTask(t){ tasks[ti] = t; show(); } };
 showMenu();
 })();
 </script>
