@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Literatūros kartoteka – MokomėsKartu.lt</title>
+<meta name="description" content="Lietuvių literatūros žaidimas 11–12 klasėms ir VBE: 16 kortelių, 4 paslėpti ryšiai – autoriai, laikotarpiai, žanrai ir sąvokos pagal Bendrąją programą.">
+<meta name="theme-color" content="#f6f1e6">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<style>
+/* Literatūros kartoteka: bibliotekos katalogo kortelės. 16 kortelių → 4 stalčiai po 4 (populiari „ryšių“ dėlionės mechanika). */
+body{--paper:#f6f1e6;--grid:#ebe1cc;--soft:#5a5246;--kid:"Fraunces",Georgia,"Times New Roman",serif;--ac:#8e2a3b;--ac-ink:#fff;--ac-soft:#f6dfe2;--wood:#8a5a36;--card-p:#fffaf0;
+  --c0:#f1c04f;--c1:#86c79f;--c2:#86aee6;--c3:#c9a1e4}
+.mk-ico[data-k="music"]{display:none}
+.mk-lvl{border-radius:14px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink)}
+.mk-lvl-art{border-radius:10px;background:#f3e6cf}
+.mk-lvl-art svg{width:52px;height:52px}
+.mk-lvl-t b{font-size:19px;letter-spacing:-.01em}
+.mk-lvl-t small{font-size:13.5px}
+.mk-hero h1{font-size:clamp(32px,8.4vw,52px);letter-spacing:-.02em}
+.mk-hero p{max-width:44ch}
+.mk-hero-art{width:min(460px,100%)}
+.mk-btn{border-radius:12px;font-size:18px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res h2{font-size:25px}
+.mk-sec{font-size:18px}
+.hero-card{background:#fff;border-radius:18px;padding:6px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.hero-card svg{display:block;width:100%;height:auto;border-radius:12px}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+
+/* biblioteka */
+.lib{max-width:520px;margin:0 auto}
+.libbox{background:#fff;border-radius:12px;padding:10px 10px 12px;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.shelf{border-radius:8px}
+.shelf summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:8px;padding:6px 4px 0}
+.shelf summary::-webkit-details-marker{display:none}
+.shelf .sname{font:800 13px/1.2 var(--body);color:var(--ink)}
+.shelf .scount{font:800 12px/1.2 var(--body);color:var(--soft)}
+.shelf svg{grid-column:1/-1;display:block;width:100%;height:auto}
+.shelf ul{margin:6px 4px 8px;padding-left:18px;font:600 13.5px/1.45 var(--body)}
+.shelf p{margin:6px 4px 8px;font:600 13px/1.4 var(--body);color:var(--soft)}
+.ltext{margin:10px 0 0;font:700 14px/1.4 var(--body);color:var(--soft)}
+.lbar{height:10px;border-radius:6px;background:#efe6d2;box-shadow:inset 0 0 0 2px var(--ink);margin:8px 0 2px;overflow:hidden}
+.lbar i{display:block;height:100%;background:var(--ac)}
+
+/* žaidimas */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;background:#fff;font:800 17px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink)}
+.chip small{font:800 11px/1 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.card{background:#fff;border-radius:14px;padding:12px 10px 14px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.chead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.chead small{display:block;font:800 12px/1.25 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--ac)}
+.chead .task{font:700 14px/1.35 var(--body);margin-top:3px;color:var(--ink)}
+.drops{display:flex;gap:4px;flex:none;align-items:center}
+.drops svg{width:18px;height:24px;display:block}
+.drops .lost{opacity:.22}
+.drops small{margin-right:3px;letter-spacing:.04em}
+.rows{display:grid;gap:6px;margin-top:10px}
+.row{border-radius:10px;padding:8px 10px;box-shadow:inset 0 0 0 2.5px var(--ink);text-align:center;animation:mkPop .4s cubic-bezier(.2,1.5,.4,1)}
+.row b{display:block;font:900 15px/1.2 var(--kid)}
+.row span{display:block;font:700 12.5px/1.35 var(--body);margin-top:2px}
+.row.rev{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.55) 0 6px,transparent 6px 12px)}
+.row .tag{display:inline-block;font:800 10px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:5px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink);margin-left:6px;vertical-align:2px}
+.hints{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.hints span{font:800 12px/1.2 var(--body);padding:5px 8px;border-radius:8px;background:#fff6dc;box-shadow:inset 0 0 0 2px #d9b65a}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px}
+.t{position:relative;min-height:74px;padding:12px 4px 12px;border:0;border-radius:8px;cursor:pointer;background:var(--card-p);color:var(--ink);
+  box-shadow:inset 0 0 0 2px var(--ink),0 3px 0 var(--ink);display:grid;place-items:center;align-content:center;gap:3px;text-align:center;
+  touch-action:manipulation;transition:transform .1s,background .1s;overflow:hidden}
+.t::before{content:"";position:absolute;left:6px;right:6px;top:7px;height:2px;background:#e48a95;border-radius:1px}
+.t::after{content:"";position:absolute;left:50%;bottom:4px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--paper);box-shadow:inset 0 0 0 1.5px #b9a98c}
+.t b{display:block;font:800 13.5px/1.18 var(--body);font-size:calc(var(--fs) * 1px);max-width:100%;word-break:normal;overflow-wrap:normal}
+.t small{display:block;font:700 10px/1.15 var(--body);color:var(--soft);max-width:100%;overflow-wrap:break-word}
+.t.au b{font-family:var(--kid);font-weight:700;font-style:italic}
+.t.tm b{font-family:var(--kid);font-weight:700}
+.t.sel{background:var(--ink);color:#fff;transform:translateY(-2px);box-shadow:inset 0 0 0 2px var(--ink),0 5px 0 #4a4031}
+.t.sel small{color:#e8dfcd}
+.t.sel::before{background:#ff9fab}
+.t:disabled{cursor:default}
+.t.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.t.mk-shake{animation:mkShake .45s}
+.acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:12px}
+.acts .mk-btn{min-height:44px;padding:8px 6px;font:800 14px/1.1 var(--body)}
+.go{width:100%;margin-top:10px}
+.mk-why-m p{margin:3px 0}
+.mk-why-m i{font-style:normal;color:var(--soft)}
+.legend{margin:8px 0 0;font:700 12.5px/1.3 var(--body);color:var(--soft);text-align:center}
+@media (max-width:370px){.t{min-height:70px;padding:12px 3px}.grid{gap:5px}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1 id="h1"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div id="levels"></div>
+    <div class="lib" id="lib"></div>
+    <div id="learn"></div>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><span class="chip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="board"></div>
+    <div id="why"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "literaturos-kartoteka", GRADES = [11, 12], PUZ = 3, MAXM = 4, INK = "#121a33";
+const T = window.MK_T, SH = MK.shuffle;
+const $ = id => document.getElementById(id);
+const COLS = ["var(--c0)", "var(--c1)", "var(--c2)", "var(--c3)"];
+
+/* ---------- duomenys → kortelės ---------- */
+const A = T.authors;
+const TILES = [];
+T.works.forEach((w, i) => TILES.push({ id: "w" + i, kind: "w", label: w[0], a: w[1], p: w[2], g: w[3], bp: w[4] }));
+Object.keys(A).forEach(k => { if(A[k][2].length) TILES.push({ id: "a:" + k, kind: "a", label: A[k][0], a: k, ps: A[k][2] }); });
+T.terms.forEach((t, i) => TILES.push({ id: "t" + i, kind: "t", label: t[0], tg: t[1], def: t[2] }));
+const PER = ["rom", "real", "mod1", "kat", "mod2", "siuol"], GEN = ["rom", "apy", "dra", "poe", "eil", "pr", "ap"], TG = Object.keys(T.termGroups);
+
+/* Kategorija: { id, fam, name, test(tile) → true | false | null (neaišku – tokia kortelė su šia kategorija nenaudojama) } */
+function catAuthor(k){ return { id: "au:" + k, fam: "au", name: T.catAuthor(A[k][0]), why: T.catAuthorWhy(A[k][0]), test: t => t.kind === "w" ? t.a === k : false }; }
+function catPeriod(p){ return { id: "pe:" + p, fam: "pe", name: T.periods[p], why: T.catPeriodWhy(T.periods[p]),
+  test: t => t.kind === "w" ? (t.p === p ? true : t.p == null ? null : false) : t.kind === "a" ? t.ps.some(x => x[0] === p) : false }; }
+function catGenre(g){ return { id: "ge:" + g, fam: "ge", name: T.genreNames[g], why: T.genreWhy[g],
+  test: t => t.kind !== "w" ? false : t.g == null ? null : g === "ap" ? (t.g === "aps" || t.g === "nov") : t.g === g }; }
+function catTerm(k){ return { id: "tm:" + k, fam: "tm:" + k, name: T.termGroups[k][0], why: T.termGroups[k][1], test: t => t.kind === "t" ? t.tg.includes(k) : false }; }
+const CATS = {};
+Object.keys(A).forEach(k => CATS["au:" + k] = catAuthor(k));
+PER.forEach(p => CATS["pe:" + p] = catPeriod(p));
+GEN.forEach(g => CATS["ge:" + g] = catGenre(g));
+TG.forEach(k => CATS["tm:" + k] = catTerm(k));
+
+const POOLS = [
+  T.authorSets.l1.map(k => "au:" + k),
+  T.authorSets.l2.map(k => "au:" + k),
+  PER.map(p => "pe:" + p),
+  GEN.map(g => "ge:" + g),
+  TG.map(k => "tm:" + k),
+  [].concat(T.authorSets.l1, T.authorSets.l2).filter((k, i, a) => a.indexOf(k) === i).map(k => "au:" + k).concat(PER.map(p => "pe:" + p), GEN.map(g => "ge:" + g), TG.map(k => "tm:" + k))
+];
+/* VBE treniruotėje neleidžiama painiavos tarp panašių stalčių tipų */
+function mixOk(ids){
+  const f = ids.map(i => i.split(":")[0]);
+  if(f.includes("ge") && ids.some(i => ["tm:lyr", "tm:epi", "tm:dra"].includes(i))) return false;
+  if(f.includes("pe") && ids.includes("tm:sro")) return false;
+  const fams = new Set(f); if(fams.size < 3) return false;
+  return ["au", "pe", "ge", "tm"].every(x => f.filter(y => y === x).length <= 2);
+}
+
+/* ---------- dėlionės generavimas ---------- */
+const seenAll = () => MK.get("mk-" + GAME + "-matyta", {});
+function buildPuzzle(li, avoid){
+  const seen = new Set((seenAll()["l" + li] || []).concat(avoid || []));
+  for(let tries = 0; tries < 600; tries++){
+    let ids = SH(POOLS[li]).slice(0, 4);
+    if(li === 5 && !mixOk(ids)) continue;
+    const cats = ids.map(i => CATS[i]), groups = [];
+    let ok = true;
+    for(let ci = 0; ci < 4 && ok; ci++){
+      const c = cats[ci];
+      let cand = TILES.filter(t => {
+        let yes = 0, bad = false;
+        cats.forEach((d, di) => { const r = d.test(t); if(r === null) bad = true; else if(r){ yes++; if(di !== ci) bad = true; } });
+        return !bad && yes === 1 && c.test(t) === true;
+      });
+      if(cand.length < 4){ ok = false; break; }
+      /* laikotarpių lygyje – maišyti kūrinius ir autorius */
+      let pick;
+      const fresh = SH(cand.filter(t => !seen.has(t.id))), old = SH(cand.filter(t => seen.has(t.id)));
+      if(c.fam === "pe"){
+        const au = fresh.filter(t => t.kind === "a").concat(old.filter(t => t.kind === "a")), wk = fresh.filter(t => t.kind === "w").concat(old.filter(t => t.kind === "w"));
+        const nA = Math.min(au.length, wk.length >= 3 ? MK.rnd(1, 2) : 4 - wk.length);
+        pick = au.slice(0, nA).concat(wk.slice(0, 4 - nA));
+        if(pick.length < 4) pick = pick.concat(SH(cand.filter(t => !pick.includes(t))).slice(0, 4 - pick.length));
+      } else pick = fresh.concat(old).slice(0, 4);
+      groups.push({ cat: c, tiles: pick });
+    }
+    if(!ok) continue;
+    const all = groups.flatMap(g => g.tiles);
+    if(new Set(all.map(t => t.label.toLowerCase())).size !== 16) continue;
+    if(countPartitions(all, li === 5 ? CAT_LIST : POOLS[li].map(i => CATS[i])) !== 1) continue;
+    const showAu = !ids.some(i => i.startsWith("au:"));
+    return { groups, showAu, sig: ids.slice().sort().join("|") };
+  }
+  return null;
+}
+/* Teisingas suskirstymas turi būti vienintelis: ieškoma visų būdų sudėti 16 kortelių į 4 grupes,
+   kurių kiekvieną jungia bet kuri to lygio kategorija (lygio pavadinimas pasako ryšio tipą);
+   VBE treniruotėje – bet kuri visų lygių kategorija. */
+const CAT_LIST = Object.values(CATS);
+function countPartitions(tiles, list){
+  const quads = new Set();
+  list.forEach(c => {
+    const m = []; tiles.forEach((t, i) => { if(c.test(t) === true) m.push(i); });
+    if(m.length < 4) return;
+    for(let a = 0; a < m.length; a++) for(let b = a + 1; b < m.length; b++) for(let d = b + 1; d < m.length; d++) for(let e = d + 1; e < m.length; e++)
+      quads.add((1 << m[a]) | (1 << m[b]) | (1 << m[d]) | (1 << m[e]));
+  });
+  const Q = [...quads]; let n = 0;
+  (function rec(used, k){
+    if(n > 1) return;
+    if(used === 0xFFFF){ n++; return; }
+    let low = 0; while(used & (1 << low)) low++;
+    for(const q of Q) if((q & (1 << low)) && !(q & used)) rec(used | q, k + 1);
+  })(0, 0);
+  return n;
+}
+function rememberSeen(li, puz){
+  const all = seenAll(), k = "l" + li;
+  all[k] = (all[k] || []).concat(puz.groups.flatMap(g => g.tiles.map(t => t.id))).slice(-120);
+  MK.set("mk-" + GAME + "-matyta", all);
+}
+
+/* ---------- piešiniai ---------- */
+function heroSvg(){
+  const drawer = (x, y, c) => `<rect x="${x}" y="${y}" width="40" height="26" rx="3" fill="#b07a4c" stroke="${INK}" stroke-width="2.2"/><rect x="${x + 11}" y="${y + 5}" width="18" height="8" rx="1.5" fill="${c}" stroke="${INK}" stroke-width="1.6"/><path d="M${x + 15} ${y + 19}h10" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
+  const cols = ["#f1c04f", "#86c79f", "#86aee6", "#c9a1e4"];
+  let dr = "";
+  for(let r = 0; r < 3; r++) for(let c = 0; c < 4; c++) dr += drawer(186 + c * 42, 78 + r * 29, cols[(r + c) % 4]);
+  const spines = [["#8e2a3b", 14, 30], ["#2f6b5a", 11, 26], ["#c58a2a", 13, 32], ["#3d5a99", 10, 24], ["#6b3f7a", 14, 29], ["#a8442f", 12, 31], ["#2b6f8a", 11, 27], ["#7a5a2a", 13, 30]];
+  let x = 18, sp = "";
+  spines.forEach(s => { sp += `<rect x="${x}" y="${52 - s[2]}" width="${s[1]}" height="${s[2]}" rx="1.5" fill="${s[0]}" stroke="${INK}" stroke-width="1.8"/><path d="M${x + 3} ${52 - s[2] + 6}h${s[1] - 6}" stroke="#fff" stroke-width="1.6" opacity=".7"/>`; x += s[1] + 1; });
+  x = 18; let sp2 = "";
+  spines.slice().reverse().forEach(s => { sp2 += `<rect x="${x}" y="${100 - s[2] + 2}" width="${s[1]}" height="${s[2] - 2}" rx="1.5" fill="${s[0]}" stroke="${INK}" stroke-width="1.8"/>`; x += s[1] + 2; });
+  return `<svg viewBox="0 0 360 214" role="img" aria-label="Archyvarė stovi prie katalogo spintos su spalvotais stalčiais ir laiko katalogo kortelę">
+  <rect width="360" height="214" fill="#efe3cc"/>
+  <path d="M0 168h360v46H0z" fill="#c9a77e"/><path d="M0 168h360" stroke="${INK}" stroke-width="2.5"/>
+  <path d="M0 186h360M0 202h360" stroke="#b08e66" stroke-width="2"/>
+  <!-- knygų lentyna -->
+  <rect x="10" y="12" width="132" height="150" rx="3" fill="#8a5a36" stroke="${INK}" stroke-width="2.6"/>
+  <rect x="16" y="18" width="120" height="138" fill="#5e3b22"/>
+  ${sp}<rect x="14" y="52" width="124" height="6" fill="#a8744a" stroke="${INK}" stroke-width="2"/>
+  ${sp2}<rect x="14" y="100" width="124" height="6" fill="#a8744a" stroke="${INK}" stroke-width="2"/>
+  <rect x="22" y="118" width="32" height="34" rx="2" fill="#e9dcc0" stroke="${INK}" stroke-width="1.8" transform="rotate(-8 38 135)"/>
+  <rect x="60" y="126" width="70" height="10" rx="2" fill="#3d5a99" stroke="${INK}" stroke-width="1.8"/><rect x="62" y="136" width="66" height="10" rx="2" fill="#c58a2a" stroke="${INK}" stroke-width="1.8"/><rect x="58" y="146" width="74" height="10" rx="2" fill="#8e2a3b" stroke="${INK}" stroke-width="1.8"/>
+  <rect x="14" y="152" width="124" height="6" fill="#a8744a" stroke="${INK}" stroke-width="2"/>
+  <!-- katalogo spinta -->
+  <rect x="178" y="66" width="182" height="102" rx="4" fill="#8a5a36" stroke="${INK}" stroke-width="2.6"/>
+  <rect x="176" y="60" width="186" height="10" rx="3" fill="#a8744a" stroke="${INK}" stroke-width="2.4"/>
+  ${dr}
+  <!-- atidarytas stalčius su kortelėmis -->
+  <rect x="270" y="138" width="44" height="30" rx="2" fill="#b07a4c" stroke="${INK}" stroke-width="2.2"/>
+  <rect x="274" y="128" width="34" height="16" rx="1.5" fill="#fffaf0" stroke="${INK}" stroke-width="1.6"/><rect x="278" y="124" width="34" height="16" rx="1.5" fill="#fffaf0" stroke="${INK}" stroke-width="1.6"/><path d="M282 129h24" stroke="#e48a95" stroke-width="1.6"/>
+  <!-- stalinė lempa -->
+  <path d="M202 60l10-22" stroke="${INK}" stroke-width="3"/><path d="M196 38q16-16 32 0z" fill="#2f6b5a" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
+  <ellipse cx="212" cy="40" rx="6" ry="3" fill="#ffe9a6"/>
+  <!-- archyvarė -->
+  <ellipse cx="164" cy="194" rx="34" ry="6" fill="#000" opacity=".12"/>
+  <path d="M151 150l-3 40h11l3-32z M168 158l3 32h11l-4-40z" fill="#3a3550" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M144 189h16v6h-18z M170 189h16l2 6h-18z" fill="${INK}"/>
+  <path d="M146 98q18-8 36 0l6 54q-24 8-48 0z" fill="#8e2a3b" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M154 100l10 12 10-12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M146 104q-12 20-6 40" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><path d="M146 104q-12 20-6 40" fill="none" stroke="#8e2a3b" stroke-width="6" stroke-linecap="round"/>
+  <path d="M182 104q14 8 22 -2" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><path d="M182 104q14 8 22 -2" fill="none" stroke="#8e2a3b" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="140" cy="146" r="5" fill="#f0c3a0" stroke="${INK}" stroke-width="2"/><circle cx="205" cy="101" r="5" fill="#f0c3a0" stroke="${INK}" stroke-width="2"/>
+  <rect x="198" y="80" width="30" height="20" rx="2" fill="#fffaf0" stroke="${INK}" stroke-width="2" transform="rotate(-12 213 90)"/>
+  <path d="M203 84h20" stroke="#e48a95" stroke-width="1.8" transform="rotate(-12 213 90)"/><path d="M203 90h16M203 94h12" stroke="#b9a98c" stroke-width="1.6" transform="rotate(-12 213 90)"/>
+  <rect x="158" y="86" width="12" height="12" fill="#f0c3a0" stroke="${INK}" stroke-width="2"/>
+  <circle cx="164" cy="72" r="17" fill="#f0c3a0" stroke="${INK}" stroke-width="2.6"/>
+  <path d="M146 74q-2-26 18-27q22 0 19 26q-4-14-18-15q-10 2-19 16z" fill="#4a2c1c" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M147 70q-6 16 2 26" fill="none" stroke="#4a2c1c" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="158" cy="75" r="5.2" fill="none" stroke="${INK}" stroke-width="2"/><circle cx="171" cy="75" r="5.2" fill="none" stroke="${INK}" stroke-width="2"/><path d="M163 75h3" stroke="${INK}" stroke-width="2"/>
+  <circle cx="158" cy="75.5" r="1.8" fill="${INK}"/><circle cx="171" cy="75.5" r="1.8" fill="${INK}"/>
+  <path d="M159 83q5 4 10 0" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="152" cy="81" r="2.6" fill="#ff8aa0" opacity=".5"/><circle cx="177" cy="81" r="2.6" fill="#ff8aa0" opacity=".5"/>
+</svg>`;
+}
+const DROP = `<svg viewBox="0 0 18 24" aria-hidden="true"><path d="M9 2C6 8 2.5 11.5 2.5 15.5a6.5 6.5 0 0 0 13 0C15.5 11.5 12 8 9 2z" fill="#2a2f55" stroke="${INK}" stroke-width="1.6"/><path d="M6 15a3 3 0 0 0 2 3" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".7"/></svg>`;
+function lvlIcon(i){
+  const lab = ["III", "IV", "", "", "Aa", "VBE"][i];
+  let inner = "";
+  if(i === 2) inner = `<path d="M10 30h36" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>${[14, 24, 34, 44].map((x, k) => `<circle cx="${x - 2}" cy="30" r="4.5" fill="${["#f1c04f", "#86c79f", "#86aee6", "#c9a1e4"][k]}" stroke="${INK}" stroke-width="2"/>`).join("")}`;
+  else if(i === 3) inner = `<rect x="12" y="34" width="32" height="8" rx="2" fill="#8e2a3b" stroke="${INK}" stroke-width="2"/><rect x="15" y="26" width="28" height="8" rx="2" fill="#86aee6" stroke="${INK}" stroke-width="2"/><rect x="13" y="18" width="30" height="8" rx="2" fill="#f1c04f" stroke="${INK}" stroke-width="2"/>`;
+  else inner = `<rect x="8" y="12" width="40" height="32" rx="4" fill="#b07a4c" stroke="${INK}" stroke-width="2.6"/><rect x="15" y="17" width="26" height="12" rx="2" fill="#fffaf0" stroke="${INK}" stroke-width="2"/>
+    <text x="28" y="26.5" text-anchor="middle" font-family="Georgia,serif" font-weight="900" font-size="${lab.length > 2 ? 8.5 : 10}" fill="${INK}">${lab}</text><path d="M22 37h12" stroke="${INK}" stroke-width="3.4" stroke-linecap="round"/>`;
+  return `<svg viewBox="0 0 56 56" aria-hidden="true">${inner}</svg>`;
+}
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: lvlIcon(i) }));
+
+/* ---------- biblioteka ---------- */
+const libGet = () => { const v = MK.get("mk-" + GAME + "-biblioteka", {}); return { w: v.w || [], t: v.t || [] }; };
+const SHELF = ["rom", "real", "mod1", "kat", "mod2", "siuol", "kiti"];
+const shelfOf = w => SHELF.includes(w[2]) ? w[2] : "kiti";
+function shelfSvg(have, total){
+  const cols = ["#8e2a3b", "#2f6b5a", "#c58a2a", "#3d5a99", "#6b3f7a", "#a8442f", "#2b6f8a"];
+  const n = Math.max(total, 1), w = Math.min(14, 296 / n);
+  let s = "";
+  for(let i = 0; i < total; i++){
+    const x = 12 + i * w, h = 22 + ((i * 7) % 9);
+    s += i < have ? `<rect x="${x.toFixed(1)}" y="${40 - h}" width="${(w - 1.5).toFixed(1)}" height="${h}" rx="1" fill="${cols[i % 7]}" stroke="${INK}" stroke-width="1.2"/>`
+      : `<rect x="${x.toFixed(1)}" y="${40 - h}" width="${(w - 1.5).toFixed(1)}" height="${h}" rx="1" fill="none" stroke="#cdbf9f" stroke-width="1" stroke-dasharray="2 2"/>`;
+  }
+  return `<svg viewBox="0 0 320 48" aria-hidden="true"><rect x="2" y="40" width="316" height="6" rx="1.5" fill="#a8744a" stroke="${INK}" stroke-width="1.8"/>${s}</svg>`;
+}
+function drawLib(){
+  const L = libGet(), have = new Set(L.w), n = L.w.filter(t => T.works.some(w => w[0] === t)).length, all = T.works.length;
+  const rk = T.ranks.filter(r => n >= r[1]).pop(), nx = T.ranks.find(r => r[1] > n);
+  const prev = rk[1], nxt = nx ? nx[1] : all;
+  const shelves = SHELF.map(p => {
+    const ws = T.works.filter(w => shelfOf(w) === p), got = ws.filter(w => have.has(w[0]));
+    return `<details class="shelf"><summary><span class="sname">${p === "kiti" ? "Kiti kūriniai" : T.periods[p]}</span><span class="scount">${got.length} / ${ws.length}</span>${shelfSvg(got.length, ws.length)}</summary>
+      ${got.length ? `<ul>${got.map(w => `<li>„${MK.esc(w[0])}“ – ${MK.esc(A[w[1]][1])}</li>`).join("")}</ul>` : `<p>${T.shelfEmpty}</p>`}</details>`;
+  }).join("");
+  $("lib").innerHTML = `<h2 class="mk-sec" style="margin-left:0">${T.libTitle}</h2><div class="libbox">${shelves}
+    <div class="lbar" aria-hidden="true"><i style="width:${Math.round(Math.min(1, (n - prev) / Math.max(1, nxt - prev)) * 100)}%"></i></div>
+    <p class="ltext">${T.libText(n, all, rk[0], nx ? nx[1] - n : 0, nx ? nx[0] : "")} ${T.libTerms(L.t.length, T.terms.length)}</p>
+    <p class="ltext" style="font-weight:600;font-size:13px">${T.libHow} ${T.shelfOpen}</p></div>`;
+}
+
+/* ---------- elementai ---------- */
+const app = $("app"), menu = $("menu"), play = $("play"), why = $("why");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[1] }));
+$("h1").innerHTML = T.h1; $("heroP").textContent = T.hero; $("note").textContent = T.note; $("ptsL").textContent = T.points;
+$("heroArt").innerHTML = `<div class="hero-card">${heroSvg()}</div>`;
+
+let lvl = 0, Lv = null, pi = 0, puz = null, order = [], sel = new Set(), solved = [], revealed = [], hinted = [], mist = 0, tried = new Set();
+let pts = 0, S = 0, M = 0, H = 0, dots = null, gi = 0, locked = false, fresh = 0, used = [];
+function showMenu(){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); drawLib(); MK.learn($("learn"), { topics: T.learn, onPlay: start }); window.scrollTo(0, 0); }
+function start(i){
+  lvl = i; Lv = LEVELS[i]; pi = 0; pts = 0; S = 0; M = 0; H = 0; gi = 0; fresh = 0; used = [];
+  $("pts").textContent = 0; why.innerHTML = ""; menu.hidden = true; play.hidden = false;
+  dots = MK.dots($("dots"), PUZ * 4); newPuzzle(); window.scrollTo(0, 0);
+}
+function newPuzzle(){
+  puz = buildPuzzle(lvl, used);
+  if(!puz){ puz = buildPuzzle(lvl, []); }
+  used = used.concat(puz.groups.flatMap(g => g.tiles.map(t => t.id)));
+  rememberSeen(lvl, puz);
+  order = SH(puz.groups.flatMap(g => g.tiles)); sel = new Set(); solved = []; revealed = []; hinted = []; mist = 0; tried = new Set(); locked = false;
+  why.innerHTML = ""; dots.cur(gi); draw();
+}
+/* šrifto dydis: kad ilgiausias žodis tilptų vienoje eilutėje, o visas pavadinimas – ne daugiau kaip 4 eilutėse */
+function fontPx(label, kind){
+  const w = Math.max(60, (Math.min(window.innerWidth, 760) - 28 - 18) / 4 - 10);
+  const longest = Math.max(...label.split(/[\s–-]+/).map(x => x.length)) + (kind === "w" ? 1 : 0);
+  const k = kind === "a" ? 0.6 : 0.62;
+  let fs = Math.min(14, w / (longest * k));
+  while(fs > 9 && Math.ceil(label.length * fs * k / w) * fs * 1.2 > 4.4 * 13) fs -= 0.5;
+  return fs.toFixed(1);
+}
+function tileHtml(t){
+  const isSel = sel.has(t.id);
+  const sub = t.kind === "w" && puz.showAu ? `<small>${MK.esc(A[t.a][1])}</small>` : "";
+  const cls = "t" + (t.kind === "a" ? " au" : t.kind === "t" ? " tm" : "") + (isSel ? " sel" : "");
+  const lab = t.kind === "w" ? `„${MK.esc(t.label)}“` : MK.esc(t.label);
+  return `<button type="button" class="${cls}" data-id="${t.id}" aria-pressed="${isSel}" ${locked ? "disabled" : ""} style="--fs:${fontPx(t.label, t.kind)}"><b lang="lt">${lab}</b>${sub}</button>`;
+}
+function rowHtml(g, k, rev){
+  const names = g.tiles.map(t => t.kind === "w" ? `„${MK.esc(t.label)}“` : MK.esc(t.label)).join(" · ");
+  return `<div class="row${rev ? " rev" : ""}" style="background:${COLS[k % 4]}"><b>${MK.esc(g.cat.name)}${rev ? `<span class="tag">atskleista</span>` : ""}</b><span>${names}</span></div>`;
+}
+function draw(){
+  const left = order.filter(t => !solved.concat(revealed).some(g => g.tiles.includes(t)));
+  const drops = Array.from({ length: MAXM }, (_, i) => `<span class="${i < MAXM - mist ? "" : "lost"}">${DROP}</span>`).join("");
+  const done = solved.length + revealed.length;
+  $("board").innerHTML = `<div class="card"><div class="chead"><div><small>${T.puzzleOf(pi + 1, PUZ)} · ${Lv.name}</small><div class="task">${T.tasks[lvl]}</div></div>
+      <div class="drops" aria-label="${T.mistakesL}: liko ${MAXM - mist}">${drops}</div></div>
+    ${done ? `<div class="rows">${solved.map((g, k) => rowHtml(g, puz.groups.indexOf(g), false)).join("")}${revealed.map(g => rowHtml(g, puz.groups.indexOf(g), true)).join("")}</div>` : ""}
+    ${hinted.filter(g => !solved.includes(g) && !revealed.includes(g)).length ? `<div class="hints">${hinted.filter(g => !solved.includes(g) && !revealed.includes(g)).map(g => `<span>💡 ${MK.esc(g.cat.name)}</span>`).join("")}</div>` : ""}
+    ${left.length ? `<div class="grid" id="grid">${left.map(tileHtml).join("")}</div>
+    <div class="acts"><button type="button" class="mk-btn alt" id="shuf">${T.shuffle}</button><button type="button" class="mk-btn alt" id="clr">${T.clear}</button><button type="button" class="mk-btn alt" id="hint">${T.hint}</button></div>
+    <button type="button" class="mk-btn go" id="chk" ${sel.size === 4 && !locked ? "" : "disabled"}>${T.check}</button>
+    ${puz.showAu ? "" : ""}` : ""}</div>`;
+}
+function tileLine(t){
+  if(t.kind === "t") return `<p><b>${MK.esc(t.label)}</b> – ${MK.esc(t.def)}</p>`;
+  if(t.kind === "a") return `<p><b>${MK.esc(t.label)}</b> – <i>${t.ps.map(x => T.periods[x[0]] + (x[1] ? ": " + T.rubric[x[1]] : "")).join("; ")}</i></p>`;
+  const bits = [MK.esc(A[t.a][1])];
+  if(t.g) bits.push(T.genreShort[t.g]);
+  if(t.p && T.periods[t.p]) bits.push(T.periods[t.p]);
+  return `<p><b>„${MK.esc(t.label)}“</b> – <i>${bits.join(" · ")}</i></p>`;
+}
+const groupWhy = (g, ok, head) => MK.why({ ok, head, body: g.cat.why, more: g.tiles.map(tileLine).join(""), sum: T.explain, open: true });
+const goBtn = label => `<button type="button" class="mk-btn go" id="go">${label}</button>`;
+function afterLabel(){
+  if(solved.length + revealed.length < 4) return T.next;
+  return pi < PUZ - 1 ? T.nextPuzzle : T.results;
+}
+
+$("board").addEventListener("click", e => {
+  MK.unlock();
+  if(locked) return;
+  const b = e.target.closest(".t");
+  if(b){
+    const id = b.dataset.id;
+    if(sel.has(id)) sel.delete(id); else if(sel.size < 4) sel.add(id); else return;
+    b.classList.toggle("sel", sel.has(id)); b.setAttribute("aria-pressed", sel.has(id)); MK.sfx.tap();
+    $("chk").disabled = sel.size !== 4;
+    if(why.firstChild && !why.querySelector("#go")) why.innerHTML = "";
+    return;
+  }
+  if(e.target.closest("#shuf")){ order = SH(order); MK.sfx.tap(); draw(); return; }
+  if(e.target.closest("#clr")){ sel = new Set(); MK.sfx.tap(); draw(); return; }
+  if(e.target.closest("#hint")){
+    const open = puz.groups.filter(g => !solved.includes(g) && !revealed.includes(g) && !hinted.includes(g));
+    MK.sfx.tap();
+    if(!open.length){ why.innerHTML = MK.why({ ok: true, head: T.hintNone }); return; }
+    const g = MK.pick(open); hinted.push(g); H++;
+    draw(); why.innerHTML = MK.why({ ok: true, head: T.hint, body: T.hintText(MK.esc(g.cat.name)) });
+    return;
+  }
+  if(e.target.closest("#chk")) check();
+});
+function check(){
+  if(sel.size !== 4) return;
+  const key = [...sel].sort().join(",");
+  if(tried.has(key)){ why.innerHTML = MK.why({ ok: false, head: T.already }); MK.sfx.bad(); return; }
+  tried.add(key);
+  const g = puz.groups.find(g => g.tiles.every(t => sel.has(t.id)));
+  if(g){
+    solved.push(g); S++; const p = hinted.includes(g) ? 5 : 10; pts += p; $("pts").textContent = pts;
+    dots.mark(gi, !hinted.includes(g)); gi++;
+    if(!hinted.includes(g)) addLib(g);
+    sel = new Set(); MK.sfx.good(); locked = true; draw();
+    why.innerHTML = groupWhy(g, true, T.okHead(MK.praise(), p)) + goBtn(afterLabel());
+    setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+    return;
+  }
+  mist++; M++; MK.sfx.bad();
+  const near = puz.groups.some(g => g.tiles.filter(t => sel.has(t.id)).length === 3);
+  const grid = $("grid");
+  grid.querySelectorAll(".t.sel").forEach(x => { x.classList.remove("mk-shake"); void x.offsetWidth; x.classList.add("mk-shake"); });
+  grid.parentNode.querySelector(".drops").innerHTML = Array.from({ length: MAXM }, (_, i) => `<span class="${i < MAXM - mist ? "" : "lost"}">${DROP}</span>`).join("");
+  if(mist >= MAXM){
+    revealed = puz.groups.filter(x => !solved.includes(x));
+    revealed.forEach(() => { dots.mark(gi, false); gi++; });
+    sel = new Set(); locked = true; draw();
+    why.innerHTML = MK.why({ ok: false, head: T.failHead, body: T.failBody }) + revealed.map(x => groupWhy(x, false, x.cat.name)).join("") + goBtn(afterLabel());
+    setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+    return;
+  }
+  why.innerHTML = MK.why({ ok: false, head: near ? T.oneAway : T.wrong });
+}
+function addLib(g){
+  const L = libGet(); let changed = false;
+  g.tiles.forEach(t => {
+    if(t.kind === "w" && !L.w.includes(t.label)){ L.w.push(t.label); fresh++; changed = true; }
+    if(t.kind === "t" && !L.t.includes(t.label)){ L.t.push(t.label); changed = true; }
+  });
+  if(changed) MK.set("mk-" + GAME + "-biblioteka", L);
+}
+why.addEventListener("click", e => {
+  if(!e.target.closest("#go")) return;
+  MK.sfx.tap(); why.innerHTML = ""; locked = false;
+  if(solved.length + revealed.length < 4){
+    if(solved.length === 3 && !revealed.length){ /* paskutinis stalčius užsipildo pats */
+      const g = puz.groups.find(x => !solved.includes(x)); solved.push(g); S++;
+      const p = hinted.includes(g) ? 5 : 10; pts += p; $("pts").textContent = pts; dots.mark(gi, !hinted.includes(g)); gi++;
+      if(!hinted.includes(g)) addLib(g);
+      locked = true; draw(); why.innerHTML = groupWhy(g, true, T.okHead(MK.praise(), p)) + goBtn(afterLabel());
+      return;
+    }
+    draw(); return;
+  }
+  pi++;
+  if(pi >= PUZ) return finish();
+  newPuzzle(); window.scrollTo(0, 0);
+});
+function finish(){
+  const pen = M + H, all = PUZ * 4;
+  const stars = S === all && pen <= 2 ? 3 : S >= all - 3 && pen <= 6 ? 2 : 1;
+  MK.best(GAME, Lv.id, stars);
+  MK.result({ stars, title: T.resTitle(S, all), text: T.resText(pts, M, H, fresh),
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+window.__mkTest = { buildPuzzle, CATS, TILES, POOLS, mixOk, cur: () => puz };
+showMenu();
+})();
+</script>
+</body>
+</html>
