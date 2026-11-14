@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Molekulių dirbtuvė – MokomėsKartu.lt</title>
+<meta name="description" content="Organinės chemijos žaidimas 11–12 klasėms: sudaryk molekules iš atomų, pavadink jas pagal IUPAC ir surask visus izomerus.">
+<meta name="theme-color" content="#f2f8f5">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<script src="molekules.js"></script>
+<style>
+/* Molekulių dirbtuvė: „sintezės stalas“ – brėžinio tinklelis, atomai kaip spalvoti žetonai (populiari galvosūkių mechanika: sudėk molekulę, rask visas). */
+body{--paper:#f2f8f5;--grid:#dcebe4;--soft:#4b5d58;--kid:"Outfit","Trebuchet MS",system-ui,sans-serif;--ac:#0a8473;--ac-ink:#fff;--ac-soft:#d3efe8;--cc:#2a3b5a;--warm:#ff9a3c}
+.mk-ico[data-k="music"]{display:none}
+.mk-lvl{border-radius:16px;box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.16)}
+.mk-lvl-art{border-radius:12px;background:var(--ac-soft)}
+.mk-lvl-art svg{width:52px;height:52px}
+.mk-lvl-t b{font-size:19.5px}
+.mk-lvl-t small{font-size:13.5px}
+.mk-hero h1{font-size:clamp(34px,8.6vw,54px)}
+.mk-hero p{max-width:42ch}
+.mk-hero-art{width:min(430px,100%)}
+.mk-btn{border-radius:14px;font-size:18px}
+.mk-res{border-radius:20px}
+.hero-card{background:#fff;border-radius:20px;padding:5px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.hero-card svg{display:block;width:100%;height:auto;border-radius:14px}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+.tb{border-collapse:collapse;width:100%;margin:6px 0;font:600 14px/1.35 var(--body)}
+.tb th,.tb td{border:1.5px solid #bcd3cb;padding:4px 7px;text-align:left}
+.tb th{background:var(--ac-soft)}
+.mk-lt-b p,.mk-lt-b ol{margin:6px 0;font:600 15px/1.45 var(--body)}
+.mk-lt-b ol{padding-left:20px}
+sub{font-size:.72em;line-height:0}
+
+/* albumas */
+.alb{max-width:520px;margin:0 auto}
+.albbox{background:#fff;border-radius:14px;padding:12px;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.shelf{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1.5px dashed #c7dcd4}
+.shelf:last-child{border-bottom:0}
+.shelf .fl{display:flex;gap:2px;align-items:flex-end}
+.shelf .fl svg{width:15px;height:24px;display:block}
+.shelf .sn{font:800 14px/1.2 var(--body)}
+.shelf .sc{font:800 13px/1 var(--body);color:var(--soft)}
+.shelf details{grid-column:1/-1}
+.shelf summary{cursor:pointer;font:700 12.5px/1.3 var(--body);color:var(--ac)}
+.shelf ul{margin:4px 0 2px;padding-left:18px;font:600 13.5px/1.45 var(--body)}
+.altext{margin:10px 0 0;font:700 14px/1.4 var(--soft)}
+.lbar{height:10px;border-radius:6px;background:#dcebe4;box-shadow:inset 0 0 0 2px var(--ink);margin:8px 0 2px;overflow:hidden}
+.lbar i{display:block;height:100%;background:var(--ac)}
+
+/* žaidimas */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 10px}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;background:#fff;font:800 17px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink)}
+.chip small{font:800 11px/1 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.card{background:#fff;border-radius:16px;padding:12px 10px 14px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.chead small{display:block;font:800 12px/1.25 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--ac)}
+.chead .task{font:700 17px/1.35 var(--body);margin-top:3px;color:var(--ink)}
+.chead .task b{font:800 20px/1.3 var(--kid);color:var(--cc);overflow-wrap:anywhere}
+.cv{height:min(62vw,290px);min-height:200px;margin-top:8px;border-radius:12px;background:#f9fcfb;background-image:radial-gradient(#cfe1da 1.4px,transparent 1.6px);background-size:22px 22px;box-shadow:inset 0 0 0 2px #b9d2c9;touch-action:manipulation}
+.cv.ro{height:auto;min-height:0;aspect-ratio:auto}
+.cv svg.mol{display:block;width:100%;height:100%}
+.cv.ro svg.mol{height:auto;max-height:230px}
+.mol .bd{stroke:#121a33;stroke-width:3.2;stroke-linecap:round}
+.mol .bh{stroke:transparent;stroke-width:24;stroke-linecap:round;cursor:pointer}
+.mol .at{cursor:pointer}
+.mol text{font-family:var(--kid);font-weight:800;fill:#fff;pointer-events:none}
+.mol .selr{fill:none;stroke:var(--warm);stroke-width:4;stroke-dasharray:none}
+.mol .sk{cursor:pointer}
+.mol .sk circle.sc{fill:#fff;stroke:var(--ac);stroke-width:2.5;stroke-dasharray:5 4}
+.mol .sk path{stroke:var(--ac);stroke-width:3;stroke-linecap:round}
+.mol .sk:hover circle.sc{fill:var(--ac-soft)}
+.mol .sk .hit{fill:transparent;stroke:none}
+.bmsg{margin:8px 2px 0;min-height:38px;font:600 14px/1.4 var(--body);color:var(--soft)}
+.bmsg.warn{color:#b3361f;font-weight:800}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;flex-wrap:wrap}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.tl{width:52px;height:46px;border-radius:12px;border:0;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.tl svg{width:34px;height:34px;display:block}
+.tl.on{background:var(--ac-soft);box-shadow:inset 0 0 0 3.5px var(--ac)}
+.tl[disabled]{opacity:.4}
+.bact{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bact .mk-btn{min-height:46px;padding:8px 16px;font-size:16px;flex:1 1 auto}
+.drops{display:flex;gap:4px;align-items:center;margin-top:6px;font:800 12px/1 var(--body);color:var(--soft)}
+.drops i{width:12px;height:12px;border-radius:50%;background:var(--ac);display:inline-block}
+.drops i.lost{background:#d6e3de}
+.opts{display:grid;gap:9px;margin-top:12px}
+@media(min-width:560px){.opts{grid-template-columns:1fr 1fr}}
+.opt{min-height:56px;padding:10px 12px;border:0;border-radius:12px;background:#fff;cursor:pointer;font:800 17px/1.25 var(--kid);color:var(--ink);box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16);overflow-wrap:anywhere;text-align:center}
+.opt:active{transform:translateY(3px);box-shadow:inset 0 0 0 2.5px var(--ink)}
+.opt.bad{background:#ffe9e4;color:#9b3a28;box-shadow:inset 0 0 0 2.5px #e07a66;pointer-events:none}
+.opt.good{background:#dff7ea;box-shadow:inset 0 0 0 3px #2fb36b;pointer-events:none}
+.opt[disabled]{pointer-events:none}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:10px}
+.slot{border-radius:10px;padding:4px 4px 6px;text-align:center;background:#f4faf8;box-shadow:inset 0 0 0 2px #a9cbbf}
+.slot.got{background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);animation:mkPop .4s cubic-bezier(.2,1.5,.4,1)}
+.slot.rev{background:#fff7e3;box-shadow:inset 0 0 0 2.5px #d9b65a}
+.slot.empty{display:grid;place-items:center;min-height:62px;border:2px dashed #a9cbbf;box-shadow:none;background:transparent;color:#8aa89d;font:800 24px/1 var(--kid)}
+.slot svg.mol{display:block;width:100%;height:auto;max-height:96px}
+.slot b{display:block;font:800 12.5px/1.2 var(--body);overflow-wrap:anywhere;margin-top:2px}
+.slot em{display:block;font:700 10.5px/1.2 var(--body);color:#7a6a2a;font-style:normal}
+.solv{margin:12px 0 0;border-radius:12px;background:#f9fcfb;box-shadow:inset 0 0 0 2px #b9d2c9;padding:4px}
+.solv svg.mol{display:block;width:100%;height:auto;max-height:200px}
+.solv p{margin:2px 6px 6px;text-align:center;font:800 15px/1.3 var(--kid)}
+.stepl{margin:0 0 6px}
+.mk-why-m p{margin:5px 0;font:600 14.5px/1.45 var(--body)}
+.go{width:100%;margin-top:12px}
+@keyframes mkPop{0%{transform:scale(.7);opacity:.2}100%{transform:scale(1);opacity:1}}
+.mk-shake{animation:mkShake .4s}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1 id="h1"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div id="levels"></div>
+    <div class="alb" id="alb"></div>
+    <div id="learn"></div>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><span class="chip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="board"></div>
+    <div id="why"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "molekuliu-dirbtuve", GRADES = [11, 12], INK = "#121a33";
+const M = window.MK_CHEM, T = window.MK_T, SH = MK.shuffle;
+const $ = id => document.getElementById(id);
+const U = 56, R = 19;
+const COL = { C: "#2a3b5a", O: "#e5483f", Cl: "#1f9d55", Br: "#a8412a", F: "#79b02f", I: "#7a4fc2" };
+const DV = M.DIRS;
+
+/* ---------- piešimas ---------- */
+function atomLab(m, i){
+  const e = m.a[i], h = M.hCount(m, i);
+  if((e === "C" || e === "O") && h > 0) return h > 1 ? `${e}H<tspan font-size="11" dy="5">${h}</tspan>` : `${e}H`;
+  return e;
+}
+function molSvg(m, pos, o){
+  o = o || {};
+  const R = o.mini ? 13 : 19;
+  const xs = pos.map(p => p[0]), ys = pos.map(p => p[1]);
+  const mnx = Math.min(...xs), mxx = Math.max(...xs), mny = Math.min(...ys), mxy = Math.max(...ys);
+  const mar = o.mar == null ? 1 : o.mar;
+  const W = Math.max((mxx - mnx + 2 * mar) * U, (o.minW || 0) * U), H = Math.max((mxy - mny + 2 * mar) * U, (o.minH || 0) * U);
+  const cx = (mnx + mxx) / 2 * U, cy = (mny + mxy) / 2 * U;
+  let s = `<svg class="mol" viewBox="${(cx - W / 2).toFixed(1)} ${(cy - H / 2).toFixed(1)} ${W.toFixed(1)} ${H.toFixed(1)}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Molekulė ${M.fstr(M.formula(m), false)}">`;
+  m.b.forEach(([i, j, od], k) => {
+    const x1 = pos[i][0] * U, y1 = pos[i][1] * U, x2 = pos[j][0] * U, y2 = pos[j][1] * U;
+    const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len, nx = -uy, ny = ux;
+    const sx = x1 + ux * (R - 2), sy = y1 + uy * (R - 2), ex = x2 - ux * (R - 2), ey = y2 - uy * (R - 2);
+    (od === 1 ? [0] : od === 2 ? [-4.5, 4.5] : [-7.5, 0, 7.5]).forEach(f => {
+      s += `<line class="bd" x1="${(sx + nx * f).toFixed(1)}" y1="${(sy + ny * f).toFixed(1)}" x2="${(ex + nx * f).toFixed(1)}" y2="${(ey + ny * f).toFixed(1)}"/>`;
+    });
+    if(o.interactive) s += `<line class="bh" data-b="${k}" x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}"/>`;
+  });
+  if(o.sockets) o.sockets.forEach(k => {
+    const x = k.x * U, y = k.y * U;
+    s += `<g class="sk" data-s="${k.i}:${k.d}"><circle class="hit" cx="${x}" cy="${y}" r="26"/><circle class="sc" cx="${x}" cy="${y}" r="16"/><path d="M${x - 7} ${y}h14M${x} ${y - 7}v14"/></g>`;
+  });
+  m.a.forEach((e, i) => {
+    const x = pos[i][0] * U, y = pos[i][1] * U;
+    if(o.sel === i) s += `<circle class="selr" cx="${x}" cy="${y}" r="${R + 6}"/>`;
+    const lab = o.mini ? (e === "C" ? "" : e === "O" ? (M.hCount(m, i) ? "OH" : "O") : e) : atomLab(m, i);
+    s += `<g class="at" data-a="${i}"><circle cx="${x}" cy="${y}" r="${R}" fill="${COL[e] || "#555"}" stroke="${INK}" stroke-width="2"/>`
+      + (lab ? `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${o.mini ? 12 : e.length > 1 ? 15 : 17}">${lab}</text>` : "") + `</g>`;
+  });
+  return s + "</svg>";
+}
+const layoutSvg = (m, o) => molSvg(m, M.layout(m) || m.a.map((_, i) => [i, 0]), o);
+
+/* ---------- molekulių konstruktorius ---------- */
+const ORD = { C: 1, OH: 1, O: 2, Cl: 1, Br: 1, F: 1 };
+const EL = { C: "C", OH: "O", O: "O", Cl: "Cl", Br: "Br", F: "F" };
+function toolIcon(k){
+  if(k === "del") return `<svg viewBox="0 0 34 34" aria-hidden="true"><path d="M8 11h18l-2 17H10z" fill="#fff" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M6 11h22M13 11V8h8v3M14 16v8M20 16v8" fill="none" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+  const el = EL[k], lab = k === "O" ? "=O" : k;
+  return `<svg viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="13" fill="${COL[el]}" stroke="${INK}" stroke-width="2"/><text x="17" y="17.5" text-anchor="middle" dominant-baseline="central" font-family="Outfit,sans-serif" font-weight="800" font-size="${lab.length > 1 ? 13 : 15}" fill="#fff">${lab}</text></svg>`;
+}
+function makeBuilder(host, o){
+  host.innerHTML = `<div class="cv" id="cv"></div><div class="bmsg" id="bmsg" aria-live="polite"></div>
+    <div class="frow"><span class="chip"><small>${T.formulaNow}</small><span id="fv"></span></span>${o.tools.length > 1 ? `<div class="tools" id="tools"></div>` : ""}</div>
+    <div class="bact"><button type="button" class="mk-btn alt" id="bundo">${T.undo}</button><button type="button" class="mk-btn alt" id="bclr">${T.clear}</button></div>`;
+  let mol, pos, sel, tool, hist, locked = false, msg = "", warn = false;
+  const cv = host.querySelector("#cv");
+  const reset = () => { mol = { a: ["C"], b: [] }; pos = [[0, 0]]; sel = 0; tool = o.tools[0]; hist = []; msg = ""; warn = false; draw(); o.onChange && o.onChange(); };
+  const snap = () => { hist.push({ mol: M.clone(mol), pos: pos.map(p => p.slice()), sel }); if(hist.length > 80) hist.shift(); };
+  const occupied = (x, y) => pos.some(p => p[0] === x && p[1] === y);
+  function sockets(){
+    if(locked || tool === "del" || sel == null || mol.a[sel] !== "C") return [];
+    if(M.free(mol, sel) < ORD[tool]) return [];
+    const out = [];
+    for(const d of ["E", "N", "S", "W"]){
+      const x = pos[sel][0] + DV[d][0], y = pos[sel][1] + DV[d][1];
+      if(!occupied(x, y)) out.push({ i: sel, d, x, y });
+    }
+    return out;
+  }
+  function draw(){
+    const sk = sockets();
+    cv.innerHTML = molSvg(mol, pos, { interactive: !locked, sel, sockets: sk, minW: 5, minH: 3.4, mar: 1.3 });
+    host.querySelector("#fv").innerHTML = M.fstr(M.formula(mol), true);
+    const b = host.querySelector("#bmsg");
+    let text = msg;
+    if(!text){
+      if(locked) text = "";
+      else if(sel != null && mol.a[sel] === "C" && !sk.length) text = T.noSock;
+      else if(sel != null && mol.a[sel] !== "C") text = "Prie šio atomo nieko pridėti negalima – pasirink anglies atomą.";
+      else text = o.tools.length > 1 ? T.buildHow : T.buildHowC;
+    }
+    b.textContent = text; b.classList.toggle("warn", warn);
+    const tl = host.querySelector("#tools");
+    if(tl) tl.innerHTML = o.tools.concat(["del"]).map(k => `<button type="button" class="tl${tool === k ? " on" : ""}" data-t="${k}" title="${T.toolTitle[k]}" aria-label="${T.toolTitle[k]}" aria-pressed="${tool === k}">${toolIcon(k)}</button>`).join("");
+  }
+  const say = (t, w) => { msg = t || ""; warn = !!w; };
+  function place(i, d){
+    if(locked) return;
+    if(M.free(mol, i) < ORD[tool]){ say(T.valMsg, true); draw(); return; }
+    const x = pos[i][0] + DV[d][0], y = pos[i][1] + DV[d][1];
+    if(occupied(x, y)) return;
+    snap();
+    mol.a.push(EL[tool]); mol.b.push([i, mol.a.length - 1, ORD[tool]]); pos.push([x, y]);
+    if(tool === "C") sel = mol.a.length - 1;
+    say(""); MK.sfx.tap(); draw(); o.onChange && o.onChange();
+  }
+  function cycle(k){
+    if(locked) return;
+    const [i, j, od] = mol.b[k];
+    const both = mol.a[i] === "C" && mol.a[j] === "C", co = (mol.a[i] === "C") !== (mol.a[j] === "C") && (mol.a[i] === "O" || mol.a[j] === "O");
+    if(!o.bonds || (!both && !co)){ say(o.bonds ? "Šio ryšio pakeisti negalima." : T.onlySingle, true); draw(); return; }
+    const max = both ? 3 : 2;
+    let n = od, found = 0;
+    for(let t = 0; t < max; t++){
+      n = n % max + 1; const delta = n - od;
+      if(delta <= 0 || (M.free(mol, i) >= delta && M.free(mol, j) >= delta)){ found = n; break; }
+    }
+    if(!found || found === od){ say(T.bondMsg, true); draw(); return; }
+    snap(); mol.b[k][2] = found; say(""); MK.sfx.tap(); draw(); o.onChange && o.onChange();
+  }
+  function erase(i){
+    const deg = mol.b.filter(x => x[0] === i || x[1] === i).length;
+    if(mol.a.length < 2 || deg !== 1){ say(T.eraseOnly, true); draw(); return; }
+    snap();
+    mol.b = mol.b.filter(x => x[0] !== i && x[1] !== i);
+    mol.a.splice(i, 1); pos.splice(i, 1);
+    mol.b.forEach(x => { if(x[0] > i) x[0]--; if(x[1] > i) x[1]--; });
+    sel = Math.min(sel > i ? sel - 1 : sel === i ? 0 : sel, mol.a.length - 1);
+    say(""); MK.sfx.tap(); draw(); o.onChange && o.onChange();
+  }
+  host.addEventListener("click", e => {
+    MK.unlock();
+    if(locked) return;
+    const s = e.target.closest(".sk"); if(s){ const [i, d] = s.dataset.s.split(":"); place(+i, d); return; }
+    const a = e.target.closest(".at");
+    if(a){ const i = +a.dataset.a; if(tool === "del"){ erase(i); return; } sel = i; say(""); MK.sfx.tap(); draw(); return; }
+    const bn = e.target.closest(".bh"); if(bn){ cycle(+bn.dataset.b); return; }
+    const tl = e.target.closest(".tl"); if(tl){ tool = tl.dataset.t; say(""); MK.sfx.tap(); draw(); return; }
+    if(e.target.closest("#bundo")){ const h = hist.pop(); if(h){ mol = h.mol; pos = h.pos; sel = Math.min(h.sel, mol.a.length - 1); say(""); MK.sfx.tap(); draw(); o.onChange && o.onChange(); } return; }
+    if(e.target.closest("#bclr")){ MK.sfx.tap(); reset(); return; }
+  });
+  reset();
+  return { mol: () => M.clone(mol), reset, lock(v){ locked = !!v; draw(); }, say: (t, w) => { say(t, w); draw(); }, state: () => ({ mol, pos, sel }) };
+}
+
+/* ---------- užduočių duomenys ---------- */
+const cache = {};
+function mkItem(m){
+  const tr = M.trace(m); if(!tr || !tr.name) return null;
+  return { m, key: M.canon(m), name: tr.name, tr, cls: M.classOf(m), nC: m.a.filter(x => x === "C").length };
+}
+function items(spec){
+  const k = JSON.stringify(spec); if(cache[k]) return cache[k];
+  return cache[k] = M.enumerate(spec).map(mkItem).filter(Boolean);
+}
+const isPlain = it => it.tr.subs.length === 0;
+const chain = n => mkItem(M.parse("C".repeat(n)));
+function poolFor(L, type){
+  const out = [];
+  const bld = type === "B";
+  if(L === 0){ for(let n = type === "B" ? 3 : 2; n <= (bld ? 8 : 10); n++) out.push(chain(n)); return out; }
+  if(L === 1){
+    for(let n = 2; n <= (bld ? 7 : 8); n++){
+      items({ cls: "ene", n }).filter(isPlain).forEach(x => out.push(x));
+      items({ cls: "yne", n }).filter(isPlain).forEach(x => out.push(x));
+    }
+    if(type === "C" || type === "F") for(let n = 3; n <= 8; n++) out.push(chain(n));
+    return out;
+  }
+  if(L === 2){
+    for(let n = 4; n <= (bld ? 7 : 8); n++) items({ cls: "ane", n }).filter(x => !isPlain(x)).forEach(x => out.push(x));
+    for(let n = 4; n <= 7; n++){ items({ cls: "ene", n }).filter(x => !isPlain(x)).forEach(x => out.push(x)); }
+    for(let n = 4; n <= 6; n++){ items({ cls: "yne", n }).filter(x => !isPlain(x)).forEach(x => out.push(x)); }
+    return out;
+  }
+  if(L === 3){
+    for(let n = 1; n <= 6; n++){ items({ cls: "alc", n }).forEach(x => out.push(x)); items({ cls: "ald", n }).forEach(x => out.push(x)); }
+    for(let n = 3; n <= 6; n++) items({ cls: "ket", n }).forEach(x => out.push(x));
+    if(type === "C") for(let n = 3; n <= 5; n++){ items({ cls: "ane", n }).forEach(x => out.push(x)); items({ cls: "ene", n }).filter(isPlain).forEach(x => out.push(x)); }
+    return out;
+  }
+  if(L === 4){
+    for(let n = 1; n <= 6; n++) items({ cls: "acid", n }).forEach(x => out.push(x));
+    for(let n = 1; n <= 5; n++){ items({ cls: "hal", n, x: "Cl", k: 1 }).forEach(x => out.push(x)); items({ cls: "hal", n, x: "Br", k: 1 }).forEach(x => out.push(x)); }
+    for(let n = 1; n <= 4; n++) items({ cls: "hal", n, x: "Cl", k: 2 }).forEach(x => out.push(x));
+    if(type === "C") for(let n = 2; n <= 5; n++){ items({ cls: "alc", n }).forEach(x => out.push(x)); items({ cls: "ket", n: Math.max(n, 3) }).forEach(x => out.push(x)); }
+    return out;
+  }
+  return out;
+}
+const poolCache = {};
+const pool = (L, type) => { const k = L + type; if(!poolCache[k]) poolCache[k] = poolFor(L, type).filter(x => x && x.nC <= (type === "B" ? 8 : 10)); return poolCache[k]; };
+
+const seenGet = () => MK.get("mk-" + GAME + "-matyta", []);
+function seenAdd(keys){ let s = seenGet().filter(k => !keys.includes(k)).concat(keys); if(s.length > 400) s = s.slice(-400); MK.set("mk-" + GAME + "-matyta", s); }
+function choose(p, used, seen){
+  const fresh = p.filter(x => !used.has(x.key)), un = fresh.filter(x => !seen.has(x.key));
+  return MK.pick(un.length ? un : fresh.length ? fresh : p);
+}
+
+/* ---------- atsakymų variantai ---------- */
+function lev(a, b){
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for(let j = 1; j <= b.length; j++) d[0][j] = j;
+  for(let i = 1; i <= a.length; i++) for(let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+function specOf(it){
+  const f = M.formula(it.m); const hs = ["F", "Cl", "Br", "I"].find(x => f[x]);
+  return { cls: it.cls, n: it.nC, x: hs, k: hs ? f[hs] : undefined };
+}
+function nameOptions(it, L){
+  const w = M.wrongNames(it.m), cand = [];
+  const plainOnly = L <= 1;
+  const sp = specOf(it);
+  const near = [];
+  [0, 1, -1, 2, -2, 3, -3].forEach(dn => {
+    const n = sp.n + dn; if(n < 1) return;
+    if(it.cls === "ane" && plainOnly){ if(dn && n <= 10) near.push(chain(n)); return; }
+    items(Object.assign({}, sp, { n })).forEach(x => { if(x.key !== it.key && (!plainOnly || isPlain(x))) near.push(x); });
+  });
+  if(it.cls === "ald" || it.cls === "ket") items({ cls: it.cls === "ald" ? "ket" : "ald", n: it.nC }).forEach(x => near.push(x));
+  if(plainOnly && it.cls !== "ane" && it.nC >= 2) ["ane", it.cls === "ene" ? "yne" : "ene"].forEach(c => items({ cls: c, n: it.nC }).filter(isPlain).forEach(x => near.push(x)));
+  const nm = new Set(); const push = s => { if(s && s !== it.name) nm.add(s); };
+  const pri = [];
+  if(w.num) pri.push(w.num);
+  if(w.short && !plainOnly) pri.push(w.short);
+  near.sort((a, b) => lev(a.name, it.name) - lev(b.name, it.name));
+  const rest = near.map(x => x.name).filter((s, i, a) => a.indexOf(s) === i && s !== it.name && !pri.includes(s));
+  const chosen = MK.shuffle(pri).slice(0, 2);
+  const top = rest.slice(0, 7);
+  while(chosen.length < 3 && top.length){ chosen.push(top.splice(MK.rnd(0, Math.min(3, top.length - 1)), 1)[0]); }
+  if(chosen.length < 3) rest.forEach(s => { if(chosen.length < 3 && !chosen.includes(s)) chosen.push(s); });
+  return SH([it.name].concat(chosen.slice(0, 3)));
+}
+function classOptions(it, L){
+  const allowed = [["ane", "ene", "yne"], ["ane", "ene", "yne"], ["ane", "ene", "yne"], ["ane", "ene", "yne", "alc", "ald", "ket"], ["ane", "ene", "alc", "ald", "ket", "acid", "hal"]][Math.min(L, 4)];
+  const conf = { ane: ["ene", "yne", "hal"], ene: ["ane", "yne", "alc"], yne: ["ane", "ene", "ket"], alc: ["ald", "ket", "acid"], ald: ["ket", "acid", "alc"], ket: ["ald", "alc", "acid"], acid: ["ald", "alc", "ket"], hal: ["ane", "alc", "ene"] };
+  let d = conf[it.cls].filter(c => allowed.includes(c));
+  allowed.forEach(c => { if(c !== it.cls && !d.includes(c)) d.push(c); });
+  return SH([it.cls].concat(SH(d).slice(0, 3)));
+}
+function formulaOptions(it){
+  const f = M.formula(it.m), s = [M.fstr(f, true)], c = [];
+  const mod = (dc, dh) => { const g = Object.assign({}, f); g.C += dc; g.H += dh; if(g.C >= 1 && g.H >= 0) c.push(M.fstr(g, true)); };
+  mod(0, 2); mod(0, -2); mod(1, 0); mod(-1, 0); mod(0, 4); mod(0, -4); mod(1, 2); mod(-1, -2);
+  const u = c.filter((x, i) => x !== s[0] && c.indexOf(x) === i);
+  return SH(s.concat(SH(u).slice(0, 3)));
+}
+
+/* ---------- užduotys ---------- */
+const PLAN = [
+  ["B", "N", "F", "G", "B", "N", "G", "B"],
+  ["N", "B", "C", "G", "B", "F", "N", "B"],
+  ["B", "N", "N", "B", "N", "B", "N", "N"],
+  ["C", "B", "N", "C", "B", "N", "B", "N"],
+  ["C", "B", "N", "C", "B", "N", "B", "N"]
+];
+function toolsFor(it, L){
+  const t = ["C"], f = M.formula(it.m);
+  if(f.O){ t.push("OH"); t.push("O"); }
+  if(f.Cl || f.Br || f.F || f.I){ t.push("Cl"); t.push("Br"); }
+  return t;
+}
+function makeG(L, used){
+  const clsList = L === 0 ? ["ane"] : ["ane", "ene", "yne"];
+  let tries = 0, t;
+  do {
+    const cls = MK.pick(clsList), kind = MK.pick(["fwd", "rec", "rev"]);
+    const nMin = cls === "ane" ? 2 : 2, n = MK.rnd(nMin, 16);
+    const H = cls === "ane" ? 2 * n + 2 : cls === "ene" ? 2 * n : 2 * n - 2;
+    const key = "G:" + kind + cls + n;
+    if(used.has(key)) continue;
+    used.add(key);
+    const nm = { ane: "alkanas", ene: "alkenas", yne: "alkinas" }[cls], dat = { ane: "alkanui", ene: "alkenui", yne: "alkinui" }[cls];
+    const gen = { ane: "CₙH₂ₙ₊₂", ene: "CₙH₂ₙ", yne: "CₙH₂ₙ₋₂" }[cls];
+    const calc = { ane: `2·${n} + 2`, ene: `2·${n}`, yne: `2·${n} − 2` }[cls];
+    const F = (c, h) => `C${c > 1 ? "<sub>" + c + "</sub>" : ""}H<sub>${h}</sub>`;
+    let q, right, opts, why;
+    if(kind === "fwd"){
+      q = T.gFwd(nm, n); right = String(H);
+      opts = [H, H + 2, H - 2, 2 * n + (cls === "ane" ? 0 : 2), n * 2 + 1].filter((x, i, a) => a.indexOf(x) === i && x > 0).map(String);
+      why = T.gWhyFwd(nm, gen, n, calc, H);
+    } else if(kind === "rev"){
+      q = T.gRev(nm, H); right = String(n);
+      opts = [n, n + 1, n - 1, n + 2, n * 2].filter((x, i, a) => a.indexOf(x) === i && x > 0).map(String);
+      why = T.gWhyRev(nm, gen, H, n);
+    } else {
+      q = T.gRec(dat); right = F(n, H);
+      const wrong = { ane: [F(n, 2 * n), F(n, 2 * n - 2), F(n, 2 * n + 1)], ene: [F(n, 2 * n + 2), F(n, 2 * n - 2), F(n, 2 * n + 1)], yne: [F(n, 2 * n), F(n, 2 * n + 2), F(n, 2 * n - 1)] }[cls];
+      opts = [right].concat(wrong);
+      why = T.gWhyRec(dat, gen, n, calc, H);
+    }
+    if(opts.length < 4) continue;
+    const others = SH(opts.filter(x => x !== right)).slice(0, 3);
+    t = { type: "G", L, it: { key, nC: n, name: key }, q, right, opts: SH([right].concat(others)), why };
+  } while(!t && ++tries < 50);
+  return t;
+}
+function makeTask(type, L, used, seen){
+  if(type === "G") return makeG(L, used);
+  const p = pool(L, type);
+  const it = choose(p, used, seen);
+  used.add(it.key);
+  const t = { type, L, it };
+  if(type === "B"){ t.tools = toolsFor(it, L); t.bonds = L >= 1; }
+  if(type === "N") t.opts = nameOptions(it, L);
+  if(type === "C") t.opts = classOptions(it, L);
+  if(type === "F") t.opts = formulaOptions(it);
+  return t;
+}
+function roundTasks(L){
+  const seen = new Set(seenGet()), used = new Set();
+  if(L <= 4) return PLAN[L].map(ty => makeTask(ty, L, used, seen)).sort((a, b) => a.it.nC - b.it.nC);
+  /* mišrus egzaminas: po 2 užduotis iš kiekvienos temos */
+  const out = []; const types = ["B", "N", "C", "F", "G"];
+  for(let l = 0; l < 5; l++){
+    const ty = SH(types.filter(x => !((x === "F" || x === "G") && l >= 2) && !(x === "C" && l === 0) && !(x === "G" && l === 1 && false)));
+    out.push(makeTask(ty[0], l, used, seen)); out.push(makeTask(ty[1], l, used, seen));
+  }
+  return SH(out);
+}
+function huntTasks(){
+  const by = l => SH(T.hunts.filter(h => h.lvl === l));
+  const seenH = new Set(MK.get("mk-" + GAME + "-medziokle", []));
+  const pickH = l => { const a = by(l); return a.find(h => !seenH.has(h.id)) || a[0]; };
+  return ["e", "m", "h"].map(l => ({ type: "H", def: pickH(l), L: 5 }));
+}
+
+/* ---------- albumas ---------- */
+const albumGet = () => MK.get("mk-" + GAME + "-albumas", {});
+function albumAdd(it){
+  const a = albumGet(); if(a[it.name]) return false;
+  a[it.name] = [it.cls, M.fstr(M.formula(it.m), false)];
+  MK.set("mk-" + GAME + "-albumas", a); return true;
+}
+const CL_COL = { ane: "#7aa6d8", ene: "#e7a33b", yne: "#c27ad8", alc: "#58b98a", ald: "#e8736d", ket: "#e8c34a", acid: "#d65c7f", hal: "#6cc4cc" };
+const flask = (c, on) => `<svg viewBox="0 0 15 24" aria-hidden="true"><path d="M5 1h5v7l4 11q1 4-3 4H4q-4 0-3-4L5 8z" fill="${on ? "#fff" : "#f1f6f4"}" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round"/>${on ? `<path d="M3.6 15.5h7.8l2.2 4.6q.5 2.4-2 2.4H3.4q-2.5 0-2-2.4z" fill="${c}"/>` : ""}</svg>`;
+function drawAlbum(){
+  const a = albumGet(), keys = Object.keys(a), n = keys.length;
+  const rk = T.ranks.filter(r => n >= r[1]).pop(), nx = T.ranks.find(r => r[1] > n);
+  const rows = Object.keys(T.cls).map(c => {
+    const ks = keys.filter(k => a[k][0] === c).sort((x, y) => x.localeCompare(y, "lt"));
+    const fl = Array.from({ length: 6 }, (_, i) => flask(CL_COL[c], i < Math.min(ks.length, 6))).join("");
+    return `<div class="shelf"><span class="fl">${fl}</span><span class="sn">${T.cls[c]}</span><span class="sc">${ks.length}</span>
+      ${ks.length ? `<details><summary>Parodyti pavadinimus</summary><ul>${ks.map(k => `<li>${MK.esc(k)} <small>${a[k][1]}</small></li>`).join("")}</ul></details>` : ""}</div>`;
+  }).join("");
+  const pct = Math.min(100, nx ? Math.round((n - rk[1]) / (nx[1] - rk[1]) * 100) : 100);
+  $("alb").innerHTML = `<h2 class="mk-sec" style="margin-left:0">${T.albumTitle}</h2><div class="albbox">${rows}
+    <div class="lbar"><i style="width:${pct}%"></i></div>
+    <p class="altext">${n ? T.albumText(n, rk[0], nx ? nx[1] - n : 0, nx ? nx[0] : "") : T.albumEmpty}</p></div>`;
+}
+
+/* ---------- lygių piktogramos ir pagrindinis paveikslas ---------- */
+function lvlIcon(i){
+  const at = (x, y, c, t) => `<circle cx="${x}" cy="${y}" r="6.2" fill="${c}" stroke="${INK}" stroke-width="1.6"/>${t ? `<text x="${x}" y="${y + .5}" text-anchor="middle" dominant-baseline="central" font-family="Outfit,sans-serif" font-weight="800" font-size="6.8" fill="#fff">${t}</text>` : ""}`;
+  const ln = (a, b, c, d, w) => `<path d="M${a} ${b}L${c} ${d}" stroke="${INK}" stroke-width="${w || 2.4}" stroke-linecap="round"/>`;
+  const C = COL.C, O = COL.O, K = COL.Cl;
+  const S = {
+    0: ln(8, 38, 18, 26) + ln(18, 26, 30, 38) + ln(30, 38, 40, 26) + ln(40, 26, 50, 38) + at(8, 38, C) + at(18, 26, C) + at(30, 38, C) + at(40, 26, C) + at(50, 38, C),
+    1: ln(8, 38, 20, 26) + ln(20, 26, 32, 38) + ln(34, 41, 46, 29, 2.2) + ln(30, 35, 42, 23, 2.2) + ln(46, 29, 54, 40) + at(8, 38, C) + at(20, 26, C) + at(32, 38, C) + at(44, 26, C) + at(54, 40, C),
+    2: ln(10, 36, 22, 28) + ln(22, 28, 34, 36) + ln(34, 36, 46, 28) + ln(22, 28, 22, 14) + ln(34, 36, 34, 50) + at(10, 36, C) + at(22, 28, C) + at(34, 36, C) + at(46, 28, C) + at(22, 14, "#7aa6d8") + at(34, 50, "#7aa6d8"),
+    3: ln(8, 40, 20, 30) + ln(20, 30, 32, 40) + ln(32, 40, 44, 30) + ln(32, 40, 32, 52) + at(8, 40, C) + at(20, 30, C) + at(32, 40, C) + at(44, 30, C) + at(32, 52, O, "OH"),
+    4: ln(10, 38, 22, 28) + ln(22, 28, 34, 38) + ln(34, 38, 46, 28) + ln(46, 28, 54, 16, 2.2) + ln(50, 30, 58, 18, 2.2) + ln(46, 28, 56, 42) + ln(10, 38, 8, 50) + at(10, 38, C) + at(22, 28, C) + at(34, 38, C) + at(46, 28, C) + at(54, 15, O) + at(56, 44, O, "OH") + at(8, 51, K, "Cl"),
+    5: `<circle cx="26" cy="26" r="16" fill="#fff" stroke="${INK}" stroke-width="3"/>` + ln(37, 37, 54, 54, 5) + ln(18, 30, 26, 22, 2.2) + ln(26, 22, 34, 30, 2.2) + at(18, 30, C) + at(26, 22, C) + at(34, 30, C),
+    6: `<path d="M24 8h16v14l12 24q3 8-5 8H17q-8 0-5-8l12-24z" fill="#fff" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><path d="M19 38h26l7 12q2 4-3 4H15q-5 0-3-4z" fill="#58b98a"/><path d="M32 24l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5-3.6-3.5 5-.7z" fill="#ffc61a" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>`
+  };
+  return `<svg viewBox="0 0 64 64" aria-hidden="true">${S[i]}</svg>`;
+}
+function heroSvg(){
+  const bd = (a, b, c, d, w) => `<path d="M${a} ${b}L${c} ${d}" stroke="${INK}" stroke-width="${w || 5}" stroke-linecap="round"/>`;
+  const ball = (x, y, r, c, t) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="${INK}" stroke-width="3"/><circle cx="${x - r * .32}" cy="${y - r * .36}" r="${r * .26}" fill="#fff" opacity=".45"/>${t ? `<text x="${x}" y="${y + .5}" text-anchor="middle" dominant-baseline="central" font-family="Outfit,sans-serif" font-weight="800" font-size="${r * .9}" fill="#fff">${t}</text>` : ""}`;
+  return `<svg viewBox="0 0 400 250" role="img" aria-label="Chemikas laboratorijoje šalia molekulės modelio">
+  <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2f4ee"/><stop offset="1" stop-color="#f7fcfa"/></linearGradient></defs>
+  <rect width="400" height="250" fill="url(#hg)"/>
+  <g stroke="#cfe4dc" stroke-width="1.2">${Array.from({ length: 9 }, (_, i) => `<path d="M${i * 50} 0V250"/>`).join("")}${Array.from({ length: 5 }, (_, i) => `<path d="M0 ${i * 50}H400"/>`).join("")}</g>
+  <rect x="0" y="62" width="400" height="9" fill="#c9a77a" stroke="${INK}" stroke-width="2.5"/>
+  <g><path d="M24 62V30h20v32M60 62V20h16v42M96 62V34h24v28" fill="#fff" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/><path d="M24 50h20v12H24zM60 44h16v18H60zM96 52h24v10H96z" fill="#7bd3b4" opacity=".85"/></g>
+  <g>${bd(86, 168, 120, 138, 6)}${bd(120, 138, 156, 168, 6)}${bd(156, 168, 190, 138, 6)}${bd(120, 138, 120, 100, 6)}${bd(156, 168, 156, 204, 6)}
+  ${ball(86, 168, 17, "#2a3b5a", "C")}${ball(120, 138, 17, "#2a3b5a", "C")}${ball(156, 168, 17, "#2a3b5a", "C")}${ball(190, 138, 17, "#2a3b5a", "C")}${ball(120, 100, 17, "#2a3b5a", "C")}${ball(156, 204, 16, "#e5483f", "OH")}</g>
+  <g transform="translate(300 0)">
+    <path d="M-46 226l8-86q4-18 24-20h28q20 2 24 20l8 86z" fill="#fff" stroke="${INK}" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M-12 120l12 36 12-36" fill="#dff1ec" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M0 156v70" stroke="${INK}" stroke-width="2.4"/>
+    <rect x="-34" y="170" width="16" height="22" rx="3" fill="#e6f4ef" stroke="${INK}" stroke-width="2.4"/>
+    <path d="M-48 150q-30 14-44 36" fill="none" stroke="${INK}" stroke-width="22" stroke-linecap="round"/>
+    <path d="M-48 150q-30 14-44 36" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round"/>
+    <circle cx="-94" cy="190" r="10" fill="#f0c49b" stroke="${INK}" stroke-width="2.6"/>
+    <path d="M-110 132l-14-6-8-34h40l-6 34z" fill="#bdebd8" stroke="${INK}" stroke-width="3" stroke-linejoin="round" transform="translate(6 82)"/>
+    <path d="M-106 200l-12 34q-4 12 6 12h38q10 0 6-12l-12-34v-18h-26z" fill="#fff" stroke="${INK}" stroke-width="3" stroke-linejoin="round" transform="translate(-4 -2)"/>
+    <path d="M-120 226l-6 18q-3 6 4 6h36q7 0 4-6l-6-18z" fill="#ff9a3c" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round" transform="translate(6 -14)"/>
+    <path d="M50 150q22 8 34 30" fill="none" stroke="${INK}" stroke-width="22" stroke-linecap="round"/>
+    <path d="M50 150q22 8 34 30" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round"/>
+    <circle cx="86" cy="184" r="10" fill="#f0c49b" stroke="${INK}" stroke-width="2.6"/>
+    <circle cx="0" cy="94" r="32" fill="#f0c49b" stroke="${INK}" stroke-width="3.5"/>
+    <path d="M-34 90q-2-34 34-36 36 2 34 36-12-18-34-18t-34 18z" fill="#3b2a24" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M-34 88q34 8 68 0" fill="none" stroke="${INK}" stroke-width="4"/>
+    <circle cx="-14" cy="96" r="11" fill="#cdeee5" stroke="${INK}" stroke-width="3.2"/><circle cx="14" cy="96" r="11" fill="#cdeee5" stroke="${INK}" stroke-width="3.2"/>
+    <path d="M-3 96h6" stroke="${INK}" stroke-width="3.2"/>
+    <circle cx="-14" cy="97" r="3" fill="${INK}"/><circle cx="14" cy="97" r="3" fill="${INK}"/>
+    <path d="M-10 112q10 8 20 0" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="-22" cy="108" r="4" fill="#ff8aa0" opacity=".55"/><circle cx="22" cy="108" r="4" fill="#ff8aa0" opacity=".55"/>
+  </g>
+  <rect x="0" y="226" width="400" height="24" fill="#8a6a46" stroke="${INK}" stroke-width="3"/>
+  </svg>`;
+}
+
+/* ---------- eiga ---------- */
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: lvlIcon(i) }));
+const app = $("app"), menu = $("menu"), play = $("play"), why = $("why");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("h1").innerHTML = T.h1; $("heroP").textContent = T.hero; $("note").textContent = T.note; $("ptsL").textContent = T.points;
+$("heroArt").innerHTML = `<div class="hero-card">${heroSvg()}</div>`;
+
+let lvl = 0, tasks = [], ti = 0, task = null, tries = 0, pts = 0, score = 0, fresh = 0, dots = null, B = null, hunt = null, locked = false, answered = false;
+function showMenu(){
+  play.hidden = true; menu.hidden = false;
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  drawAlbum();
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+function start(i){
+  lvl = i; pts = 0; score = 0; fresh = 0; ti = 0;
+  tasks = i === 5 ? huntTasks() : roundTasks(i);
+  $("pts").textContent = 0; why.innerHTML = ""; menu.hidden = true; play.hidden = false;
+  dots = MK.dots($("dots"), tasks.length);
+  showTask(); window.scrollTo(0, 0);
+}
+const lvName = () => LEVELS[lvl].name;
+const head = txt => `<div class="chead"><small>${T.taskOf(ti + 1, tasks.length, lvName())}</small><div class="task">${txt}</div></div>`;
+function showTask(){
+  task = tasks[ti]; tries = 0; locked = false; answered = false; hunt = null; B = null; why.innerHTML = ""; dots.cur(ti);
+  const bd = $("board");
+  if(task.type === "B"){
+    bd.innerHTML = `<div class="card">${head(T.build(MK.esc(task.it.name)))}<div id="bld"></div>
+      <div class="drops" id="drops"></div>
+      <div class="bact"><button type="button" class="mk-btn alt" id="hintf">${T.hintBtn}</button><button type="button" class="mk-btn go" id="chk" style="margin-top:0">${T.check}</button></div></div>`;
+    B = makeBuilder($("bld"), { tools: task.tools, bonds: task.bonds });
+    drawDrops();
+  } else if(task.type === "H"){
+    startHunt();
+  } else if(task.type === "G"){
+    bd.innerHTML = `<div class="card">${head(task.q)}<div class="opts" id="opts">${task.opts.map(o => `<button type="button" class="opt" data-v="${MK.esc(o)}">${o}</button>`).join("")}</div></div>`;
+  } else {
+    const q = task.type === "N" ? T.nameQ : task.type === "C" ? T.classQ : T.formQ;
+    const lab = task.type === "C" ? c => T.cls[c] : s => s;
+    bd.innerHTML = `<div class="card">${head(q)}<div class="cv ro">${layoutSvg(task.it.m, { mar: .7 })}</div>
+      <div class="opts" id="opts">${task.opts.map(o => `<button type="button" class="opt" data-v="${MK.esc(o)}">${task.type === "N" ? MK.esc(o) : lab(o)}</button>`).join("")}</div></div>`;
+  }
+}
+function drawDrops(){
+  const el = $("drops"); if(!el) return;
+  el.innerHTML = `${T.tries}: ` + [0, 1].map(i => `<i class="${i < 2 - tries ? "" : "lost"}"></i>`).join("");
+}
+const goBtn = label => `<button type="button" class="mk-btn go" id="go">${label}</button>`;
+const lastTask = () => ti >= tasks.length - 1;
+const nextLabel = () => lastTask() ? T.results : T.next;
+const solvBox = it => `<div class="solv">${layoutSvg(it.m, { mar: .6 })}<p>${MK.esc(it.name)}</p></div>`;
+const stepsHtml = it => `<div class="stepl">${T.nameSteps(it.tr).map(x => `<p>${x}</p>`).join("")}</div>`;
+
+/* daugialypiai pasirinkimai */
+$("board").addEventListener("click", e => {
+  const o = e.target.closest(".opt");
+  if(o && !answered){ MK.unlock(); answerMC(o); return; }
+  if(e.target.closest("#chk")){ MK.unlock(); if(task.type === "B") checkBuild(); else checkHunt(); return; }
+  if(e.target.closest("#hintf")){ MK.sfx.tap(); B.say(T.hintFormula(M.fstr(M.formula(task.it.m), true))); task.hinted = true; return; }
+  if(e.target.closest("#hhint")) return huntHint();
+  if(e.target.closest("#hshow")) return huntShow();
+});
+function mcWhy(it, ok, head){
+  const t = task.type;
+  if(t === "G") return MK.why({ ok, head, body: task.why });
+  let body, more;
+  if(t === "N"){ body = ""; more = stepsHtml(it); }
+  else if(t === "C"){ body = T.classWhy[it.cls]; more = `<p>${MK.esc(it.name)}</p>`; }
+  else {
+    const f = M.fstr(M.formula(it.m), true);
+    const parts = it.m.a.map((e, i) => ({ e, i, h: M.hCount(it.m, i) })).filter(x => x.e === "C").map(x => x.h);
+    const hs = M.formula(it.m).H;
+    if(it.cls === "ane") body = T.formWhyAl(it.nC, f);
+    else if(it.cls === "ene" && it.tr.subs.length === 0) body = T.formWhyEne(it.nC, f);
+    else if(it.cls === "yne" && it.tr.subs.length === 0) body = T.formWhyYne(it.nC, f);
+    else body = T.formWhy(parts.map(h => h ? (h > 1 ? "CH<sub>" + h + "</sub>" : "CH") : "C").join(" + "), hs, f);
+    more = `<p>${MK.esc(it.name)}</p>`;
+  }
+  return MK.why({ ok, head, body, more, sum: t === "N" ? T.explain : "Pavadinimas", open: !ok || t === "N" });
+}
+function answerMC(btn){
+  const it = task.it, v = btn.dataset.v;
+  const right = task.type === "G" ? task.right : task.type === "N" ? it.name : task.type === "C" ? it.cls : M.fstr(M.formula(it.m), true);
+  const norm = s => s.replace(/&amp;/g, "&");
+  const ok = norm(v) === norm(right);
+  const optBtns = [...document.querySelectorAll(".opt")];
+  if(ok){
+    answered = true; btn.classList.add("good"); MK.sfx.good();
+    const p = tries === 0 ? 10 : 5; pts += p; score += tries === 0 ? 1 : 0.5; $("pts").textContent = pts;
+    dots.mark(ti, tries === 0); if(task.type !== "G") albumAdd2(it);
+    why.innerHTML = mcWhy(it, true, T.okHead(MK.praise(), p)) + goBtn(nextLabel());
+    scrollWhy(); return;
+  }
+  tries++; btn.classList.add("bad"); MK.sfx.bad();
+  if(tries >= 2){
+    answered = true; dots.mark(ti, false);
+    optBtns.forEach(b => { if(norm(b.dataset.v) === norm(right)) b.classList.add("good"); });
+    why.innerHTML = mcWhy(it, false, T.badHead) + goBtn(nextLabel());
+    scrollWhy(); return;
+  }
+  why.innerHTML = MK.why({ ok: false, head: T.secondHead, body: T.tryAgain + "." });
+}
+function albumAdd2(it){ if(task.type === "N" && albumAdd(it)) fresh++; }
+function scrollWhy(){ setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80); }
+
+/* konstravimas */
+function checkBuild(){
+  const mine = B.mol(), it = task.it;
+  if(M.canon(mine) === it.key){
+    B.lock(true); answered = true; MK.sfx.good();
+    const p = tries === 0 ? (task.hinted ? 7 : 10) : 5; pts += p; score += tries === 0 ? (task.hinted ? 0.8 : 1) : 0.5; $("pts").textContent = pts;
+    dots.mark(ti, tries === 0); if(albumAdd(it)) fresh++;
+    why.innerHTML = MK.why({ ok: true, head: T.okHead(MK.praise(), p), body: T.buildOk(MK.esc(it.name)), more: stepsHtml(it), sum: T.explain }) + goBtn(nextLabel());
+    scrollWhy(); return;
+  }
+  tries++; MK.sfx.bad(); drawDrops();
+  const fm = M.formula(mine), ft = M.formula(it.m), a = M.fstr(fm, true), b = M.fstr(ft, true);
+  let msg;
+  if(a !== b) msg = T.buildBadFormula(a, b, fm.C - ft.C, fm.H - ft.H);
+  else msg = T.buildBadSame(a, M.name(mine));
+  if(tries >= 2){
+    B.lock(true); answered = true; dots.mark(ti, false);
+    why.innerHTML = MK.why({ ok: false, head: T.revealHead, body: msg, more: stepsHtml(it), sum: T.explain, open: true }) + solvBox(it) + goBtn(nextLabel());
+    scrollWhy(); return;
+  }
+  why.innerHTML = MK.why({ ok: false, head: T.secondHead, body: msg });
+  if(a === b) B.say("Formulė tinka – pakeisk atomų sujungimus.", true);
+}
+
+/* izomerų medžioklė */
+function startHunt(){
+  const def = task.def; const its = [], seen = new Set();
+  def.specs.forEach(sp => items(sp).forEach(x => { if(!seen.has(x.key)){ seen.add(x.key); its.push(x); } }));
+  its.sort((a, b) => a.name.localeCompare(b.name, "lt"));
+  const f = M.fstr(M.formula(its[0].m), true);
+  hunt = { def, its, found: new Map(), rev: new Set(), hints: 0, f };
+  const classes = def.specs.map(s => s.cls);
+  const tools = ["C"]; if(classes.some(c => ["alc", "acid"].includes(c))) tools.push("OH"); if(classes.some(c => ["ald", "ket", "acid"].includes(c))) tools.push("O");
+  if(classes.includes("hal")) tools.push("Cl");
+  const bonds = classes.some(c => c === "ene" || c === "yne");
+  $("board").innerHTML = `<div class="card">${head(T.huntQ(def.what, f, its.length))}<div id="slots"></div><div id="bld"></div>
+    <div class="bact"><button type="button" class="mk-btn alt" id="hhint">${T.hintBtn}</button><button type="button" class="mk-btn alt" id="hshow">${T.huntShow}</button><button type="button" class="mk-btn go" id="chk" style="margin-top:0">${T.check}</button></div></div>`;
+  B = makeBuilder($("bld"), { tools, bonds });
+  drawSlots();
+  const done = MK.get("mk-" + GAME + "-medziokle", []); if(!done.includes(def.id)) MK.set("mk-" + GAME + "-medziokle", done.concat(def.id));
+}
+function slotHtml(it, state){
+  return `<div class="slot ${state}">${layoutSvg(it.m, { mar: .5, mini: true })}<b>${MK.esc(it.name)}</b>${state === "rev" ? `<em>${T.slotRevealed}</em>` : ""}</div>`;
+}
+function drawSlots(){
+  const h = hunt;
+  const cells = h.its.map(it => h.found.has(it.key) ? slotHtml(it, "got") : h.rev.has(it.key) ? slotHtml(it, "rev") : `<div class="slot empty" aria-label="Dar neatrasta">?</div>`);
+  $("slots").innerHTML = `<div class="drops" style="margin-top:8px;font-size:14px">${T.huntFound(h.found.size, h.its.length)}</div><div class="slots">${cells.join("")}</div>`;
+}
+function checkHunt(){
+  const h = hunt, mine = B.mol();
+  if(mine.a.length < 2){ B.say("Pirmiausia sudaryk molekulę.", true); return; }
+  const key = M.canon(mine), it = h.its.find(x => x.key === key);
+  if(it){
+    if(h.found.has(key) || h.rev.has(key)){ MK.sfx.bad(); why.innerHTML = MK.why({ ok: false, head: T.huntDupSame }); B.reset(); return; }
+    const hinted = h.hintedKeys && h.hintedKeys.has(key);
+    h.found.set(key, hinted ? 1 : 2);
+    const p = hinted ? 4 : 10; pts += p; $("pts").textContent = pts; MK.sfx.good();
+    if(albumAdd(it)) fresh++;
+    B.reset(); drawSlots();
+    if(h.found.size + h.rev.size >= h.its.length) return endHunt();
+    why.innerHTML = MK.why({ ok: true, head: T.okHead(MK.praise(), p), body: T.huntNew(MK.esc(it.name)) });
+    return;
+  }
+  MK.sfx.bad();
+  const fm = M.fstr(M.formula(mine), true);
+  let msg;
+  if(fm !== h.f) msg = T.huntBadF(fm, h.f);
+  else msg = T.huntBadC(h.def.what);
+  why.innerHTML = MK.why({ ok: false, head: T.badHead, body: msg });
+}
+function huntHint(){
+  const h = hunt, left = h.its.filter(x => !h.found.has(x.key) && !h.rev.has(x.key));
+  MK.sfx.tap();
+  if(!left.length) return;
+  const it = MK.pick(left); h.hints++; (h.hintedKeys = h.hintedKeys || new Set()).add(it.key);
+  why.innerHTML = MK.why({ ok: true, head: T.hintBtn, body: T.huntHint(MK.esc(it.name)) });
+}
+function huntShow(){
+  const h = hunt;
+  h.its.forEach(x => { if(!h.found.has(x.key)) h.rev.add(x.key); });
+  drawSlots(); endHunt();
+}
+function endHunt(){
+  const h = hunt;
+  B.lock(true); answered = true;
+  const full = h.found.size, n = h.its.length;
+  const clean = [...h.found.values()].reduce((s, v) => s + (v === 2 ? 1 : 0.4), 0);
+  score += clean / n;
+  dots.mark(ti, full === n && h.rev.size === 0 && !h.hints);
+  if(full === n) MK.confetti(24);
+  const extra = h.def.inter ? `<p>${T.huntInter}</p>` : "";
+  why.innerHTML = MK.why({ ok: full === n, head: full === n ? T.huntDoneH(n) : T.badHead, body: full === n ? T.huntDoneB(h.f) : T.huntEnd(full, n, h.f), more: extra + `<p>${T.huntCis}</p>`, sum: "Papildomai", open: true }) + goBtn(nextLabel());
+  scrollWhy();
+}
+
+why.addEventListener("click", e => {
+  if(!e.target.closest("#go")) return;
+  MK.sfx.tap(); why.innerHTML = "";
+  ti++;
+  if(ti >= tasks.length) return finish();
+  showTask(); window.scrollTo(0, 0);
+});
+function finish(){
+  const all = tasks.length;
+  const stars = MK.starsFor(Math.round(score * 100) / 100, all);
+  seenAdd(tasks.filter(t => t.it && t.type !== "G").map(t => t.it.key));
+  MK.best(GAME, LEVELS[lvl].id, stars);
+  MK.result({ stars, title: T.resTitle(score, all), text: T.resText(pts, fresh),
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+window.__mkTest = { M, T, pool, items, roundTasks, huntTasks, nameOptions, makeTask, mkItem, state: () => ({ task, hunt, tasks, ti, B }) , start, showMenu };
+showMenu();
+})();
+</script>
+</body>
+</html>
