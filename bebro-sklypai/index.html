@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bebro sklypai – MokomėsKartu.lt</title>
+<meta name="description" content="3–4 klasių matematikos žaidimas: stačiakampio ir kvadrato plotas, figūros iš kelių stačiakampių, sklypų galvosūkiai su bebru Rimu.">
+<meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/bebro-sklypai/tekstai.lt.js"></script>
+<style>
+/* Meniu: bebras Rimas, „Bebro kaimas“ (kolekcija), lygiai, „Noriu pasimokyti“.
+   Užduotys: pasirinkimas su brėžiniu, lysvės braižymas tempiant, sklypų galvosūkis (Shikaku tipo), sudėtinės figūros. */
+body{--ac:#2f9e5b;--ac-ink:#fff;--ac-soft:#dff5e4}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(34px,8.6vw,56px)}
+.mk-hero p{max-width:42ch;font-size:16.5px}
+.hero-art{width:min(100%,480px);border-radius:26px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15)}
+.hero-art svg{display:block;width:100%;height:auto}
+.hero-art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 18px/1.2 var(--kid);display:flex;gap:8px;align-items:center}
+.col h2 svg{width:30px;height:30px;flex:none}
+.col p{margin:4px 0 10px;color:var(--soft);font-weight:700;font-size:14.5px}
+.vill{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;padding:8px;border-radius:14px;background:#8a5a33;box-shadow:inset 0 0 0 2px #121a33}
+.vill svg{display:block;width:100%;height:auto;border-radius:6px}
+.vill .new{animation:mkPop .6s cubic-bezier(.2,1.6,.4,1)}
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.card{width:100%;max-width:600px;margin:0 auto 10px;padding:12px 14px 14px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12)}
+.txt{margin:0 0 10px;font:700 16px/1.5 var(--body)}
+.txt b{font-weight:800}
+.figw{margin:0 0 10px;border-radius:14px;overflow:hidden;box-shadow:0 0 0 2.5px var(--ink);background:#eaf7dc}
+.figw svg{display:block;width:100%;height:auto}
+.ans{display:grid;gap:8px}
+.ans.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.a{min-height:52px;padding:10px 12px;border:0;border-radius:14px;background:#fff;cursor:pointer;text-align:center;font:800 18px/1.3 var(--body);color:var(--ink);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16);transition:transform .1s;touch-action:manipulation}
+.a:active{transform:translateY(3px)}
+.a.ok{background:#dff7e6;box-shadow:inset 0 0 0 3.5px var(--good),0 4px 0 rgba(18,26,51,.16)}
+.a.no{background:#ffe6df;box-shadow:inset 0 0 0 3.5px var(--bad),0 4px 0 rgba(18,26,51,.16)}
+.ans.done .a{pointer-events:none}
+.ans.done .a:not(.ok):not(.no){opacity:.5}
+.go{display:flex;width:100%;max-width:600px;margin:4px auto 0}
+.mk-why{max-width:600px;margin-inline:auto}
+.mk-why-m p{margin:4px 0}
+.fade{animation:mkIn .4s cubic-bezier(.2,1.2,.4,1)}
+.note{min-height:24px;margin:8px 0;text-align:center;font:800 15.5px/1.35 var(--body)}
+.note.good{color:#1c8a52}.note.warn{color:#b8531a}
+.bar{display:flex;justify-content:space-between;gap:8px;margin:8px 0 0;font:800 14px/1.2 var(--body);color:var(--soft)}
+.tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0 0}
+.tools .mk-btn{min-height:44px;padding:8px 16px;font-size:16px}
+.board{margin:0 auto;max-width:460px;border-radius:14px;overflow:hidden;box-shadow:0 0 0 2.5px var(--ink);background:#8ccf66;touch-action:none}
+.board svg{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none;touch-action:none}
+.board.shake{animation:mkShake .45s}
+.legend{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:8px 0 0;font:700 13px/1.3 var(--body);color:var(--soft)}
+@media (max-width:420px){.vill{gap:3px;padding:6px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="g-carrot" viewBox="0 0 40 40"><path d="M20 38 14 17q6-4 12 0z" fill="#ff8a1f" stroke="#121a33" stroke-width="2" stroke-linejoin="round"/><path d="M17 23h5M16 29h5" stroke="#c75e00" stroke-width="1.6" stroke-linecap="round"/><path d="M20 16 14 5M20 16V3M20 16 26 5" stroke="#2f9e4a" stroke-width="3.2" stroke-linecap="round"/></symbol>
+<symbol id="g-cabbage" viewBox="0 0 40 40"><circle cx="20" cy="22" r="14" fill="#8bdc4a" stroke="#121a33" stroke-width="2"/><path d="M8 22q12-14 24 0M12 29q8-10 16 0" fill="none" stroke="#3a9a2e" stroke-width="2.2" stroke-linecap="round"/><path d="M20 10v24" stroke="#3a9a2e" stroke-width="1.8"/></symbol>
+<symbol id="g-berry" viewBox="0 0 40 40"><path d="M20 37C7 29 7 15 13 13q7 2 14 0c6 2 6 16-7 24z" fill="#ff4f5e" stroke="#121a33" stroke-width="2" stroke-linejoin="round"/><path d="M12 13q8-8 16 0q-8 3-16 0z" fill="#3aa655" stroke="#121a33" stroke-width="1.8" stroke-linejoin="round"/><g fill="#ffe08a"><circle cx="15" cy="20" r="1.4"/><circle cx="22" cy="19" r="1.4"/><circle cx="26" cy="25" r="1.4"/><circle cx="18" cy="27" r="1.4"/><circle cx="21" cy="32" r="1.4"/></g></symbol>
+<symbol id="g-sun" viewBox="0 0 40 40"><path d="M20 22v16" stroke="#2f9e4a" stroke-width="3.5" stroke-linecap="round"/><path d="M20 32q-8-1-9-7 8 0 9 7z" fill="#3aa655" stroke="#121a33" stroke-width="1.5"/><g fill="#ffd21f" stroke="#121a33" stroke-width="1.6"><ellipse cx="20" cy="6.5" rx="3.3" ry="5.5"/><ellipse cx="20" cy="29.5" rx="3.3" ry="5.5" transform="rotate(0)" opacity="0"/><ellipse cx="20" cy="6.5" rx="3.3" ry="5.5" transform="rotate(45 20 17)"/><ellipse cx="20" cy="6.5" rx="3.3" ry="5.5" transform="rotate(90 20 17)"/><ellipse cx="20" cy="6.5" rx="3.3" ry="5.5" transform="rotate(135 20 17)"/><ellipse cx="20" cy="6.5" rx="3.3" ry="5.5" transform="rotate(180 20 17)"/><ellipse cx="20" cy="6.5" rx="3.3" ry="5.5" transform="rotate(225 20 17)"/><ellipse cx="20" cy="6.5" rx="3.3" ry="5.5" transform="rotate(270 20 17)"/><ellipse cx="20" cy="6.5" rx="3.3" ry="5.5" transform="rotate(315 20 17)"/></g><circle cx="20" cy="17" r="6" fill="#7a4b2a" stroke="#121a33" stroke-width="1.8"/></symbol>
+<symbol id="g-wheat" viewBox="0 0 40 40"><path d="M20 38V10" stroke="#b58a1d" stroke-width="2.6" stroke-linecap="round"/><g fill="#f2c94c" stroke="#121a33" stroke-width="1.5"><ellipse cx="15.5" cy="14" rx="3" ry="5.2" transform="rotate(-24 15.5 14)"/><ellipse cx="24.5" cy="14" rx="3" ry="5.2" transform="rotate(24 24.5 14)"/><ellipse cx="15.5" cy="23" rx="3" ry="5.2" transform="rotate(-24 15.5 23)"/><ellipse cx="24.5" cy="23" rx="3" ry="5.2" transform="rotate(24 24.5 23)"/><ellipse cx="20" cy="8" rx="3" ry="5.2"/></g></symbol>
+<symbol id="g-tomato" viewBox="0 0 40 40"><circle cx="20" cy="23" r="13" fill="#ff5a47" stroke="#121a33" stroke-width="2"/><path d="M12 13l8 5 8-5-4 8-4-3-4 3z" fill="#3aa655" stroke="#121a33" stroke-width="1.5" stroke-linejoin="round"/><circle cx="15" cy="25" r="2.5" fill="#fff" opacity=".35"/></symbol>
+<symbol id="g-pumpkin" viewBox="0 0 40 40"><ellipse cx="20" cy="24" rx="16" ry="12.5" fill="#ff9a2e" stroke="#121a33" stroke-width="2"/><path d="M20 12q-6 12 0 24M20 12q6 12 0 24M11 15q-4 10 1 20M29 15q4 10-1 20" fill="none" stroke="#d96a00" stroke-width="1.8"/><path d="M20 12q0-6 5-7" fill="none" stroke="#2f9e4a" stroke-width="3.2" stroke-linecap="round"/></symbol>
+<symbol id="g-tulip" viewBox="0 0 40 40"><path d="M20 38V19" stroke="#2f9e4a" stroke-width="3.2" stroke-linecap="round"/><path d="M20 34q-9 0-10-10 7 1 10 10zM20 34q9 0 10-10-7 1-10 10z" fill="#3aa655" stroke="#121a33" stroke-width="1.4" stroke-linejoin="round"/><path d="M11 6q1 14 9 14t9-14l-5 5-4-6-4 6z" fill="#ff6fa4" stroke="#121a33" stroke-width="2" stroke-linejoin="round"/></symbol>
+<symbol id="g-tree" viewBox="0 0 40 40"><path d="M17 38l1-14h4l1 14z" fill="#8a5a33" stroke="#121a33" stroke-width="1.8" stroke-linejoin="round"/><circle cx="20" cy="15" r="12" fill="#3aa655" stroke="#121a33" stroke-width="2"/><g fill="#ff4f5e"><circle cx="14" cy="14" r="2.4"/><circle cx="24" cy="10" r="2.4"/><circle cx="25" cy="19" r="2.4"/><circle cx="17" cy="21" r="2.4"/></g></symbol>
+<symbol id="g-grape" viewBox="0 0 40 40"><path d="M20 4q1 6 6 8" fill="none" stroke="#2f9e4a" stroke-width="3" stroke-linecap="round"/><g fill="#8a5be0" stroke="#121a33" stroke-width="1.6"><circle cx="13" cy="15" r="5.4"/><circle cx="24" cy="15" r="5.4"/><circle cx="18.5" cy="23" r="5.4"/><circle cx="29" cy="23" r="5.4"/><circle cx="8.5" cy="23" r="5.4"/><circle cx="24" cy="31" r="5.4"/><circle cx="13" cy="31" r="5.4"/><circle cx="18.5" cy="37" r="3.6"/></g></symbol>
+<symbol id="g-oak" viewBox="0 0 40 40"><path d="M17 38l1-12h4l1 12z" fill="#8a5a33" stroke="#121a33" stroke-width="1.8" stroke-linejoin="round"/><circle cx="20" cy="15" r="12.5" fill="#2e8f4e" stroke="#121a33" stroke-width="2"/><circle cx="14" cy="12" r="4" fill="#47ad66" opacity=".7"/></symbol>
+<symbol id="g-rock" viewBox="0 0 40 40"><path d="M5 33q-1-12 8-16 5-6 13-3 9 3 9 12 1 6-3 8H8q-3 0-3-1z" fill="#a6a39a" stroke="#121a33" stroke-width="2" stroke-linejoin="round"/><path d="M13 20q4-3 8-1M22 27q4-2 7 0" fill="none" stroke="#7d7a70" stroke-width="2" stroke-linecap="round"/></symbol>
+</defs>
+</svg>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="hero-art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="col" id="col"></div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="ptsChip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="stage"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, GAME = "bebro-sklypai", GRADES = [3, 4];
+const R = MK.rnd, P = MK.pick, SH = MK.shuffle;
+const K = "#121a33", S = `stroke="${K}" stroke-width="2.4" stroke-linejoin="round"`;
+const $ = id => document.getElementById(id);
+const f1 = x => +x.toFixed(1);
+const CROPS = ["carrot", "cabbage", "berry", "sun", "wheat", "tomato", "pumpkin", "tulip", "tree", "grape"];
+const CROPBG = ["#f6d9a8", "#d4f0b0", "#ffd3d6", "#fff0a6", "#f8e7ac", "#ffd9cf", "#ffe2b8", "#ffe0ee", "#d8f1c9", "#e6dcfb"];
+const fmt = (v, u) => `${v} ${u}²`;
+const pairs = A => { const r = []; for(let w = 1; w * w <= A; w++) if(A % w === 0) r.push([w, A / w]); return r; };
+const pairsTxt = A => pairs(A).map(p => `${p[0]} × ${p[1]}`).join(", ");
+
+/* ================= Shikaku: generatorius ir sprendiklis ================= */
+function tiling(W, H, maxA, maxSide){
+  const g = new Int16Array(W * H).fill(-1), rects = [];
+  for(let y = 0; y < H; y++) for(let x = 0; x < W; x++){
+    if(g[y * W + x] >= 0) continue;
+    const opts = [];
+    let mw = 0; while(x + mw < W && g[y * W + x + mw] < 0 && mw < maxSide) mw++;
+    for(let w = 1; w <= mw; w++){
+      let mh = 0;
+      for(let h = 1; y + h <= H && h <= maxSide; h++){
+        let ok = true; for(let xx = x; xx < x + w; xx++) if(g[(y + h - 1) * W + xx] >= 0){ ok = false; break; }
+        if(!ok) break; mh = h;
+      }
+      for(let h = 1; h <= mh; h++){ const a = w * h; if(a <= maxA) opts.push({ w, h, wt: a === 1 ? 0.12 : a <= 3 ? 0.7 : 1 + Math.min(a, 8) * 0.15 }); }
+    }
+    let tot = 0; opts.forEach(o => tot += o.wt); let r = Math.random() * tot, pick = opts[0];
+    for(const o of opts){ r -= o.wt; if(r <= 0){ pick = o; break; } }
+    const id = rects.length; rects.push({ x, y, w: pick.w, h: pick.h });
+    for(let yy = y; yy < y + pick.h; yy++) for(let xx = x; xx < x + pick.w; xx++) g[yy * W + xx] = id;
+  }
+  return rects;
+}
+function countSol(W, H, clues, limit){
+  const N = W * H, at = new Int16Array(N).fill(-1); clues.forEach((c, i) => at[c.y * W + c.x] = i);
+  const cands = clues.map((c, i) => {
+    const res = [];
+    for(let w = 1; w <= c.n; w++){
+      if(c.n % w) continue; const h = c.n / w; if(w > W || h > H) continue;
+      for(let x0 = Math.max(0, c.x - w + 1); x0 <= Math.min(c.x, W - w); x0++) for(let y0 = Math.max(0, c.y - h + 1); y0 <= Math.min(c.y, H - h); y0++){
+        const cells = []; let ok = true;
+        for(let yy = y0; yy < y0 + h && ok; yy++) for(let xx = x0; xx < x0 + w; xx++){ const k = yy * W + xx; if(at[k] >= 0 && at[k] !== i){ ok = false; break; } cells.push(k); }
+        if(ok) res.push(cells);
+      }
+    }
+    return res;
+  });
+  const used = new Uint8Array(N), placed = new Uint8Array(clues.length); let sols = 0;
+  (function rec(n){
+    if(sols >= limit) return;
+    if(n === clues.length){ sols++; return; }
+    let best = -1, bestList = null;
+    for(let i = 0; i < clues.length; i++){
+      if(placed[i]) continue;
+      const list = cands[i].filter(cs => { for(let j = 0; j < cs.length; j++) if(used[cs[j]]) return false; return true; });
+      if(best < 0 || list.length < bestList.length){ best = i; bestList = list; if(list.length <= 1) break; }
+    }
+    if(!bestList.length) return;
+    placed[best] = 1;
+    for(const cs of bestList){ cs.forEach(k => used[k] = 1); rec(n + 1); cs.forEach(k => used[k] = 0); if(sols >= limit) break; }
+    placed[best] = 0;
+  })(0);
+  return sols;
+}
+function genPuzzle(W, H, maxA, o){
+  o = o || {}; const maxSide = o.maxSide || Math.max(W, H);
+  for(let t = 0; t < 400; t++){
+    const rects = tiling(W, H, maxA, maxSide);
+    const ones = rects.filter(r => r.w * r.h === 1).length, areas = new Set(rects.map(r => r.w * r.h));
+    if(ones > Math.max(1, Math.round(W * H / 14)) || areas.size < (W >= 6 ? 4 : 3) || rects.length < (W * H) / (maxA * 0.8)) continue;
+    const clues = rects.map(r => ({ x: r.x + R(0, r.w - 1), y: r.y + R(0, r.h - 1), n: r.w * r.h }));
+    if(countSol(W, H, clues, 2) === 1) return { W, H, clues, sol: rects.map((r, i) => Object.assign({ ci: i }, r)) };
+  }
+  return null;
+}
+const rectCells = r => { const a = []; for(let y = r.y; y < r.y + r.h; y++) for(let x = r.x; x < r.x + r.w; x++) a.push([x, y]); return a; };
+const inRect = (r, x, y) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h;
+const overlap = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+
+/* ================= lentos piešimas (Shikaku ir braižymo užduotys) ================= */
+const C = 40, PAD = 6;
+function boardSvg(st){
+  const W = st.W, H = st.H, vw = W * C + PAD * 2, vh = H * C + PAD * 2; let h = "";
+  h += `<rect x="0" y="0" width="${vw}" height="${vh}" fill="#6fb552"/>`;
+  for(let y = 0; y < H; y++) for(let x = 0; x < W; x++) h += `<rect x="${PAD + x * C}" y="${PAD + y * C}" width="${C}" height="${C}" fill="${(x + y) % 2 ? "#a3dc7a" : "#98d46f"}"/>`;
+  (st.obst || []).forEach(o => { h += `<use href="#g-${o.t}" x="${PAD + o.x * C + 2}" y="${PAD + o.y * C + 2}" width="${C - 4}" height="${C - 4}"/>`; });
+  (st.plots || []).forEach((p, i) => {
+    const px = PAD + p.x * C, py = PAD + p.y * C, cr = p.crop != null ? p.crop : (p.ci != null ? p.ci : i) % CROPS.length;
+    h += `<rect x="${px}" y="${py}" width="${p.w * C}" height="${p.h * C}" fill="${CROPBG[cr]}"/>`;
+    for(let yy = 0; yy < p.h; yy++) for(let xx = 0; xx < p.w; xx++){
+      const isClue = (st.clues || []).some(c => c.x === p.x + xx && c.y === p.y + yy);
+      if(!isClue || st.plotGlyphOnClue) h += `<use href="#g-${CROPS[cr]}" x="${px + xx * C + 6}" y="${py + yy * C + 6}" width="${C - 12}" height="${C - 12}" opacity=".95"/>`;
+    }
+    h += `<rect x="${px + 1.5}" y="${py + 1.5}" width="${p.w * C - 3}" height="${p.h * C - 3}" fill="none" stroke="#8a5a33" stroke-width="3.4" rx="3"/>`;
+    [[px, py], [px + p.w * C, py], [px, py + p.h * C], [px + p.w * C, py + p.h * C]].forEach(q => { h += `<rect x="${q[0] - 4}" y="${q[1] - 4}" width="8" height="8" rx="2" fill="#6b3f1d" stroke="${K}" stroke-width="1.4"/>`; });
+  });
+  if(st.flag){
+    const fx = PAD + st.flag.x * C + C / 2, fy = PAD + st.flag.y * C + C / 2;
+    h += `<path d="M${fx - 8} ${fy + 14}V${fy - 14}" stroke="${K}" stroke-width="3" stroke-linecap="round"/><path d="M${fx - 8} ${fy - 14}h18l-5 7 5 7h-18z" fill="#ff4f5e" stroke="${K}" stroke-width="2" stroke-linejoin="round"/><ellipse cx="${fx - 8}" cy="${fy + 15}" rx="8" ry="3" fill="#121a33" opacity=".25"/>`;
+  }
+  (st.clues || []).forEach(c => {
+    const cx = PAD + c.x * C + C / 2, cy = PAD + c.y * C + C / 2, fs = c.n >= 100 ? 14 : c.n >= 10 ? 19 : 22;
+    h += `<rect x="${cx - 14}" y="${cy - 13}" width="28" height="26" rx="6" fill="#fff4d6" stroke="${K}" stroke-width="2.2"/>
+      <path d="M${cx - 5} ${cy + 13}v4M${cx + 5} ${cy + 13}v4" stroke="${K}" stroke-width="2.2" stroke-linecap="round"/>
+      <text x="${cx}" y="${cy + 1}" text-anchor="middle" dominant-baseline="middle" font-family="Grandstander,Chalkboard SE,sans-serif" font-weight="800" font-size="${fs}" fill="${K}">${c.n}</text>`;
+  });
+  const dim = r => `<text x="${PAD + (r.x + r.w / 2) * C}" y="${PAD + (r.y + r.h / 2) * C}" text-anchor="middle" dominant-baseline="middle" font-family="Grandstander,sans-serif" font-weight="800" font-size="17" fill="#fff" stroke="#1b3fa0" stroke-width="4.5" paint-order="stroke" stroke-linejoin="round">${r.w} × ${r.h}</text>`;
+  if(st.prev){ const r = st.prev; h += `<rect x="${PAD + r.x * C + 2}" y="${PAD + r.y * C + 2}" width="${r.w * C - 4}" height="${r.h * C - 4}" fill="rgba(47,107,255,.22)" stroke="#2f6bff" stroke-width="3.2" stroke-dasharray="7 5" rx="4"/>${dim(r)}`; }
+  if(st.pend && !st.prev){ const p = st.pend; h += `<rect x="${PAD + p.x * C + 3}" y="${PAD + p.y * C + 3}" width="${C - 6}" height="${C - 6}" fill="rgba(47,107,255,.25)" stroke="#2f6bff" stroke-width="3.2" stroke-dasharray="7 5" rx="5"/>`; }
+  if(st.flash){ const r = st.flash; h += `<rect x="${PAD + r.x * C + 2}" y="${PAD + r.y * C + 2}" width="${r.w * C - 4}" height="${r.h * C - 4}" fill="rgba(255,80,60,.3)" stroke="#e8432d" stroke-width="3.4" rx="4"/>`; }
+  if(st.ghost){ const r = st.ghost; h += `<rect x="${PAD + r.x * C + 2}" y="${PAD + r.y * C + 2}" width="${r.w * C - 4}" height="${r.h * C - 4}" fill="rgba(255,255,255,.28)" stroke="#fff" stroke-width="3.4" stroke-dasharray="3 6" stroke-linecap="round" rx="4"/>`; }
+  return `<svg viewBox="0 0 ${vw} ${vh}" role="img" aria-label="Laukas">${h}</svg>`;
+}
+/* Prijungia tempimą ir bakstelėjimus. opts: { st, host, draw(), onCommit(rect), onTapPlot(plot) } */
+function attachBoard(o){
+  const st = o.st, host = o.host; let down = null, cur = null;
+  const cellAt = e => {
+    const svg = host.querySelector("svg"); if(!svg) return null; const b = svg.getBoundingClientRect();
+    const vx = (e.clientX - b.left) / b.width * (st.W * C + PAD * 2) - PAD, vy = (e.clientY - b.top) / b.height * (st.H * C + PAD * 2) - PAD;
+    return { x: Math.max(0, Math.min(st.W - 1, Math.floor(vx / C))), y: Math.max(0, Math.min(st.H - 1, Math.floor(vy / C))) };
+  };
+  const rectOf = (a, b) => ({ x: Math.min(a.x, b.x), y: Math.min(a.y, b.y), w: Math.abs(a.x - b.x) + 1, h: Math.abs(a.y - b.y) + 1 });
+  host.addEventListener("pointerdown", e => {
+    if(o.locked && o.locked()) return; const c = cellAt(e); if(!c) return; MK.unlock(); down = c; cur = c;
+    try{ host.setPointerCapture(e.pointerId); }catch(_){} e.preventDefault();
+    st.flash = null;
+  });
+  host.addEventListener("pointermove", e => {
+    if(!down) return; const c = cellAt(e); if(!c || (cur && c.x === cur.x && c.y === cur.y)) return; cur = c;
+    st.pend = null; st.prev = (c.x !== down.x || c.y !== down.y) ? rectOf(down, c) : null; o.draw();
+  });
+  const up = e => {
+    if(!down) return; const c = cellAt(e) || cur; const moved = c.x !== down.x || c.y !== down.y; const d = down; down = null; st.prev = null;
+    if(moved){ st.pend = null; o.draw(); o.onCommit(rectOf(d, c)); return; }
+    if(st.pend){ const r = rectOf(st.pend, c); st.pend = null; o.draw(); o.onCommit(r); return; }
+    if(o.onTapCell && o.onTapCell(c)){ o.draw(); return; }
+    const p = (st.plots || []).find(p => inRect(p, c.x, c.y));
+    if(p && o.onTapPlot){ o.onTapPlot(p); return; }
+    st.pend = c; MK.sfx.tap(); o.draw();
+  };
+  host.addEventListener("pointerup", up);
+  host.addEventListener("pointercancel", () => { down = null; st.prev = null; o.draw(); });
+}
+
+/* ================= brėžiniai: stačiakampiai ================= */
+const lab = (x, y, s, o) => { o = o || {}; return `<text x="${f1(x)}" y="${f1(y)}" text-anchor="${o.a || "middle"}" dominant-baseline="middle" font-family="Manrope,sans-serif" font-weight="800" font-size="${o.fs || 15}" fill="${o.c || K}" stroke="${o.bg || "#eaf7dc"}" stroke-width="4.5" paint-order="stroke" stroke-linejoin="round">${s}</text>`; };
+function gridRect(x0, y0, a, b, s, o){
+  o = o || {}; let h = "";
+  h += `<rect x="${x0}" y="${y0}" width="${a * s}" height="${b * s}" fill="${o.fill || "#b9e58f"}"/>`;
+  for(let i = 0; i <= a; i++) h += `<path d="M${x0 + i * s} ${y0}v${b * s}" stroke="#5f9e3a" stroke-width="${i === 0 || i === a ? 0 : 1.4}"/>`;
+  for(let j = 0; j <= b; j++) h += `<path d="M${x0} ${y0 + j * s}h${a * s}" stroke="#5f9e3a" stroke-width="${j === 0 || j === b ? 0 : 1.4}"/>`;
+  h += `<rect x="${x0}" y="${y0}" width="${a * s}" height="${b * s}" fill="none" stroke="#8a5a33" stroke-width="3.4" rx="2"/>`;
+  return h;
+}
+function figWrap(w, h, inner){ return `<div class="figw"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Brėžinys">${inner}</svg></div>`; }
+function gridFig(a, b, o){
+  o = o || {}; const s = Math.min(34, Math.floor(280 / a), Math.floor(170 / b)), m = 34, w = a * s + 2 * m, h = b * s + 2 * m; let g = gridRect(m, m, a, b, s, o);
+  if(o.sides) g += lab(m + a * s / 2, m - 16, `${a}`, { fs: 16 }) + lab(m - 16, m + b * s / 2, `${b}`, { fs: 16 });
+  return figWrap(w, h, g);
+}
+function rectFig(a, b, u, o){
+  o = o || {}; const mx = 250, my = 120, s = Math.min(mx / a, my / b), W = a * s, H = b * s, m = 40, w = W + 2 * m + 12, h = H + 2 * m;
+  let g = `<rect x="${m}" y="${m}" width="${W}" height="${H}" fill="${o.fill || "#b9e58f"}" stroke="#8a5a33" stroke-width="3.4" rx="3"/>`;
+  g += lab(m + W / 2, m - 16, o.topQ ? "?" : `${a} ${u}`, { fs: 16, c: o.topQ ? "#d6336c" : K }) + lab(m + W + 8, m + H / 2, o.rightQ ? "?" : `${b} ${u}`, { fs: 16, a: "start", c: o.rightQ ? "#d6336c" : K });
+  if(o.inside) g += lab(m + W / 2, m + H / 2, o.inside, { fs: 17, c: "#1b5e20", bg: o.fill || "#b9e58f" });
+  return figWrap(w + 40, h, g);
+}
+function twoRectFig(r1, r2, u){
+  const mx = 130, my = 120, s = Math.min(mx / Math.max(r1[0], r2[0]), my / Math.max(r1[1], r2[1])), m = 34, gap = 30; let g = "", x = m, wmax = 0;
+  [r1, r2].forEach((r, i) => {
+    const W = r[0] * s, H = r[1] * s; g += `<rect x="${x}" y="${m + 16}" width="${W}" height="${H}" fill="${i ? "#ffe3a8" : "#b9e58f"}" stroke="#8a5a33" stroke-width="3.4" rx="3"/>`;
+    g += lab(x + W / 2, m + 2, `${r[0]} ${u}`, { fs: 14 }) + lab(x + W + 6, m + 16 + H / 2, `${r[1]} ${u}`, { fs: 14, a: "start" }) + lab(x + W / 2, m + 16 + H / 2, i ? "B" : "A", { fs: 20, c: "#1b5e20", bg: i ? "#ffe3a8" : "#b9e58f" });
+    x += W + gap + 30;
+  });
+  return figWrap(x + m - gap, m * 2 + my + 20, g);
+}
+
+/* ================= 1 ir 4 lygių atsakymų variantai ================= */
+function opts4(correct, cands){
+  const set = [correct];
+  cands.forEach(c => { if(c > 0 && Number.isFinite(c) && !set.includes(c)) set.push(c); });
+  let d = 1; while(set.length < 4){ [correct + d, correct - d].forEach(v => { if(v > 0 && set.length < 4 && !set.includes(v)) set.push(v); }); d++; }
+  return SH(set.slice(0, 4));
+}
+function mcNum(kind, fig, text, correct, cands, u, why, more){
+  const o = opts4(correct, cands);
+  return { type: "mc", kind, fig, text, opts: o.map(v => u === "n" ? `${v}` : fmt(v, u)), right: o.indexOf(correct), ans: u === "n" ? `${correct}` : fmt(correct, u), two: 1, why: { body: why, more } };
+}
+const RANGE = [[2, 6], [3, 8], [4, 10]];
+function t1(kind, tier){
+  tier = tier == null ? 1 : tier; const [lo, hi] = RANGE[tier], a = R(lo, hi); let b = R(lo, hi); if(b === a && kind !== "square") b = a < hi ? a + 1 : a - 1;
+  const it = P(T.items), u = it[2];
+  switch(kind){
+    case "gridCount": { const aa = R(3, 7), bb = R(2, 5), A = aa * bb;
+      return mcNum(kind, gridFig(aa, bb), T.q1.gridCount, A, [aa + bb, A + aa, A - bb, 2 * (aa + bb)], "m", T.w1.cells(aa, bb, A) + "", T.w1.more); }
+    case "cells": { const aa = R(3, 8), bb = R(3, 6), A = aa * bb;
+      return mcNum(kind, gridFig(aa, bb, { sides: 1 }), T.q1.cells(aa, bb), A, [aa + bb, A + aa, A - bb, A + bb], "m", T.w1.cells(aa, bb, A), T.w1.more); }
+    case "rect": { const A = a * b;
+      return mcNum(kind, rectFig(a, b, u), T.q1.rect(it, a, b, u), A, [a + b, 2 * (a + b), a * (b + 1), (a - 1) * b, A + a], u, T.w1.rect(a, b, A, u), T.w1.more); }
+    case "square": { const s = R(2, tier ? 9 : 7), A = s * s;
+      return mcNum(kind, rectFig(s, s, u), T.q1.square(it, s, u), A, [2 * s, 4 * s, s * (s + 1), s * (s - 1), A + s], u, T.w1.square(s, A, u), T.w1.more); }
+    case "rev": { const A = a * b; const ask = P(["w", "h"]); const known = a;
+      return mcNum(kind, rectFig(a, b, u, { rightQ: 1, inside: `${A} ${u}²` }), T.q1.rev(it, A, known, u), b, [A - a, A + a, a, b + 1, b - 1], u, T.w1.rev(A, a, b, u), T.w1.more); }
+    case "revSq": { const s = R(3, 9), A = s * s;
+      return mcNum(kind, rectFig(s, s, "cm", { topQ: 1, rightQ: 1, inside: `${A} cm²` }), T.q1.revSq(A), s, [A / 2, s + 1, s - 1, 2 * s], "cm", T.w1.revSq(A, s), T.w1.more); }
+    case "tiles": { const aa = R(3, 9), bb = R(2, 7), A = aa * bb;
+      return mcNum(kind, gridFig(aa, bb, { fill: "#f0dcb4" }), T.q1.tiles(aa, bb), A, [aa + bb, A + aa, A - bb, 2 * (aa + bb)], "n", T.w1.tiles(aa, bb, A), T.w1.more); }
+    case "cmp": {
+      let r1, r2, A, B;
+      if(Math.random() < 0.18){ const ns = [12, 16, 18, 20, 24, 30, 36].filter(n => pairs(n).length >= 2), n = P(ns), ps = SH(pairs(n)).slice(0, 2); r1 = ps[0]; r2 = ps[1]; if(Math.random() < .5){ r1 = r1.slice().reverse(); } }
+      else { do { r1 = [R(2, 9), R(2, 7)]; r2 = [R(2, 9), R(2, 7)]; } while(r1[0] * r1[1] === r2[0] * r2[1] || Math.abs(r1[0] * r1[1] - r2[0] * r2[1]) < 3); }
+      A = r1[0] * r1[1]; B = r2[0] * r2[1];
+      const right = A === B ? 2 : A > B ? 0 : 1, names = ["A", "B", T.q1.same];
+      return { type: "mc", kind, fig: twoRectFig(r1, r2, "m"), text: T.q1.cmp(), opts: names, right, ans: names[right], two: 0, why: { body: T.w1.cmp(A, B, r1[0], r1[1], r2[0], r2[1]), more: T.w1.more } };
+    }
+    case "unit": { const q = P(T.unitItems), cm = q[1] === "cm";
+      return { type: "mc", kind: "unit:" + q[0], fig: "", text: `<b>${q[0]}.</b> ${T.q1.unitQ}`, opts: T.unitOpts, right: cm ? 0 : 1, ans: T.unitOpts[cm ? 0 : 1], two: 1, why: { body: T.w1.unit(cm), more: T.w1.more } }; }
+    case "big": { const aa = R(12, 38), bb = R(11, 26), A = aa * bb, it2 = P(T.items.filter(i => i[2] === "m"));
+      return mcNum(kind, rectFig(aa, bb, "m"), T.q4.big(it2, aa, bb, "m"), A, [A + 10, A - 10, A + 100, A - 100, aa * (bb - 10), aa + bb], "m", T.w4.big(aa, bb, A, "m"), T.w4more); }
+  }
+}
+const mkRound1 = () => [t1("gridCount", 0), t1("cells", 0), t1("rect", 0), t1(P(["square", "unit"]), 1), t1(P(["tiles", "unit"]), 1), t1("rev", 1), t1("cmp", 2), t1(P(["revSq", "rev", "cmp"]), 2)];
+
+/* ================= sudėtinės figūros ================= */
+function shapeRects(kind){
+  switch(kind){
+    case "L": { const W = R(4, 9), H = R(4, 8), a = R(2, W - 2), b = R(2, H - 2); return [[0, 0, a, H], [0, H - b, W, b]]; }
+    case "T": { const s = R(2, 4), arm = R(1, 3), W = s + 2 * arm, H = R(5, 8), b = R(2, H - 2); return [[0, 0, W, b], [arm, b, s, H - b]]; }
+    case "U": { const a = R(2, 3), n = R(2, 4), W = 2 * a + n, H = R(4, 7), b = R(2, H - 2); return [[0, H - b, W, b], [0, 0, a, H - b], [W - a, 0, a, H - b]]; }
+    case "step": { const cw = [R(2, 4), R(2, 4), R(2, 4)], hs = [R(6, 8)]; hs.push(hs[0] - R(2, 3)); hs.push(hs[1] - R(1, 2)); if(hs[2] < 2) hs[2] = 2;
+      return [[0, 0, cw[0], hs[0]], [cw[0], hs[0] - hs[1], cw[1], hs[1]], [cw[0] + cw[1], hs[0] - hs[2], cw[2], hs[2]]]; }
+    case "plus": { const s = R(2, 3), a = R(2, 4), b = R(2, 4), W = s + 2 * a, H = s + 2 * b; return [[a, 0, s, H], [0, b, W, s]]; }
+    case "S": { const wa = R(4, 7), ha = R(2, 3), wb = R(4, 7), hb = R(2, 3), o = R(2, Math.min(wa, wb) - 1); return [[0, 0, wa, ha], [wa - o, ha, wb, hb]]; }
+  }
+}
+function buildShape(kind){
+  const rs = shapeRects(kind); let W = 0, H = 0; rs.forEach(r => { W = Math.max(W, r[0] + r[2]); H = Math.max(H, r[1] + r[3]); });
+  const fx = Math.random() < .5, fy = Math.random() < .5, tr = Math.random() < .5;
+  let out = rs.map(r => { let [x, y, w, h] = r; if(fx) x = W - x - w; if(fy) y = H - y - h; return [x, y, w, h]; });
+  if(tr){ out = out.map(([x, y, w, h]) => [y, x, h, w]); const t = W; W = H; H = t; }
+  const mask = new Uint8Array(W * H); out.forEach(([x, y, w, h]) => { for(let yy = y; yy < y + h; yy++) for(let xx = x; xx < x + w; xx++) mask[yy * W + xx] = 1; });
+  return { W, H, mask, kind };
+}
+function frameShape(){
+  for(;;){ const W = R(7, 11), H = R(6, 8), t1 = R(1, 3), t2 = R(1, 3), t3 = R(1, 3), t4 = R(1, 3), w = W - t1 - t2, h = H - t3 - t4; if(w < 4 || h < 3) continue;
+    const mask = new Uint8Array(W * H).fill(1); for(let y = t3; y < t3 + h; y++) for(let x = t1; x < t1 + w; x++) mask[y * W + x] = 0;
+    return { W, H, mask, kind: "frame", hole: { x: t1, y: t3, w, h } }; }
+}
+function loopsOf(sh){
+  const { W, H, mask } = sh, filled = (x, y) => x >= 0 && y >= 0 && x < W && y < H && mask[y * W + x], E = new Map();
+  const add = (a, b) => E.set(a[0] + "," + a[1], { a, b, used: false });
+  for(let y = 0; y < H; y++) for(let x = 0; x < W; x++){ if(!filled(x, y)) continue;
+    if(!filled(x, y - 1)) add([x, y], [x + 1, y]); if(!filled(x + 1, y)) add([x + 1, y], [x + 1, y + 1]);
+    if(!filled(x, y + 1)) add([x + 1, y + 1], [x, y + 1]); if(!filled(x - 1, y)) add([x, y + 1], [x, y]); }
+  const loops = [];
+  for(const e0 of E.values()){ if(e0.used) continue; const pts = []; let e = e0;
+    while(e && !e.used){ e.used = true; pts.push(e.a); e = E.get(e.b[0] + "," + e.b[1]); }
+    loops.push(pts); }
+  /* kraštinės: sujungiame vienodos krypties vienetus */
+  return loops.map(pts => { const n = pts.length, segs = [];
+    for(let i = 0; i < n; i++){ const p = pts[i], q = pts[(i + 1) % n], dx = q[0] - p[0], dy = q[1] - p[1];
+      const last = segs[segs.length - 1]; if(last && last.dx === dx && last.dy === dy) last.len++; else segs.push({ x: p[0], y: p[1], dx, dy, len: 1 }); }
+    if(segs.length > 1 && segs[0].dx === segs[segs.length - 1].dx && segs[0].dy === segs[segs.length - 1].dy){ const l = segs.pop(); segs[0].x = l.x; segs[0].y = l.y; segs[0].len += l.len; }
+    return { pts, segs }; });
+}
+function strips(fn, W, H){
+  const rects = []; let open = new Map();
+  for(let y = 0; y < H; y++){ const next = new Map(); let x = 0;
+    while(x < W){ if(!fn(x, y)){ x++; continue; } let x2 = x; while(x2 < W && fn(x2, y)) x2++;
+      const key = x + "," + (x2 - x), prev = open.get(key); if(prev){ prev.h++; next.set(key, prev); } else { const r = { x, y, w: x2 - x, h: 1 }; rects.push(r); next.set(key, r); } x = x2; }
+    open = next; }
+  return rects;
+}
+function decomp(sh){
+  const { W, H, mask } = sh, fill = (x, y) => mask[y * W + x] === 1;
+  const a = strips(fill, W, H), b = strips((y, x) => fill(x, y), H, W).map(r => ({ x: r.y, y: r.x, w: r.h, h: r.w }));
+  const parts = (a.length < b.length || (a.length === b.length && Math.random() < .5)) ? a : b;
+  let cut = null;
+  if(sh.kind !== "frame"){ const e = strips((x, y) => !fill(x, y), W, H), e2 = strips((y, x) => !fill(x, y), H, W).map(r => ({ x: r.y, y: r.x, w: r.h, h: r.w })); const c = e.length <= e2.length ? e : e2; if(c.length && c.length <= 2) cut = c; }
+  return { parts: parts.map(r => [r.w, r.h]), cut: cut ? cut.map(r => [r.w, r.h]) : null };
+}
+function shapeSvg(sh, o){
+  o = o || {}; const { W, H } = sh, s = o.s || (W > 8 ? 25 : 28), m = o.m || 38, mxm = o.mx || m + 18, vw = W * s + 2 * mxm, vh = H * s + 2 * m, loops = loopsOf(sh), u = o.u || "m";
+  let g = "", d = ""; loops.forEach(l => { d += l.pts.map((p, i) => `${i ? "L" : "M"}${mxm + p[0] * s} ${m + p[1] * s}`).join("") + "Z"; });
+  g += `<path d="${d}" fill="${sh.kind === "frame" ? "#e8d4a6" : "#b9e58f"}" fill-rule="evenodd" stroke="#8a5a33" stroke-width="3.4" stroke-linejoin="round"/>`;
+  if(sh.kind === "frame"){ const h = sh.hole; g += `<rect x="${mxm + h.x * s + 1.7}" y="${m + h.y * s + 1.7}" width="${h.w * s - 3.4}" height="${h.h * s - 3.4}" fill="#7fd0f0"/><path d="M${mxm + h.x * s + 14} ${m + h.y * s + h.h * s - 14}q10-8 20 0t20 0" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".9"/>`; }
+  if(o.grid){ for(let y = 0; y < H; y++) for(let x = 0; x < W; x++) if(sh.mask[y * W + x]) g += `<rect x="${mxm + x * s}" y="${m + y * s}" width="${s}" height="${s}" fill="none" stroke="#5f9e3a" stroke-width="1" opacity=".55"/>`; g += `<path d="${d}" fill="none" stroke="#8a5a33" stroke-width="3.4" stroke-linejoin="round"/>`; }
+  const hid = o.hidden || [], labs = [], placed = [], filledAt = (x, y) => x >= 0 && y >= 0 && x < W && y < H && sh.mask[y * W + x] === 1;
+  loops.forEach((l, li) => l.segs.forEach((sg, si) => {
+    const key = li + ":" + si, isH = hid.includes(key), txt = isH ? "?" : `${sg.len} ${u}`, mx = mxm + (sg.x + sg.dx * sg.len / 2) * s, my = m + (sg.y + sg.dy * sg.len / 2) * s, nx = sg.dy, ny = -sg.dx;
+    const gx = sg.x + sg.dx * sg.len / 2, gy = sg.y + sg.dy * sg.len / 2; let cramped = sg.len <= 2;
+    for(let k = 1; k <= 3 && !cramped; k++) if(filledAt(Math.floor(gx + nx * (k - 0.5) - 1e-6 * (nx ? 0 : 1)), Math.floor(gy + ny * (k - 0.5) - 1e-6 * (ny ? 0 : 1)))) cramped = true;
+    const inside = cramped && sh.kind !== "frame", dir = inside ? -1 : 1;
+    const col = isH ? "#d6336c" : K; const bg = inside ? "#b9e58f" : (sh.kind === "frame" && li > 0 ? "#7fd0f0" : "#eaf7dc");
+    const fs = o.fs || 14, tw = txt.length * 0.6 * fs + 6, cand = [];
+    const mk = (d, dt) => nx === 0 ? { x: mx + dt, y: my + d * ny * 13, a: "middle" } : { x: mx + d * nx * 7, y: my + dt, a: nx * d > 0 ? "start" : "end" };
+    [dir, -dir].forEach(d => [0, 16, -16].forEach(dt => cand.push([d, dt])));
+    let pick = null;
+    for(const [d, dt] of cand){ const c = mk(d, dt), x1 = c.a === "middle" ? c.x - tw / 2 : c.a === "start" ? c.x : c.x - tw, x2 = x1 + tw, y1 = c.y - fs / 2 - 1, y2 = c.y + fs / 2 + 1;
+      if(x1 < 1 || x2 > vw - 1 || y1 < 1 || y2 > vh - 1) continue; if(placed.some(q => x1 < q[2] && x2 > q[0] && y1 < q[3] && y2 > q[1])) continue;
+      pick = { c, b: [x1, y1, x2, y2], inn: d === -1 }; break; }
+    if(!pick){ const c = mk(dir, 0); pick = { c, b: [c.x - tw / 2, c.y - 8, c.x + tw / 2, c.y + 8], inn: dir === -1 }; }
+    placed.push(pick.b); const bg2 = pick.inn ? "#b9e58f" : (sh.kind === "frame" && li > 0 ? "#7fd0f0" : "#eaf7dc");
+    labs.push(lab(pick.c.x, pick.c.y, txt, { fs, c: col, bg: bg2, a: pick.c.a }));
+  }));
+  return { svg: `<svg viewBox="0 0 ${vw} ${vh}" role="img" aria-label="Figūra">${g}${labs.join("")}</svg>`, loops };
+}
+function compTask(tier, mode){
+  const frame = mode === "frame", kinds = ["L", "L", "T", "U", "step", "plus", "S"];
+  for(let t = 0; t < 60; t++){
+    const sh = frame ? frameShape() : buildShape(tier === 0 ? P(["L", "T", "U"]) : P(kinds));
+    if(sh.W > 11 || sh.H > 9) continue; let A = 0; sh.mask.forEach(v => A += v); if(A > 120) continue;
+    let hidden = [];
+    const loops = loopsOf(sh);
+    if(!frame && tier >= 1 && Math.random() < .75){ const hs = [], vs = []; loops[0].segs.forEach((sg, i) => (sg.dx ? hs : vs).push(i)); hidden = [`0:${P(hs)}`, `0:${P(vs)}`]; if(tier === 1 && Math.random() < .5) hidden.pop(); }
+    const u = Math.random() < .7 ? "m" : "cm", it = P(T.items.filter(i => i[2] === (u === "cm" ? "cm" : "m")));
+    const fig = shapeSvg(sh, { hidden, u, grid: tier === 0 });
+    const dc = decomp(sh); let bbox = sh.W * sh.H, why, more = "", textQ;
+    let hidTxt = "";
+    hidden.forEach(key => { const [li, si] = key.split(":").map(Number), sg = loops[li].segs[si], horiz = !!sg.dx;
+      const same = [], opp = []; loops[li].segs.forEach((q, j) => { if(j === si || !!q.dx !== horiz) return; ((q.dx === sg.dx && q.dy === sg.dy) ? same : opp).push(q.len); });
+      const expr = opp.join(" + ") + (same.length ? " − " + same.join(" − ") : ""); const val = opp.reduce((a, b) => a + b, 0) - same.reduce((a, b) => a + b, 0);
+      if(val !== sg.len) throw new Error("hidden mismatch"); hidTxt += T.w4.hid(expr, val, u) + " "; });
+    if(frame){ const h = sh.hole; why = T.w4.frame(sh.W, sh.H, h.w, h.h, u, A); textQ = T.q4.frame(it, u); A = A; }
+    else {
+      const p1 = T.w4.parts(dc.parts, u, A), c1 = dc.cut ? T.w4.cut(sh.W, sh.H, dc.cut, u, A) : "";
+      if(dc.cut && dc.cut.length < dc.parts.length){ why = c1; more = `<p>${p1}</p>`; } else { why = p1; more = c1 ? `<p>${c1}</p>` : ""; }
+      textQ = Math.random() < .25 ? T.q4.cover(0, 0, u) : (Math.random() < .5 ? T.q4.compPlain(u) : T.q4.comp(it, u));
+    }
+    why = hidTxt + why;
+    const parts = dc.parts.map(p => p[0] * p[1]), cands = frame ? [bbox, sh.hole.w * sh.hole.h, bbox - sh.hole.w * sh.hole.h + sh.hole.w, A + sh.hole.h] : [bbox, A + Math.min(...parts), A - Math.min(...parts), parts[0], A + 2, A - 2];
+    const t = mcNum(frame ? "frame" : "comp:" + sh.kind, fig.svg ? `<div class="figw">${fig.svg}</div>` : "", textQ, A, cands.filter(v => v !== A), u, why, (more ? more : "") + `<p>${T.w4more}</p>`);
+    t.shape = sh; t.hidden = hidden; return t;
+  }
+  return t1("big");
+}
+function cmpTask(){
+  for(let t = 0; t < 40; t++){
+    const s1 = buildShape(P(["L", "T", "U", "S"])), a = R(5, 10), b = R(4, 8); let A = 0; s1.mask.forEach(v => A += v);
+    const B = a * b, equal = Math.random() < .12; let r2 = [a, b];
+    if(equal){ const ps = []; for(let w = 3; w <= 10; w++) if(A % w === 0 && A / w >= 3 && A / w <= 8) ps.push([w, A / w]); if(!ps.length) continue; r2 = P(ps); }
+    const BB = r2[0] * r2[1]; if(!equal && Math.abs(A - BB) < 3) continue; if(s1.W > 9 || s1.H > 8) continue;
+    const f1s = shapeSvg(s1, { s: 20, m: 28, fs: 12 }), figB = (() => { const W = r2[0] * 20, H = r2[1] * 20, m = 28; return `<svg viewBox="0 0 ${W + 2 * m + 20} ${H + 2 * m}"><rect x="${m}" y="${m}" width="${W}" height="${H}" fill="#ffe3a8" stroke="#8a5a33" stroke-width="3.4" rx="3"/>${lab(m + W / 2, m - 12, r2[0] + " m", { fs: 12 })}${lab(m + W + 6, m + H / 2, r2[1] + " m", { fs: 12, a: "start" })}</svg>`; })();
+    const names = [T.q4.figA, T.q4.figB, T.q4.same], right = A === BB ? 2 : A > BB ? 0 : 1;
+    const fig = `<div class="figw" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;align-items:center"><div><p style="margin:4px 8px 0;font:800 14px var(--body)">A</p>${f1s.svg}</div><div><p style="margin:4px 8px 0;font:800 14px var(--body)">B</p>${figB}</div></div>`;
+    const dc = decomp(s1);
+    return { type: "mc", kind: "cmp4", fig, text: T.q4.cmp, opts: names, right, ans: names[right], two: 0, why: { body: T.w4.cmp(A, BB), more: `<p>${T.w4.parts(dc.parts, "m", A)}</p><p>${T.w4more}</p>` } };
+  }
+  return t1("big");
+}
+const mkRound4 = () => [compTask(0), compTask(0), compTask(1), t1("big"), compTask(1), compTask(2, "frame"), cmpTask(), compTask(2)];
+
+/* ================= braižyk lysvę ================= */
+function genDraw(kind){
+  for(let t = 0; t < 300; t++){
+    const W = R(5, 8), H = R(5, 6), nObs = R(3, 6), obst = [], taken = new Set();
+    while(obst.length < nObs){ const x = R(0, W - 1), y = R(0, H - 1), k = y * W + x; if(taken.has(k)) continue; taken.add(k); obst.push({ x, y, t: Math.random() < .5 ? "oak" : "rock" }); }
+    let flag = null; if(kind === "anchor"){ for(;;){ const x = R(0, W - 1), y = R(0, H - 1); if(!taken.has(y * W + x)){ flag = { x, y }; break; } } }
+    const blocked = (r) => obst.some(o => inRect(r, o.x, o.y));
+    let A, B = null, wReq = null;
+    if(kind === "square") A = P([4, 9, 16]);
+    else if(kind === "width"){ wReq = R(2, 4); A = wReq * R(2, 4); }
+    else if(kind === "two"){ A = R(4, 10); B = R(4, 10); }
+    else A = P([6, 8, 9, 10, 12, 12, 14, 15, 16, 18]);
+    const list = n => { const res = []; for(const [w0, h0] of pairs(n)) for(const [w, h] of w0 === h0 ? [[w0, h0]] : [[w0, h0], [h0, w0]]){ if(w > W || h > H) continue;
+      for(let x = 0; x + w <= W; x++) for(let y = 0; y + h <= H; y++){ const r = { x, y, w, h }; if(blocked(r)) continue; if(flag && !inRect(r, flag.x, flag.y)) continue; if(wReq && w !== wReq) continue; if(kind === "square" && w !== h) continue; res.push(r); } } return res; };
+    const la = list(A); if(!la.length) continue;
+    if(kind === "two"){ const lb = list(B); let ok = false, sol = null; for(const r of SH(la)){ const q = lb.find(z => !overlap(r, z)); if(q){ ok = true; sol = [r, q]; break; } } if(!ok || la.length < 2 || lb.length < 2) continue;
+      return { type: "draw", kind, W, H, obst, flag, A, B, wReq, sol }; }
+    if(kind === "free" && (la.length < 2 || la.length > 12)) continue; if(kind !== "free" && la.length > 8) continue;
+    return { type: "draw", kind, W, H, obst, flag, A, B, wReq, sol: [P(la)] };
+  }
+  return null;
+}
+function checkDraw(task, r, prior){
+  const A = prior ? task.B : task.A;
+  if(task.obst.some(o => inRect(r, o.x, o.y))) return { ok: false, msg: T.f2.blocked };
+  if(prior && overlap(r, prior)) return { ok: false, msg: T.f2.overlap };
+  const a = r.w * r.h; if(a !== A) return { ok: false, msg: T.f2.wrongArea(r.w, r.h, a, A) };
+  if(task.kind === "square" && r.w !== r.h) return { ok: false, msg: T.f2.notSq };
+  if(task.kind === "anchor" && !inRect(r, task.flag.x, task.flag.y)) return { ok: false, msg: T.f2.noFlag };
+  if(task.kind === "width" && r.w !== task.wReq) return { ok: false, msg: T.f2.width(task.wReq) };
+  return { ok: true };
+}
+
+/* ================= piešiniai: bebras, kaimas, lygių piktogramos ================= */
+function beaverSvg(){
+  let plots = ""; const cr = [0, 1, 2, 7];
+  [[0, 0], [1, 0], [0, 1], [1, 1]].forEach(([i, j], n) => {
+    const x = 252 + i * 112, y = 128 + j * 66;
+    plots += `<rect x="${x}" y="${y}" width="100" height="56" fill="${CROPBG[cr[n]]}" stroke="#8a5a33" stroke-width="3.4" rx="4"/>`;
+    for(let k = 0; k < 3; k++) plots += `<use href="#g-${CROPS[cr[n]]}" x="${x + 10 + k * 28}" y="${y + 8}" width="38" height="38"/>`;
+    [[x, y], [x + 100, y], [x, y + 56], [x + 100, y + 56]].forEach(q => plots += `<rect x="${q[0] - 4}" y="${q[1] - 4}" width="8" height="8" rx="2" fill="#6b3f1d" stroke="${K}" stroke-width="1.4"/>`);
+  });
+  return `<svg viewBox="0 0 480 270" role="img" aria-label="Bebras Rimas su sklypais">
+  <rect width="480" height="270" fill="#d8f0ff"/>
+  <path d="M0 108q70-34 150-8t180-14 150 14v170H0z" fill="#b6e48f"/><path d="M0 130q110-24 240-6t240-6v152H0z" fill="#a3dc7a"/>
+  <circle cx="420" cy="42" r="22" fill="#ffd21f" stroke="${K}" stroke-width="2.4"/>
+  <g fill="#fff" stroke="${K}" stroke-width="2.2"><path d="M40 52q-14 0-14-11t14-11q4-12 20-8 10-8 22 0 16-2 18 10 12 2 12 10t-14 10z"/></g>
+  ${plots}
+  <ellipse cx="128" cy="250" rx="62" ry="9" fill="#121a33" opacity=".22"/>
+  <path d="M168 220q44 8 58-22-6-20-32-12-28 8-26 34z" fill="#6b3f1d" stroke="${K}" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M184 200l14 12M196 192l14 14M176 214l12 8M208 196l10 10" stroke="#4a2a12" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+  <ellipse cx="108" cy="244" rx="20" ry="9" fill="#6b3f1d" ${S}/><ellipse cx="150" cy="244" rx="20" ry="9" fill="#6b3f1d" ${S}/>
+  <ellipse cx="128" cy="186" rx="46" ry="58" fill="#9a6232" ${S}/><ellipse cx="128" cy="196" rx="28" ry="40" fill="#e0b27a" stroke="${K}" stroke-width="2"/>
+  <path d="M96 168q-26 10-34 36" fill="none" stroke="${K}" stroke-width="15" stroke-linecap="round"/><path d="M96 168q-26 10-34 36" fill="none" stroke="#9a6232" stroke-width="10" stroke-linecap="round"/>
+  <path d="M160 168q22-2 38-20" fill="none" stroke="${K}" stroke-width="15" stroke-linecap="round"/><path d="M160 168q22-2 38-20" fill="none" stroke="#9a6232" stroke-width="10" stroke-linecap="round"/>
+  <g transform="translate(40 150)"><path d="M16 20v82" stroke="#6b3f1d" stroke-width="7" stroke-linecap="round"/><rect x="-10" y="-8" width="52" height="40" rx="7" fill="#fff4d6" ${S}/><text x="16" y="13" text-anchor="middle" dominant-baseline="middle" font-family="Grandstander,Chalkboard SE,sans-serif" font-weight="800" font-size="25" fill="${K}">12</text></g>
+  <circle cx="60" cy="206" r="9" fill="#9a6232" ${S}/>
+  <g transform="rotate(-24 206 140)"><rect x="196" y="100" width="22" height="86" rx="4" fill="#ffd34d" ${S}/><path d="M196 112h8M196 124h12M196 136h8M196 148h12M196 160h8M196 172h12" stroke="${K}" stroke-width="2"/></g>
+  <circle cx="200" cy="150" r="9" fill="#9a6232" ${S}/>
+  <circle cx="92" cy="86" r="12" fill="#9a6232" ${S}/><circle cx="164" cy="86" r="12" fill="#9a6232" ${S}/><circle cx="92" cy="86" r="5.5" fill="#e0b27a"/><circle cx="164" cy="86" r="5.5" fill="#e0b27a"/>
+  <circle cx="128" cy="116" r="42" fill="#9a6232" ${S}/>
+  <ellipse cx="128" cy="134" rx="25" ry="19" fill="#e8bd86" stroke="${K}" stroke-width="2.2"/>
+  <ellipse cx="128" cy="124" rx="9" ry="6" fill="${K}"/>
+  <rect x="120" y="136" width="8" height="16" rx="2.5" fill="#fff" ${S}/><rect x="128" y="136" width="8" height="16" rx="2.5" fill="#fff" ${S}/>
+  <circle cx="112" cy="108" r="6" fill="#fff" stroke="${K}" stroke-width="2"/><circle cx="144" cy="108" r="6" fill="#fff" stroke="${K}" stroke-width="2"/>
+  <circle cx="113" cy="109" r="3.6" fill="${K}"/><circle cx="145" cy="109" r="3.6" fill="${K}"/><circle cx="114.2" cy="107.6" r="1.2" fill="#fff"/><circle cx="146.2" cy="107.6" r="1.2" fill="#fff"/>
+  <circle cx="98" cy="126" r="5.5" fill="#ff8aa0" opacity=".6"/><circle cx="158" cy="126" r="5.5" fill="#ff8aa0" opacity=".6"/>
+  <path d="M86 92Q86 58 128 58t42 34z" fill="#ffd21f" ${S}/><rect x="80" y="90" width="96" height="10" rx="5" fill="#ffb800" ${S}/><path d="M128 60v28" stroke="${K}" stroke-width="2.2" opacity=".5"/><rect x="118" y="64" width="20" height="10" rx="3" fill="#fff" opacity=".7"/>
+  </svg>`;
+}
+function tileSvg(i, on){
+  if(!on) return `<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#cdbf94"/><rect x="2" y="2" width="36" height="36" fill="none" stroke="#a8996a" stroke-width="2" stroke-dasharray="4 4"/><path d="M20 12v18" stroke="#a8996a" stroke-width="3" stroke-linecap="round"/><path d="M15 17h10" stroke="#a8996a" stroke-width="3" stroke-linecap="round"/></svg>`;
+  const c = (i * 3 + (i / 10 | 0)) % 10;
+  return `<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="${CROPBG[c]}"/><path d="M0 12h40M0 22h40M0 32h40" stroke="#000" stroke-width="1" opacity=".07"/><use href="#g-${CROPS[c]}" x="3" y="3" width="34" height="34"/><rect x="1.5" y="1.5" width="37" height="37" fill="none" stroke="#8a5a33" stroke-width="3" rx="3"/></svg>`;
+}
+const LEVELART = [
+  `<svg viewBox="0 0 56 56"><rect x="8" y="14" width="40" height="28" fill="#b9e58f" stroke="#8a5a33" stroke-width="3" rx="3"/><path d="M18 14v28M28 14v28M38 14v28M8 24h40M8 33h40" stroke="#5f9e3a" stroke-width="1.6"/><text x="28" y="52" text-anchor="middle" font-family="Grandstander,sans-serif" font-weight="800" font-size="11" fill="${K}">a × b</text></svg>`,
+  `<svg viewBox="0 0 56 56"><rect x="6" y="6" width="44" height="44" rx="8" fill="#98d46f" ${S}/><rect x="14" y="16" width="26" height="18" fill="rgba(47,107,255,.22)" stroke="#2f6bff" stroke-width="3" stroke-dasharray="5 4" rx="3"/><use href="#g-tree" x="30" y="30" width="18" height="18"/></svg>`,
+  `<svg viewBox="0 0 56 56"><rect x="5" y="5" width="46" height="46" rx="8" fill="#98d46f" ${S}/><rect x="9" y="9" width="22" height="20" fill="#f6d9a8" stroke="#8a5a33" stroke-width="2.4"/><rect x="31" y="9" width="16" height="30" fill="#ffd3d6" stroke="#8a5a33" stroke-width="2.4"/><rect x="9" y="29" width="22" height="18" fill="#d4f0b0" stroke="#8a5a33" stroke-width="2.4"/><text x="20" y="24" text-anchor="middle" font-family="Grandstander,sans-serif" font-weight="800" font-size="12" fill="${K}">6</text><text x="39" y="29" text-anchor="middle" font-family="Grandstander,sans-serif" font-weight="800" font-size="12" fill="${K}">4</text></svg>`,
+  `<svg viewBox="0 0 56 56"><path d="M8 10h22v18h18v18H8z" fill="#b9e58f" stroke="#8a5a33" stroke-width="3" stroke-linejoin="round"/><text x="19" y="38" text-anchor="middle" font-family="Grandstander,sans-serif" font-weight="800" font-size="13" fill="${K}">m²</text></svg>`,
+  `<svg viewBox="0 0 56 56"><rect x="3" y="3" width="50" height="50" rx="8" fill="#98d46f" ${S}/><path d="M3 22h26v16h24M29 3v35M16 22v31M41 38v15" stroke="#8a5a33" stroke-width="2.6" fill="none"/><use href="#g-sun" x="31" y="6" width="19" height="19"/><use href="#g-wheat" x="5" y="30" width="19" height="19"/></svg>`,
+  `<svg viewBox="0 0 56 56"><path d="M10 34Q10 12 28 12t18 22z" fill="#ffd21f" ${S}/><rect x="6" y="32" width="44" height="9" rx="4.5" fill="#ffb800" ${S}/><path d="M28 13v18" stroke="${K}" stroke-width="2" opacity=".5"/><path d="M17 50h22" stroke="${K}" stroke-width="3" stroke-linecap="round"/></svg>`
+];
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: LEVELART[i] }));
+
+/* ================= meniu ================= */
+const menu = $("menu"), play = $("play"), stage = $("stage"), app = $("app");
+const saved = MK.get("mokomeskartu-klase", 0), KEY = "mk-" + GAME + "-kaimas", VILLN = 30;
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("ptsL").textContent = T.pts;
+const solvedN = () => MK.get(KEY, 0), villGot = n => Math.min(VILLN, Math.floor(n / 3));
+function renderVillage(prev){
+  const n = solvedN(), got = villGot(n), rank = T.ranks[got >= VILLN ? 4 : got >= 20 ? 3 : got >= 10 ? 2 : got >= 3 ? 1 : 0]; let h = "";
+  for(let i = 0; i < VILLN; i++) h += `<div class="${i < got && prev != null && i >= prev ? "new" : ""}">${tileSvg(i, i < got)}</div>`;
+  $("col").innerHTML = `<h2><svg viewBox="0 0 40 40" aria-hidden="true"><use href="#g-sun" x="0" y="0" width="40" height="40"/></svg>${T.colH}</h2><p>${T.colP(n, got, VILLN, rank)}</p><div class="vill">${h}</div>`;
+}
+function showMenu(prev){
+  play.hidden = true; menu.hidden = false; $("heroArt").innerHTML = beaverSvg(); renderVillage(prev);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+
+/* ================= kūrimas: raundai ================= */
+const puz = (W, H, maxA) => ({ type: "puz", W, H, maxA });
+const mkRound2 = () => SH(["free", "free", "anchor", "width", "square", "anchor", "two", "two"]).map(k => genDraw(k) || genDraw("free"));
+const mkRound2o = () => ["free", "free", "free", "anchor", "width", "square", "anchor", "two"].map(k => genDraw(k) || genDraw("free"));
+const mkRound3 = () => [puz(4, 4, 6), puz(5, 5, 9), puz(6, 6, 12)];
+const mkRound5 = () => [puz(6, 6, 16), puz(7, 7, 20), puz(8, 8, 24)];
+const mkRound6 = () => SH([t1("rect", 1), t1(P(["square", "unit", "tiles"]), 1), t1("rev", 2), genDraw(P(["free", "anchor", "width"])) || genDraw("free"), puz(5, 5, 9), compTask(1), compTask(1, "frame"), t1("big"), puz(6, 6, 12), cmpTask()]);
+const LV = [mkRound1, mkRound2o, mkRound3, mkRound4, mkRound5, mkRound6];
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, pts = 0, dots = null, vill0 = 0;
+function start(i){
+  L = i; tasks = LV[i](); ti = 0; okN = 0; pts = 0; $("pts").textContent = 0; vill0 = villGot(solvedN());
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+function award(n){ if(n){ pts += n; const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); } }
+function first(ok){ dots.mark(ti, ok); if(ok){ okN++; MK.set(KEY, solvedN() + 1); } }
+function whyBlock(ok, w, ans){ return MK.why({ ok, head: ok ? MK.praise() : (ans ? T.bad(ans) : T.badPlain), body: w.body, more: w.more, sum: T.rule, open: !ok }); }
+function addWhy(ok, w, ans){ const d = document.createElement("div"); d.innerHTML = whyBlock(ok, w, ans); $("flow").appendChild(d.firstElementChild); }
+function nextBtn(){
+  const go = document.createElement("button"); go.type = "button"; go.className = "mk-btn go"; go.id = "next"; go.textContent = ti < tasks.length - 1 ? T.next : T.finish;
+  go.onclick = () => { MK.sfx.tap(); ti++; ti < tasks.length ? show() : finish(); };
+  $("flow").appendChild(go); setTimeout(() => go.scrollIntoView({ behavior: "smooth", block: "nearest" }), 120);
+}
+function show(){
+  cur = tasks[ti]; dots.cur(ti); window.scrollTo({ top: 0 });
+  if(cur.type === "puz") return showPuzzle();
+  if(cur.type === "draw") return showDraw();
+  stage.innerHTML = `<div class="card fade">${cur.fig || ""}<p class="txt">${cur.text}</p>
+    <div class="ans${cur.two ? " two" : ""}" id="ans">${cur.opts.map((o, i) => `<button type="button" class="a" data-i="${i}">${o}</button>`).join("")}</div></div><div id="flow"></div>`;
+  $("ans").onclick = e => {
+    const b = e.target.closest(".a"), ans = $("ans"); if(!b || ans.classList.contains("done")) return;
+    ans.classList.add("done"); MK.unlock(); const ok = +b.dataset.i === cur.right;
+    b.classList.add(ok ? "ok" : "no"); if(!ok) ans.children[cur.right].classList.add("ok");
+    first(ok); if(ok){ award(10); MK.sfx.good(); } else MK.sfx.bad();
+    addWhy(ok, cur.why, cur.ans); nextBtn();
+  };
+}
+function boardUI(st, o){
+  const host = $("bd"); const draw = () => { host.innerHTML = boardSvg(st); };
+  draw(); attachBoard({ st, host, draw, onCommit: o.onCommit, onTapPlot: o.onTapPlot, onTapCell: o.onTapCell, locked: o.locked });
+  return { draw, shake(){ host.classList.remove("shake"); void host.offsetWidth; host.classList.add("shake"); } };
+}
+function showPuzzle(){
+  let pz = null; const t = cur;
+  for(let k = 0; k < 6 && !pz; k++) pz = genPuzzle(t.W, t.H, t.maxA);
+  if(!pz) pz = genPuzzle(t.W, t.H, Math.max(4, t.maxA - 2)) || genPuzzle(5, 5, 8);
+  const st = { W: pz.W, H: pz.H, clues: pz.clues, plots: [], prev: null, pend: null, flash: null, obst: [] };
+  let invalid = 0, hints = 0, done = false; const undo = [];
+  stage.innerHTML = `<div class="card fade"><p class="txt">${T.q3.intro(pz.W * pz.H, pz.clues.length)}</p><div class="board" id="bd"></div>
+    <p class="note" id="note" role="status" aria-live="polite">${T.q3.help}</p>
+    <div class="tools" id="tools"><button type="button" class="mk-btn alt" id="bU">↶ ${T.q3.undo}</button><button type="button" class="mk-btn alt" id="bH">💡 ${T.q3.hint}</button><button type="button" class="mk-btn ghost" id="bR">${T.q3.reset}</button></div></div><div id="flow"></div>`;
+  const note = $("note"), say = (m, c) => { note.className = "note" + (c ? " " + c : ""); note.textContent = m; };
+  const covered = () => st.plots.reduce((s, p) => s + p.w * p.h, 0);
+  let ui;
+  const complete = () => {
+    done = true; $("tools").hidden = true; st.plotGlyphOnClue = false; ui.draw(); const ok = hints === 0 && invalid <= 3;
+    first(ok); award(hints ? 4 : ok ? 10 : 6); MK.sfx.good(); say(T.q3.solved, "good");
+    const list = pz.sol.map(r => `${r.w * r.h} = ${r.w} × ${r.h}`).join(", ");
+    addWhy(true, { body: T.w3(list), more: `<p>${T.w3more}</p>` }); nextBtn();
+  };
+  const commit = r => {
+    if(done) return;
+    const ins = pz.clues.map((c, i) => ({ c, i })).filter(q => inRect(r, q.c.x, q.c.y));
+    let msg = "";
+    if(ins.length === 0) msg = T.q3.bad0; else if(ins.length > 1) msg = T.q3.bad2; else if(ins[0].c.n !== r.w * r.h) msg = T.q3.badA(r.w, r.h, r.w * r.h, ins[0].c.n);
+    if(msg){ invalid++; st.flash = r; ui.draw(); ui.shake(); MK.sfx.bad(); say(msg, "warn"); setTimeout(() => { st.flash = null; ui.draw(); }, 700); return; }
+    undo.push(st.plots.slice()); st.plots = st.plots.filter(p => !overlap(p, r)); st.plots.push(Object.assign({ ci: ins[0].i }, r));
+    MK.sfx.tap(); ui.draw(); const left = st.W * st.H - covered(); say(left ? T.q3.open(left) : "", "");
+    if(left === 0) complete();
+  };
+  ui = boardUI(st, { onCommit: commit, onTapCell: c => { if(done) return false; const q = pz.clues.find(z => z.x === c.x && z.y === c.y && z.n === 1); if(!q) return false; commit({ x: c.x, y: c.y, w: 1, h: 1 }); return true; }, onTapPlot: p => { if(done) return; undo.push(st.plots.slice()); st.plots = st.plots.filter(q => q !== p); MK.sfx.tap(); ui.draw(); say(T.q3.open(st.W * st.H - covered())); }, locked: () => done });
+  $("bU").onclick = () => { if(done || !undo.length) return; st.plots = undo.pop(); st.pend = null; ui.draw(); MK.sfx.tap(); };
+  $("bR").onclick = () => { if(done) return; undo.push(st.plots.slice()); st.plots = []; st.pend = null; ui.draw(); MK.sfx.tap(); say(T.q3.help); };
+  $("bH").onclick = () => {
+    if(done) return; MK.sfx.tap(); hints++;
+    const same = (a, b) => a.x === b.x && a.y === b.y && a.w === b.w && a.h === b.h, wrong = st.plots.find(p => !pz.sol.some(s => same(s, p)));
+    undo.push(st.plots.slice());
+    if(wrong){ st.plots = st.plots.filter(p => p !== wrong); }
+    else { const todo = pz.sol.filter(s => !st.plots.some(p => same(p, s))); if(!todo.length) return; const s = P(todo); st.plots = st.plots.filter(p => !overlap(p, s)); st.plots.push(Object.assign({}, s)); }
+    ui.draw(); say(T.q3.hinted, "warn"); const left = st.W * st.H - covered(); if(left === 0) complete();
+  };
+  window.__pz = { pz, st, commit, get done(){ return done; } };
+}
+function showDraw(){
+  const t = cur, A = t.A, B = t.B; let tries = 0, totalWrong = 0, phase = 0, done = false;
+  const st = { W: t.W, H: t.H, obst: t.obst, flag: t.flag, clues: [], plots: [], prev: null, pend: null, flash: null, ghost: null };
+  const q = T.q2, txt = () => t.kind === "two" ? (phase ? q.twoSecond(B) : q.two(A, B)) : t.kind === "free" ? q.free(A) : t.kind === "anchor" ? q.anchor(A) : t.kind === "width" ? q.width(A, t.wReq) : q.square(A);
+  stage.innerHTML = `<div class="card fade"><p class="txt" id="qt">${txt()}</p><div class="board" id="bd"></div><p class="note" id="note" role="status" aria-live="polite">${T.hint2}</p></div><div id="flow"></div>`;
+  const note = $("note"), say = (m, c) => { note.className = "note" + (c ? " " + c : ""); note.textContent = m; };
+  let ui;
+  const finishTask = ok => {
+    done = true; const first1 = totalWrong === 0; first(first1); ui.draw();
+    const body = (t.kind === "square" ? T.w2.sq(A, Math.sqrt(A)) + " " : "") + T.w2.pairs(A, pairsTxt(A)) + (B ? " " + T.w2.pairs(B, pairsTxt(B)) : "");
+    if(ok){ award(totalWrong === 0 ? 10 : totalWrong <= 2 ? 6 : 3); MK.sfx.good(); say("", ""); addWhy(true, { body, more: "" }); }
+    else { MK.sfx.bad(); say(T.fail2, "warn"); addWhy(false, { body, more: "" }, ""); }
+    nextBtn();
+  };
+  const commit = r => {
+    if(done) return; const res = checkDraw(t, r, phase ? st.plots[0] : null);
+    if(!res.ok){
+      tries++; totalWrong++; st.flash = r; ui.draw(); ui.shake(); MK.sfx.bad(); say(res.msg, "warn"); setTimeout(() => { st.flash = null; ui.draw(); }, 700);
+      if(tries >= 3){ setTimeout(() => { const sol = t.sol; if(phase === 0){ st.plots = [Object.assign({ crop: 0 }, sol[0])]; if(sol[1]) st.plots.push(Object.assign({ crop: 3 }, sol[1])); } else st.plots.push(Object.assign({ crop: 3 }, sol[1])); st.flash = null; finishTask(false); }, 760); }
+      return;
+    }
+    st.plots.push(Object.assign({ crop: phase ? 3 : 0 }, r)); MK.sfx.tap(); ui.draw();
+    if(t.kind === "two" && phase === 0){ phase = 1; tries = 0; $("qt").textContent = txt(); say(q.twoSecond(B), "good"); return; }
+    finishTask(true);
+  };
+  ui = boardUI(st, { onCommit: commit, locked: () => done });
+  window.__dr = { t, st, commit, get done(){ return done; } };
+}
+function finish(){
+  const total = tasks.length, stars = MK.starsFor(okN, total); MK.best(GAME, LEVELS[L].id, stars);
+  const gain = villGot(solvedN()) - vill0;
+  MK.result({ stars, title: `${okN} / ${total}`, text: T.res(okN, total, pts, gain),
+    next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(gain ? vill0 : null) });
+}
+Object.defineProperty(window, "__cur", { get: () => cur });
+window.__MK_TEST = { LV, t1, compTask, cmpTask, genDraw, checkDraw, genPuzzle, countSol, pairs, T, decomp, buildShape, loopsOf };
+showMenu();
+})();
+</script>
+</body>
+</html>
