@@ -379,5 +379,16 @@ window.MK_ZAIDIMAI = [
   "desc": "Šildyk, šaldyk, tirpink ir atskirk mišinius – medžiagų būsenos, vandens kelionė ir kitimai.",
   "url": "/medziagu-laboratorija/",
   "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMwZjliOGUiLz48cGF0aCBkPSJNMjYgMTBoMTJ2MTZsMTIgMjBxMiA2LTQgNkgxOHEtNiAwLTQtNmwxMi0yMHoiIGZpbGw9IiNlYWY3ZmYiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTggMzhoMjhsNCA4cTEgNS00IDVIMThxLTUgMC00LTV6IiBmaWxsPSIjNjljM2ZmIi8+PHBhdGggZD0iTTI2IDEwaDEydjE2bDEyIDIwcTIgNi00IDZIMThxLTYgMC00LTZsMTItMjB6IiBmaWxsPSJub25lIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMjgiIGN5PSI0NCIgcj0iMi41IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMzYiIGN5PSI0MCIgcj0iMiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0yNCAxMGgxNiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg=="
+ },
+ {
+  "id": "slibino-sala",
+  "subject": "mat",
+  "grades": [
+   5
+  ],
+  "title": "Slibino sala",
+  "desc": "3D nuotykis: tyrinėk salą, ieškok kristalų ir nugalėk slibiną spręsdamas 5 klasės matematikos užduotis. Bandomoji versija.",
+  "url": "/slibino-sala/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMyYjhmZDYiLz48cGF0aCBkPSJNNiA1MHEyNi0xMCA1MiAwdjhINnoiIGZpbGw9IiNmMmNmN2EiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTQgNDZsMTQtMjYgOCAxMiA2LTggMTIgMjJ6IiBmaWxsPSIjNWZhZTVhIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTI0IDI3bDQtNyA0IDYtNCAyeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik00MCAxMnE4LTQgMTIgMmw2LTItMyA2cTEgNi01IDhsLTQtNC02IDJxLTItNiAwLTEyeiIgZmlsbD0iI2U1MjQzYiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjQ5IiBjeT0iMTciIHI9IjEuOCIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg=="
  }
 ];
