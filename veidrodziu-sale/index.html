@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Veidrodžių salė – MokomėsKartu.lt</title>
+<meta name="description" content="7 klasės fizikos žaidimas: šviesos atspindžio dėsnis, kritimo ir atspindžio kampai, plokščiasis veidrodis – nukreipk spindulį į kristalus.">
+<meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/veidrodziu-sale/tekstai.lt.js"></script>
+<style>
+/* Meniu: meistrė su žibintu, kristalų siena (kolekcija), lygiai, „Noriu pasimokyti“.
+   Užduotys: kampų brėžiniai (pasirinkimas), salės galvosūkiai (pasuk / pastatyk veidrodžius, tada „Įjungti žibintą“),
+   atvaizdas plokščiajame veidrodyje (langelis, laikrodžiai, užrašai). */
+body{--ac:#7a4be0;--ac-ink:#fff;--ac-soft:#ebe2ff}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(32px,8.4vw,54px)}
+.mk-hero p{max-width:42ch;font-size:16.5px}
+.hero-art{width:min(100%,480px);border-radius:26px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15)}
+.hero-art svg{display:block;width:100%;height:auto}
+.hero-art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 18px/1.2 var(--kid);display:flex;gap:8px;align-items:center}
+.col h2 svg{width:28px;height:28px;flex:none}
+.col p{margin:4px 0 10px;color:var(--soft);font-weight:700;font-size:14.5px}
+.wall{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px;padding:8px;border-radius:14px;background:#2b2350;box-shadow:inset 0 0 0 2px #121a33}
+.wall svg{display:block;width:100%;height:auto}
+.wall .off{opacity:.9}
+.wall .new{animation:mkPop .6s cubic-bezier(.2,1.6,.4,1)}
+
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.card{width:100%;max-width:600px;margin:0 auto 10px;padding:12px 14px 14px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12)}
+.txt{margin:0 0 10px;font:700 16px/1.5 var(--body)}
+.txt b{font-weight:800}
+.figw{margin:0 0 10px;border-radius:14px;overflow:hidden;box-shadow:0 0 0 2.5px var(--ink);background:#f6f2ff}
+.figw svg{display:block;width:100%;height:auto}
+.figw.dark{background:#241d45}
+.ans{display:grid;gap:8px}
+.ans.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.a{min-height:52px;padding:10px 12px;border:0;border-radius:14px;background:#fff;cursor:pointer;text-align:left;font:800 16.5px/1.3 var(--body);color:var(--ink);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16);transition:transform .1s;touch-action:manipulation}
+.ans.two .a{text-align:center}
+.a svg{display:block;width:100%;height:auto;pointer-events:none}
+.a.pic{padding:6px 6px 4px;position:relative}
+.a.pic i{position:absolute;left:8px;top:5px;font:800 15px/1 var(--kid);font-style:normal;color:var(--ac)}
+.a:active{transform:translateY(3px)}
+.a.ok{background:#dff7e6;box-shadow:inset 0 0 0 3.5px var(--good),0 4px 0 rgba(18,26,51,.16)}
+.a.no{background:#ffe6df;box-shadow:inset 0 0 0 3.5px var(--bad),0 4px 0 rgba(18,26,51,.16)}
+.ans.done .a{pointer-events:none}
+.ans.done .a:not(.ok):not(.no){opacity:.5}
+.go{display:flex;width:100%;max-width:600px;margin:4px auto 0}
+.mk-why{max-width:600px;margin-inline:auto}
+.mk-why-m p{margin:4px 0}
+.fade{animation:mkIn .4s cubic-bezier(.2,1.2,.4,1)}
+.note{min-height:24px;margin:8px 0;text-align:center;font:800 15.5px/1.35 var(--body)}
+.note.good{color:#1c8a52}.note.warn{color:#b8531a}
+.bigbtn{display:flex;width:100%;min-height:54px;font-size:19px}
+.bar{display:flex;justify-content:space-between;gap:8px;margin:8px 0 0;font:800 14px/1.2 var(--body);color:var(--soft)}
+/* salė */
+.hall{margin:0 auto;max-width:440px;border-radius:16px;overflow:hidden;box-shadow:0 0 0 2.5px var(--ink);background:#241d45;touch-action:manipulation}
+.hall svg{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none}
+.hall .hit{fill:transparent;cursor:pointer}
+.hall .mv{transition:transform .22s cubic-bezier(.3,1.5,.5,1);transform-box:fill-box;transform-origin:center}
+.beam{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.beam.run{stroke-dasharray:1;stroke-dashoffset:1;animation:bm var(--t,1.4s) linear forwards}
+@keyframes bm{to{stroke-dashoffset:0}}
+.beam.old{opacity:.38}
+.gem.lit .gl{opacity:1}
+.gem.lit .gb{filter:brightness(1.35) saturate(1.3)}
+.gem .gl{opacity:0;transition:opacity .3s}
+.gem.lit{animation:mkPop .45s cubic-bezier(.2,1.6,.4,1);transform-box:fill-box;transform-origin:center}
+.tapc{fill:transparent;cursor:pointer}
+.tapc.sel{fill:rgba(122,75,224,.25)}
+.tapc.ok{fill:rgba(47,179,107,.4)}
+.tapc.no{fill:rgba(232,96,75,.4)}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="hero-art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="col" id="col"></div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="ptsChip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="stage"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, GAME = "veidrodziu-sale", GRADES = [7];
+const R = MK.rnd, P = MK.pick, SH = MK.shuffle;
+const K = "#121a33", S = `stroke="${K}" stroke-width="2.4" stroke-linejoin="round"`;
+const rad = d => d * Math.PI / 180, f1 = x => +x.toFixed(1);
+
+/* ================= brėžiniai: atspindžio dėsnis ================= */
+function arrow(x1, y1, x2, y2, col, t){
+  const mx = x1 + (x2 - x1) * (t || .55), my = y1 + (y2 - y1) * (t || .55), a = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+  return `<path d="M${f1(x1)} ${f1(y1)}L${f1(x2)} ${f1(y2)}" stroke="${col}" stroke-width="4" stroke-linecap="round"/><path d="M-8 -6L5 0L-8 6Z" fill="${col}" transform="translate(${f1(mx)} ${f1(my)}) rotate(${f1(a)})"/>`;
+}
+function mirrorH(x1, x2, y){
+  let h = ""; for(let x = x1 + 4; x < x2; x += 12) h += `<path d="M${x} ${y + 3}l-7 9" stroke="#8a84a8" stroke-width="2"/>`;
+  return h + `<path d="M${x1} ${y}H${x2}" stroke="#7fd4f5" stroke-width="7" stroke-linecap="round"/><path d="M${x1} ${y}H${x2}" stroke="${K}" stroke-width="2.5" stroke-linecap="round" transform="translate(0 3.5)"/>`;
+}
+const lab = (x, y, s, col, sz) => `<text x="${f1(x)}" y="${f1(y)}" text-anchor="middle" dominant-baseline="middle" font-family="Manrope,sans-serif" font-weight="800" font-size="${sz || 15}" fill="${col || K}" stroke="#f6f2ff" stroke-width="5" paint-order="stroke" stroke-linejoin="round">${s}</text>`;
+/* o: { a, flip, lab: { inc, ref, mi, mr, bet }, names } – kampai nuo statmens */
+function rayFig(o){
+  const hx = 160, hy = 150, L = 122, s = o.flip ? -1 : 1, a = o.a;
+  const pt = (th, r) => [hx + r * Math.sin(rad(th)), hy - r * Math.cos(rad(th))];
+  const arc = (t1, t2, r, col) => { const p = pt(t1, r), q = pt(t2, r); return `<path d="M${f1(p[0])} ${f1(p[1])}A${r} ${r} 0 0 ${t2 > t1 ? 1 : 0} ${f1(q[0])} ${f1(q[1])}" fill="none" stroke="${col}" stroke-width="2.6"/>`; };
+  const A = pt(-a * s, L), B = pt(a * s, L); let h = "";
+  h += mirrorH(22, 298, hy) + `<path d="M${hx} ${hy}V16" stroke="${K}" stroke-width="2" stroke-dasharray="6 5"/>`;
+  const l = o.lab || {}, q = v => v === "?" ? "#d6336c" : "#5a37b8";
+  if(a === 0){ h += arrow(hx - (o.noRef ? 0 : 5), 22, hx - (o.noRef ? 0 : 5), hy, "#f29b0c") + (o.noRef ? "" : arrow(hx + 5, hy, hx + 5, 22, "#e8590c")); }
+  else {
+    h += arrow(A[0], A[1], hx, hy, "#f29b0c") + arrow(hx, hy, B[0], B[1], "#e8590c");
+    if(l.inc){ h += arc(-a * s, 0, 46, q(l.inc)); const p = pt(-a * s / 2, 66); h += lab(p[0], p[1], l.inc, q(l.inc)); }
+    if(l.ref){ h += arc(0, a * s, 46, q(l.ref)); const p = pt(a * s / 2, 66); h += lab(p[0], p[1], l.ref, q(l.ref)); }
+    if(l.mi){ const t1 = -90 * s, t2 = -a * s; h += arc(Math.min(t1, t2), Math.max(t1, t2), 34, q(l.mi)); const p = pt(-(90 + a) / 2 * s, 84); h += lab(p[0], p[1], l.mi, q(l.mi)); }
+    if(l.mr){ const t1 = a * s, t2 = 90 * s; h += arc(Math.min(t1, t2), Math.max(t1, t2), 34, q(l.mr)); const p = pt((90 + a) / 2 * s, 84); h += lab(p[0], p[1], l.mr, q(l.mr)); }
+    if(l.bet){ h += arc(-a, a, 30, q(l.bet)); h += lab(hx, hy - 46, l.bet, q(l.bet)); }
+  }
+  h += lab(hx + 30, 12, T.fig.normal, "#5b6480", 11.5) + lab(270, hy + 17, T.fig.mirror, "#5b6480", 11.5);
+  return `<div class="figw"><svg viewBox="0 0 320 174" role="img" aria-label="${T.fig.mirror}">${h}</svg></div>`;
+}
+function miniFig(a, kind){
+  const hx = 70, hy = 76, L = 62, pt = (th, r) => [hx + r * Math.sin(rad(th)), hy - r * Math.cos(rad(th))];
+  const A = pt(-a, L); let h = mirrorH(8, 132, hy).replace(/stroke-width="7"/, 'stroke-width="5"') + `<path d="M${hx} ${hy}V10" stroke="${K}" stroke-width="1.6" stroke-dasharray="5 4"/>`;
+  h += arrow(A[0], A[1], hx, hy, "#f29b0c");
+  if(kind === "ok"){ const B = pt(a, L); h += arrow(hx, hy, B[0], B[1], "#e8590c"); }
+  else if(kind === "wide" || kind === "narrow"){ const b = kind === "wide" ? Math.min(a + 28, 82) : Math.max(a - 26, 8), B = pt(b, L); h += arrow(hx, hy, B[0], B[1], "#e8590c"); }
+  else if(kind === "back"){ const o = 5, B = [A[0] + o, A[1] + o]; h += arrow(hx + o, hy - 1, B[0], B[1], "#e8590c"); }
+  else { const B = [hx + 26 * Math.sin(rad(a)), hy + 26 * Math.cos(rad(a))]; h += arrow(hx, hy, B[0], B[1], "#e8590c", .7); }
+  return `<svg viewBox="0 0 140 104">${h}</svg>`;
+}
+function twoFig(a, q2){
+  const hx = 150, hy = 160, vx = 252, sn = Math.sin(rad(a)), cs = Math.cos(rad(a));
+  const A = [hx - 112 * sn, hy - 112 * cs], t = (vx - hx) / sn, B = [vx, hy - t * cs], C = [B[0] - 78 * sn, B[1] - 78 * cs];
+  let h = mirrorH(34, vx, hy) + `<g transform="rotate(-90 ${vx} ${hy})">${mirrorH(vx, vx + 148, hy)}</g>`;
+  h += `<path d="M${hx} ${hy}V${hy - 70}" stroke="${K}" stroke-width="2" stroke-dasharray="6 5"/><path d="M${vx} ${f1(B[1])}H${vx - 70}" stroke="${K}" stroke-width="2" stroke-dasharray="6 5"/>`;
+  h += arrow(A[0], A[1], hx, hy, "#f29b0c") + arrow(hx, hy, B[0], B[1], "#e8590c") + arrow(B[0], B[1], C[0], C[1], "#d6336c", .7);
+  const pt = (th, r) => [hx + r * Math.sin(rad(th)), hy - r * Math.cos(rad(th))], p = pt(-a, 40), q = pt(0, 40), m = pt(-a / 2, 58);
+  h += `<path d="M${f1(p[0])} ${f1(p[1])}A40 40 0 0 1 ${f1(q[0])} ${f1(q[1])}" fill="none" stroke="#5a37b8" stroke-width="2.6"/>` + lab(m[0], m[1], a + "°", "#5a37b8");
+  if(q2){ const th = (90 - a) / 2, x = vx - 52 * Math.cos(rad(th)), y = B[1] + 52 * Math.sin(rad(th)); h += lab(x, y, "?", "#d6336c", 17); }
+  h += lab(80, hy + 17, T.fig.m1, "#5b6480", 11.5) + lab(vx + 14, 12, T.fig.m2, "#5b6480", 11.5).replace('text-anchor="middle"', 'text-anchor="end"');
+  return `<div class="figw"><svg viewBox="0 0 320 184">${h}</svg></div>`;
+}
+function periFig(){
+  const mir = (x, y) => `<path d="M${x - 17} ${y - 17}l34 34" stroke="#7fd4f5" stroke-width="7" stroke-linecap="round"/><path d="M${x - 20} ${y - 14}l34 34" stroke="${K}" stroke-width="2.5" stroke-linecap="round" transform="translate(${x < 0 ? 0 : 0} 0)"/>`;
+  const h = `<path d="M70 22h106v124h76v40H136V62H70z" fill="#e3dbfa" ${S}/>
+    <path d="M139 25l34 34" stroke="${K}" stroke-width="9" stroke-linecap="round"/><path d="M139 25l34 34" stroke="#7fd4f5" stroke-width="5" stroke-linecap="round"/>
+    <path d="M139 149l34 34" stroke="${K}" stroke-width="9" stroke-linecap="round"/><path d="M139 149l34 34" stroke="#7fd4f5" stroke-width="5" stroke-linecap="round"/>
+    ${arrow(42, 42, 156, 42, "#f29b0c", .45)}${arrow(156, 42, 156, 166, "#e8590c")}${arrow(156, 166, 262, 166, "#d6336c", .6)}
+    <ellipse cx="284" cy="166" rx="15" ry="10" fill="#fff" ${S}/><circle cx="281" cy="166" r="5.5" fill="#4a7de0" stroke="${K}" stroke-width="2"/>
+    <rect x="20" y="25" width="20" height="34" rx="4" fill="#ffd34d" ${S}/>${lab(30, 72, T.fig.obj, "#5b6480", 11.5)}${lab(284, 188, T.fig.eye, "#5b6480", 11.5)}`;
+  return `<div class="figw"><svg viewBox="0 0 320 200">${h}</svg></div>`;
+}
+
+/* ================= 1 lygis ================= */
+const deg = x => x + "°";
+function numOpts(right, cands){
+  const set = []; for(const c of SH(cands)){ if(c !== right && c >= 0 && c <= 180 && !set.includes(c)) set.push(c); if(set.length === 3) break; }
+  for(let d = 5; set.length < 3; d += 5){ for(const c of [right + d, right - d]) if(c > 0 && c < 180 && c !== right && !set.includes(c) && set.length < 3) set.push(c); }
+  const all = SH([right].concat(set)); return { opts: all.map(deg), right: all.indexOf(right), ans: deg(right) };
+}
+function mc(o){ return Object.assign({ type: "mc" }, o); }
+function textOpts(list){ const sh = SH(list.map((_, i) => i)); return { opts: sh.map(i => list[i]), right: sh.indexOf(0), ans: list[0] }; }
+const ANG = [20, 25, 30, 35, 40, 50, 55, 60, 65, 70];
+function t1(kind){
+  const a = P(ANG), f = 90 - a, flip = R(0, 1) === 1, law = T.w1.law;
+  switch(kind){
+    case "ref": { const o = numOpts(a, [f, 2 * a, 180 - a, 180 - 2 * a]); return mc(Object.assign(o, { kind, fig: rayFig({ a, flip, lab: { inc: deg(a), ref: "?" } }), text: T.q1.ref(a), two: 1, why: { body: T.w1.ref(a), more: law } })); }
+    case "mirInc": { const o = numOpts(a, [f, 2 * f, 180 - f, 2 * a]); return mc(Object.assign(o, { kind, fig: rayFig({ a, flip, lab: { mi: deg(f), inc: "?" } }), text: T.q1.mirInc(f), two: 1, why: { body: T.w1.mirInc(f, a), more: law } })); }
+    case "mirRef": { const o = numOpts(a, [f, 2 * f, 180 - f, 2 * a]); return mc(Object.assign(o, { kind, fig: rayFig({ a, flip, lab: { mi: deg(f), ref: "?" } }), text: T.q1.mirRef(f), two: 1, why: { body: T.w1.mirRef(f, a), more: law } })); }
+    case "between": { const o = numOpts(2 * a, [a, f, 180 - 2 * a, 180 - a, 90]); return mc(Object.assign(o, { kind, fig: rayFig({ a, flip, lab: { inc: deg(a) } }), text: T.q1.between(a), two: 1, why: { body: T.w1.between(a, 2 * a), more: law } })); }
+    case "half": { const o = numOpts(a, [2 * a, f, 180 - 2 * a, 4 * a]); return mc(Object.assign(o, { kind, fig: rayFig({ a, flip, lab: { bet: deg(2 * a) } }), text: T.q1.half(2 * a), two: 1, why: { body: T.w1.half(2 * a, a), more: law } })); }
+    case "refMir": { const o = numOpts(f, [a, 2 * a, 180 - a, 2 * f]); return mc(Object.assign(o, { kind, fig: rayFig({ a, flip, lab: { inc: deg(a), mr: "?" } }), text: T.q1.refMir(a), two: 1, why: { body: T.w1.refMir(a, f), more: law } })); }
+    case "grow": { const x = P([5, 10, 15, 20]), all = SH([2 * x, x, x / 2, 0]), sh = v => v === 0 ? T.o1.grow0 : String(v).replace(".", ",") + "°";
+      return mc({ kind, fig: rayFig({ a: 35, flip }), text: T.q1.grow(x), opts: all.map(sh), right: all.indexOf(2 * x), ans: sh(2 * x), two: 1, why: { body: T.w1.grow(x, 2 * x), more: law } }); }
+    case "zero": { if(R(0, 1)){ const o = numOpts(0, [90, 45, 180]); return mc(Object.assign(o, { kind, fig: rayFig({ a: 0 }), text: T.q1.zero, two: 1, why: { body: T.w1.zero, more: law } })); }
+      return mc(Object.assign(textOpts(T.o1.zero2), { kind: "zero2", fig: rayFig({ a: 0, noRef: 1 }), text: T.q1.zero2, why: { body: T.w1.zero2, more: law } })); }
+    case "pick": { const b = P([30, 40, 50, 60]), kinds = SH(["ok", P(["wide", "narrow"]), "back", "thru"]), L = "ABCD";
+      return mc({ kind, fig: "", text: T.q1.pick, opts: kinds.map((k, i) => `<i>${L[i]}</i>${miniFig(b, k)}`), pic: 1, two: 1, right: kinds.indexOf("ok"), ans: L[kinds.indexOf("ok")], why: { body: T.w1.pick, more: law } }); }
+    case "two": { const b = P([40, 45, 50, 55, 60, 65, 70]), o = numOpts(90 - b, [b, 2 * b, 180 - 2 * b, 180 - b, 90]); return mc(Object.assign(o, { kind, fig: twoFig(b, true), text: T.q1.two(b), two: 1, why: { body: T.w1.two(b, 90 - b), more: law } })); }
+    case "two2": return mc(Object.assign(textOpts(T.o1.two2), { kind, fig: twoFig(P([45, 50, 55, 60, 65]), false), text: T.q1.two2, why: { body: T.w1.two2, more: law } }));
+    case "peri": { const v = R(0, 1), o = v ? numOpts(90, [45, 180, 60, 30]) : numOpts(45, [90, 30, 60, 180]); return mc(Object.assign(o, { kind: "peri" + v, fig: periFig(), text: v ? T.q1.peri2 : T.q1.peri1, two: 1, why: { body: v ? T.w1.peri2 : T.w1.peri1, more: law } })); }
+    default: { const c = kind && kind.q ? kind : P(T.concept1); return mc(Object.assign(textOpts(c.o), { kind: "c:" + T.concept1.indexOf(c), fig: "", text: c.q, why: { body: c.w } })); }
+  }
+}
+function gen1(){
+  const core = SH(["ref", "mirInc", "mirRef", "between", "half", "refMir", "grow", "zero"]).slice(0, 4), cs = SH(T.concept1);
+  return SH(core.concat(["pick", P(["two", "two2"]), "peri"]).map(t1).concat([t1(cs[0])]));
+}
+
+/* ================= salė: spindulio kelias ================= */
+const W = 6, H = 6, C = 50, PAD = 8, DX = [1, 0, -1, 0], DY = [0, 1, 0, -1], SL = [3, 2, 1, 0], BS = [1, 0, 3, 2];
+function trace(st, mirOf){
+  let x = st.lamp.x, y = st.lamp.y, d = st.lamp.d, n = 0; const pts = [[x, y]], lit = new Set(), seen = new Set(), ts = new Set(st.targets);
+  for(;;){
+    x += DX[d]; y += DY[d];
+    if(x < 0 || y < 0 || x >= W || y >= H || st.walls.has(y * W + x) || (x === st.lamp.x && y === st.lamp.y)){ pts.push([x - DX[d] * .5, y - DY[d] * .5]); break; }
+    const k = y * W + x, s = k * 4 + d; if(seen.has(s)){ pts.push([x, y]); break; } seen.add(s);
+    if(ts.has(k)) lit.add(k);
+    const m = mirOf(k); if(m){ pts.push([x, y]); d = m === "/" ? SL[d] : BS[d]; n++; }
+  }
+  return { pts, lit, n, ok: lit.size === ts.size };
+}
+function basePuzzle(k, nT){
+  for(let tr = 0; tr < 4000; tr++){
+    const side = R(0, 3); let lx, ly, d;
+    if(side === 0){ lx = 0; ly = R(0, H - 1); d = 0; } else if(side === 1){ lx = R(0, W - 1); ly = 0; d = 1; } else if(side === 2){ lx = W - 1; ly = R(0, H - 1); d = 2; } else { lx = R(0, W - 1); ly = H - 1; d = 3; }
+    const lampK = ly * W + lx, axis = new Map([[lampK, 3]]), sol = new Map(), pass = []; let x = lx, y = ly, dir = d, ok = true, fin = -1;
+    for(let i = 0; i <= k && ok; i++){
+      const cells = []; let cx = x, cy = y; const ax = dir % 2 === 0 ? 1 : 2;
+      for(;;){ cx += DX[dir]; cy += DY[dir]; if(cx < 0 || cy < 0 || cx >= W || cy >= H) break; const kk = cy * W + cx; if(kk === lampK || sol.has(kk) || ((axis.get(kk) || 0) & ax)) break; cells.push(kk); }
+      const ends = cells.map((_, j) => j).filter(j => !axis.has(cells[j]));
+      if(!ends.length){ ok = false; break; }
+      const j = P(ends); for(let q = 0; q < j; q++){ axis.set(cells[q], (axis.get(cells[q]) || 0) | ax); pass.push(cells[q]); }
+      const ek = cells[j]; axis.set(ek, 3);
+      if(i < k){ const nd = (dir + (R(0, 1) ? 1 : 3)) % 4; sol.set(ek, SL[dir] === nd ? "/" : "\\"); x = ek % W; y = (ek - x) / W; dir = nd; } else fin = ek;
+    }
+    if(!ok) continue;
+    const extra = SH([...new Set(pass)]).slice(0, nT - 1); if(extra.length < nT - 1) continue;
+    const st = { lamp: { x: lx, y: ly, d }, walls: new Set(), targets: [fin].concat(extra), sol, used: axis };
+    if(!trace(st, q => sol.get(q)).ok) continue;
+    return st;
+  }
+  return null;
+}
+function freeCells(st, taken){ const f = []; for(let k = 0; k < W * H; k++) if(!st.used.has(k) && !taken.has(k)) f.push(k); return SH(f); }
+const pop = m => { let c = 0; while(m){ c += m & 1; m >>= 1; } return c; };
+/* 2 lygis: veidrodžiai jau stovi, sukiojami */
+function genRot(diff){
+  const cfg = [[R(2, 3), R(1, 2), 2, 1, 2], [R(3, 4), 2, 3, 2, 2], [R(5, 6), 3, 3, 3, 3]][diff];
+  for(let tr = 0; tr < 300; tr++){
+    const st = basePuzzle(cfg[0], cfg[1]); if(!st) continue;
+    const fr = freeCells(st, new Set()); if(fr.length < cfg[2] + cfg[3]) continue;
+    fr.slice(0, cfg[2]).forEach(k => st.walls.add(k));
+    const keys = [...st.sol.keys()].concat(fr.slice(cfg[2], cfg[2] + cfg[3])), n = keys.length;
+    for(let s = 0; s < 25; s++){
+      const init = keys.map(() => P(["/", "\\"])); let min = 99;
+      for(let m = 0; m < (1 << n); m++){ const pc = pop(m); if(pc >= min) continue; const cf = new Map(keys.map((k, i) => [k, (m >> i & 1) ? (init[i] === "/" ? "\\" : "/") : init[i]])); if(trace(st, q => cf.get(q)).ok) min = pc; }
+      const fl = new Map(keys.map((k, i) => [k, init[i] === "/" ? "\\" : "/"]));
+      if(min >= cfg[4] && min < n && !trace(st, q => fl.get(q)).ok){ st.mir = new Map(keys.map((k, i) => [k, { o: init[i] }])); st.min = min; return { type: "rot", st }; }
+    }
+  }
+  return genRot(Math.max(0, diff - 1));
+}
+/* 3 lygis: veidrodžius stato mokinys */
+function genPlace(diff){
+  const cfg = [[2, R(1, 2), R(3, 4), 0], [3, 2, R(4, 5), 0], [R(4, 5), 3, R(4, 5), R(1, 2)]][diff];
+  for(let tr = 0; tr < 300; tr++){
+    const st = basePuzzle(cfg[0], cfg[1]); if(!st) continue;
+    const fr = freeCells(st, new Set()); if(fr.length < cfg[2]) continue;
+    fr.slice(0, cfg[2]).forEach(k => st.walls.add(k));
+    const lock = SH([...st.sol.keys()]).slice(0, cfg[3]);
+    st.mir = new Map(lock.map(k => [k, { o: st.sol.get(k), lock: true }])); st.max = cfg[0] - cfg[3];
+    if(trace(st, q => st.mir.get(q) && st.mir.get(q).o).ok) continue;
+    /* vienu veidrodžiu neišsprendžiama, kai jų duota daugiau */
+    if(st.max > 1){ let easy = false; for(let k = 0; k < W * H && !easy; k++){ if(st.walls.has(k) || st.mir.has(k) || k === st.lamp.y * W + st.lamp.x || st.targets.includes(k)) continue; for(const o of ["/", "\\"]) if(trace(st, q => q === k ? o : (st.mir.get(q) && st.mir.get(q).o)).ok) easy = true; } if(easy) continue; }
+    return { type: "place", st };
+  }
+  return genPlace(Math.max(0, diff - 1));
+}
+const gen2 = () => [0, 0, 1, 1, 2, 2].map(genRot), gen3 = () => [0, 0, 1, 1, 2, 2].map(genPlace);
+
+/* ---- salės piešinys ---- */
+const GEMC = ["#ff5d8f", "#ffb020", "#3ecf8e", "#35b6ff", "#b184ff", "#ff7a45"];
+const gemSvg = (col, lit) => `<g class="gem${lit ? " lit" : ""}"><circle class="gl" r="21" fill="${col}" opacity=".35"/><g class="gb"><path d="M0 -15L12 -5L7 14H-7L-12 -5Z" fill="${col}" ${S}/><path d="M-12 -5H12M0 -15L-4 -5L0 14L4 -5Z" fill="none" stroke="${K}" stroke-width="1.4" opacity=".55"/><path d="M-7 -6l3-6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".8"/></g></g>`;
+function mirSvg(m){
+  const bolts = m.lock ? `<circle cx="-13" cy="13" r="3" fill="#c9c3e6" stroke="${K}" stroke-width="1.5"/><circle cx="13" cy="-13" r="3" fill="#c9c3e6" stroke="${K}" stroke-width="1.5"/>` : "";
+  return `<g class="mv" style="transform:rotate(${m.o === "/" ? 0 : 90}deg)"><path d="M-17 17L17 -17" stroke="${K}" stroke-width="9" stroke-linecap="round"/><path d="M-17 17L17 -17" stroke="${m.lock ? "#b9c4d6" : "#8fe0ff"}" stroke-width="5" stroke-linecap="round"/><path d="M-10 10L-2 2" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".9"/>${bolts}</g>`;
+}
+const cx = x => PAD + x * C + C / 2;
+function hallSvg(st, o){
+  o = o || {}; let h = `<rect width="${W * C + 2 * PAD}" height="${H * C + 2 * PAD}" fill="#241d45"/>`;
+  for(let y = 0; y < H; y++) for(let x = 0; x < W; x++) h += `<rect x="${PAD + x * C + 1.5}" y="${PAD + y * C + 1.5}" width="${C - 3}" height="${C - 3}" rx="7" fill="${(x + y) % 2 ? "#3a3068" : "#41367a"}"/>`;
+  st.walls.forEach(k => { const x = k % W, y = (k - x) / W; h += `<g transform="translate(${cx(x)} ${cx(y)})"><rect x="-19" y="-19" width="38" height="38" rx="8" fill="#9a92b8" ${S}/><rect x="-13" y="-13" width="26" height="26" rx="5" fill="#c4bddc" stroke="${K}" stroke-width="1.6"/><path d="M-6 -6h12v12h-12z" fill="#a9a1c6"/></g>`; });
+  st.targets.forEach((k, i) => { const x = k % W, y = (k - x) / W; h += `<g transform="translate(${cx(x)} ${cx(y)})" data-gem="${k}">${gemSvg(GEMC[i % GEMC.length], o.lit && o.lit.has(k))}</g>`; });
+  h += `<g id="beamG"></g>`;
+  st.mir.forEach((m, k) => { const x = k % W, y = (k - x) / W; h += `<g transform="translate(${cx(x)} ${cx(y)})">${m.lock || o.place ? "" : `<rect x="-22" y="-22" width="44" height="44" rx="9" fill="none" stroke="#ffe27a" stroke-width="1.6" stroke-dasharray="4 4" opacity=".7"/>`}${mirSvg(m)}</g>`; });
+  const l = st.lamp; h += `<g transform="translate(${cx(l.x)} ${cx(l.y)}) rotate(${l.d * 90})"><path d="M10 -9L24 -15V15L10 9Z" fill="#fff3b0" opacity=".55"/><rect x="-19" y="-9" width="22" height="18" rx="5" fill="#ff8a1f" ${S}/><path d="M3 -12h8v24H3z" fill="#ffd34d" ${S}/><circle cx="-8" cy="0" r="3.2" fill="#fff" stroke="${K}" stroke-width="1.6"/></g>`;
+  for(let k = 0; k < W * H; k++){ const x = k % W, y = (k - x) / W; h += `<rect class="hit" data-k="${k}" x="${PAD + x * C}" y="${PAD + y * C}" width="${C}" height="${C}"/>`; }
+  return `<svg viewBox="0 0 ${W * C + 2 * PAD} ${H * C + 2 * PAD}">${h}</svg>`;
+}
+function beamSvg(tr, cls){
+  const d = tr.pts.map((p, i) => (i ? "L" : "M") + f1(cx(p[0])) + " " + f1(cx(p[1]))).join(""), len = tr.pts.reduce((s, p, i) => i ? s + Math.abs(p[0] - tr.pts[i - 1][0]) + Math.abs(p[1] - tr.pts[i - 1][1]) : 0, 0);
+  const t = Math.min(3.2, Math.max(.9, len * .17));
+  return { t, html: `<path class="beam ${cls}" pathLength="1" style="--t:${t}s" d="${d}" stroke="#ffd34d" stroke-width="11" opacity=".35"/><path class="beam ${cls}" pathLength="1" style="--t:${t}s" d="${d}" stroke="#fff6c9" stroke-width="4"/>` };
+}
+
+/* ================= 4 lygis ================= */
+const SEG = { 0: "abcdef", 1: "bc", 2: "abged", 5: "afgcd", 8: "abcdefg" };
+function segDigit(ch, x){
+  const s = SEG[ch], on = "#ff5d3a", off = "#3a3158", r = { a: [4, 0, 18, 5], b: [21, 4, 5, 18], c: [21, 27, 5, 18], d: [4, 44, 18, 5], e: [0, 27, 5, 18], f: [0, 4, 5, 18], g: [4, 22, 18, 5] };
+  return Object.keys(r).map(k => `<rect x="${x + r[k][0]}" y="${r[k][1]}" width="${r[k][2]}" height="${r[k][3]}" rx="2.5" fill="${s.includes(k) ? on : off}"/>`).join("");
+}
+function digFig(real){
+  const xs = [0, 34, 82, 116]; let g = ""; [0, 1, 3, 4].forEach((ci, i) => g += segDigit(real[ci], xs[i])); g += `<circle cx="71" cy="16" r="3.4" fill="#ff5d3a"/><circle cx="71" cy="34" r="3.4" fill="#ff5d3a"/>`;
+  return `<div class="figw dark"><svg viewBox="0 0 320 124"><rect x="62" y="20" width="196" height="84" rx="14" fill="#151028" stroke="#8fe0ff" stroke-width="5"/><path d="M76 30l28-6M80 40l14-3" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".35"/><g transform="translate(231 37) scale(-1 1)">${g}</g></svg></div>`;
+}
+const hm = m => { const h = Math.floor(m / 60) % 12 || 12; return h + ":" + String(m % 60).padStart(2, "0"); };
+function anaFig(realMin){
+  const seen = (720 - realMin) % 720, ha = seen / 2, ma = (seen % 60) * 6; let ticks = "";
+  for(let i = 0; i < 12; i++) ticks += `<path d="M0 -${i % 3 ? 49 : 46}V-54" stroke="${K}" stroke-width="${i % 3 ? 2.2 : 4}" stroke-linecap="round" transform="rotate(${i * 30})"/>`;
+  return `<div class="figw dark"><svg viewBox="0 0 320 156"><rect x="84" y="6" width="152" height="144" rx="16" fill="#cfeefd" stroke="#8fe0ff" stroke-width="5"/><path d="M98 22l30-8M102 34l14-4" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/><g transform="translate(160 78)"><circle r="58" fill="#fff" ${S}/>${ticks}<path d="M0 6V-30" stroke="${K}" stroke-width="6" stroke-linecap="round" transform="rotate(${ha})"/><path d="M0 8V-45" stroke="#d6336c" stroke-width="3.6" stroke-linecap="round" transform="rotate(${ma})"/><circle r="4.5" fill="${K}"/></g></svg></div>`;
+}
+function wordSvg(w, mode){
+  const tf = ["", "translate(160 0) scale(-1 1)", "translate(0 46) scale(1 -1)", "translate(160 46) scale(-1 -1)"][mode];
+  return `<svg viewBox="0 0 160 46"><text x="80" y="24" transform="${tf}" text-anchor="middle" dominant-baseline="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="${w.length > 7 ? 21 : 25}" letter-spacing="1" fill="${K}">${w}</text></svg>`;
+}
+const candle = `<path d="M-5 14V-2h10v16z" fill="#ffe9a8" ${S}/><path d="M0 -3q-7-8 0-15q7 7 0 15z" fill="#ff8a1f" stroke="${K}" stroke-width="1.8"/>`;
+function tapFig(o, mark){
+  const c = 38, cols = 8, rows = 5, mx = o.m * c; let h = `<rect width="${cols * c}" height="${rows * c}" fill="#f6f2ff"/>`;
+  const behind = o.left ? [o.m, cols] : [0, o.m]; h += `<rect x="${behind[0] * c}" y="0" width="${(behind[1] - behind[0]) * c}" height="${rows * c}" fill="#e2f4fd"/>`;
+  for(let i = 1; i < cols; i++) h += `<path d="M${i * c} 0V${rows * c}" stroke="#cdc5e6" stroke-width="1"/>`;
+  for(let i = 1; i < rows; i++) h += `<path d="M0 ${i * c}H${cols * c}" stroke="#cdc5e6" stroke-width="1"/>`;
+  h += `<g transform="translate(${o.c * c + c / 2} ${o.r * c + c / 2})">${candle}</g>`;
+  if(mark) h += `<g transform="translate(${o.ic * c + c / 2} ${o.r * c + c / 2})" opacity=".55">${candle}</g>`;
+  for(let x = behind[0]; x < behind[1]; x++) for(let y = 0; y < rows; y++){ const cl = mark ? (x === o.ic && y === o.r ? " ok" : (mark.x === x && mark.y === y ? " no" : "")) : ""; h += `<rect class="tapc${cl}" data-x="${x}" data-y="${y}" x="${x * c}" y="${y * c}" width="${c}" height="${c}"/>`; }
+  h += `<path d="M${mx} 0V${rows * c}" stroke="#7fd4f5" stroke-width="7"/><path d="M${mx + (o.left ? 3.5 : -3.5)} 0V${rows * c}" stroke="${K}" stroke-width="2.5"/>`;
+  return `<svg viewBox="0 0 ${cols * c} ${rows * c}">${h}</svg>`;
+}
+function t4(kind){
+  const law = T.w4.law;
+  switch(kind){
+    case "tap": { const left = R(0, 1) === 1, n = R(1, 3), m = left ? R(n, 8 - n) : R(n, 8 - n), c = left ? m - n : m + n - 1, ic = left ? m + n - 1 : m - n;
+      if(m < 2 || m > 6) return t4("tap"); return { type: "tap", kind, o: { left, m, c, ic, r: R(0, 4) }, n, text: T.q4.tap, why: { body: T.w4.tap(n), more: law } }; }
+    case "dist": { const d = P([15, 20, 25, 30, 40, 60, 80, 120]), u = v => v + " cm", all = SH([d, d * 2, d / 2, 0]); return mc({ kind, fig: "", text: T.q4.dist(d), opts: all.map(v => u(String(v).replace(".", ","))), right: all.indexOf(d), ans: u(d), two: 1, why: { body: T.w4.dist(d), more: law } }); }
+    case "dist2": { const d = P([1, 2, 3, 4, 5, 6]), all = SH([2 * d, d, d / 2, 4 * d]), u = v => String(v).replace(".", ",") + " m"; return mc({ kind, fig: "", text: T.q4.dist2(d), opts: all.map(u), right: all.indexOf(2 * d), ans: u(2 * d), two: 1, why: { body: T.w4.dist2(d, 2 * d), more: law } }); }
+    case "appr": { const x = P([10, 20, 30, 40, 50]), all = SH([2 * x, x, x / 2, 4 * x]), u = v => v + " cm"; return mc({ kind, fig: "", text: T.q4.appr(x), opts: all.map(u), right: all.indexOf(2 * x), ans: u(2 * x), two: 1, why: { body: T.w4.appr(x, 2 * x), more: law } }); }
+    case "back": { const d = P([20, 30, 40, 50]), x = P([10, 20, 30]), n = d + x, u = v => v + " cm", sh = SH([2 * n].concat(SH([...new Set([n, 2 * d + x, d + 2 * x, 2 * d, 4 * n])]).slice(0, 3)));
+      return mc({ kind, fig: "", text: T.q4.back(d, x), opts: sh.map(u), right: sh.indexOf(2 * n), ans: u(2 * n), two: 1, why: { body: T.w4.back(d, x, n, 2 * n), more: law } }); }
+    case "dig": { for(;;){ const hh = P(["00", "01", "02", "05", "08", "10", "11", "12", "15", "18", "20", "21", "22"]), mm = P("0125") + P("01258"), real = hh + ":" + mm, sw = s => s.replace(/[25]/g, c => c === "2" ? "5" : "2"), rev = real.split("").reverse().join(""), seen = sw(rev), set = [real, seen, sw(real), rev];
+        if(new Set(set).size < 4) continue; const sh = SH(set); return mc({ kind, fig: digFig(real), text: T.q4.dig, opts: sh, right: sh.indexOf(real), ans: real, two: 1, why: { body: T.w4.dig(seen, real), more: law } }); } }
+    case "ana": { for(;;){ const real = R(1, 143) * 5, seen = (720 - real) % 720; if(real % 360 === 0 || Math.abs(real - seen) < 30) continue; const set = [real, seen, (real + 60) % 720, (seen + 660) % 720].map(hm); if(new Set(set).size < 4) continue; const sh = SH(set);
+        return mc({ kind, fig: anaFig(real), text: T.q4.ana, opts: sh, right: sh.indexOf(hm(real)), ans: hm(real), two: 1, why: { body: T.w4.ana(hm(seen), hm(real)), more: law } }); } }
+    case "word": { const w = P(T.words), modes = SH([1, 0, 2, 3]), L = "ABCD"; return mc({ kind: "word:" + w, fig: "", text: T.q4.word(w), opts: modes.map((m, i) => `<i>${L[i]}</i>${wordSvg(w, m)}`), pic: 1, right: modes.indexOf(1), ans: L[modes.indexOf(1)], why: { body: T.w4.word, more: law } }); }
+    default: { const c = kind && kind.q ? kind : P(T.concept4); return mc(Object.assign(textOpts(c.o), { kind: "c4:" + T.concept4.indexOf(c), fig: "", text: c.q, why: { body: c.w, more: c === T.concept4[3] ? "" : "" } })); }
+  }
+}
+function gen4(){ const cs = SH(T.concept4); return SH(["tap", "tap", P(["dist", "dist2"]), P(["appr", "back"]), "dig", "ana", "word"].map(t4).concat([t4(cs[0])])); }
+function gen5(){
+  const a = SH(["mirInc", "mirRef", "between", "half", "refMir"]);
+  return SH([t1(a[0]), t1(a[1]), t1(P(["pick", "two", "peri"])), t4("tap"), t4(P(["dig", "ana"])), t4(P(["dist2", "appr", "back", "word"])), t1(P(T.concept1)), t4(P(T.concept4))]).concat([genRot(R(1, 2)), genPlace(R(1, 2))]);
+}
+const LV = [gen1, gen2, gen3, gen4, gen5];
+
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: [
+  `<svg viewBox="0 0 56 56"><path d="M6 44h44" stroke="#7fd4f5" stroke-width="6" stroke-linecap="round"/><path d="M6 47.5h44" stroke="${K}" stroke-width="2.4" stroke-linecap="round"/><path d="M28 44V8" stroke="${K}" stroke-width="2" stroke-dasharray="4 4"/><path d="M8 14L28 44L48 14" fill="none" stroke="#f29b0c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 56 56"><rect x="4" y="4" width="48" height="48" rx="10" fill="#41367a" ${S}/><path d="M10 40h18V16h16" fill="none" stroke="#ffd34d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 47L35 33" stroke="${K}" stroke-width="7" stroke-linecap="round"/><path d="M21 47L35 33" stroke="#8fe0ff" stroke-width="3.6" stroke-linecap="round"/><path d="M21 23L35 9" stroke="${K}" stroke-width="7" stroke-linecap="round"/><path d="M21 23L35 9" stroke="#8fe0ff" stroke-width="3.6" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 56 56"><rect x="4" y="4" width="48" height="48" rx="10" fill="#41367a" ${S}/><g transform="translate(38 18) scale(.8)">${gemSvg("#ff5d8f", true)}</g><path d="M12 44L26 30" stroke="${K}" stroke-width="7" stroke-linecap="round"/><path d="M12 44L26 30" stroke="#8fe0ff" stroke-width="3.6" stroke-linecap="round"/><path d="M36 38v12M30 44h12" stroke="#ffd34d" stroke-width="4" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 56 56"><path d="M28 4v48" stroke="#7fd4f5" stroke-width="6"/><path d="M31.5 4v48" stroke="${K}" stroke-width="2.4"/><g transform="translate(14 32) scale(1.1)">${candle}</g><g transform="translate(44 32) scale(1.1)" opacity=".5">${candle}</g></svg>`,
+  `<svg viewBox="0 0 56 56"><g transform="translate(28 30) scale(1.5)">${gemSvg("#ffb020", true)}</g><path d="M28 2v6M10 10l4 4M46 10l-4 4" stroke="${K}" stroke-width="3" stroke-linecap="round"/></svg>`][i] }));
+
+/* ================= meniu ================= */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), stage = $("stage");
+const saved = MK.get("mokomeskartu-klase", 0), KEY = "mk-" + GAME + "-kristalai", WALLN = 36;
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("ptsL").textContent = T.pts;
+function heroSvg(){
+  return `<svg viewBox="0 0 480 250" role="img" aria-label="${T.title}">
+  <rect width="480" height="250" fill="#2b2350"/><path d="M0 196h480v54H0z" fill="#41367a"/><path d="M0 196h480" stroke="${K}" stroke-width="3"/>
+  <g opacity=".5"><path d="M40 196V40q0-22 22-22h36q22 0 22 22v156z" fill="#3a3068" ${S}/><path d="M360 196V40q0-22 22-22h36q22 0 22 22v156z" fill="#3a3068" ${S}/></g>
+  <path d="M150 150H300V62H398" fill="none" stroke="#ffd34d" stroke-width="16" opacity=".3" stroke-linejoin="round"/><path d="M150 150H300V62H398" fill="none" stroke="#fff6c9" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <g transform="translate(300 150)"><path d="M0 22V46M-16 46h32" stroke="${K}" stroke-width="5" stroke-linecap="round"/><path d="M-22 22L22 -22" stroke="${K}" stroke-width="11" stroke-linecap="round"/><path d="M-22 22L22 -22" stroke="#8fe0ff" stroke-width="6" stroke-linecap="round"/></g>
+  <g transform="translate(300 62)"><path d="M0 -22V-46" stroke="${K}" stroke-width="5" stroke-linecap="round"/><path d="M-22 22L22 -22" stroke="${K}" stroke-width="11" stroke-linecap="round"/><path d="M-22 22L22 -22" stroke="#8fe0ff" stroke-width="6" stroke-linecap="round"/></g>
+  <g transform="translate(410 62) scale(2)">${gemSvg("#ff5d8f", true)}</g>
+  <g transform="translate(408 150) scale(1.3)">${gemSvg("#35b6ff", false)}</g><path d="M392 196v-22h32v22" fill="#9a92b8" ${S}/>
+  <g transform="translate(92 96)">
+    <ellipse cx="0" cy="102" rx="34" ry="6" fill="#121a33" opacity=".3"/>
+    <path d="M-14 62L-17 96h13l3-28 3 28h13l-3-34z" fill="#3b4fa8" ${S}/><path d="M-19 96h17v7h-21zM3 96h17l3 7H3z" fill="#ff8a1f" ${S}/>
+    <path d="M-17 22q17-10 34 0l3 44h-40z" fill="#7a4be0" ${S}/><path d="M-6 20l6 9 6-9" fill="#fff" ${S}/>
+    <path d="M-16 28q-14 14-8 34" fill="none" stroke="${K}" stroke-width="11" stroke-linecap="round"/><path d="M-16 28q-14 14-8 34" fill="none" stroke="#7a4be0" stroke-width="6.5" stroke-linecap="round"/><circle cx="-24" cy="63" r="5.5" fill="#ffd6b3" ${S}/>
+    <path d="M15 30q16 8 28 22" fill="none" stroke="${K}" stroke-width="11" stroke-linecap="round"/><path d="M15 30q16 8 28 22" fill="none" stroke="#7a4be0" stroke-width="6.5" stroke-linecap="round"/>
+    <g transform="translate(46 54)"><rect x="-10" y="-8" width="20" height="16" rx="4" fill="#ff8a1f" ${S}/><path d="M10 -11h7v22h-7z" fill="#ffd34d" ${S}/></g><circle cx="42" cy="52" r="5.5" fill="#ffd6b3" ${S}/>
+    <circle cx="0" cy="0" r="21" fill="#ffd6b3" ${S}/><path d="M-21 -2q-3-24 21-24t21 24q-8-12-21-12t-21 12z" fill="#7b3f1d" ${S}/><path d="M-20 -4q-8 14-2 28" fill="none" stroke="#7b3f1d" stroke-width="7" stroke-linecap="round"/><path d="M20 -4q8 14 2 28" fill="none" stroke="#7b3f1d" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="-7" cy="1" r="2.6" fill="${K}"/><circle cx="8" cy="1" r="2.6" fill="${K}"/><path d="M-5 10q6 5 12 0" fill="none" stroke="${K}" stroke-width="2.2" stroke-linecap="round"/><circle cx="-13" cy="8" r="3.4" fill="#ff9d9d" opacity=".7"/><circle cx="14" cy="8" r="3.4" fill="#ff9d9d" opacity=".7"/>
+  </g></svg>`;
+}
+const crystals = () => MK.get(KEY, 0), wallGot = n => Math.min(WALLN, Math.floor(n / 3));
+function renderWall(prev){
+  const n = crystals(), got = wallGot(n), rank = T.ranks[got >= WALLN ? 4 : got >= 20 ? 3 : got >= 10 ? 2 : got >= 3 ? 1 : 0]; let h = "";
+  for(let i = 0; i < WALLN; i++) h += `<svg viewBox="-22 -22 44 44" class="${i < got ? (prev != null && i >= prev ? "new" : "") : "off"}">${i < got ? gemSvg(GEMC[(i * 5 + (i / 9 | 0)) % 6], true) : gemSvg("#4a4170", false)}</svg>`;
+  $("col").innerHTML = `<h2><svg viewBox="-22 -22 44 44" aria-hidden="true">${gemSvg("#b184ff", false)}</svg>${T.colH}</h2><p>${T.colP(n, got, WALLN, rank)}</p><div class="wall">${h}</div>`;
+}
+function showMenu(prev){
+  play.hidden = true; menu.hidden = false; $("heroArt").innerHTML = heroSvg(); renderWall(prev);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, pts = 0, dots = null, wall0 = 0;
+function start(i){
+  L = i; tasks = LV[i](); ti = 0; okN = 0; pts = 0; $("pts").textContent = 0; wall0 = wallGot(crystals());
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+function award(n){ if(n){ pts += n; const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); } }
+function first(ok){ dots.mark(ti, ok); if(ok){ okN++; MK.set(KEY, crystals() + 1); } }
+function whyBlock(ok, w, ans){ return MK.why({ ok, head: ok ? MK.praise() : (ans ? T.bad(ans) : T.badPlain), body: w.body, more: w.more, sum: T.rule, open: !ok }); }
+function addWhy(ok, w, ans){ const d = document.createElement("div"); d.innerHTML = whyBlock(ok, w, ans); $("flow").appendChild(d.firstElementChild); }
+function nextBtn(){
+  const go = document.createElement("button"); go.type = "button"; go.className = "mk-btn go"; go.id = "next"; go.textContent = ti < tasks.length - 1 ? T.next : T.finish;
+  go.onclick = () => { MK.sfx.tap(); ti++; ti < tasks.length ? show() : finish(); };
+  $("flow").appendChild(go); setTimeout(() => go.scrollIntoView({ behavior: "smooth", block: "nearest" }), 120);
+}
+function show(){
+  cur = tasks[ti]; dots.cur(ti); window.scrollTo({ top: 0 });
+  if(cur.type === "rot" || cur.type === "place") return showHall();
+  if(cur.type === "tap") return showTap();
+  stage.innerHTML = `<div class="card fade">${cur.fig || ""}<p class="txt">${cur.text}</p>
+    <div class="ans${cur.two ? " two" : ""}" id="ans">${cur.opts.map((o, i) => `<button type="button" class="a${cur.pic ? " pic" : ""}" data-i="${i}">${o}</button>`).join("")}</div></div><div id="flow"></div>`;
+  $("ans").onclick = e => {
+    const b = e.target.closest(".a"), ans = $("ans"); if(!b || ans.classList.contains("done")) return;
+    ans.classList.add("done"); MK.unlock(); const ok = +b.dataset.i === cur.right;
+    b.classList.add(ok ? "ok" : "no"); if(!ok) ans.children[cur.right].classList.add("ok");
+    first(ok); if(ok){ award(10); MK.sfx.good(); } else MK.sfx.bad();
+    addWhy(ok, cur.why, cur.pic ? cur.ans : cur.ans); nextBtn();
+  };
+}
+function showTap(){
+  stage.innerHTML = `<div class="card fade"><p class="txt">${cur.text}</p><div class="figw" id="tapw">${tapFig(cur.o)}</div></div><div id="flow"></div>`;
+  let done = false;
+  $("tapw").onclick = e => {
+    const c = e.target.closest(".tapc"); if(!c || done) return; done = true; MK.unlock();
+    const x = +c.dataset.x, y = +c.dataset.y, ok = x === cur.o.ic && y === cur.o.r;
+    $("tapw").innerHTML = tapFig(cur.o, { x, y }); first(ok); if(ok){ award(10); MK.sfx.good(); } else MK.sfx.bad();
+    addWhy(ok, cur.why, ""); nextBtn();
+  };
+}
+function showHall(){
+  const st = cur.st, place = cur.type === "place", nT = st.targets.length; let tries = 0, done = false, busy = false, old = null;
+  const lockN = place ? [...st.mir.values()].filter(m => m.lock).length : 0;
+  stage.innerHTML = `<div class="card fade"><p class="txt">${place ? T.p3(nT, st.max, lockN) : T.p2(nT)}</p><div class="hall" id="hall"></div>
+    <div class="bar"><span id="cnt"></span><span id="trl"></span></div><p class="note" id="note" role="status" aria-live="polite"></p>
+    <button type="button" class="mk-btn bigbtn" id="goB">${T.go}</button></div><div id="flow"></div>`;
+  const hall = $("hall"), note = $("note"), mirOf = k => st.mir.get(k) && st.mir.get(k).o, placed = () => [...st.mir.values()].filter(m => !m.lock).length;
+  const draw = lit => { hall.innerHTML = hallSvg(st, { place, lit }); if(old) hall.querySelector("#beamG").innerHTML = old; $("cnt").textContent = place ? T.left(placed(), st.max) : ""; $("trl").textContent = done ? "" : T.tries(3 - tries); };
+  draw();
+  hall.onclick = e => {
+    const r = e.target.closest(".hit"); if(!r || done || busy) return; const k = +r.dataset.k, m = st.mir.get(k); MK.unlock();
+    if(m && m.lock){ note.className = "note warn"; note.textContent = T.locked; return; }
+    if(place){
+      if(k === st.lamp.y * W + st.lamp.x || st.walls.has(k) || st.targets.includes(k)) return;
+      if(!m){ if(placed() >= st.max){ note.className = "note warn"; note.textContent = T.noMore; MK.sfx.bad(); return; } st.mir.set(k, { o: "/" }); }
+      else if(m.o === "/") m.o = "\\"; else st.mir.delete(k);
+    } else { if(!m) return; m.o = m.o === "/" ? "\\" : "/"; }
+    MK.sfx.tap(); note.textContent = ""; old = null; draw();
+  };
+  $("goB").onclick = () => {
+    if(done || busy) return; MK.unlock(); busy = true; tries++; old = null; draw(); $("goB").disabled = true; note.textContent = "";
+    const tr = trace(st, mirOf), b = beamSvg(tr, "run"); hall.querySelector("#beamG").innerHTML = b.html; MK.sfx.whoosh();
+    setTimeout(() => {
+      busy = false; old = beamSvg(tr, tr.ok ? "" : "old").html; draw(tr.lit);
+      if(tr.ok){
+        done = true; const spare = place && placed() < st.max; first(tries === 1); award([0, 10, 6, 3][tries] + (spare ? 2 : 0)); MK.sfx.good();
+        note.className = "note good"; note.textContent = T.win(tr.n) + (spare ? T.spare : ""); $("goB").hidden = true; $("trl").textContent = "";
+        addWhy(true, { body: T.wPuz(tr.n), more: T.wPuzMore }); nextBtn();
+      } else if(tries >= 3){
+        done = true; first(false); MK.sfx.bad(); note.className = "note warn"; note.textContent = T.failEnd; $("goB").hidden = true;
+        if(place) [...st.mir.keys()].forEach(k => { if(!st.mir.get(k).lock) st.mir.delete(k); });
+        st.sol.forEach((o, k) => st.mir.set(k, { o, lock: st.mir.get(k) && st.mir.get(k).lock }));
+        const s = trace(st, mirOf); old = beamSvg(s, "").html; draw(s.lit);
+        addWhy(false, { body: T.wPuz(s.n), more: T.wPuzMore }, ""); nextBtn();
+      } else { MK.sfx.bad(); note.className = "note warn"; note.textContent = T.fail(tr.lit.size, nT, 3 - tries); $("goB").disabled = false; }
+    }, b.t * 1000 + 250);
+  };
+}
+function finish(){
+  const total = tasks.length, stars = MK.starsFor(okN, total); MK.best(GAME, LEVELS[L].id, stars);
+  const gain = wallGot(crystals()) - wall0;
+  MK.result({ stars, title: `${okN} / ${total}`, text: T.res(okN, total, pts, gain),
+    next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(gain ? wall0 : null) });
+}
+Object.defineProperty(window, "__cur", { get: () => cur });
+window.__MK_TEST = { LV, t1, t4, genRot, genPlace, trace, W, H, T };
+showMenu();
+})();
+</script>
+</body>
+</html>
