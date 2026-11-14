@@ -1,6 +1,7 @@
 /* Slibino sala – 3D pasaulis: reljefas, augmenija, statiniai, susidūrimai, slibinų modeliai.
    Koordinatės: x – į rytus, z – į pietus, y – aukštyn (metrais). Sala ~900 m skersmens. */
 import * as THREE from "./three.module.min.js";
+import { leafTex, groundTex, waterTex, decorateMaze, addWildlife } from "./sala-gyviai.js";
 
 /* ---------- triukšmas ir atsitiktinumas (fiksuotas – sala visada tokia pati) ---------- */
 function mulberry(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
@@ -139,8 +140,10 @@ export function buildWorld(scene, Q){
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(pos, 3)); g.setAttribute("color", new THREE.BufferAttribute(col, 3));
+    const uv = new Float32Array(pos.length / 3 * 2); for(let k = 0, q = 0; k < pos.length; k += 3){ uv[q++] = pos[k] / 7; uv[q++] = pos[k + 2] / 7; }
+    g.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
     g.computeVertexNormals();
-    const m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true }));
+    const m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true, map: groundTex() }));
     m.receiveShadow = !low; scene.add(m); W.terrainMesh = m;
   }
   /* takai – juostos virš reljefo */
@@ -170,8 +173,10 @@ export function buildWorld(scene, Q){
   /* vanduo */
   {
     const g = new THREE.PlaneGeometry(2400, 2400, 1, 1); g.rotateX(-Math.PI / 2);
-    const m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: "#3d9fd8", transparent: true, opacity: 0.82 }));
+    const wt = waterTex(); wt.repeat.set(260, 260);
+    const m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: "#3d9fd8", transparent: true, opacity: 0.84, map: wt }));
     m.position.y = 0; scene.add(m); W.water = m;
+    W.anim.push((t) => { wt.offset.set(t * 0.012, Math.sin(t * 0.25) * 0.01 + t * 0.006); });
     /* šviesesnė juosta prie kranto */
     const g2 = new THREE.RingGeometry(380, 470, 64, 1); g2.rotateX(-Math.PI / 2);
     const m2 = new THREE.Mesh(g2, new THREE.MeshBasicMaterial({ color: "#7fd0ee", transparent: true, opacity: 0.25, depthWrite: false }));
@@ -297,15 +302,39 @@ export function buildWorld(scene, Q){
     const segs = [], T = 0.9, HH = 3.3;
     for(let j = 0; j <= n; j++){ let s = -1; for(let i = 0; i <= n; i++){ const w = i < n && walls.h[j][i]; if(w && s < 0) s = i; if(!w && s >= 0){ segs.push([ox + s * c - T / 2, ox + i * c + T / 2, oz + j * c - T / 2, oz + j * c + T / 2]); s = -1; } } }
     for(let i = 0; i <= n; i++){ let s = -1; for(let j = 0; j <= n; j++){ const w = j < n && walls.v[j][i]; if(w && s < 0) s = j; if(!w && s >= 0){ segs.push([ox + i * c - T / 2, ox + i * c + T / 2, oz + s * c - T / 2, oz + j * c + T / 2]); s = -1; } } }
-    const hg = box(1, 1, 1), hc = [], hn = hg.attributes.normal, hp = hg.attributes.position;
-    for(let i = 0; i < hp.count; i++){ const top = hn.getY(i) > 0.5, k = top ? 1.3 : 0.72 + (hp.getY(i) + 0.5) * 0.3; hc.push(k, k, k); }
-    hg.setAttribute("color", new THREE.Float32BufferAttribute(hc, 3));
-    const im = new THREE.InstancedMesh(hg, new THREE.MeshLambertMaterial({ color: "#ffffff", vertexColors: true }), segs.length), mm = new THREE.Matrix4(), col = new THREE.Color();
-    segs.forEach(([x0, x1, z0, z1], k) => { const hh = HH + (r() - 0.5) * 0.5; mm.makeScale(x1 - x0, hh, z1 - z0); mm.setPosition((x0 + x1) / 2, y + hh / 2 - 0.2, (z0 + z1) / 2); im.setMatrixAt(k, mm); im.setColorAt(k, col.setHSL(0.31 + 0.03 * r(), 0.5, 0.3 + 0.06 * r())); W.addBox(x0, x1, y - 2, y + HH - 0.2, z0, z1, "hedge"); });
+    /* gyvatvorės: viena sulieta geometrija su lapijos tekstūra (UV pagal sienos dydį) */
+    const hPos = [], hUv = [], hCol = [], col = new THREE.Color(), segInfo = [];
+    segs.forEach(([x0, x1, z0, z1]) => {
+      const hh = HH + (r() - 0.5) * 0.5, w = x1 - x0, d = z1 - z0, g = box(w, hh, d).toNonIndexed();
+      g.translate((x0 + x1) / 2, y + hh / 2 - 0.2, (z0 + z1) / 2);
+      const gp = g.attributes.position, gn = g.attributes.normal, gu = g.attributes.uv;
+      col.setHSL(0.31 + 0.03 * r(), 0.42, 0.52 + 0.1 * r());
+      for(let i = 0; i < gp.count; i++){
+        const nx = Math.abs(gn.getX(i)), ny = gn.getY(i), top = ny > 0.5;
+        const fw = nx > 0.5 ? d : w, fh = Math.abs(ny) > 0.5 ? d : hh;
+        hPos.push(gp.getX(i), gp.getY(i), gp.getZ(i)); hUv.push(gu.getX(i) * fw / 2.6, gu.getY(i) * fh / 2.6);
+        const k = top ? 1.35 : 0.7 + (gp.getY(i) - (y - 0.2)) / hh * 0.45; hCol.push(col.r * k, col.g * k, col.b * k);
+      }
+      W.addBox(x0, x1, y - 2, y + HH - 0.2, z0, z1, "hedge");
+      segInfo.push([x0, x1, z0, z1, y + hh - 0.2, y]);
+    });
+    const hgeo = new THREE.BufferGeometry();
+    hgeo.setAttribute("position", new THREE.Float32BufferAttribute(hPos, 3)); hgeo.setAttribute("uv", new THREE.Float32BufferAttribute(hUv, 2)); hgeo.setAttribute("color", new THREE.Float32BufferAttribute(hCol, 3));
+    hgeo.computeVertexNormals();
+    const im = new THREE.Mesh(hgeo, new THREE.MeshLambertMaterial({ color: "#ffffff", vertexColors: true, map: leafTex() }));
     if(!low){ im.castShadow = true; im.receiveShadow = true; }
     scene.add(im);
+    /* įėjimo arka su žibintais */
+    {
+      const ax = ox + 6.5 * c, az = oz + n * c + 0.2, wm = MAT.wood2;
+      solidBox(ax - 1.75, y - 0.2, az, 0.4, 4.3, 0.4, wm); solidBox(ax + 1.75, y - 0.2, az, 0.4, 4.3, 0.4, wm);
+      mesh(box(4.6, 0.35, 0.5), wm, ax, y + 4.2, az); mesh(box(3.6, 0.25, 0.4), MAT.wood, ax, y + 4.65, az);
+      const lm = new THREE.MeshLambertMaterial({ color: "#ffe9a8", emissive: "#ffc94d", emissiveIntensity: 0.9 });
+      for(const sx of [-1.2, 1.2]){ mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.5, 4), MAT.dark, ax + sx, y + 3.8, az, false); mesh(new THREE.OctahedronGeometry(0.2, 0), lm, ax + sx, y + 3.45, az, false); }
+    }
     exR(ox - 6, ox + n * c + 6, oz - 6, oz + n * c + 6);
-    W.maze = { ox, oz, walls };
+    W.maze = { ox, oz, walls, segs: segInfo, n, c, y };
+    W.mazeStats = decorateMaze(scene, W, low);
     makeChest("leaf", ox + 6.5 * c, oz + 6.5 * c, Math.PI);
   }
   /* ---------- vėjo malūnas ---------- */
@@ -352,24 +381,28 @@ export function buildWorld(scene, Q){
   }
   /* ---------- Erelio uola: akmeniniai stulpai rytuose ---------- */
   {
-    const [px, pz] = POI.plateau, n = 20, R0 = 34.5;
+    const [px, pz] = POI.plateau, n = 20, R0 = 36.6, PW = 2.9;
     const a0 = -4 * Math.PI / 180, a1 = -84 * Math.PI / 180; // nuo rytų (0) link šiaurės
-    let prevTop = null;
+    W.pillars = [];
+    const flagM = lam("#ffc61a");
     for(let k = 0; k < n; k++){
       const a = a0 + (a1 - a0) * (n - 1 - k) / (n - 1); // paskutinis stulpas – rytuose
       const cx = px + Math.cos(a) * R0, cz = pz + Math.sin(a) * R0, g = ground(cx, cz);
       const startG = ground(px + Math.cos(a1) * R0, pz + Math.sin(a1) * R0);
       const top = startG + (k + 1) * (PLATEAU_TOP - startG) / n;
       const hh = Math.max(top - g + 0.8, 0.8);
-      const m = mesh(new THREE.BoxGeometry(2.5, hh, 2.5), MAT.stone, cx, top - hh / 2, cz); m.rotation.y = 0; // ašims lygiagretūs – kaip susidūrimai
-      W.addBox(cx - 1.25, cx + 1.25, top - hh, top, cz - 1.25, cz + 1.25, "pillar");
-      prevTop = top;
+      const cp = k % 5 === 4 && k < n - 1, w = cp ? PW + 0.7 : PW; // kas penktas stulpas – platesnė poilsio aikštelė (grįžimo vieta nukritus)
+      mesh(new THREE.BoxGeometry(w, hh, w), cp ? MAT.stone2 : MAT.stone, cx, top - hh / 2, cz); // ašims lygiagretūs – kaip susidūrimai
+      W.addBox(cx - w / 2, cx + w / 2, top - hh, top, cz - w / 2, cz + w / 2, "pillar");
+      if(cp){ const ox2 = Math.cos(a) * (w / 2 - 0.2), oz2 = Math.sin(a) * (w / 2 - 0.2); mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.6, 5), MAT.wood, cx + ox2, top + 0.8, cz + oz2, false); const fl = mesh(new THREE.BoxGeometry(0.7, 0.4, 0.04), flagM, cx + ox2 + 0.36, top + 1.38, cz + oz2, false); W.anim.push(t => { fl.rotation.y = Math.sin(t * 3 + k) * 0.35; }); }
+      W.pillars.push({ x: cx, z: cz, top, cp, half: w / 2 });
     }
+    W.pillarStart = [px + Math.cos(a1) * (R0 + 4.5), pz + Math.sin(a1) * (R0 + 4.5)];
     /* paskutinis tiltelis ant viršaus */
     const t = PLATEAU_TOP;
-    const sl = mesh(new THREE.BoxGeometry(13, 0.6, 5), MAT.stone2, px + 29.5, t - 0.3, pz - 1.2);
-    W.addBox(px + 23, px + 36, t - 0.6, t, pz - 3.7, pz + 1.3, "pillar");
-    exC(px, pz, 40);
+    mesh(new THREE.BoxGeometry(15.4, 0.6, 5), MAT.stone2, px + 30.7, t - 0.3, pz - 1.2);
+    W.addBox(px + 23, px + 38.4, t - 0.6, t, pz - 3.7, pz + 1.3, "pillar");
+    exC(px, pz, 45);
     makeChest("eagle", px + 3, pz - 4, 0.3);
     W.eagleTop = [px, t, pz];
   }
@@ -511,6 +544,7 @@ export function buildWorld(scene, Q){
       c.position.set((rng() - 0.5) * 1100, 130 + rng() * 50, (rng() - 0.5) * 1100); clouds.add(c); }
     W.anim.push((t, dt) => { clouds.position.x = (t * 1.5) % 200 - 100; });
   }
+  addWildlife(scene, W, [[START[0], START[1] - 22], POI.cross, [POI.mill[0] + 10, POI.mill[1] + 14], [POI.maze[0], POI.maze[1] + 44], [POI.ruins[0], POI.ruins[1] + 12]], LIGHT, low);
   return W;
 }
 

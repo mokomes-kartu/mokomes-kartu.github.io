@@ -1,12 +1,16 @@
 /* Slibino sala – žaidimo logika: meniu, valdymas, fizika, sąveikos, užduotys, kovos, žemėlapis, išsaugojimas. */
 import * as THREE from "./three.module.min.js";
+import { openVault } from "./sala-lobynas.js";
 import { buildWorld, makeDragon, animateDragon, glowTex, POI, HALF, SEG, PLATEAU_TOP } from "./sala-pasaulis.js";
 
 const T = window.MK_T, UZ = window.MK_SALA_U, INK = "#121a33";
 const GAME = "slibino-sala", SKEY = "mk-slibino-sala-kl5", QKEY = "mk-slibino-sala-grafika";
 const $ = id => document.getElementById(id);
 const IDS = ["shell", "leaf", "mushroom", "eagle", "fish"];
-const TOPIC = { shell: "div", leaf: "frac", mushroom: "dec", fish: "eq", eagle: "geo" };
+/* užduočių dalykai kiekvienoje vietoje: matematikos tema + kitas mokomasis dalykas (keičiasi paeiliui) */
+const TOPIC = { shell: ["div", "ist", "div"], leaf: ["lt", "frac", "lt"], mushroom: ["gam", "dec", "gam"], fish: ["en", "eq", "en"], eagle: ["geo"],
+  lever: ["eq", "en", "eq"], green: ["geo", "ist", "gam", "geo", "lt", "en"] };
+const TD = window.MK_T_D;
 const COL = { shell: "#ff8a2a", leaf: "#3fd16a", mushroom: "#b16bff", eagle: "#ffc61a", fish: "#2f9bff" };
 const TEST = /[?&]test=1/.test(location.search);
 
@@ -24,7 +28,7 @@ const I = {
 const gemSvg = (id, on) => `<svg viewBox="0 0 20 26" aria-hidden="true"><path d="M10 1l8 8-8 16L2 9z" fill="${on ? COL[id] : "#e8e4da"}" stroke="${on ? INK : "#b4ad9c"}" stroke-width="1.8" stroke-linejoin="round"/>${on ? '<path d="M2 9h16M10 1l-3 8 3 16 3-16z" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.1"/>' : ""}</svg>`;
 
 /* ---------- išsaugojimas ---------- */
-const fresh = () => ({ v: 1, pos: null, yaw: 0, found: {}, opened: {}, dug: false, bridge: false, placed: {}, green: false, red: false, gate: false, clues: [], seen: [], mask: "", time: 0, lastProg: 0, redMist: 0, lever: 0, dials: {} });
+const fresh = () => ({ v: 1, pos: null, yaw: 0, found: {}, opened: {}, dug: false, bridge: false, placed: {}, green: false, red: false, gate: false, clues: [], seen: [], mask: "", time: 0, lastProg: 0, redMist: 0, lever: 0, dials: {}, vault: {}, vaultDone: false });
 let S = Object.assign(fresh(), MK.get(SKEY, {}));
 const save = () => { if(world) S.mask = maskStr(); MK.set(SKEY, S); };
 const hasSave = () => !!MK.get(SKEY, null);
@@ -145,7 +149,7 @@ function init3D(){
   sg.setAttribute("color", new THREE.Float32BufferAttribute(cols, 3));
   sky = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false })); sky.renderOrder = -1; scene.add(sky);
   const sunS = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex(), color: "#fff3c0", fog: false, depthWrite: false })); sunS.scale.set(140, 140, 1); sunS.position.set(-300, 560, 200); sky.add(sunS);
-  world = buildWorld(scene, Q);
+  world = buildWorld(scene, Q); world.camPos = camera.position;
   /* slibinai */
   greenD = makeDragon({ body: "#3fae4a", belly: "#c8ef9a", wing: "#7fd36a", horn: "#f2e6c4" });
   greenD.scale.setScalar(1.15); greenD.position.set(POI.plateau[0] - 3, PLATEAU_TOP, POI.plateau[1] + 3); greenD.rotation.y = Math.PI / 2; scene.add(greenD);
@@ -156,7 +160,7 @@ function init3D(){
   clock = new THREE.Clock();
   addEventListener("resize", onResize);
   initInput(); buildHud(); initMap();
-  if(TEST) window.__sala = { P, S, world, setMode: m => mode = m, tp: (x, z) => { P.x = x; P.z = z; P.y = world.groundAt(x, z, 999, 999); P.vy = 0; }, quiz: () => quiz, fight: () => F, act: () => doAct(), dig: () => doDig(), render: () => renderer.render(scene, camera), cam: camera, solve: () => quizSolve(), inter: () => curInter,
+  if(TEST) window.__sala = { P, S, world, setMode: m => mode = m, tp: (x, z) => { P.x = x; P.z = z; P.y = world.groundAt(x, z, 999, 999); P.vy = 0; }, quiz: () => quiz, fight: () => F, act: () => doAct(), dig: () => doDig(), render: () => renderer.render(scene, camera), cam: camera, solve: () => quizSolve(), vault: () => vaultApi, enterVault, rescue, safe: () => safeList, trapped: () => isTrapped(), inter: () => curInter,
     sim: (keys, sec, jump) => { const old = mode; mode = "walk"; keys.forEach(k => K[k] = true); if(jump) wantJump = true; for(let t = 0; t < sec; t += 1 / 60) movePlayer(1 / 60); keys.forEach(k => K[k] = false); mode = old; return [P.x, P.y, P.z]; } };
 }
 function onResize(){ if(!renderer) return; renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
@@ -287,6 +291,45 @@ function movePlayer(dt){
     if(ny <= sup){ P.y = sup; P.vy = 0; P.ground = true; } else P.y = ny;
   }
   if(P.y < -20){ placeSafe(); }
+  if(P.ground) pillarCheck();
+  safeTrack(dt, l);
+}
+/* Erelio uolos stulpai: nukritus grąžinama ant paskutinės poilsio aikštelės (stulpas su vėliavėle) */
+let lastPillar = -1;
+function pillarCheck(){
+  const PL = world.pillars, [cx, , cz] = world.eagleTop, dC = Math.hypot(P.x - cx, P.z - cz);
+  if(dC > 60){ lastPillar = -1; return; }
+  if(dC < 30 && P.y > PLATEAU_TOP - 1){ lastPillar = -1; return; }
+  for(let k = 0; k < PL.length; k++){ const p = PL[k]; if(Math.abs(P.x - p.x) <= p.half + 0.01 && Math.abs(P.z - p.z) <= p.half + 0.01 && Math.abs(P.y - p.top) < 0.08){ lastPillar = k; return; } }
+  if(lastPillar < 0) return;
+  if(P.y < PL[lastPillar].top - 1.2){
+    let cp = -1; for(let k = lastPillar; k >= 0; k--) if(PL[k].cp){ cp = k; break; }
+    if(cp < 0){ lastPillar = -1; return; }
+    const p = PL[cp]; P.x = p.x; P.z = p.z; P.y = p.top; P.vy = 0; lastPillar = cp; toast(T.fellBack, 3200); MK.sfx.hop(1);
+  }
+}
+/* saugios vietos ir išlaisvinimas įstrigus */
+const safeList = []; let safeT = 0, trapN = 0, pushT = 0, pushFrom = null;
+function isTrapped(){ for(let k = 0; k < 8; k++){ const a = k * Math.PI / 4; if(!blocked(P.x + Math.cos(a) * 0.4, P.z + Math.sin(a) * 0.4, P.y, 0.5)) return false; } return true; }
+function safeTrack(dt, input){
+  safeT -= dt; if(safeT > 0) return; safeT = 0.6;
+  if(!P.ground) return;
+  if(isTrapped()){ if(++trapN >= 2){ trapN = 0; rescue(false); } return; }
+  trapN = 0;
+  /* stumia į kliūtį ir beveik nejuda – priminti apie „Įstrigau“ */
+  if(input > 0.5){ if(!pushFrom) pushFrom = [P.x, P.z, 0]; pushFrom[2] += 0.6; if(Math.hypot(P.x - pushFrom[0], P.z - pushFrom[1]) > 1.2) pushFrom = null; else if(pushFrom[2] > 6){ pushFrom = null; toast(T.stuckHint, 4500); } } else pushFrom = null;
+  const onTerrain = Math.abs(world.terrain(P.x, P.z) - P.y) < 0.05, last = safeList[safeList.length - 1];
+  if(!onTerrain || world.cave.inside(P.x, P.z)) return;
+  let free = 0; for(let k = 0; k < 8; k++){ const a = k * Math.PI / 4; if(!blocked(P.x + Math.cos(a) * 1.2, P.z + Math.sin(a) * 1.2, P.y, 0.5)) free++; }
+  if(free < 8) return;
+  if(!last || Math.hypot(P.x - last[0], P.z - last[1]) > 4){ safeList.push([P.x, P.z]); if(safeList.length > 8) safeList.shift(); }
+}
+function rescue(manual){
+  let t = null;
+  for(let k = safeList.length - 1; k >= 0; k--){ const [x, z] = safeList[k]; if(Math.hypot(P.x - x, P.z - z) > 2.5){ t = safeList[k]; break; } }
+  if(!t) t = world.start;
+  P.x = t[0]; P.z = t[1]; P.y = world.groundAt(t[0], t[1], 999, 999); P.vy = 0; P.ground = true; lastPillar = -1; pushFrom = null;
+  toast(T.rescued, 3800); MK.sfx.whoosh();
 }
 function placeSafe(){ const [sx, sz] = world.start; P.x = sx; P.z = sz; P.y = world.groundAt(sx, sz, 999, 999); P.vy = 0; }
 
@@ -309,6 +352,7 @@ function interactions(){
   const gx = W.gate.x, gz = W.gate.z + 4;
   if(!S.gate){ const d = d2(gx, gz); const have = IDS.filter(i => S.found[i] && !S.placed[i]).length; L.push({ d, r: 8, label: have ? T.act.place : T.act.gate, f: gateAct }); }
   else if(!S.red && redD.visible) L.push({ d: d2(redD.position.x, redD.position.z), r: 26, label: T.act.fight, f: () => startFight("red") });
+  else if(S.red && !S.vaultDone) L.push({ d: d2(gx, gz), r: 14, label: T.act.vault, f: enterVault });
   let best = null; for(const it of L) if(it.d < it.r && (!best || it.d - it.r < best.d - best.r)) best = it;
   return best;
 }
@@ -365,7 +409,7 @@ function takeCrystal(id){
 }
 /* svirtis */
 function leverTasks(){
-  openQuiz({ title: T.lever.t, intro: T.lever.b, topic: "eq", need: 3, key: "lever", onDone: () => { S.bridge = true; world.bridge.raise(false); leverAnim = 1; toast(T.bridgeUp); MK.sfx.whoosh(); progress(); save(); } });
+  openQuiz({ title: T.lever.t, intro: T.lever.b, topic: TOPIC.lever, need: 3, key: "lever", onDone: () => { S.bridge = true; world.bridge.raise(false); leverAnim = 1; toast(T.bridgeUp); MK.sfx.whoosh(); progress(); save(); } });
 }
 let leverAnim = 0;
 /* vartai */
@@ -405,7 +449,9 @@ function openQuiz(o){
   nextTask();
 }
 function nextTask(){
-  const q = quiz; q.t = UZ.gen(q.topic); q.input = ""; q.answered = false; drawQuiz();
+  const q = quiz; q.asked = (q.asked || 0) + 1;
+  const tp = Array.isArray(q.topic) ? q.topic[(q.fight ? q.asked - 1 : q.got) % q.topic.length] : q.topic;
+  q.t = UZ.gen(tp); q.input = ""; q.answered = false; drawQuiz();
 }
 function dialsHtml(){
   const q = quiz;
@@ -421,9 +467,10 @@ function drawQuiz(why){
     inp = `<div class="ans${cls}" aria-live="polite">${q.input || ""}${q.answered ? "" : '<span class="cur"></span>'}</div>
       <div class="pad">${["7", "8", "9", "bs", "4", "5", "6", "go", "1", "2", "3", "0", ","].map(k => k === "bs" ? `<button type="button" data-k="bs" class="bs" aria-label="Trinti" ${q.answered ? "disabled" : ""}>⌫</button>` : k === "go" ? `<button type="button" data-k="go" class="go" ${q.answered ? "disabled" : ""}>${T.task.check}</button>` : `<button type="button" data-k="${k}" ${q.answered ? "disabled" : ""}>${k}</button>`).join("")}</div>`;
   } else {
-    inp = `<div class="opts">${t.opts.map((o, i) => `<button type="button" data-o="${i}" class="${q.answered ? (i === t.a ? "ok" : i === q.pick ? "no" : "") : ""}" ${q.answered ? "disabled" : ""}>${o}</button>`).join("")}</div>`;
+    const longest = Math.max(...t.opts.map(o => String(o).replace(/<[^>]+>/g, "").length));
+    inp = `<div class="opts${longest > 26 ? " txt" : longest > 11 ? " mid" : ""}">${t.opts.map((o, i) => `<button type="button" data-o="${i}" class="${q.answered ? (i === t.a ? "ok" : i === q.pick ? "no" : "") : ""}" ${q.answered ? "disabled" : ""}>${o}</button>`).join("")}</div>`;
   }
-  $("tpP").innerHTML = `<button type="button" class="x" id="tX" aria-label="${T.close}">✕</button><h2>${q.title}</h2>${intro}${dialsHtml()}
+  $("tpP").innerHTML = `<button type="button" class="x" id="tX" aria-label="${T.close}">✕</button><h2>${q.title}</h2>${intro}${dialsHtml()}<div class="subj s-${t.subj}">${TD.subj[t.subj]}</div>
     <div class="tgrid"><div><div class="tq">${t.q}${t.fig || ""}</div></div><div>${inp}</div></div><div id="tWhy">${why || ""}</div>`;
   $("tX").hidden = !!q.fight && !q.canLeave;
 }
@@ -480,7 +527,7 @@ function startFight(which){
   d.rotation.y = Math.atan2(P.x - d.position.x, P.z - d.position.z);
   MK.sfx.vroom(); mode = "fight";
   drawFHud(); $("fhud").hidden = false;
-  openQuiz({ title: T.fight[which].n, intro: T.fight.intro(T.fight[which].n), topic: which === "green" ? "geo" : "mix", fight: true, need: 999,
+  openQuiz({ title: T.fight[which].n, intro: T.fight.intro(T.fight[which].n), topic: which === "green" ? TOPIC.green : "mix", fight: true, need: 999,
     onAnswer: ok => { if(ok){ shootBolt(); F.hp--; } else { breatheFire(); F.sh--; F.mist++; } drawFHud(); },
     beforeNext: () => { if(F.hp <= 0){ closeQuiz(); winFight(); return false; } if(F.sh <= 0){ closeQuiz(); loseFight(); return false; } return true; }
   });
@@ -508,11 +555,25 @@ function winFight(){
   const f = F, n = T.fight[f.which].n; $("fhud").hidden = true; F = null; f.d.userData.flyAway = 0.001; MK.sfx.win(); inGame(() => MK.confetti(50));
   if(f.which === "green"){ S.green = true; progress(); save(); mode = "walk"; openDlg(`<h2>${T.fight.won(n)}</h2>${MK.guide(T.fight.greenWon)}<button type="button" class="mk-btn" data-close>${T.task.next}</button>`); }
   else {
-    S.red = true; S.redMist = f.mist; progress(); save();
-    const stars = f.mist <= 1 ? 3 : f.mist <= 3 ? 2 : 1; MK.best(GAME, "kl5", stars);
-    mode = "ui";
-    setTimeout(() => inGame(() => MK.result({ stars, title: T.winTitle, text: T.winText(Math.max(1, Math.round(S.time / 60)), f.mist) + " " + T.winMore, next: () => { mode = "walk"; }, nextLabel: T.winBtn, again: () => { S = fresh(); MK.set(SKEY, S); location.reload(); }, menu: () => { mode = "walk"; exitGame(); }, menuLabel: T.pause.exit })), 1600);
+    S.red = true; S.redMist = f.mist; progress(); save(); mode = "ui";
+    setTimeout(() => { openDlg(`<h2>${T.fight.won(n)}</h2>${MK.guide(T.vault.intro)}<button type="button" class="mk-btn" id="vGo">${T.vault.enter}</button>`); $("vGo").onclick = () => { closeOv($("dlg")); enterVault(); }; }, 1500);
   }
+}
+/* ===================== SLIBINO LOBYNAS (paskutinė užduotis) ===================== */
+let vaultApi = null;
+function enterVault(){
+  if(document.pointerLockElement) document.exitPointerLock();
+  mode = "ui"; $("vaultOv").hidden = false;
+  if(!S.vault) S.vault = {};
+  vaultApi = openVault($("vaultP"), T, MK.sfx, S.vault, {
+    save, later: () => { $("vaultOv").hidden = true; mode = "walk"; toast(T.vault.laterToast, 4200); },
+    opened: () => { inGame(() => MK.confetti(60)); },
+    done: (tries) => {
+      $("vaultOv").hidden = true; S.vaultDone = true; save();
+      const pen = (S.redMist || 0) + tries, stars = pen <= 1 ? 3 : pen <= 4 ? 2 : 1; MK.best(GAME, "kl5", stars);
+      inGame(() => MK.result({ stars, title: T.winTitle, text: T.winText(Math.max(1, Math.round(S.time / 60)), S.redMist || 0, tries) + " " + T.winMore, next: () => { mode = "walk"; }, nextLabel: T.winBtn, again: () => { S = fresh(); MK.set(SKEY, S); location.reload(); }, menu: () => { mode = "walk"; exitGame(); }, menuLabel: T.pause.exit }));
+    }
+  });
 }
 function loseFight(){
   const f = F; $("fhud").hidden = true; F = null; mode = "ui";
@@ -524,7 +585,7 @@ function loseFight(){
 /* ===================== LANGAI ===================== */
 function openDlg(html){ if(document.pointerLockElement) document.exitPointerLock(); $("dlgP").innerHTML = html; $("dlg").hidden = false; if(mode === "walk") mode = "ui"; }
 function closeOv(ov){ if(!ov) return; ov.hidden = true; if(ov.id === "tp"){ quiz = null; } if(mode === "ui" && !anyOpen()) mode = F ? "fight" : "walk"; }
-const anyOpen = () => ["dlg", "tp", "mapOv", "notesOv", "pauseOv"].some(id => !$(id).hidden);
+const anyOpen = () => ["dlg", "tp", "mapOv", "notesOv", "pauseOv", "vaultOv"].some(id => !$(id).hidden);
 function closeTop(){ for(const id of ["mapOv", "notesOv", "pauseOv", "dlg"]) if(!$(id).hidden){ closeOv($(id)); return true; } if(!$("tp").hidden && quiz && !quiz.fight){ closeQuiz(); return true; } return false; }
 function openPause(){
   if(mode === "fight" || mode === "cut") return;
@@ -533,12 +594,14 @@ function openPause(){
     <button type="button" class="mk-btn" data-close>${T.pause.cont}</button>
     <button type="button" class="mk-btn alt" id="pMap">${T.pause.map}</button>
     <button type="button" class="mk-btn alt" id="pNotes">${T.pause.notes}</button>
+    <button type="button" class="mk-btn alt" id="pStuck">${T.pause.stuck}</button>
     <details class="mk-lt"><summary>${T.pause.ctrl}</summary><div class="keys">${T.ctrlPc.concat(T.ctrlPhone).map(([a, b]) => `<b>${a}</b><span>${b}</span>`).join("")}</div></details>
     <button type="button" class="mk-btn ghost" id="pExit">${T.pause.exit}</button></div>`;
   $("pauseOv").hidden = false; mode = "ui";
   $("pMap").onclick = () => { closeOv($("pauseOv")); openMap(); };
   $("pNotes").onclick = () => { closeOv($("pauseOv")); openNotes(); };
   $("pExit").onclick = () => { closeOv($("pauseOv")); exitGame(); };
+  $("pStuck").onclick = () => { closeOv($("pauseOv")); rescue(true); };
 }
 function openNotes(){
   if(mode === "fight" || mode === "cut") return;

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Slibino sala – MokomėsKartu.lt</title>
-<meta name="description" content="3D matematikos nuotykis: keliauk po salą, rask penkis paslėptus kristalus ir nugalėk slibinus spręsdamas 5 klasės užduotis.">
+<meta name="description" content="3D nuotykis: keliauk po salą, rask penkis paslėptus kristalus ir nugalėk slibinus spręsdamas 5 klasės matematikos, kalbų, gamtos mokslų ir istorijos užduotis.">
 <meta name="theme-color" content="#eaf5ff">
 <link rel="icon" href="/logo/mk-ikona.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
 <script src="/bendra/mk.js"></script>
 <script src="tekstai.lt.js"></script>
+<script src="tekstai-dalykai.lt.js"></script>
 <script src="uzduotys.js"></script>
 <style>
 body{--paper:#eef6ff;--grid:#d9e8f7;--soft:#4a5a70;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#d8443a;--ac-ink:#fff;--ac-soft:#ffe1dc;--sea:#2f8fd0}
@@ -149,6 +150,39 @@ body{--paper:#eef6ff;--grid:#d9e8f7;--soft:#4a5a70;--kid:"Unbounded","Arial Blac
 #rot{position:absolute;left:10px;right:10px;top:110px;z-index:3;margin:0 auto;max-width:360px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.95);box-shadow:inset 0 0 0 2.5px var(--ink);font:800 14px/1.35 var(--body);text-align:center;display:none}
 @media (orientation:portrait){ .touch #rot.show{display:block} }
 @media (max-width:620px){ #compass{top:calc(max(10px,env(safe-area-inset-top)) + 54px)} #fhud{top:104px} #toast{top:100px} }
+
+/* dalyko žymė ir tekstiniai variantai */
+.subj{display:inline-block;margin:2px 0 8px;padding:4px 10px;border-radius:8px;font:800 12px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;box-shadow:inset 0 0 0 2px var(--ink);background:#ffe9a8}
+.subj.s-lt{background:#ffd3de}.subj.s-en{background:#cfe4ff}.subj.s-gam{background:#c9f2cf}.subj.s-ist{background:#e9d9ff}
+.opts.mid button{font-size:16px}
+.opts.txt{grid-template-columns:1fr}
+.opts.txt button{font:700 15px/1.3 var(--body);text-align:left;padding:8px 12px;min-height:46px}
+/* slibino lobynas */
+.pan.vault{width:min(980px,100%)}
+.vtask{margin:0 0 8px;font:700 15px/1.35 var(--body)}
+.vgrid{display:grid;gap:10px}
+.vsc{display:block;width:100%;height:auto;border-radius:10px;box-shadow:inset 0 0 0 3px var(--ink);touch-action:manipulation;cursor:crosshair}
+.vit{cursor:pointer}
+.vit.on{animation:mkPop .45s cubic-bezier(.2,1.6,.4,1);transform-box:fill-box}
+.vlist{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:6px}
+.vlist span{display:grid;justify-items:center;gap:1px;padding:4px 2px;border-radius:8px;background:#f6f3ea;font:800 11px/1.1 var(--body);color:#8a8473}
+.vlist span.on{background:#fff;box-shadow:inset 0 0 0 2px var(--ink);color:var(--ink)}
+.vlist svg{width:30px;height:30px}
+.vlist i{font-style:normal}
+.vclues{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.vclues li{display:grid;grid-template-columns:28px auto 1fr;align-items:center;gap:8px;padding:5px 8px;border-radius:8px;background:#fff8e2;box-shadow:inset 0 0 0 2px #d9b65a;font:700 13.5px/1.25 var(--body)}
+.vclues li.mine{grid-template-columns:auto 1fr;background:#eef3ff;box-shadow:inset 0 0 0 2px #9fb4e6}
+.vclues em{display:block;width:28px;height:28px}
+.vclues em svg{width:28px;height:28px;display:block}
+.vclues b{font:800 20px/1 var(--kid);letter-spacing:.08em;white-space:nowrap}
+.vlock{margin-top:10px;padding:10px;border-radius:12px;background:#f1eee4;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.vdials{display:flex;justify-content:center;gap:10px}
+.vd{display:grid;justify-items:center;gap:4px}
+.vd b{display:grid;place-items:center;width:58px;height:58px;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 3px var(--ink);font:800 32px/1 var(--kid)}
+.vd button{width:58px;height:40px;border:0;border-radius:10px;background:#ffd84d;box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 var(--ink);font:800 16px/1 var(--body);cursor:pointer;touch-action:manipulation;color:var(--ink)}
+.vd button:active{transform:translateY(2px);box-shadow:inset 0 0 0 2.5px var(--ink),0 1px 0 var(--ink)}
+.vmsg{margin:8px 0 0;font:700 14px/1.35 var(--body);color:#5a5246}
+@media (orientation:landscape) and (min-width:700px){ .vgrid{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);align-items:start} }
 </style>
 </head>
 <body>
@@ -198,6 +232,7 @@ body{--paper:#eef6ff;--grid:#d9e8f7;--soft:#4a5a70;--kid:"Unbounded","Arial Blac
   <div class="ov" id="mapOv" hidden><div class="pan"><button type="button" class="x" data-close aria-label="Uždaryti">✕</button><h2 id="mapT"></h2><canvas id="mapC" width="512" height="512"></canvas><p class="small" id="mapN"></p></div></div>
   <div class="ov" id="notesOv" hidden><div class="pan" id="notesP"></div></div>
   <div class="ov" id="pauseOv" hidden><div class="pan" id="pauseP"></div></div>
+  <div class="ov" id="vaultOv" hidden><div class="pan vault" id="vaultP"></div></div>
   <div id="loading"></div>
 </div>
 <script type="module" src="zaidimas.js"></script>

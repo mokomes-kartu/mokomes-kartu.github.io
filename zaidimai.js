@@ -387,7 +387,7 @@ window.MK_ZAIDIMAI = [
    5
   ],
   "title": "Slibino sala",
-  "desc": "3D nuotykis: tyrinėk salą, ieškok kristalų ir nugalėk slibiną spręsdamas 5 klasės matematikos užduotis. Bandomoji versija.",
+  "desc": "3D nuotykis: tyrinėk salą, ieškok kristalų, nugalėk slibiną ir atrakink jo lobyną – matematikos, kalbų, gamtos mokslų ir istorijos užduotys. Bandomoji versija.",
   "url": "/slibino-sala/",
   "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMyYjhmZDYiLz48cGF0aCBkPSJNNiA1MHEyNi0xMCA1MiAwdjhINnoiIGZpbGw9IiNmMmNmN2EiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTQgNDZsMTQtMjYgOCAxMiA2LTggMTIgMjJ6IiBmaWxsPSIjNWZhZTVhIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTI0IDI3bDQtNyA0IDYtNCAyeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik00MCAxMnE4LTQgMTIgMmw2LTItMyA2cTEgNi01IDhsLTQtNC02IDJxLTItNiAwLTEyeiIgZmlsbD0iI2U1MjQzYiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjQ5IiBjeT0iMTciIHI9IjEuOCIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg=="
  },

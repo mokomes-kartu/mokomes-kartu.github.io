@@ -273,17 +273,32 @@ const PROB = [
   function roman(){ const v = R(14, 2999); const { s, parts } = toRoman(v); return num("prob", U.roman(s), v, U.romanWhy(s, parts.join(" + "), v)); }
 ];
 
-const SETS = { div: DIV, frac: FRAC, dec: DEC, geo: GEO, eq: EQ, prob: PROB };
+/* ================= 7. Kiti mokomieji dalykai (tekstai-dalykai.lt.js) ================= */
+const D = window.MK_T_D;
+const rowGen = (topic, row) => function(){ return opt(topic, row[0], row[1], SH(row[2]), row[3]); };
+const IST = D.ist.map(r => rowGen("ist", r)), LT = D.lt.map(r => rowGen("lt", r)), GAM = D.gam.map(r => rowGen("gam", r));
+const EN = D.en.map(r => rowGen("en", r))
+  .concat(D.enVerbs.map(v => function(){ const reg = v[0].endsWith("e") ? v[0] + "d" : v[0] + "ed"; return opt("en", D.enPastQ(v[0]), v[1], SH([reg, v[2], v[3]]), D.enPastWhy(v[0], v[1], v[2])); }))
+  .concat(D.enPlurals.map(w => function(){ return opt("en", D.enPluralQ(w[0]), w[1], SH(w[2]), D.enPluralWhy(w[0], w[1])); }));
+
+const SETS = { div: DIV, frac: FRAC, dec: DEC, geo: GEO, eq: EQ, prob: PROB, ist: IST, lt: LT, en: EN, gam: GAM };
+const SUBJ = { div: "mat", frac: "mat", dec: "mat", geo: "mat", eq: "mat", prob: "mat", ist: "ist", lt: "lt", en: "en", gam: "gam" };
 /* sunkesni generatoriai raudonajam slibinui */
 const HARD = [DIV[3], DIV[4], DIV[7], DIV[8], FRAC[5], FRAC[6], FRAC[7], FRAC[9], DEC[5], DEC[9], DEC[10], DEC[11], GEO[3], GEO[5], GEO[9], GEO[10], EQ[6], EQ[7], EQ[11], EQ[12], PROB[0], PROB[1], PROB[2]];
+/* raudonojo slibino kova: dalykai keičiasi ratu, kad būtų visi */
+const MIXSEQ = ["mat", "lt", "gam", "mat", "ist", "en"];
+let mixI = Math.floor(Math.random() * MIXSEQ.length);
 
-/* neseniai matytų generatorių vengimas */
-const recent = [];
+/* neseniai matytų generatorių vengimas (atskirai kiekvienam rinkiniui) */
+const recent = new Map();
 function gen(topic){
-  const pool = topic === "mix" ? HARD : SETS[topic];
-  let f, k = 0; do { f = P(pool); k++; } while(recent.includes(f) && k < 12);
-  recent.push(f); if(recent.length > Math.min(5, pool.length - 1)) recent.shift();
-  const t = f(); t.gen = f.name; return t;
+  let pool;
+  if(topic === "mix"){ const k = MIXSEQ[mixI++ % MIXSEQ.length]; pool = k === "mat" ? HARD : SETS[k]; }
+  else pool = SETS[topic];
+  let rc = recent.get(pool); if(!rc){ rc = []; recent.set(pool, rc); }
+  let f, k = 0; do { f = P(pool); k++; } while(rc.includes(f) && k < 30);
+  rc.push(f); if(rc.length > Math.min(12, pool.length - 1)) rc.shift();
+  const t = f(); t.gen = f.name; t.subj = SUBJ[t.topic] || "mat"; return t;
 }
 /* atsakymo tikrinimas: „4,15“, „4.15“, „ 4,150 “ */
 function check(t, input){
@@ -292,5 +307,5 @@ function check(t, input){
   if(!/^-?\d+(,\d+)?$/.test(s)) return false;
   return Math.abs(parseFloat(s.replace(",", ".")) - t.a) < 1e-6;
 }
-window.MK_SALA_U = { gen, check, SETS, HARD, fmt };
+window.MK_SALA_U = { gen, check, SETS, HARD, fmt, SUBJ };
 })();
