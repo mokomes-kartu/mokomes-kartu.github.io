@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Turgaus aikštė – MokomėsKartu.lt</title>
+<meta name="description" content="10 klasės ekonomikos ir verslumo žaidimas: paklausa ir pasiūla, rinkos pusiausvyra, stygius ir perteklius, paklausos ir pasiūlos veiksniai, pelnas ir lūžio taškas.">
+<meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/turgaus-aikste/tekstai.lt.js"></script>
+<style>
+/* Meniu: turgaus piešinys, „Mano turgus“ (12 prekystalių), lygiai, „Noriu pasimokyti“.
+   Užduotys: kainos / kiekio nustatymas ir „Atidaryti turgų“ (lentelė, grafikas, funkcijos, verslas), pasirinkimas iš 4, veiksniai (du žingsniai su kreivės poslinkiu). */
+body{--ac:#0f8a5f;--ac-ink:#fff;--ac-soft:#d9f5e8;--dc:#2f6bff;--sc:#ff7a1a}
+@media (max-width:380px){.mk-title{font-size:17px}}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(32px,8.4vw,54px)}
+.mk-hero p{max-width:46ch;font-size:16.5px}
+.hero-art{width:min(100%,480px);border-radius:26px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15)}
+.hero-art svg{display:block;width:100%;height:auto}
+.hero-art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 12px 10px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 18px/1.2 var(--kid);display:flex;gap:8px;align-items:center}
+.col h2 svg{width:30px;height:30px;flex:none}
+.col p{margin:4px 0 8px;color:var(--soft);font-weight:700;font-size:14px}
+.col p b{color:var(--ink)}
+.col>svg{display:block;width:100%;height:auto}
+.st-new{animation:mkPop .8s cubic-bezier(.2,1.6,.4,1);transform-box:fill-box;transform-origin:center}
+
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.card{width:100%;max-width:560px;margin:0 auto;padding:10px 12px 14px;border-radius:24px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 6px 0 rgba(18,26,51,.15)}
+.scene{border-radius:16px;overflow:hidden;background:#e8f6ff;box-shadow:inset 0 0 0 2px var(--ink)}
+.scene svg{display:block;width:100%;height:auto}
+.cap{min-height:22px;margin:6px 2px 0;font:800 14.5px/1.3 var(--body);text-align:center;color:var(--soft)}
+.cap.eq{color:#0b7a4b}.cap.short,.cap.surplus{color:#c2410c}
+.q{margin:8px 2px 10px;font:800 17px/1.35 var(--body)}
+.pers .bag,.pers .m2,.pers .xm{opacity:0;transition:opacity .25s}
+.pers.got .bag{opacity:1}
+.pers.sad{opacity:.75}.pers.sad .m1{opacity:0}.pers.sad .m2,.pers.sad .xm{opacity:1}
+.crate{transition:opacity .25s}.crate.gone{opacity:.12}
+.crate .lf{opacity:0}.crate.left .lf{opacity:1}
+
+.tb{display:grid;gap:5px;margin:0 0 10px}
+.tr{display:grid;grid-template-columns:.8fr 1fr 1fr;align-items:center;min-height:42px;padding:0 6px;border:0;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 2px var(--ink);font:800 17px/1 var(--kid);text-align:center;color:var(--ink);margin:0;width:100%}
+.tr.c4{grid-template-columns:.7fr 1fr 1fr .9fr}.tr.c2{grid-template-columns:1fr 1fr}.tr.c3b{grid-template-columns:.8fr 1fr 1fr}
+.tr.h{min-height:34px;background:var(--ac-soft);font:800 12.5px/1.15 var(--body);box-shadow:none}
+.tr.h span:nth-child(2){color:var(--dc)}.tr.h span:nth-child(3){color:#c2560a}
+.tr.h.plain span{color:var(--ink)}
+button.tr{cursor:pointer;touch-action:manipulation}
+.tr.sel{background:#ffe27a;box-shadow:inset 0 0 0 3px var(--ink)}
+.tr.ok{background:#b9efcd;box-shadow:inset 0 0 0 3px var(--good)}
+.tr.no{background:#ffe1d9;box-shadow:inset 0 0 0 2px #ff8a7a;color:#9a8f86}
+.tr[disabled]{pointer-events:none}
+.gr{margin:0 0 8px;border-radius:14px;background:#fffdf5;box-shadow:inset 0 0 0 2px var(--ink);overflow:hidden}
+.gr svg{display:block;width:100%;height:auto}
+.fx{margin:0 0 10px;padding:10px 12px;border-radius:14px;background:#fffdf5;box-shadow:inset 0 0 0 2px var(--ink);font:800 19px/1.5 var(--kid)}
+.fx b.d{color:#1c4fd1}.fx .s{color:#c2560a}
+.fx small{display:block;font:700 12.5px/1.3 var(--body);color:var(--soft);margin-top:2px}
+.fx span{font:700 13px/1 var(--body);color:var(--soft);margin-right:4px}
+.stp{display:grid;grid-template-columns:56px minmax(0,1fr) 56px;gap:8px;align-items:center;margin:0 0 10px}
+.stp button{height:52px;border:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.2);font:800 28px/1 var(--kid);cursor:pointer;touch-action:manipulation;color:var(--ink)}
+.stp button:active{transform:translateY(3px);box-shadow:inset 0 0 0 2.5px var(--ink)}
+.stp button[disabled]{opacity:.35;pointer-events:none}
+.stp div{height:52px;border-radius:16px;background:#ffe27a;box-shadow:inset 0 0 0 2.5px var(--ink);display:grid;place-items:center;font:800 24px/1 var(--kid)}
+.stp div{text-align:center}.stp div small{display:block;font:800 10px/1 var(--body);letter-spacing:.05em;text-transform:uppercase;color:var(--soft);margin-bottom:3px}.stp div #val{display:block;font:800 22px/1 var(--kid)}
+.stp.done button{visibility:hidden}.stp.ok div{background:#b9efcd}
+.go{width:100%}
+.note{margin:10px 2px 0;min-height:20px;font:700 14.5px/1.4 var(--body);color:#9a3412}
+.note:empty{display:none}
+.opts{display:grid;gap:8px}
+.opts.two{grid-template-columns:1fr 1fr}
+.opt{min-height:52px;padding:8px 12px;border:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.18);font:800 16.5px/1.25 var(--body);cursor:pointer;touch-action:manipulation;color:var(--ink)}
+.opt:active{transform:translateY(3px)}
+.opt.ok{background:#b9efcd;box-shadow:inset 0 0 0 3px var(--good)}
+.opt.no{background:#ffd3c8;box-shadow:inset 0 0 0 3px var(--bad)}
+.opt[disabled]{pointer-events:none}
+.opt.dim{opacity:.55}
+.q2{margin:12px 2px 8px;font:800 16.5px/1.35 var(--body)}
+#flow .mk-btn{width:100%;margin-top:4px}
+.sh1{animation:shIn .7s ease-out}
+@keyframes shIn{from{opacity:0}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <main id="menu">
+    <section class="mk-hero"><div class="hero-art" id="heroArt"></div><h1 id="heroH"></h1><p id="heroP"></p></section>
+    <section class="col" id="col"></section>
+    <div id="levels"></div>
+    <section id="learn"></section>
+  </main>
+  <main id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="ptsChip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div class="card" id="stage"></div>
+  </main>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, GAME = "turgaus-aikste", GRADES = [10];
+const $ = id => document.getElementById(id), R = MK.rnd, P = MK.pick, SH = MK.shuffle, eur = T.eur;
+const uniq = a => a.filter((v, i) => a.indexOf(v) === i), cl = s => String(s).replace(/vnt\.\./g, "vnt.");
+const GOODS = T.goods.map((g, i) => ({ i, n: g[0], g: g[1], u: g[2], col: g[3], aw: g[4], lo: g[5], hi: g[6] }));
+const goodOf = gen => GOODS.find(g => g.g === gen) || { g: gen, col: "#ffc61a", aw: "#bfe3ff", u: "vnt." };
+
+/* ================= piešiniai ================= */
+const SKIN = ["#f6c9a0", "#e9b48a", "#f9d7b5", "#d99e73"], HAIR = ["#5a3a1e", "#2b2118", "#c98a2b", "#8a4b2a", "#6b6b6b"],
+  SHIRT = ["#2f6bff", "#e5243b", "#12b886", "#ff8a1f", "#6b4dff", "#ff3d9a", "#0fa3b1", "#b9772c"], PANTS = ["#39446b", "#5b4636", "#2d5d4b", "#444"];
+function person(x, y, s, o){
+  o = o || {}; const sk = o.skin || SKIN[0], sh = o.shirt || SHIRT[0], pa = o.pants || PANTS[0], ha = o.hair || HAIR[0];
+  return `<g class="pers ${o.cls || ""}" transform="translate(${x} ${y}) scale(${s})">
+  <rect x="7" y="37" width="4.2" height="15" rx="2" fill="${pa}"/><rect x="12.8" y="37" width="4.2" height="15" rx="2" fill="${pa}"/>
+  <ellipse cx="8.2" cy="53.4" rx="4" ry="2.2" fill="#121a33"/><ellipse cx="15.8" cy="53.4" rx="4" ry="2.2" fill="#121a33"/>
+  <path d="M6 22 2.5 33M18 22 21.5 33" stroke="${sh}" stroke-width="4.4" stroke-linecap="round"/>
+  <circle cx="2.5" cy="34" r="2.3" fill="${sk}"/><circle cx="21.5" cy="34" r="2.3" fill="${sk}"/>
+  <rect x="5" y="17" width="14" height="23" rx="6" fill="${sh}"/>
+  ${o.apron ? `<path d="M7.6 24h8.8v15.5H7.6z" fill="#fff"/><path d="M9 24v-6M15 24v-6" stroke="#fff" stroke-width="1.6"/>` : ""}
+  <circle cx="12" cy="9.5" r="7.5" fill="${sk}"/>
+  <path d="${o.long ? "M4.2 13C2.6 3 8 1 12 1s9.4 2 7.8 12c-1-4.6-3-7-7.8-7s-6.8 2.4-7.8 7Z" : "M4.6 8.6C5 3 9 1.4 12 1.4s7 1.6 7.4 7.2c-2-2.5-4.5-3.3-7.4-3.3S6.6 6.1 4.6 8.6Z"}" fill="${ha}"/>
+  ${o.bun ? `<circle cx="12" cy="1.4" r="3.3" fill="${ha}"/>` : ""}
+  <circle cx="9.3" cy="10" r="1.1" fill="#121a33"/><circle cx="14.7" cy="10" r="1.1" fill="#121a33"/>
+  <path class="m1" d="M9.4 13q2.6 2.2 5.2 0" fill="none" stroke="#121a33" stroke-width="1.2" stroke-linecap="round"/>
+  <path class="m2" d="M9.6 14.6q2.4-2 4.8 0" fill="none" stroke="#121a33" stroke-width="1.2" stroke-linecap="round"/>
+  <g class="bag"><rect x="17.5" y="34" width="9" height="8.5" rx="1.6" fill="${o.bag || "#ffc61a"}" stroke="#121a33" stroke-width="1"/><path d="M19.6 34q2.4-4.6 4.8 0" fill="none" stroke="#121a33" stroke-width="1"/></g>
+  <g class="xm"><circle cx="12" cy="-6" r="5.2" fill="#ff6b4a"/><path d="M9.8-8.2l4.4 4.4M14.2-8.2l-4.4 4.4" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></g>
+  </g>`;
+}
+function stall(x, y, w, h, aw, col){
+  const n = Math.max(3, Math.round(w / 12)), sw = w / n, ah = h * .2; let st = "";
+  for(let i = 0; i < n; i++) st += `<path d="M${x + i * sw} ${y}h${sw}v${ah}a${sw / 2} ${sw / 2} 0 0 1-${sw} 0z" fill="${i % 2 ? "#fff" : aw}" stroke="#121a33" stroke-width="1.2"/>`;
+  const cy = y + h * .58, items = [0, 1, 2, 3].map(i => `<circle cx="${x + w * (.2 + i * .2)}" cy="${cy - h * .05}" r="${Math.min(w * .085, h * .08)}" fill="${col}" stroke="#121a33" stroke-width="1"/>`).join("");
+  return `<g><path d="M${x + 3} ${y + ah}V${y + h}M${x + w - 3} ${y + ah}V${y + h}" stroke="#7a4b2a" stroke-width="3"/>
+    ${items}<rect x="${x}" y="${cy}" width="${w}" height="${h - h * .58}" rx="2.5" fill="#d9a066" stroke="#121a33" stroke-width="1.4"/>
+    <path d="M${x} ${cy + (h * .42) * .5}h${w}" stroke="#121a33" stroke-width="1" opacity=".35"/>${st}</g>`;
+}
+function crate(x, y, col, i){
+  return `<g class="crate" data-i="${i}"><circle cx="${x + 4.5}" cy="${y + 3}" r="3.6" fill="${col}" stroke="#121a33" stroke-width=".9"/><circle cx="${x + 10}" cy="${y + 2.2}" r="3.6" fill="${col}" stroke="#121a33" stroke-width=".9"/><circle cx="${x + 15}" cy="${y + 3.2}" r="3.4" fill="${col}" stroke="#121a33" stroke-width=".9"/>
+    <rect x="${x}" y="${y + 4}" width="19" height="12" rx="1.6" fill="#c98f52" stroke="#121a33" stroke-width="1.2"/><path d="M${x} ${y + 10}h19" stroke="#121a33" stroke-width=".9" opacity=".45"/>
+    <rect class="lf" x="${x - 1.5}" y="${y - 2.5}" width="22" height="20" rx="3" fill="none" stroke="#ff6b4a" stroke-width="1.8" stroke-dasharray="3 2.5"/></g>`;
+}
+const buyerLook = i => ({ skin: SKIN[i % 4], hair: HAIR[(i * 3 + 1) % 5], shirt: SHIRT[(i * 5 + 2) % 8], pants: PANTS[i % 4], long: i % 2 === 0, bag: ["#ffc61a", "#9bd0ff", "#b9efcd"][i % 3] });
+function sceneSvg(g, crates, buyers){
+  let c = "", b = "";
+  for(let i = 0; i < crates; i++){ const colN = Math.floor(i / 2), row = i % 2; c += crate(112 + colN * 21, row ? 49 : 68, g.col, i); }
+  const step = buyers > 8 ? 15 : 17;
+  for(let i = 0; i < buyers; i++) b += person(202 + i * step, 40, .82, Object.assign(buyerLook(i), { cls: "buyer" }));
+  return `<svg viewBox="0 0 340 96" role="img" aria-label="${T.heroAria}">
+    <rect width="340" height="96" fill="#e8f6ff"/><path d="M0 60h340v36H0z" fill="#efe2c2"/>
+    <path d="M0 60h340" stroke="#121a33" stroke-width="1" opacity=".25"/>
+    <g fill="#e2d1a8">${[14, 60, 150, 190, 250, 300].map((x, i) => `<ellipse cx="${x + 12}" cy="${72 + (i % 3) * 8}" rx="9" ry="2.6"/>`).join("")}</g>
+    ${stall(30, 14, 76, 72, g.aw, g.col)}${person(2, 30, 1, { shirt: "#0f8a5f", hair: "#8a4b2a", bun: true, apron: true, long: true })}${c}${b}</svg>`;
+}
+function heroSvg(){
+  const g = GOODS[0], g2 = GOODS[1];
+  return `<svg viewBox="0 0 480 210" role="img" aria-label="${T.heroAria}">
+    <rect width="480" height="210" fill="#cfeaff"/><circle cx="420" cy="42" r="22" fill="#ffd84d"/>
+    <g fill="#fff" opacity=".9"><ellipse cx="90" cy="38" rx="34" ry="11"/><ellipse cx="118" cy="30" rx="22" ry="10"/><ellipse cx="300" cy="26" rx="28" ry="9"/></g>
+    <g stroke="#121a33" stroke-width="2" stroke-linejoin="round">
+      <path d="M0 150V84l34-26 34 26v66z" fill="#ffd9b0"/><path d="M68 150V70h56v80z" fill="#ffe9a8"/><path d="M62 70l34-24 34 24z" fill="#d9480f"/>
+      <path d="M124 150V92l30-20 30 20v58z" fill="#d6f0c4"/>
+      <path d="M352 150V78h44v72z" fill="#ffe3e6"/><path d="M346 78l28-30 28 30z" fill="#6b4dff"/><path d="M396 150V96l42-22 42 22v54z" fill="#ffe9a8"/>
+      <path d="M214 150V60h52v90z" fill="#fff4d6"/><path d="M206 60l34-34 34 34z" fill="#b9772c"/>
+    </g>
+    <circle cx="240" cy="78" r="10" fill="#fff" stroke="#121a33" stroke-width="2"/><path d="M240 72v6l4 3" fill="none" stroke="#121a33" stroke-width="2" stroke-linecap="round"/>
+    <g fill="#bfe3ff" stroke="#121a33" stroke-width="1.5"><rect x="12" y="98" width="14" height="16"/><rect x="42" y="98" width="14" height="16"/><rect x="80" y="86" width="12" height="16"/><rect x="100" y="86" width="12" height="16"/><rect x="146" y="104" width="14" height="14"/><rect x="366" y="92" width="14" height="16"/><rect x="418" y="108" width="14" height="14"/><rect x="448" y="108" width="14" height="14"/></g>
+    <path d="M0 150h480v60H0z" fill="#efe2c2"/><path d="M0 150h480" stroke="#121a33" stroke-width="2"/>
+    <g fill="#e2d1a8">${[20, 90, 170, 250, 330, 410, 60, 210, 380].map((x, i) => `<ellipse cx="${x + 14}" cy="${166 + (i % 4) * 11}" rx="15" ry="4"/>`).join("")}</g>
+    ${stall(96, 74, 150, 126, g.aw, g.col)}${stall(300, 96, 104, 100, g2.aw, g2.col)}
+    <g transform="translate(196 126)"><rect x="-34" y="-10" width="68" height="20" rx="5" fill="#fff" stroke="#121a33" stroke-width="2"/><text y="5" text-anchor="middle" font-family="Grandstander,system-ui,sans-serif" font-weight="800" font-size="13" fill="#121a33">6 € / kg</text></g>
+    ${person(40, 86, 2.05, { shirt: "#0f8a5f", hair: "#8a4b2a", bun: true, apron: true, long: true })}
+    ${person(250, 104, 1.75, Object.assign(buyerLook(1), { cls: "got" }))}${person(416, 110, 1.6, Object.assign(buyerLook(4), { cls: "got" }))}${person(446, 116, 1.5, buyerLook(2))}
+    <g transform="translate(262 166) scale(1.5)">${crate(0, 0, g.col, 0)}</g><g transform="translate(232 174) scale(1.5)">${crate(0, 0, g.col, 0)}</g></svg>`;
+}
+/* lygių piktogramos */
+const ic = s => `<svg viewBox="0 0 56 56" aria-hidden="true">${s}</svg>`;
+const LART = [
+  ic(`<rect x="8" y="9" width="40" height="38" rx="6" fill="#fff" stroke="#121a33" stroke-width="2.5"/><path d="M8 21h40M8 30h40M8 39h40M22 9v38M35 9v38" stroke="#121a33" stroke-width="1.8"/><rect x="9.5" y="22" width="37" height="7.5" fill="#ffe27a"/>`),
+  ic(`<path d="M11 8v38h38" fill="none" stroke="#121a33" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 15l26 24" stroke="#2f6bff" stroke-width="4" stroke-linecap="round"/><path d="M17 39l26-24" stroke="#ff7a1a" stroke-width="4" stroke-linecap="round"/><circle cx="30" cy="27" r="4.5" fill="#fff" stroke="#121a33" stroke-width="2.4"/>`),
+  ic(`<path d="M10 8v38h38" fill="none" stroke="#121a33" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 16l20 22" stroke="#2f6bff" stroke-width="3.4" stroke-linecap="round" opacity=".4"/><path d="M26 14l20 22" stroke="#2f6bff" stroke-width="4" stroke-linecap="round"/><path d="M24 30h9m-4-4 4 4-4 4" fill="none" stroke="#121a33" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`),
+  ic(`<rect x="6" y="14" width="44" height="28" rx="8" fill="#fff" stroke="#121a33" stroke-width="2.5"/><text x="28" y="34" text-anchor="middle" font-family="Grandstander,system-ui,sans-serif" font-weight="800" font-size="15" fill="#121a33">Q = P</text>`),
+  ic(`<ellipse cx="22" cy="42" rx="13" ry="5" fill="#ffc61a" stroke="#121a33" stroke-width="2.2"/><path d="M9 42v-7a13 5 0 0 0 26 0v7" fill="#ffc61a" stroke="#121a33" stroke-width="2.2"/><ellipse cx="22" cy="35" rx="13" ry="5" fill="#ffe27a" stroke="#121a33" stroke-width="2.2"/><path d="M9 35v-7a13 5 0 0 0 26 0v7" fill="#ffc61a" stroke="#121a33" stroke-width="2.2"/><ellipse cx="22" cy="28" rx="13" ry="5" fill="#ffe27a" stroke="#121a33" stroke-width="2.2"/><path d="M38 30l5-16 5 5m-5-5-5 4" fill="none" stroke="#0f8a5f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`),
+  ic(`<path d="M18 6h20v14l-10 8-10-8z" fill="#2f6bff" stroke="#121a33" stroke-width="2.4" stroke-linejoin="round"/><circle cx="28" cy="36" r="13" fill="#ffc61a" stroke="#121a33" stroke-width="2.5"/><path d="M28 28.5l2.4 5 5.4.6-4 3.7 1.1 5.4-4.9-2.8-4.9 2.8 1.1-5.4-4-3.7 5.4-.6z" fill="#fff" stroke="#121a33" stroke-width="1.4" stroke-linejoin="round"/>`)
+];
+const COLICON = `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 12l3-7h18l3 7a4 4 0 0 1-8 0 4 4 0 0 1-8 0 4 4 0 0 1-8 0z" fill="#ff8a8a" stroke="#121a33" stroke-width="2" stroke-linejoin="round"/><path d="M6 15v12h20V15" fill="#fff" stroke="#121a33" stroke-width="2" stroke-linejoin="round"/><rect x="13" y="19" width="6" height="8" fill="#d9a066" stroke="#121a33" stroke-width="1.6"/></svg>`;
+
+/* ---------- grafikas ---------- */
+function graph(m, o){
+  o = o || {};
+  const W = 340, H = 252, L = 34, Rm = 12, Tp = 26, B = 40, pw = W - L - Rm, ph = H - Tp - B;
+  const pMax = m.rows[4] + 2, qMax = m.qMax, X = q => L + q / qMax * pw, Y = p => Tp + ph - p / pMax * ph;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${T.dem}, ${T.sup}"><rect x="${L}" y="${Tp}" width="${pw}" height="${ph}" fill="#fff"/>`;
+  const qs = qMax > 170 ? 40 : 20;
+  for(let q = 0; q <= qMax; q += 10) s += `<path d="M${X(q)} ${Tp}V${Tp + ph}" stroke="${q % 20 ? "#efe6cc" : "#dccfa6"}" stroke-width="1"/>` + (q % qs === 0 ? `<text x="${X(q)}" y="${Tp + ph + 14}" text-anchor="middle" class="gt">${q}</text>` : "");
+  const ps = pMax > 11 ? 2 : 1;
+  for(let p = 0; p <= pMax; p++) s += `<path d="M${L} ${Y(p)}H${L + pw}" stroke="#dccfa6" stroke-width="1"/>` + (p % ps === 0 ? `<text x="${L - 6}" y="${Y(p) + 4}" text-anchor="end" class="gt${o.price === p ? " hot" : ""}">${p}</text>` : "");
+  s += `<path d="M${L} ${Tp - 4}V${Tp + ph}H${L + pw + 6}" fill="none" stroke="#121a33" stroke-width="2.2" stroke-linecap="round"/>
+    <text x="5" y="13" class="ga">${T.priceE}</text><text x="${W - 8}" y="${H - 6}" text-anchor="end" class="ga">${T.qty}, ${m.u}</text>`;
+  const pa = m.gLo, pb = m.gHi, ab = o.ab;
+  const ln = (f, col) => `<path d="M${X(f(pa))} ${Y(pa)}L${X(f(pb))} ${Y(pb)}" stroke="${col}" stroke-width="3.6" stroke-linecap="round"/>`;
+  s += ln(m.qd, "var(--dc)") + ln(m.qs, "var(--sc)");
+  const tag = (x, y, t, col, anchor) => `<text x="${x}" y="${y}" text-anchor="${anchor}" class="gl" fill="${col}" stroke="#fff" stroke-width="3.5" paint-order="stroke">${t}</text>`;
+  const dx = X(m.qd(pb)), sx = X(m.qs(pb)), ty = Y(pb) - 7;
+  if(ab){ s += tag(dx, ty, ab.D, "#121a33", "middle") + tag(sx, ty, ab.S, "#121a33", "middle"); }
+  else { s += tag(Math.max(dx, L + 30), ty, T.dem, "#1c4fd1", "middle") + tag(Math.min(sx, L + pw - 26), ty, T.sup, "#c2560a", "middle"); }
+  if(o.price != null){
+    const p = o.price, a = m.qd(p), b = m.qs(p);
+    s += `<path d="M${L} ${Y(p)}H${L + pw}" stroke="#121a33" stroke-width="2" stroke-dasharray="6 4"/>`;
+    [[a, "var(--dc)"], [b, "var(--sc)"]].forEach(([q, c]) => { if(q >= 0 && q <= qMax) s += `<path d="M${X(q)} ${Y(p)}V${Tp + ph}" stroke="${c}" stroke-width="1.6" stroke-dasharray="3 3"/><circle cx="${X(q)}" cy="${Y(p)}" r="5" fill="#fff" stroke="${c}" stroke-width="3"/>`; });
+  }
+  if(o.eq) s += `<path d="M${L} ${Y(m.P)}H${X(m.Q)}V${Tp + ph}" fill="none" stroke="#0f8a5f" stroke-width="2" stroke-dasharray="4 3"/><circle cx="${X(m.Q)}" cy="${Y(m.P)}" r="6" fill="#b9efcd" stroke="#0f8a5f" stroke-width="3"/>`;
+  return s + `<style>.gt{font:700 11px Manrope,system-ui,sans-serif;fill:#5f5a45}.gt.hot{font-weight:800;fill:#121a33;font-size:13px}.ga{font:800 11.5px Manrope,system-ui,sans-serif;fill:#121a33}.gl{font:800 13px Manrope,system-ui,sans-serif}</style></svg>`;
+}
+/* kokybinis grafikas veiksniams: stage 0 – pradinė padėtis, 1 – pasislinkusi kreivė, 2 – rodyklės ant ašių */
+function shiftSvg(c, d, stage){
+  const dx = d * 46, ex = 170 + dx / 2, ey = c === "D" ? 90 - .375 * dx : 90 + .375 * dx;
+  const D = o => `M${90 + o} 30L${250 + o} 150`, S = o => `M${90 + o} 150L${250 + o} 30`;
+  let s = `<svg viewBox="0 0 340 196" role="img" aria-label="${T.dem}, ${T.sup}"><rect x="40" y="12" width="286" height="150" fill="#fff"/>
+    <path d="M40 6V162H332" fill="none" stroke="#121a33" stroke-width="2.2" stroke-linecap="round"/>
+    <text x="6" y="12" class="ga">${T.price}</text><text x="334" y="184" text-anchor="end" class="ga">${T.qty}</text>
+    <path d="${D(0)}" stroke="var(--dc)" stroke-width="3.6" stroke-linecap="round" opacity="${stage && c === "D" ? .3 : 1}"/>
+    <path d="${S(0)}" stroke="var(--sc)" stroke-width="3.6" stroke-linecap="round" opacity="${stage && c === "S" ? .3 : 1}"/>
+    <text x="${90 + (stage && c === "D" ? dx : 0)}" y="24" class="gl" fill="#1c4fd1" text-anchor="middle" stroke="#fff" stroke-width="3" paint-order="stroke">${T.dem}</text>
+    <text x="${250 + (stage && c === "S" ? dx : 0) + 4}" y="24" class="gl" fill="#c2560a" text-anchor="middle" stroke="#fff" stroke-width="3" paint-order="stroke">${T.sup}</text>
+    <path d="M40 90H170V162" fill="none" stroke="#8a8266" stroke-width="1.6" stroke-dasharray="4 3"/><circle cx="170" cy="90" r="5.5" fill="#fff" stroke="#121a33" stroke-width="2.6"/>`;
+  if(stage){
+    s += `<g class="sh1"><path d="${c === "D" ? D(dx) : S(dx)}" stroke="var(--${c === "D" ? "dc" : "sc"})" stroke-width="3.6" stroke-linecap="round"/>
+      <path d="M${170 + (d > 0 ? 8 : -8)} ${c === "D" ? 62 : 118}h${dx - (d > 0 ? 16 : -16)}" stroke="#121a33" stroke-width="2.4" stroke-linecap="round"/><path d="M${170 + dx - (d > 0 ? 8 : -8)} ${c === "D" ? 62 : 118}l${d > 0 ? -6 : 6}-5v10z" fill="#121a33"/>
+      <path d="M40 ${ey}H${ex}V162" fill="none" stroke="#0f8a5f" stroke-width="1.8" stroke-dasharray="4 3"/><circle cx="${ex}" cy="${ey}" r="6" fill="#b9efcd" stroke="#0f8a5f" stroke-width="3"/></g>`;
+  }
+  if(stage > 1){
+    const up = ey < 90, rt = ex > 170;
+    s += `<g class="sh1"><path d="M27 ${up ? 88 : 92}V${up ? ey + 5 : ey - 5}" stroke="#0f8a5f" stroke-width="3" stroke-linecap="round"/><path d="M27 ${ey}l-5.5 ${up ? 8 : -8}h11z" fill="#0f8a5f"/>
+      <path d="M${rt ? 172 : 168} 176H${rt ? ex - 5 : ex + 5}" stroke="#0f8a5f" stroke-width="3" stroke-linecap="round"/><path d="M${ex} 176l${rt ? -8 : 8}-5.5v11z" fill="#0f8a5f"/></g>`;
+  }
+  return s + `<style>.ga{font:800 11.5px Manrope,system-ui,sans-serif;fill:#121a33}.gl{font:800 13px Manrope,system-ui,sans-serif}</style></svg>`;
+}
+
+/* ================= rinkos ir užduočių generatoriai ================= */
+function market(o){
+  o = o || {};
+  for(let k = 0; k < 800; k++){
+    const g = P(GOODS), Pe = R(g.lo + 1, g.hi - 1), b = P(o.graph ? [10, 10, 20] : [5, 10, 10, 15, 20]), d = P(o.graph ? [10, 20, 20] : [5, 10, 15, 20, 20]), Q = 10 * R(4, o.graph ? 9 : 12);
+    const s = R(Math.max(g.lo, Pe - 4), Math.min(Pe, g.hi - 4));
+    const qd = p => Q - b * (p - Pe), qs = p => Q + d * (p - Pe);
+    if(qd(s + 4) < 10 || qs(s) < 10) continue;
+    const rows = [0, 1, 2, 3, 4].map(i => s + i), a = Q + b * Pe, c = d * Pe - Q;
+    let gLo = s, gHi = s + 4; if(o.graph){ if(s > 1 && qs(s - 1) >= 0) gLo = s - 1; if(qd(s + 5) >= 0) gHi = s + 5; }
+    const m = { g, u: g.u, P: Pe, Q, b, d, a, c, qd, qs, rows, gLo, gHi };
+    m.qMax = Math.ceil((Math.max(qd(gLo), qs(gHi)) + 4) / 20) * 20;
+    m.fD = fDem(a, b); m.fS = fSup(d, c);
+    return m;
+  }
+}
+const fDem = (a, b) => `${a} − ${b}P`;
+const fSup = (d, c) => c > 0 ? `${d}P − ${c}` : c < 0 ? `${d}P + ${-c}` : `${d}P`;
+function numOpts(right, cands, fmt){
+  let w = uniq(cands.filter(v => v !== right && v > 0 && Number.isFinite(v)));
+  w = SH(w).slice(0, 3); const add = SH([10, -10, 20, -20, 5, -5, 30, 15]); let i = 0;
+  while(w.length < 3){ const v = right + add[i++ % add.length] * (i > 8 ? 2 : 1); if(v > 0 && v !== right && !w.includes(v)) w.push(v); }
+  const all = [right].concat(w).sort((x, y) => x - y);
+  return { opts: all.map(fmt || String), right: all.indexOf(right), ans: (fmt || String)(right) };
+}
+function strOpts(right, wrongs){ const w = uniq(wrongs.filter(x => x !== right)).slice(0, 3), all = SH([right].concat(w)); return { opts: all, right: all.indexOf(right), ans: right }; }
+const ch = (id, m, view, text, o, why, x) => Object.assign({ type: "choice", id, m, view, text, opts: o.opts, right: o.right, ans: o.ans, why }, x || {});
+const gapO = (qd, qs, u) => qd > qs ? T.o.short(qd - qs, u) : qd < qs ? T.o.surplus(qs - qd, u) : T.o.eq;
+const unitsOf = (m, vals) => { const mx = Math.max.apply(null, vals.map(p => Math.max(m.qd(p), m.qs(p)))), sc = mx / 8; return q => q <= 0 ? 0 : Math.max(1, Math.round(q / sc)); };
+function simMarket(m, un, qd, qs){
+  let a = un(qd), b = un(qs);
+  if(qd === qs) b = a; else if(a === b){ if(qd > qs){ if(a < 8) a++; else b--; } else { if(b < 8) b++; else a--; } }
+  return { buyers: a, crates: b, sold: Math.min(a, b), cls: qd > qs ? "short" : qd < qs ? "surplus" : "eq", cap: qd > qs ? T.cap.short(qd - qs, m.u) : qd < qs ? T.cap.surplus(qs - qd, m.u) : T.cap.eq(qd, m.u) };
+}
+const mid = (vals, ok) => { const c = vals.filter(v => !ok(v)); return c[Math.floor(c.length / 2)]; };
+
+const G = {
+  /* ---- kainos nustatymas (lentelė, grafikas, funkcijos) ---- */
+  setEq(view){
+    const m = market({ graph: view === "graph" }), vals = view === "table" ? m.rows : view === "graph" ? range(m.gLo, m.gHi) : funcVals(m), un = unitsOf(m, vals), ok = v => v === m.P;
+    return { type: "set", id: "setEq-" + view, view, m, text: T.q.setEq(m.g.g), values: vals, start: view === "table" ? null : mid(vals, ok), unit: "€", ok,
+      fb: v => T.fb.price(v, m.qd(v), m.qs(v), m.u) + (m.qd(v) > m.qs(v) ? T.fb.upHint : T.fb.downHint), sim: v => simMarket(m, un, m.qd(v), m.qs(v)), target: m.P, ans: eur(m.P),
+      why: view === "func" ? funcWhy(m) : T.w.eq(m.P, m.Q, m.u) };
+  },
+  setGap(view){
+    const m = market({ graph: view === "graph" }), vals = view === "table" ? m.rows : view === "graph" ? range(m.gLo, m.gHi) : funcVals(m), un = unitsOf(m, vals);
+    const p = P(m.rows.filter(x => x !== m.P)), n = Math.abs(m.qd(p) - m.qs(p)), sh = m.qd(p) > m.qs(p), ok = v => v === p;
+    return { type: "set", id: "setGap-" + view, view, m, text: T.q.setGap(m.g.g, n, m.u, sh), values: vals, start: view === "table" ? null : mid(vals, v => v === p || v === m.P), unit: "€", ok,
+      fb: v => T.fb.price(v, m.qd(v), m.qs(v), m.u) + T.fb.needGap(n, m.u, sh), sim: v => simMarket(m, un, m.qd(v), m.qs(v)), target: p, ans: eur(p),
+      why: view === "func" ? T.w.funcGap(p, sub(m.fD, p), sub(m.fS, p), m.qd(p), m.qs(p), m.u) : T.w.gap(p, m.qd(p), m.qs(p), m.u) };
+  },
+  shiftF(){
+    for(let k = 0; k < 300; k++){
+      const m = market(), [txt, c, sg] = P(T.shiftF), j = P([1, 1, 2]), kk = (m.b + m.d) * j, nP = c === "D" ? m.P + sg * j : m.P - sg * j;
+      const nqd = p => m.qd(p) + (c === "D" ? sg * kk : 0), nqs = p => m.qs(p) + (c === "S" ? sg * kk : 0);
+      if(nP < 1 || nqd(nP) < 10) continue;
+      const vals = range(1, m.g.hi + 4).filter(p => nqd(p) >= 0 && nqs(p) >= 0 && m.qd(p) >= 0 && m.qs(p) >= 0); if(!vals.includes(nP) || vals.length < 5) continue;
+      const mm = Object.assign({}, m, { qd: nqd, qs: nqs }), un = unitsOf(mm, vals), a2 = m.a + (c === "D" ? sg * kk : 0), c2 = m.c - (c === "S" ? sg * kk : 0), ok = v => v === nP;
+      const nf = c === "D" ? fDem(a2, m.b) : fSup(m.d, c2);
+      return { type: "set", id: "shiftF-" + c + (sg > 0 ? "+" : "-"), view: "func", m, text: T.q.shiftF(m.g.g, txt(kk, m.u)), values: vals, start: vals.includes(m.P) ? m.P : mid(vals, ok), unit: "€", ok, target: nP, ans: eur(nP),
+        fb: v => T.fb.price(v, nqd(v), nqs(v), m.u) + (nqd(v) > nqs(v) ? T.fb.upHint : T.fb.downHint), sim: v => simMarket(m, un, nqd(v), nqs(v)),
+        why: T.w.func(fDem(a2, m.b), fSup(m.d, c2), m.b + m.d, a2 + c2, nP, `Q = ${sub(fDem(a2, m.b), nP)} = ${nqd(nP)} ${m.u}`, T.shiftFLine(c, "Q = " + nf)), _n: { nqd, nqs, nP, c, sg, kk } };
+    }
+  },
+  /* ---- pasirinkimas ---- */
+  state(view){
+    const m = market({ graph: view === "graph" }), p = Math.random() < .15 ? m.P : P(m.rows.filter(x => x !== m.P)), qd = m.qd(p), qs = m.qs(p), right = gapO(qd, qs, m.u), n = Math.abs(qd - qs) || m.b + m.d;
+    const o = strOpts(right, SH([qd > qs ? T.o.surplus(n, m.u) : T.o.short(n, m.u), qd >= qs ? T.o.short(Math.max(qd, qs), m.u) : T.o.surplus(Math.max(qd, qs), m.u), T.o.eq, qd > qs ? T.o.short(Math.min(qd, qs), m.u) : T.o.surplus(Math.min(qd, qs), m.u), T.o.short(n, m.u)]));
+    return ch("state-" + view, m, view, T.q.state(m.g.g, p), o, view === "func" ? T.w.funcGap(p, sub(m.fD, p), sub(m.fS, p), qd, qs, m.u) : T.w.gap(p, qd, qs, m.u), { after: { price: p }, _p: p });
+  },
+  law(){
+    const m = market(), i = R(0, 3), j = Math.min(4, i + R(1, 2)), flip = Math.random() < .5, p1 = m.rows[flip ? j : i], p2 = m.rows[flip ? i : j], dem = Math.random() < .5, f = dem ? m.qd : m.qs, g = dem ? m.qs : m.qd;
+    const q1 = f(p1), q2 = f(p2), dl = Math.abs(q2 - q1), o1 = Math.abs(g(p2) - g(p1)), right = q2 < q1 ? T.o.dec(dl, m.u) : T.o.inc(dl, m.u);
+    const o = strOpts(right, [q2 < q1 ? T.o.inc(dl, m.u) : T.o.dec(dl, m.u), o1 !== dl ? (q2 < q1 ? T.o.dec(o1, m.u) : T.o.inc(o1, m.u)) : (q2 < q1 ? T.o.dec(q2, m.u) : T.o.inc(q2, m.u)), T.o.same, T.o.dec(dl + 10, m.u)]);
+    return ch("law", m, "table", T.q.law(m.g.g, p1, p2, dem), o, T.w.law(dem, q1, q2, m.u), { _l: { p1, p2, dem } });
+  },
+  sold(view){
+    const m = market({ graph: view === "graph" }), p = P(m.rows.filter(x => x !== m.P)), qd = m.qd(p), qs = m.qs(p), u = v => `${v} ${m.u}`;
+    return ch("sold-" + view, m, view, T.q.sold(m.g.g, p, m.u), numOpts(Math.min(qd, qs), [Math.max(qd, qs), Math.abs(qd - qs), m.Q, qd + qs], u), T.w.sold(p, qd, qs, m.u), { two: true, after: { price: p }, _p: p });
+  },
+  spend(view){
+    const m = market({ graph: view === "graph" }), r = m.P * m.Q, o = P(m.rows.filter(x => x !== m.P));
+    const w = view === "func" ? Object.assign(funcWhy(m), { body: T.w.spend(m.P, m.Q, m.u).body }) : T.w.spend(m.P, m.Q, m.u); if(view === "func") w.more += "<br>" + T.w.spend(m.P, m.Q, m.u).more;
+    return ch("spend-" + view, m, view, T.q.spend(m.g.g), numOpts(r, [o * m.qd(o), o * m.qs(o), (m.P + 1) * m.Q, m.P * (m.Q + 10), m.Q, m.P * (m.qd(o) + m.qs(o))], eur), w, { two: true, after: { eq: true } });
+  },
+  read(){
+    const m = market({ graph: true }), p = P(m.rows), dem = Math.random() < .5, q = dem ? m.qd(p) : m.qs(p), u = v => `${v} ${m.u}`;
+    return ch("read", m, "graph", T.q.read(m.g.g, p, m.u, dem), numOpts(q, [dem ? m.qs(p) : m.qd(p), m.Q, q + 10, q - 10, q + 20], u), T.w.read(dem, p, q, m.u), { two: true, after: { price: p }, _r: { p, dem } });
+  },
+  which(){
+    const m = market({ graph: true }), dem = Math.random() < .5, dl = P(["A", "B"]), sl = dl === "A" ? "B" : "A", right = dem ? T.o.which(dl, true) : T.o.which(sl, false);
+    const all = [T.o.which("A", true), T.o.which("A", false), T.o.which("B", true), T.o.which("B", false)];
+    return ch("which", m, "graph", T.q.which(dem), { opts: all, right: all.indexOf(right), ans: right }, T.w.which(dem, dem ? dl : sl), { ab: { D: dl, S: sl }, _w: { dem, dl } });
+  },
+  qEq(){
+    const m = market(), u = v => `${v} ${m.u}`, w = funcWhy(m);
+    return ch("qEq", m, "func", T.q.qEq(m.g.g, m.u), numOpts(m.Q, [m.a, m.qd(m.P + 1), m.qs(m.P + 1), m.Q + 10, m.Q - 10, Math.abs(m.c)], u), w, { two: true });
+  },
+  /* ---- veiksniai ---- */
+  shift(c, d){
+    const seen = MK.get(SEEN, []), kind = T.sits.map((s, i) => i).filter(i => T.sits[i][2] === c && T.sits[i][3] === d); let pool = kind.filter(i => !used.includes(i)); if(!pool.length) pool = kind;
+    const fresh = pool.filter(i => !seen.includes(i)), i = P(fresh.length ? fresh : pool), s = T.sits[i]; used.push(i);
+    const r1 = (c === "D" ? 0 : 2) + (d > 0 ? 0 : 1), r2 = c === "D" ? (d > 0 ? 0 : 3) : (d > 0 ? 2 : 1);
+    return { type: "shift", id: "shift-" + c + (d > 0 ? "+" : "-"), si: i, g: goodOf(s[0]), text: T.q.shift1(s[0], s[1]), c, d, r1, r2, ans: `${T.o.s1[r1]}; ${T.o.s2[r2].toLowerCase()}`, why: T.w.shift(T.fk[s[4]], c, d) };
+  },
+  shiftAny(){ const [c, d] = P([["D", 1], ["D", -1], ["S", 1], ["S", -1]]); return G.shift(c, d); },
+  /* ---- prekystalio verslas ---- */
+  biz(){ const g = P(GOODS), p = R(Math.max(3, g.lo), g.hi), mg = R(2, Math.min(5, p - 1)), v = p - mg, n0 = 5 * R(2, 14), F = mg * n0; return { g, u: g.u, p, v, mg, n0, F }; },
+  profit(){
+    const z = G.biz(), n = z.n0 + 5 * R(1, 8), r = z.mg * (n - z.n0);
+    return ch("profit", z, "none", T.q.profit(z.g.g, n, z.u, z.p, z.v, z.F), numOpts(r, [n * z.p, n * z.mg, n * z.p - z.F, r + z.F - n, n * z.p - n * z.v + z.F], eur), T.w.profit(n, z.p, z.v, z.F), { two: true, _b: { n } });
+  },
+  pl(){
+    const z = G.biz(); let k = P([-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]); let n = z.n0 + 5 * k; if(n < 5){ n = z.n0 + 5 * Math.abs(k); }
+    const r = z.mg * (n - z.n0), a = Math.abs(r), right = r > 0 ? T.o.profit(a) : T.o.loss(a);
+    const o = strOpts(right, [r > 0 ? T.o.loss(a) : T.o.profit(a), T.o.profit(n * z.mg), T.o.loss(z.F), T.o.profit(n * z.p - z.F), T.o.loss(a + z.F), T.o.profit(a + z.F), T.o.loss(a * 2)]);
+    return ch("pl", z, "none", T.q.pl(z.g.g, n, z.u, z.p, z.v, z.F), o, T.w.profit(n, z.p, z.v, z.F), { _b: { n } });
+  },
+  be(){
+    const z = G.biz(), vals = range(1, 20).map(i => i * 5), ok = v => v === z.n0, un = q => Math.max(1, Math.round(q / 12.5));
+    return { type: "set", id: "be", view: "none", m: z, text: T.q.be(z.g.g, z.u, z.p, z.v, z.F), values: vals, start: z.n0 === 50 ? 40 : 50, unit: z.u, qty: true, ok, target: z.n0, ans: `${z.n0} ${z.u}`,
+      fb: v => T.fb.be(v, z.u, v * z.p, v * z.v + z.F), sim: v => { const pr = z.mg * (v - z.n0), a = un(v); return { buyers: a, crates: a, sold: a, cls: pr === 0 ? "eq" : "short", cap: pr > 0 ? T.cap.profit(pr) : pr < 0 ? T.cap.loss(-pr) : T.cap.zero }; },
+      why: T.w.be(z.p, z.v, z.F, z.n0, z.u) };
+  },
+  best(){
+    for(let k = 0; k < 5000; k++){
+      const g = P(GOODS), s = R(g.lo, g.hi - 4), b = P([5, 10, 15, 20]), q0 = 10 * R(2, 9) + b * 4, v = R(1, Math.max(1, s)), F = 10 * R(2, 12);
+      const rows = [0, 1, 2, 3, 4].map(i => s + i), qd = p => q0 - b * (p - s), pr = p => (p - v) * qd(p) - F, prs = rows.map(pr), mx = Math.max.apply(null, prs), bi = prs.indexOf(mx);
+      const rev = rows.map(p => p * qd(p)), ri = rev.indexOf(Math.max.apply(null, rev));
+      if(prs.filter(x => x === mx).length !== 1 || bi === 0 || bi === 4 || bi === ri || mx <= 0) continue;
+      const z = { g, u: g.u, rows, qd, v, F, pr, best: rows[bi] }, ok = x => x === z.best, un = q => Math.max(1, Math.round(q / (q0 / 8)));
+      return { type: "set", id: "best", view: "best", m: z, text: T.q.best(g.g, v, F), values: rows, start: null, unit: "€", ok, target: z.best, ans: eur(z.best),
+        fb: x => T.fb.best(x, qd(x), v, F, pr(x)), sim: x => { const a = un(qd(x)), e = pr(x); return { buyers: a, crates: a, sold: a, cls: x === z.best ? "eq" : "short", cap: e >= 0 ? T.cap.profit(e) : T.cap.loss(-e) }; },
+        why: T.w.best(rows.map(p => T.w.bestRow(p, v, qd(p), F, pr(p))), z.best) };
+    }
+  },
+  cost(){
+    const g = P(GOODS), n = 10 * R(2, 8), r = R(1, 6); let f = R(1, 3); if(f === r) f = r + 1; const raw = r * n, F = f * n, s = r + f;
+    return ch("cost", { g, u: g.u }, "none", T.q.cost(g.g, n, g.u, raw, F), numOpts(s, [r, f, raw + F, s + 1, s * 2, Math.abs(r - f)], eur), T.w.cost(raw, F, n, s), { two: true, _c: { n, raw, F } });
+  },
+  priceFor(){
+    const g = P(GOODS), n = 10 * R(2, 8), s = R(2, 9), t = R(1, 4), tp = t * n, p = s + t;
+    return ch("priceFor", { g, u: g.u }, "none", T.q.priceFor(g.g, n, g.u, s, tp), numOpts(p, [s, t, s + 2 * t, s * t, p + 1, p - 1, s + tp / 10], eur), T.w.priceFor(s, n, tp, p), { two: true, _c: { n, s, tp } });
+  },
+  alt(){
+    const who = P(T.people), a = SH(T.acts).slice(0, 3); let v = uniq([5 * R(6, 20), 5 * R(6, 20), 5 * R(6, 20)]); while(v.length < 3){ const x = 5 * R(6, 20); if(!v.includes(x)) v.push(x); }
+    const pi = Math.random() < .7 ? v.indexOf(Math.max.apply(null, v)) : R(0, 2), others = [0, 1, 2].filter(i => i !== pi), bo = v[others[0]] > v[others[1]] ? others[0] : others[1], right = v[bo];
+    return ch("alt", { g: GOODS[1], u: "" }, "none", T.q.alt(who, a.map((x, i) => T.actItem(x[0], v[i])).join("; "), a[pi][0]), numOpts(right, [v[others[0]], v[others[1]], v[others[0]] + v[others[1]], v[pi], Math.abs(v[pi] - right)], eur), T.w.alt(right, a[bo][1]), { two: true, _a: { v, pi } });
+  }
+};
+function range(a, b){ const r = []; for(let i = a; i <= b; i++) r.push(i); return r; }
+function funcVals(m){ return range(1, m.g.hi + 3).filter(p => m.qd(p) >= 0 && m.qs(p) >= 0); }
+function sub(f, p){ return f.replace("P", " · " + p); }
+function funcWhy(m){ return T.w.func(m.fD, m.fS, m.b + m.d, m.a + m.c, m.P, `Q = ${sub(m.fD, m.P)} = ${m.Q} ${m.u}`); }
+const one = (...f) => P(f)();
+let used = [];
+const LV = [
+  () => [G.setEq("table"), G.state("table"), G.law(), G.sold("table"), G.setGap("table"), G.spend("table"), one(G.law, () => G.state("table")), G.setEq("table")],
+  () => [G.which(), G.setEq("graph"), G.read(), G.state("graph"), G.setGap("graph"), G.spend("graph"), G.sold("graph"), G.setGap("graph")],
+  () => SH([G.shift("D", 1), G.shift("D", -1), G.shift("S", 1), G.shift("S", -1), G.shift("D", P([1, -1])), G.shift("S", P([1, -1])), G.shiftAny(), G.shiftAny()]),
+  () => [G.setEq("func"), G.qEq(), G.state("func"), G.setEq("func"), G.shiftF(), G.spend("func"), G.setGap("func"), G.shiftF()],
+  () => [G.profit(), G.be(), G.pl(), G.best(), one(G.cost, G.priceFor), G.alt(), G.be(), G.best()],
+  () => [G.setGap("table")].concat(SH([G.setGap("graph"), G.shiftAny(), G.shiftAny(), G.setEq("func"), G.shiftF(), G.be(), G.best(), G.pl(), one(() => G.sold("graph"), () => G.spend("func"), G.alt)]))
+];
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: LART[i] }));
+
+/* ================= meniu ir „Mano turgus“ ================= */
+const menu = $("menu"), play = $("play"), stage = $("stage"), app = $("app");
+const saved = MK.get("mokomeskartu-klase", 0), KEY = "mk-" + GAME + "-kasa", SEEN = "mk-" + GAME + "-matyta";
+const TH = [30, 80, 150, 240, 350, 480, 630, 800, 990, 1200, 1430, 1700];
+const stallsFor = p => TH.filter(t => p >= t).length;
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("ptsL").textContent = T.pts;
+function squareSvg(open, fresh){
+  let s = `<svg viewBox="0 0 360 172" role="img" aria-label="${T.colH}"><rect width="360" height="172" rx="14" fill="#efe2c2"/>`;
+  for(let i = 0; i < 12; i++){
+    const x = 8 + (i % 6) * 58, y = 8 + Math.floor(i / 6) * 82, g = GOODS[i];
+    if(i < open) s += `<g class="${fresh && i >= open - fresh ? "st-new" : ""}">${stall(x + 2, y, 50, 56, g.aw, g.col)}<text x="${x + 27}" y="${y + 70}" text-anchor="middle" style="font:800 8.6px Manrope,system-ui,sans-serif" fill="#121a33">${g.n.replace(/^(gėlių |moliniai |vilnonės )/, "")}</text></g>`;
+    else s += `<rect x="${x + 2}" y="${y + 2}" width="50" height="54" rx="8" fill="#f8efd8" stroke="#b9a877" stroke-width="1.6" stroke-dasharray="5 4"/><text x="${x + 27}" y="${y + 34}" text-anchor="middle" style="font:800 12px Manrope,system-ui,sans-serif" fill="#a2915f">${TH[i]}</text><text x="${x + 27}" y="${y + 70}" text-anchor="middle" style="font:700 8.6px Manrope,system-ui,sans-serif" fill="#a2915f">tšk.</text>`;
+  }
+  return s + "</svg>";
+}
+function renderCol(fresh){
+  const pts = MK.get(KEY, 0), open = stallsFor(pts), ri = Math.min(4, Math.floor(open / 3));
+  $("col").innerHTML = `<h2>${COLICON}${T.colH}</h2><p>${T.colP(pts, open, 12, T.ranks[ri], open < 12 ? TH[open] - pts : 0)}</p>${squareSvg(open, fresh || 0)}`;
+}
+function showMenu(fresh){
+  play.hidden = true; menu.hidden = false; $("heroArt").innerHTML = heroSvg(); renderCol(fresh);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, pts = 0, dots = null, stalls0 = 0, busy = false;
+function start(i){
+  used = []; L = i; tasks = LV[i](); ti = 0; okN = 0; pts = 0; $("pts").textContent = 0; stalls0 = stallsFor(MK.get(KEY, 0));
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+function award(n){ if(n){ pts += n; MK.set(KEY, MK.get(KEY, 0) + n); const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); } }
+function first(ok){ dots.mark(ti, ok); if(ok) okN++; }
+function addWhy(ok, w, ans){ const d = document.createElement("div"); d.innerHTML = MK.why({ ok, head: ok ? MK.praise() : (ans ? T.bad(ans) : T.badPlain), body: cl(w.body), more: cl(w.more), sum: T.rule, open: !ok }); $("flow").appendChild(d.firstElementChild); }
+function nextBtn(){
+  const b = document.createElement("button"); b.type = "button"; b.className = "mk-btn"; b.id = "next"; b.textContent = ti < tasks.length - 1 ? T.next + " →" : T.finish;
+  b.onclick = () => { MK.sfx.tap(); ti++; if(ti < tasks.length) show(); else finish(); };
+  $("flow").appendChild(b); setTimeout(() => b.scrollIntoView({ block: "nearest", behavior: "smooth" }), 60);
+}
+function close(ok, w, ans){ if(ok) MK.sfx.good(); else MK.sfx.bad(); addWhy(ok, w, ans); nextBtn(); }
+function viewHtml(c, o){
+  o = o || {}; const m = c.m;
+  if(c.view === "table") return `<div class="tb" id="tb"><div class="tr h"><span>${T.priceE}</span><span>${T.demQ}, ${m.u}</span><span>${T.supQ}, ${m.u}</span></div>${m.rows.map(p => `<${c.type === "set" ? "button type=\"button\"" : "div"} class="tr" data-v="${p}"><span>${p}</span><span>${m.qd(p)}</span><span>${m.qs(p)}</span></${c.type === "set" ? "button" : "div"}>`).join("")}</div>`;
+  if(c.view === "best") return `<div class="tb" id="tb"><div class="tr h plain ${o.profit ? "c3b" : "c2"}"><span>${T.priceE}</span><span>${T.demQ}, ${m.u}</span>${o.profit ? `<span>${T.profitCol}</span>` : ""}</div>${m.rows.map(p => `<button type="button" class="tr ${o.profit ? "c3b" : "c2"}" data-v="${p}"><span>${p}</span><span>${m.qd(p)}</span>${o.profit ? `<span>${String(m.pr(p)).replace("-", "−")}</span>` : ""}</button>`).join("")}</div>`;
+  if(c.view === "graph") return `<div class="gr" id="gr">${graph(m, { price: o.price, eq: o.eq, ab: c.ab })}</div>`;
+  if(c.view === "func") return `<div class="fx"><span>${T.dem}:</span><b class="d">Q = ${m.fD}</b><br><span>${T.sup}:</span><b class="s">Q = ${m.fS}</b><small>${T.funcNote(m.u)}</small></div>`;
+  return "";
+}
+function show(){
+  cur = tasks[ti]; dots.cur(ti); busy = false; const c = cur, g = c.g || c.m.g;
+  stage.innerHTML = `<div class="scene" id="scene">${sceneSvg(g, c.type === "shift" ? 3 : 4, c.type === "shift" ? 3 : 4)}</div><div class="cap" id="cap">&nbsp;</div>
+    <p class="q" id="q">${cl(c.text)}</p><div id="view"></div><div id="ctl"></div><div class="note" id="note"></div><div id="flow"></div>`;
+  ({ choice: showChoice, set: showSet, shift: showShift })[c.type](c);
+  window.scrollTo(0, 0);
+}
+function optsHtml(opts, two, id){ return `<div class="opts${two ? " two" : ""}" id="${id}">${opts.map((o, i) => `<button type="button" class="opt" data-i="${i}">${o}</button>`).join("")}</div>`; }
+function lockOpts(box, pick, right){ box.querySelectorAll(".opt").forEach((b, i) => { b.disabled = true; if(i === right) b.classList.add("ok"); else if(i === pick) b.classList.add("no"); else b.classList.add("dim"); }); }
+function showChoice(c){
+  $("view").innerHTML = viewHtml(c); $("ctl").innerHTML = optsHtml(c.opts, c.two, "opts");
+  $("opts").onclick = e => {
+    const b = e.target.closest(".opt"); if(!b || b.disabled) return; const i = +b.dataset.i, ok = i === c.right;
+    lockOpts($("opts"), i, c.right);
+    if(c.after && c.view === "graph") $("view").innerHTML = viewHtml(c, c.after);
+    if(c.view === "table" && c.after && c.after.price != null){ const r = $("tb").querySelector(`[data-v="${c.after.price}"]`); if(r) r.classList.add("sel"); }
+    if(c.view === "table" && c.after && c.after.eq){ const r = $("tb").querySelector(`[data-v="${c.m.P}"]`); if(r) r.classList.add("ok"); }
+    first(ok); award(ok ? 10 : 0); close(ok, c.why, c.opts[c.right]);
+  };
+}
+async function runSim(c, v){
+  const s = c.sim(v), g = c.m.g; $("scene").innerHTML = sceneSvg(g, s.crates, s.buyers); const cap = $("cap"); cap.className = "cap"; cap.innerHTML = "&nbsp;";
+  const cr = $("scene").querySelectorAll(".crate"), bu = $("scene").querySelectorAll(".buyer");
+  MK.sfx.whoosh(); await MK.wait(350);
+  for(let i = 0; i < s.sold; i++){ if(cr[i]) cr[i].classList.add("gone"); if(bu[i]) bu[i].classList.add("got"); if(i % 2 === 0) MK.sfx.tap(); await MK.wait(130); }
+  for(let i = s.sold; i < bu.length; i++) bu[i].classList.add("sad");
+  for(let i = s.sold; i < cr.length; i++) cr[i].classList.add("left");
+  cap.className = "cap " + s.cls; cap.textContent = cl(s.cap); await MK.wait(350);
+}
+function showSet(c){
+  let v = c.start, tries = 0; const tbl = c.view === "table" || c.view === "best", idx = () => c.values.indexOf(v);
+  const lab = c.qty ? T.yourQty : T.yourPrice, fmt = x => c.qty ? `${x} ${c.unit}` : eur(x);
+  $("view").innerHTML = viewHtml(c, { price: v });
+  $("ctl").innerHTML = (tbl ? "" : `<div class="stp" id="stp"><button type="button" id="mn" aria-label="−">−</button><div><span><small>${lab}</small><span id="val"></span></span></div><button type="button" id="pl" aria-label="+">+</button></div>`)
+    + `<button type="button" class="mk-btn go" id="go">${T.open}</button>`;
+  const note = h => { $("note").innerHTML = cl(h); };
+  if(tbl) note(T.pickRow);
+  const upd = () => {
+    if(tbl){ $("tb").querySelectorAll("button.tr").forEach(r => r.classList.toggle("sel", +r.dataset.v === v)); }
+    else { $("val").textContent = fmt(v); $("mn").disabled = idx() <= 0; $("pl").disabled = idx() >= c.values.length - 1; if(c.view === "graph") $("view").innerHTML = viewHtml(c, { price: v }); }
+    $("go").disabled = v == null;
+  };
+  if(tbl) $("tb").onclick = e => { const r = e.target.closest("button.tr"); if(!r || busy || r.disabled) return; v = +r.dataset.v; MK.sfx.tap(); upd(); };
+  else { $("mn").onclick = () => { if(busy) return; v = c.values[idx() - 1]; MK.sfx.tap(); upd(); }; $("pl").onclick = () => { if(busy) return; v = c.values[idx() + 1]; MK.sfx.tap(); upd(); }; }
+  upd();
+  const end = ok => {
+    $("go").remove();
+    if(tbl){ if(c.view === "best"){ $("view").innerHTML = viewHtml(c, { profit: true }); } $("tb").querySelectorAll("button.tr").forEach(r => { r.disabled = true; r.classList.remove("sel"); if(+r.dataset.v === c.target) r.classList.add("ok"); }); }
+    else { $("stp").classList.add("done"); if(ok) $("stp").classList.add("ok"); if(c.view === "graph") $("view").innerHTML = viewHtml(c, { price: c.target, eq: c.id.indexOf("setEq") === 0 }); }
+  };
+  $("go").onclick = async () => {
+    if(busy || v == null) return; busy = true; MK.unlock(); tries++; $("go").disabled = true; note("");
+    await runSim(c, v);
+    if(c.ok(v)){ first(tries === 1); award([10, 6, 3][tries - 1]); end(true); close(true, c.why); }
+    else if(tries < 3){
+      MK.sfx.bad(); note(c.fb(v) + " " + T.tries(3 - tries));
+      if(tbl){ const r = $("tb").querySelector(`button[data-v="${v}"]`); r.classList.remove("sel"); r.classList.add("no"); r.disabled = true; v = null; }
+      busy = false; upd(); $("go").textContent = T.again;
+    } else {
+      note(c.fb(v)); v = c.target; if(!tbl) $("val").textContent = fmt(v);
+      await runSim(c, v); first(false); end(false); close(false, c.why, c.ans);
+    }
+  };
+}
+function showShift(c){
+  let ok1 = false;
+  $("view").innerHTML = `<div class="gr" id="gr">${shiftSvg(c.c, c.d, 0)}</div>`;
+  $("ctl").innerHTML = optsHtml(T.o.s1, true, "o1") + `<div id="s2"></div>`;
+  $("o1").onclick = e => {
+    const b = e.target.closest(".opt"); if(!b || b.disabled) return; const i = +b.dataset.i; ok1 = i === c.r1; lockOpts($("o1"), i, c.r1);
+    if(ok1){ MK.sfx.good(); award(5); } else MK.sfx.bad();
+    $("gr").innerHTML = shiftSvg(c.c, c.d, 1);
+    $("s2").innerHTML = `<p class="q2">${T.q.shift2}</p>` + optsHtml(T.o.s2, false, "o2");
+    $("o2").onclick = e2 => {
+      const b2 = e2.target.closest(".opt"); if(!b2 || b2.disabled) return; const j = +b2.dataset.i, ok2 = j === c.r2; lockOpts($("o2"), j, c.r2);
+      $("gr").innerHTML = shiftSvg(c.c, c.d, 2);
+      const seen = MK.get(SEEN, []); seen.push(c.si); MK.set(SEEN, seen.slice(-40));
+      first(ok1 && ok2); award(ok2 ? 5 : 0); close(ok1 && ok2, c.why, c.ans);
+    };
+    setTimeout(() => $("o2").scrollIntoView({ block: "nearest", behavior: "smooth" }), 60);
+  };
+}
+function finish(){
+  const total = tasks.length, stars = MK.starsFor(okN, total); MK.best(GAME, LEVELS[L].id, stars);
+  const now = stallsFor(MK.get(KEY, 0)), fresh = now - stalls0, names = GOODS.slice(stalls0, now).map(g => g.n);
+  MK.result({ stars, title: `${okN} / ${total}`, text: T.res(okN, total, pts, names),
+    next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(fresh) });
+}
+Object.defineProperty(window, "__cur", { get: () => cur });
+window.__MK_TEST = { LV, G, T, GOODS, market, TH, stallsFor };
+showMenu();
+})();
+</script>
+</body>
+</html>
