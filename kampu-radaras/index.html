@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kampų radaras – MokomėsKartu.lt</title>
+<meta name="description" content="Matematikos žaidimas 11–12 klasei (VBE): vienetinis apskritimas, tikslios sinuso, kosinuso ir tangento reikšmės, trigonometrinės lygtys intervale.">
+<meta name="theme-color" content="#f4f7f2">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<style>
+/* Kampų radaras: vienetinis apskritimas kaip radaro ekranas. */
+body{--paper:#f3f7f1;--grid:#e1eadd;--soft:#4c5a5a;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#0e8f7e;--ac-ink:#fff;--ac-soft:#d3f0ea;--amber:#f08c00;--sin:#d6402e;--cos:#2563d9}
+.mk-ico[data-k="music"]{display:none}
+.mk-lvl{border-radius:14px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink)}
+.mk-lvl-art{border-radius:10px}
+.mk-lvl-t b{font-size:16px;letter-spacing:-.02em}
+.mk-lvl-t small{font-size:13.5px}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(30px,8vw,50px)}
+.mk-hero p{max-width:44ch}
+.mk-hero-art{width:min(420px,100%)}
+.mk-hero-art svg{display:block;width:100%;height:auto}
+.mk-btn{border-radius:12px;font-size:17px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res h2{font-size:22px;letter-spacing:-.03em}
+.mk-sec{font-size:16px}
+.mk-fr{font-family:var(--body);font-weight:800;font-size:.86em}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+.mode{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin:0 auto 14px;max-width:520px}
+.seg{display:inline-flex;border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink);overflow:hidden;background:#fff}
+.seg button{border:0;background:none;padding:10px 16px;font:800 14px/1 var(--body);cursor:pointer;min-height:42px}
+.seg button[aria-pressed="true"]{background:var(--ac);color:#fff}
+.mode small{color:var(--soft);font-weight:700;font-size:12.5px}
+.goal{max-width:520px;margin:0 auto 14px;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink);display:grid;grid-template-columns:128px minmax(0,1fr);gap:12px;align-items:center}
+.goal svg{width:128px;height:128px;display:block}
+.goal h2{margin:0 0 4px;font:800 15px/1.2 var(--kid);letter-spacing:-.02em}
+.goal p{margin:0;font:700 13.5px/1.4 var(--body);color:var(--soft)}
+.goal p b{color:var(--ink)}
+
+.bar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;margin:0 0 8px}
+.x{width:40px;height:40px;border-radius:10px;border:2.5px solid var(--ink);background:#fff;font:800 16px/1 var(--body);cursor:pointer;padding:0}
+.chip{font:800 13px/1 var(--kid);background:#fff;border:2.5px solid var(--ink);border-radius:10px;padding:9px 10px;white-space:nowrap}
+.qcard{background:#fff;border-radius:14px;padding:12px 14px;box-shadow:inset 0 0 0 2.5px var(--ink),4px 4px 0 var(--ink);font:700 16.5px/1.5 var(--body)}
+.qcard b{font-weight:800;color:#0a5f54;white-space:nowrap}
+.rad{display:block;width:min(100%,340px);height:auto;margin:10px auto 6px;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.rad.sm{width:min(72%,236px)}
+.rad text{font-family:Manrope,system-ui,sans-serif;font-weight:800}
+.dot{fill:#fff;stroke:#121a33;stroke-width:2.2}
+.dot.sel{fill:var(--amber)}
+.dot.ok{fill:var(--good)}
+.dot.bad{fill:var(--bad)}
+.dot.part{fill:#bfe9e0}
+.hit{fill:transparent;cursor:pointer}
+.beam{transform-origin:180px 180px}
+.beam.an{animation:sweep var(--t,1s) cubic-bezier(.3,.1,.3,1)}
+@keyframes sweep{from{transform:rotate(0deg)}}
+.opts{display:grid;gap:8px;margin:10px 0}
+.opts.g2{grid-template-columns:1fr 1fr}
+.opt{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:8px 12px;background:#fff;border:0;border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.18);cursor:pointer;font:800 17px/1.3 var(--body);text-align:center}
+.opt.right{box-shadow:inset 0 0 0 4px var(--good);background:#effcf6}
+.opt.wrongb{opacity:.42;pointer-events:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+.chipb{min-width:72px;min-height:48px;padding:6px 12px;background:#fff;border:0;border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.18);cursor:pointer;font:800 16px/1 var(--body)}
+.chipb[aria-pressed="true"]{background:var(--amber);color:#fff}
+.chipb.right{background:var(--good);color:#fff}
+.chipb.miss{box-shadow:inset 0 0 0 4px var(--good)}
+.chipb.wrongb{background:var(--bad);color:#fff;text-decoration:line-through}
+.done .opt,.done .chipb,.done .hit{pointer-events:none}
+.acts{display:grid;gap:10px;margin-top:8px}
+.tbl table{border-collapse:collapse;width:100%;margin:6px 0;font-weight:800;text-align:center}
+.tbl td,.tbl th{border:1.5px solid #c9d6d2;padding:6px 2px}
+.tbl th{background:var(--ac-soft)}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1 id="h1"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="mode"><div class="seg" id="seg"></div><small id="modeHint"></small></div>
+    <div class="goal" id="goal"></div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><button type="button" class="x" id="quit">✕</button><div id="dots"></div><span class="chip" id="pts"></span></div>
+    <div class="qcard" id="q" role="status" aria-live="polite"></div>
+    <svg class="rad" id="radar" viewBox="0 0 360 360"></svg>
+    <div id="ans"></div>
+    <div id="fb"></div>
+    <div class="acts"><button type="button" class="mk-btn" id="check"></button><button type="button" class="mk-btn" id="next"></button></div>
+  </section>
+</div>
+<script>
+"use strict";
+const T = window.MK_T, GAME = "kampu-radaras", K = "#121a33";
+const $ = id => document.getElementById(id);
+const { rnd, pick, shuffle } = MK;
+let RAD = !!MK.get("mk-" + GAME + "-rad", false);
+
+/* ============================== matematika ============================== */
+const STD = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330], ROM = ["", "I", "II", "III", "IV"];
+const norm = d => ((d % 360) + 360) % 360;
+const quad = d => { const a = norm(d); return a % 90 === 0 ? 0 : Math.floor(a / 90) + 1; };
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+const VALS = { "0": 0, "1/2": .5, "√2/2": Math.SQRT1_2, "√3/2": Math.sqrt(3) / 2, "1": 1, "√3/3": Math.sqrt(3) / 3, "√3": Math.sqrt(3), "√2": Math.SQRT2, "2": 2, "3/2": 1.5 };
+const ALL = { sin: ["0", "1/2", "√2/2", "√3/2", "1", "−1/2", "−√2/2", "−√3/2", "−1"], tg: ["0", "√3/3", "1", "√3", "−√3/3", "−1", "−√3", "nd"] }; ALL.cos = ALL.sin;
+const neg = k => k === "0" || k === "nd" ? k : k[0] === "−" ? k.slice(1) : "−" + k;
+const num = k => k === "nd" ? NaN : k[0] === "−" ? -VALS[k.slice(1)] : VALS[k];
+function exact(fn, deg){
+  const r = norm(deg) * Math.PI / 180, s = Math.sin(r), c = Math.cos(r); let v;
+  if(fn === "sin") v = s; else if(fn === "cos") v = c; else { if(Math.abs(c) < 1e-9) return "nd"; v = s / c; }
+  for(const k of ["0", "1/2", "√2/2", "√3/2", "1", "√3/3", "√3"]) if(Math.abs(Math.abs(v) - VALS[k]) < 1e-9) return (v < -1e-9 ? "−" : "") + k;
+  return null;
+}
+const sg = (fn, q) => fn === "sin" ? (q <= 2 ? 1 : -1) : fn === "cos" ? (q === 1 || q === 4 ? 1 : -1) : (q % 2 ? 1 : -1);
+const other = fn => fn === "sin" ? "cos" : "sin";
+/* užrašai */
+const D = d => (d < 0 ? "−" + (-d) : d) + "°";
+function radS(d){ if(d === 0) return "0"; const g = gcd(Math.abs(d), 180), n = d / g, q = 180 / g, an = Math.abs(n); return (n < 0 ? "−" : "") + (an === 1 ? "" : an) + "π" + (q === 1 ? "" : "/" + q); }
+const A = d => RAD ? radS(d) : D(d);
+const IV = (lo, hi, open) => `[${A(lo)}; ${A(hi)}${open ? ")" : "]"}`;
+const kTerm = st => RAD ? (st === 360 ? "2πk" : "πk") : st + "°·k";
+const vH = k => { if(k === "nd") return T.undef; const n = k[0] === "−", a = n ? k.slice(1) : k, i = a.indexOf("/"); return (n ? "−" : "") + (i > 0 ? MK.frac(a.slice(0, i), a.slice(i + 1)) : a); };
+const pv = k => k[0] === "−" ? `(${vH(k)})` : vH(k);
+const eH = (fn, a) => a < 0 ? `${fn}(${A(a)})` : `${fn} ${A(a)}`;
+const frH = (s, n, d) => (s < 0 ? "−" : "") + MK.frac(n, d);
+function expr(a, base, k){ const m = Math.abs(k) > 1 ? Math.abs(k) + " · " : ""; return k > 0 ? `${m}${A(360)} + ${A(base)}` : `${A(base)} − ${m}${A(360)}`; }
+function eqH(fn, key, form){
+  const n = key[0] === "−", ab = n ? key.slice(1) : key;
+  if(ab.endsWith("/2") && form === "2f") return `2 ${fn} x = ${n ? "−" : ""}${ab.slice(0, -2)}`;
+  if(ab.endsWith("/2") && form === "2f0") return `2 ${fn} x ${n ? "+" : "−"} ${ab.slice(0, -2)} = 0`;
+  if(form === "f0" && ab !== "0") return `${fn} x ${n ? "+" : "−"} ${vH(ab)} = 0`;
+  return `${fn} x = ${vH(key)}`;
+}
+const range = (lo, hi) => { const o = []; for(let x = lo; x <= hi; x += 15) o.push(x); return o; };
+const principal = (fn, key) => range(fn === "cos" ? 0 : -90, fn === "cos" ? 180 : 90).find(x => exact(fn, x) === key);
+const rndKey = (fn, special) => { const k = fn === "tg" ? pick(["√3/3", "1", "√3"]) : special ? pick(["0", "1", "0", "1"]) : pick(["1/2", "√2/2", "√3/2"]); return k !== "0" && Math.random() < .5 ? "−" + k : k; };
+const uniq = a => [...new Set(a)];
+const mult10 = (lo, hi) => { for(;;){ const a = rnd(lo / 10, hi / 10) * 10; if(a % 90) return a; } };
+
+/* ============================== užduočių generatoriai ============================== */
+function valWhy(fn, a){
+  const b = norm(a), q = quad(b), k = (a - b) / 360, key = exact(fn, a); let w = "";
+  if(a !== b) w += (a < 0 ? T.wNeg + " " : "") + T.wSame(A(a), A(b), expr(a, b, k)) + " ";
+  if(q) w += T.wRef(A(b), ROM[q], A([b, 180 - b, b - 180, 360 - b][q - 1])) + " ";
+  w += T.wPoint(A(b), vH(exact("cos", b)), vH(exact("sin", b))) + " ";
+  return w + (fn === "tg" ? (key === "nd" ? T.wTgUndef(eH(fn, a)) : T.wTg(eH(fn, a), pv(exact("sin", b)), pv(exact("cos", b)), vH(key))) : T.wRes(eH(fn, a), vH(key)));
+}
+function choice(q, opts, good, extra){ const sh = shuffle(opts); return Object.assign({ kind: "ch", q, opts: sh, ans: sh.indexOf(good) }, extra); }
+const G = {
+  aim(d){
+    const base = pick(d === 0 ? STD.filter(x => x) : STD), k = [0, -1, pick([1, 2]), pick([-3, -2, 2, 3])][d], a = base + 360 * k, q = quad(a);
+    const why = k === 0 ? T.wAim0(A(a), q ? T.inQuad(ROM[q], A((q - 1) * 90), A(q * 90)) : T.onAxis) : (a < 0 ? T.wNeg + " " : "") + T.wFull(A(360)) + " " + T.wSame(A(a), A(base), expr(a, base, k));
+    return { dbg: { t: "aim", a }, kind: "pt", q: T.qAim(A(a)), ans: [base], angles: [base], reveal: { beam: a, spiral: a }, why };
+  },
+  coterm(){
+    const base = pick(STD.filter(x => x)), k = pick([1, -1, 2]), c = base + 360 * k;
+    const bad = shuffle(uniq([-base, 180 - base + 360, base + 180, c + 90, c - 90, 720 - base, c + 180, -base - 360].filter(x => norm(x) !== base))).slice(0, 3);
+    return choice(T.qCoterm(A(base)), [c, ...bad].map(A), A(c), { dbg: { t: "coterm", base, c, bad }, angles: [base], reveal: { beam: c, spiral: c }, why: (c < 0 ? T.wNeg + " " : "") + T.wFull(A(360)) + " " + T.wSame(A(c), A(base), expr(c, base, k)) });
+  },
+  quadrant(d){
+    const a = d === 0 ? mult10(100, 350) : pick([-1, 1]) * mult10(370, 1100), b = norm(a), q = quad(a), k = (a - b) / 360;
+    const why = (a < 0 ? T.wNeg + " " : "") + (k ? T.wSame(A(a), A(b), expr(a, b, k)) + " " : "") + `${A(b)} – ${T.inQuad(ROM[q], A((q - 1) * 90), A(q * 90))}. ` + T.wQuad(A(a), ROM[q]);
+    return { dbg: { t: "quad", a }, kind: "ch", g2: 1, q: T.qQuad(A(a)), opts: [1, 2, 3, 4].map(i => T.quadName(ROM[i])), ans: q - 1, angles: [], reveal: { beam: a, spiral: a, extra: [b] }, why };
+  },
+  conv(){
+    const toRad = Math.random() < .5, d = pick([30, 45, 60, 90, 120, 135, 150, 210, 225, 240, 270, 300, 315, 330, -30, -45, -90, -120, 20, 36, 72, 108, 540]), f = toRad ? radS : D;
+    const bad = shuffle(uniq([d + 15, d - 15, d + 30, d * 2, 180 - d, d + 90, d - 30].filter(x => x !== d && x !== 0))).slice(0, 3);
+    return choice(toRad ? T.qConvR(D(d)) : T.qConvD(radS(d)), [d, ...bad].map(f), f(d), { dbg: { t: "conv", d }, g2: 1, angles: STD.includes(norm(d)) ? [norm(d)] : [], reveal: { beam: d, extra: [norm(d)] }, why: T.wConv(D(180), "π") + ` ${D(d)} = ${radS(d)}.` });
+  },
+  val(d, fnF){
+    const fn = fnF || (d === 0 ? pick(["sin", "cos"]) : pick(["sin", "cos", "tg"]));
+    const base = d === 0 ? pick([0, 30, 45, 60, 90]) : pick(STD.filter(x => d === 2 ? x : x > 90)), a = d < 2 ? base : base + 360 * pick([-1, -1, 1, 2]), key = exact(fn, a);
+    const co = fn === "tg" ? exact("tg", 90 - a) : exact(other(fn), a), o = uniq([key, neg(key), co, neg(co), ...shuffle(ALL[fn])]).slice(0, 5).sort((x, y) => (isNaN(num(x)) ? 9 : num(x)) - (isNaN(num(y)) ? 9 : num(y)));
+    return { dbg: { t: "val", fn, a, o }, kind: "ch", g2: 1, q: T.qVal(eH(fn, a)), opts: o.map(vH), ans: o.indexOf(key), angles: [norm(a)], show: d < 2 ? { beam: a } : null, reveal: { beam: a, spiral: a !== norm(a) ? a : null, proj: norm(a) }, why: valWhy(fn, a) };
+  },
+  eq(fn, special){
+    fn = fn || pick(["sin", "cos", "tg"]); const key = fn === "tg" && special ? "0" : rndKey(fn, special), sols = STD.filter(a => exact(fn, a) === key);
+    return { dbg: { t: "eq", fn, key }, kind: "pts", q: T.qEq(`${fn} α = ${vH(key)}`, IV(0, 360, true)), ans: sols, angles: sols, reveal: { line: { fn, key } }, why: T["wEq" + fn[0].toUpperCase() + fn.slice(1)](vH(key), sols.map(A).join(", ")) };
+  },
+  arc(){
+    const fn = pick(["sin", "cos", "tg"]), key = Math.random() < .25 && fn !== "tg" ? pick(["0", "1", "−1"]) : rndKey(fn), p = principal(fn, key);
+    const same = shuffle(range(-360, 360).filter(x => x !== p && exact(fn, x) === key)).slice(0, 2);
+    const o = uniq([p, ...same, ...shuffle([-p, 180 - p, p + 180, 90 - p, p - 90, p + 90, -p - 180])]).slice(0, 4), e = `arc${fn}${key[0] === "−" ? `(${vH(key)})` : " " + vH(key)}`;
+    return choice(T.qArc(e), o.map(A), A(p), { dbg: { t: "arc", fn, key, p, o }, g2: 1, angles: [norm(p)], reveal: { beam: p, proj: norm(p) },
+      why: T.wArc(T.arcName[fn], fn === "tg" ? `(${A(-90)}; ${A(90)})` : fn === "sin" ? IV(-90, 90) : IV(0, 180), e, A(p), o.filter(x => x !== p).map(A).join(", ")) });
+  },
+  sign(){
+    const f1 = pick(["sin", "cos", "tg"]), f2 = pick(["sin", "cos", "tg"]), a1 = mult10(100, 350), a2 = pick([mult10(100, 350), -mult10(10, 350), mult10(370, 710)]);
+    const q1 = quad(a1), q2 = quad(a2), s1 = sg(f1, q1), s2 = sg(f2, q2), res = s1 * s2 > 0 ? T.pos : T.neg;
+    return { dbg: { t: "sign", f1, a1, f2, a2 }, kind: "ch", q: T.qSign(`${eH(f1, a1)} · ${eH(f2, a2)}`), opts: [T.pos, T.neg, T.zero], ans: s1 * s2 > 0 ? 0 : 1, angles: [], reveal: { extra: [a1, a2] },
+      why: T.wSign(A(a1), ROM[q1], f1, s1 > 0 ? T.gt0 : T.lt0, A(a2), ROM[q2], f2, s2 > 0 ? T.gt0 : T.lt0, res) };
+  },
+  cmp(){
+    for(;;){
+      const fn = pick(["sin", "cos"]), as = shuffle(range(0, 345).filter(x => x % 10 === 0)).slice(0, 4), v = as.map(a => fn === "sin" ? Math.sin(a * Math.PI / 180) : Math.cos(a * Math.PI / 180));
+      if(v.some((x, i) => v.some((y, j) => i < j && Math.abs(x - y) < .05))) continue;
+      const big = Math.random() < .5, best = v.indexOf(big ? Math.max(...v) : Math.min(...v));
+      return { dbg: { t: "cmp", fn, as, big }, kind: "ch", g2: 1, q: T.qCmp(big), opts: as.map(a => eH(fn, a)), ans: best, angles: [], reveal: { extra: as },
+        why: T.wCmp(fn, fn === "sin" ? T.ordinate : T.abscissa, as.map((a, i) => `${eH(fn, a)} ≈ ${v[i].toFixed(2).replace(".", ",").replace("-", "−")}`).join("; ")) };
+    }
+  },
+  pyth(askTg){
+    let [a, b, c] = pick([[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25]]); if(Math.random() < .5) [a, b] = [b, a];
+    const gf = pick(["sin", "cos"]), of = other(gf), q = rnd(1, 4), sG = sg(gf, q), sO = sg(of, q), sT = sG * sO;
+    const tn = gf === "sin" ? a : b, td = gf === "sin" ? b : a, F = (s, n, d) => { const g = gcd(n, d); return { s, n: n / g, d: d / g }; };
+    const good = askTg ? F(sT, tn, td) : F(sO, b, c), bads = askTg ? [F(-sT, tn, td), F(sT, td, tn), F(-sT, td, tn)] : [F(-sO, b, c), F(sO, c - a, c), F(-sO, c - a, c)];
+    const h = f => frH(f.s, f.n, f.d), sv = gf === "sin" ? [frH(sG, a, c), frH(sO, b, c)] : [frH(sO, b, c), frH(sG, a, c)];
+    const why = T.wPyth(`${of}²α = 1 − ${MK.frac(a * a, c * c)} = ${MK.frac(b * b, c * c)}`, `${of} α = ±${MK.frac(b, c)}`, ROM[q], sO > 0 ? T.pos : T.neg, `${of} α = ${frH(sO, b, c)}`)
+      + (askTg ? T.wPythTg(sv[0][0] === "−" ? `(${sv[0]})` : sv[0], sv[1][0] === "−" ? `(${sv[1]})` : sv[1], h(good)) : "");
+    return choice(T.qPyth(`${gf} α = ${frH(sG, a, c)}`, ROM[q], askTg ? "tg α" : of + " α"), [good, ...bads].map(h), h(good), { dbg: { t: "pyth", gf, q, gv: sG * a / c, askTg, good: good.s * good.n / good.d, bads: bads.map(f => f.s * f.n / f.d) }, g2: 1, angles: [], reveal: {}, why });
+  },
+  red(){
+    const fn = pick(["sin", "cos"]), a = mult10(100, 350), q = quad(a), ref = [a, 180 - a, a - 180, 360 - a][q - 1], s = sg(fn, q), co = other(fn);
+    const ex = q === 2 ? `${A(180)} − ${A(ref)}` : q === 3 ? `${A(180)} + ${A(ref)}` : `${A(360)} − ${A(ref)}`, good = (s > 0 ? "" : "−") + `${fn} ${A(ref)}`;
+    return choice(T.qRed(eH(fn, a)), [`${fn} ${A(ref)}`, `−${fn} ${A(ref)}`, `${co} ${A(ref)}`, `−${co} ${A(ref)}`], good, { dbg: { t: "red", fn, a, s, ref }, g2: 1, angles: [], reveal: { beam: a, extra: [a] },
+      why: T.wRed(A(a), ex, ROM[q], T.fnW[fn], s > 0 ? T.signP : T.signN, `${eH(fn, a)} = ${good}`) });
+  },
+  solve(ivs, min, max){
+    for(;;){
+      const fn = pick(["sin", "cos", "tg"]), key = rndKey(fn, Math.random() < .2), [lo, hi] = pick(ivs), sols = range(lo, hi).filter(x => exact(fn, x) === key);
+      if(sols.length >= min && sols.length <= max) return { fn, key, lo, hi, sols, e: eqH(fn, key, pick(["plain", "plain", "2f", "2f0", "f0"])), turn: STD.filter(x => exact(fn, x) === key).map(A).join(T.and) };
+    }
+  },
+  multi(){
+    const s = G.solve([[0, 360], [-180, 180], [-360, 0], [-90, 270], [90, 450], [0, 540], [-180, 360]], 1, 4), c = new Set(s.sols);
+    const rel = shuffle(uniq(s.sols.flatMap(x => [-x, 180 - x, x + 180, x - 180, 360 - x, x + 90, x - 90, x + 360, x - 360, -x + 360, -x - 180]).concat(shuffle(range(s.lo, s.hi)).slice(0, 6)).filter(x => x >= s.lo && x <= s.hi && !c.has(x))));
+    for(const x of rel){ if(c.size >= 8) break; c.add(x); }
+    const chips = [...c].sort((x, y) => x - y);
+    return { dbg: { t: "multi", fn: s.fn, key: s.key, lo: s.lo, hi: s.hi }, kind: "multi", q: T.qMulti(s.e, IV(s.lo, s.hi)), chips, ans: s.sols, angles: uniq(s.sols.map(norm)), reveal: { line: { fn: s.fn, key: s.key }, ok: uniq(s.sols.map(norm)) }, why: T.wMulti(s.turn, A(360), s.sols.map(A).join(", ")) };
+  },
+  count(){
+    const s = G.solve([[0, 720], [-360, 360], [-180, 540], [-360, 720], [-180, 180], [90, 270], [0, 360], [-360, 0]], 1, 6), n = s.sols.length;
+    const o = uniq([n, n + 1, n - 1, n + 2, n * 2, n - 2].filter(x => x >= 0)).slice(0, 4).sort((x, y) => x - y);
+    return { dbg: { t: "count", fn: s.fn, key: s.key, lo: s.lo, hi: s.hi, o }, kind: "ch", g2: 1, q: T.qCount(s.e, IV(s.lo, s.hi)), opts: o.map(String), ans: o.indexOf(n), angles: uniq(s.sols.map(norm)), reveal: { line: { fn: s.fn, key: s.key }, ok: uniq(s.sols.map(norm)) }, why: T.wMulti(s.turn, A(360), s.sols.map(A).join(", ")) + " " + T.wCount(n) };
+  },
+  general(){
+    const fn = pick(["sin", "cos", "tg"]), key = rndKey(fn), p = principal(fn, key), ab = Math.abs(p), par = x => x < 0 ? `(${A(x)})` : A(x), k1 = "(−1)<sup>k</sup>·";
+    const co = fn === "tg" ? (p > 0 ? 90 - p : -90 - p) : 90 - p, S = (x, st) => `x = ${k1}${par(x)} + ${kTerm(st)}`, C = (x, st) => `x = ±${A(Math.abs(x))} + ${kTerm(st)}`, P = (x, st) => `x = ${A(x)} + ${kTerm(st)}`;
+    const good = fn === "sin" ? S(p, 180) : fn === "cos" ? C(p, 360) : P(p, 180);
+    const bad = fn === "sin" ? [C(ab, 360), S(p, 360), P(p, 180), S(co, 180)] : fn === "cos" ? [S(p, 180), C(p, 180), P(p, 360), C(co, 360)] : [P(p, 360), C(ab, 360), S(p, 180), P(co, 180)];
+    return choice(T.qGen(eqH(fn, key)), [good, ...shuffle(uniq(bad).filter(x => x !== good)).slice(0, 3)], good, { dbg: { t: "gen", fn, key, p }, angles: [norm(p)], reveal: { line: { fn, key }, ok: STD.filter(x => exact(fn, x) === key) },
+      why: T["wGen" + fn[0].toUpperCase() + fn.slice(1)](pv(key), A(p), kTerm(fn === "cos" ? 360 : 180)) });
+  },
+  nosol(){
+    const bf = pick(["sin", "cos"]), bk = pick(["√3", "√2", "2", "3/2", "−√2", "−2", "−√3", "−3/2"]), bad = eqH(bf, bk);
+    const o = [bad, eqH("sin", rndKey("sin", Math.random() < .4)), eqH("cos", rndKey("cos", Math.random() < .4)), eqH("tg", pick(["2", "√3", "−√3", "3/2", "−2"]))];
+    return choice(T.qNosol, o, bad, { dbg: { t: "nosol", bf, bk }, angles: [], reveal: {}, why: T.wNosol(bad, num(bk).toFixed(2).replace(".", ",").replace("-", "−")) });
+  }
+};
+const ROUNDS = {
+  posukis: () => [G.aim(0), G.aim(0), RAD ? G.conv() : G.quadrant(0), G.aim(1), G.coterm(), G.aim(2), RAD ? G.conv() : G.quadrant(1), G.aim(3)],
+  reiksmes: () => [G.val(0), G.val(0), G.val(1, pick(["sin", "cos"])), G.val(1), G.val(1, "tg"), G.val(2), G.val(2), G.val(2)],
+  paieska: () => [G.eq("sin"), G.eq("cos"), G.arc(), G.eq("tg"), G.eq(pick(["sin", "cos"]), true), G.arc(), G.eq(), G.arc()],
+  sarysiai: () => [G.sign(), G.pyth(false), G.cmp(), G.red(), G.pyth(true), G.sign(), G.red(), G.pyth(Math.random() < .5)],
+  intervalai: () => [G.multi(), G.general(), G.multi(), G.count(), G.multi(), G.nosol(), G.general(), G.multi()],
+  vbe: () => [G.val(2), G.eq(), G.multi(), G.pyth(true), G.arc(), G.general(), G.red(), G.count(), G.multi(), G.aim(3)]
+};
+
+/* ============================== radaro piešinys ============================== */
+const CX = 180, CY = 180, R = 118, f1 = x => Math.round(x * 10) / 10;
+const P = (d, r) => { r = r == null ? R : r; const t = d * Math.PI / 180; return [f1(CX + r * Math.cos(t)), f1(CY - r * Math.sin(t))]; };
+function radarInner(o){
+  o = o || {}; let s = `<circle cx="${CX}" cy="${CY}" r="170" fill="#fff" stroke="${K}" stroke-width="3"/><circle cx="${CX}" cy="${CY}" r="164" fill="#effaf6"/>`;
+  s += [R / 3, R * 2 / 3].map(r => `<circle cx="${CX}" cy="${CY}" r="${f1(r)}" fill="none" stroke="#bfe0d8" stroke-width="1.3"/>`).join("");
+  s += STD.map(d => { const [x, y] = P(d); return `<path d="M${CX} ${CY}L${x} ${y}" stroke="#d2ebe5" stroke-width="1.2"/>`; }).join("");
+  s += [45, 135, 225, 315].map((d, i) => { const [x, y] = P(d, R * .56); return `<text x="${x}" y="${y + 7}" text-anchor="middle" font-size="19" fill="#a3d3c8">${ROM[i + 1]}</text>`; }).join("");
+  s += `<path d="M${CX - R - 26} ${CY}H${CX + R + 30}M${CX} ${CY + R + 26}V${CY - R - 30}" stroke="${K}" stroke-width="1.8"/><path d="M${CX + R + 36} ${CY}l-9-5v10zM${CX} ${CY - R - 36}l-5 9h10z" fill="${K}"/>
+    <text x="${CX + R + 34}" y="${CY + 18}" text-anchor="middle" font-size="13" fill="${K}">x</text><text x="${CX - 13}" y="${CY - R - 26}" text-anchor="middle" font-size="13" fill="${K}">y</text>
+    <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${K}" stroke-width="2.6"/>`;
+  if(o.line){ const v = num(o.line.key), fn = o.line.fn, L = `stroke="#f08c00" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round"`;
+    if(fn === "sin") s += `<path d="M${CX - R - 18} ${f1(CY - v * R)}H${CX + R + 18}" ${L}/>`;
+    else if(fn === "cos") s += `<path d="M${f1(CX + v * R)} ${CY - R - 18}V${CY + R + 18}" ${L}/>`;
+    else { const a = Math.atan(v) * 180 / Math.PI, [x1, y1] = P(a, R + 18), [x2, y2] = P(a + 180, R + 18); s += `<path d="M${x1} ${y1}L${x2} ${y2}" ${L}/>`; } }
+  if(o.spiral){ const n = Math.max(8, Math.ceil(Math.abs(o.spiral) / 6)); let d = "";
+    for(let i = 0; i <= n; i++){ const [x, y] = P(o.spiral * i / n, 20 + 24 * i / n); d += (i ? "L" : "M") + x + " " + y; }
+    const [ex, ey] = P(o.spiral, 44); s += `<path d="${d}" fill="none" stroke="#f08c00" stroke-width="2.6" stroke-linecap="round"/><circle cx="${ex}" cy="${ey}" r="4" fill="#f08c00"/>`; }
+  if(o.proj != null){ const [x, y] = P(o.proj);
+    s += `<path d="M${x} ${y}H${CX}" stroke="#9aa7b5" stroke-width="1.4" stroke-dasharray="4 4"/><path d="M${CX} ${CY}H${x}" stroke="#2563d9" stroke-width="5" stroke-linecap="round"/><path d="M${x} ${CY}V${y}" stroke="#d6402e" stroke-width="5" stroke-linecap="round"/>`; }
+  if(o.beam != null){ const [wx, wy] = P(-22);
+    s += `<g class="beam${o.anim ? " an" : ""}" style="transform:rotate(${-o.beam}deg);--t:${Math.min(2.6, .6 + Math.abs(o.beam) / 420).toFixed(2)}s"><path d="M${CX} ${CY}L${CX + R} ${CY}A${R} ${R} 0 0 1 ${wx} ${wy}Z" fill="#0e8f7e" opacity=".16"/><path d="M${CX} ${CY}H${CX + R}" stroke="#0e8f7e" stroke-width="4.5" stroke-linecap="round"/></g>`; }
+  const lab = o.labels ? STD : [0, 90, 180, 270];
+  s += lab.map(d => { let [x, y] = P(d, R + 25); if(d === 0 || d === 180) y -= 11; if(d === 90 || d === 270) x += 20; return `<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="${o.labels ? 11.5 : 12}" fill="${K}">${A(d)}</text>`; }).join("");
+  s += STD.map(d => { const [x, y] = P(d), m = o.marks && o.marks[d], sel = o.sel && o.sel.has(d);
+    return `<circle class="dot ${m || (sel ? "sel" : "")}" cx="${x}" cy="${y}" r="${o.dots || m ? 9 : 4.5}"/>${o.dots ? `<circle class="hit" data-d="${d}" cx="${x}" cy="${y}" r="15.500"><title>${A(d)}</title></circle>` : ""}`; }).join("");
+  (o.extra || []).forEach(d => { const [x, y] = P(d), [lx, ly] = P(d, R + 25); s += `<circle cx="${x}" cy="${y}" r="7.5" fill="#f08c00" stroke="${K}" stroke-width="2.2"/>${STD.includes(norm(d)) ? "" : `<text x="${lx}" y="${ly + 4}" text-anchor="middle" font-size="11.5" fill="#b35f00">${A(d)}</text>`}`; });
+  return s + `<circle cx="${CX}" cy="${CY}" r="4" fill="${K}"/>`;
+}
+function operator(){
+  return `<ellipse cx="50" cy="176" rx="40" ry="6" fill="${K}" opacity=".12"/>
+  <path d="M40 118v48M62 118v48" stroke="#22304f" stroke-width="14" stroke-linecap="round"/><path d="M26 172q0-9 14-9q9 0 9 9zM53 172q0-9 9-9q14 0 14 9z" fill="${K}"/>
+  <rect x="27" y="62" width="48" height="66" rx="15" fill="#0e8f7e" stroke="${K}" stroke-width="2.5"/><path d="M27 104h48" stroke="${K}" stroke-width="2.5"/><rect x="45" y="100" width="12" height="9" rx="2" fill="#ffd166" stroke="${K}" stroke-width="2"/>
+  <path d="M51 64v30" stroke="#0a6c60" stroke-width="2"/>
+  <path d="M30 74L4 52" stroke="#0e8f7e" stroke-width="12" stroke-linecap="round"/><circle cx="3" cy="51" r="7" fill="#ffd9b3" stroke="${K}" stroke-width="2"/>
+  <path d="M72 74l14 24" stroke="#0e8f7e" stroke-width="12" stroke-linecap="round"/><rect x="70" y="92" width="30" height="22" rx="4" fill="#fff" stroke="${K}" stroke-width="2.5" transform="rotate(-12 85 103)"/><circle cx="85" cy="103" r="6" fill="none" stroke="#0e8f7e" stroke-width="2"/>
+  <circle cx="51" cy="38" r="22" fill="#ffd9b3" stroke="${K}" stroke-width="2.5"/><path d="M29 36q-2-24 22-24q24 0 22 22q-10-2-16-10q-10 10-28 12z" fill="#3b2a20" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M27 40q-3-32 24-32q27 0 24 32" fill="none" stroke="${K}" stroke-width="4" stroke-linecap="round"/><rect x="21" y="34" width="10" height="16" rx="4" fill="#f08c00" stroke="${K}" stroke-width="2"/><rect x="71" y="34" width="10" height="16" rx="4" fill="#f08c00" stroke="${K}" stroke-width="2"/>
+  <path d="M26 50q2 12 16 11" fill="none" stroke="${K}" stroke-width="2.4" stroke-linecap="round"/><circle cx="43" cy="61" r="3" fill="${K}"/>
+  <circle cx="44" cy="40" r="2.7" fill="${K}"/><circle cx="60" cy="40" r="2.7" fill="${K}"/><path d="M46 49q6 5 12 0" fill="none" stroke="${K}" stroke-width="2.3" stroke-linecap="round"/>`;
+}
+function heroSvg(){
+  return `<svg viewBox="0 0 420 230" role="img" aria-label="Radaro operatorius prie vienetinio apskritimo"><rect x="2" y="2" width="416" height="226" rx="22" fill="#dff3ee" stroke="${K}" stroke-width="3"/>
+  <path d="M2 196h416v10q0 22-22 22H24q-22 0-22-22z" fill="#b9dcd3"/><path d="M4 196h412" stroke="${K}" stroke-width="3"/>
+  <g transform="translate(22 12) scale(.56)">${radarInner({ beam: 60, proj: 60, marks: { 60: "ok", 120: "sel" }, line: { fn: "sin", key: "√3/2" } })}</g>
+  <g transform="translate(292 30)">${operator()}</g>
+  <g font-family="Manrope,system-ui,sans-serif" font-weight="800" font-size="13" fill="${K}"><rect x="226" y="18" width="78" height="26" rx="8" fill="#fff" stroke="${K}" stroke-width="2.2"/><text x="265" y="36" text-anchor="middle">sin α = ?</text></g></svg>`;
+}
+
+/* ============================== ilgalaikis tikslas ============================== */
+const MKEY = "mk-" + GAME + "-kampai";
+const mastered = () => { const m = MK.get(MKEY, {}); return STD.filter(d => (m[d] || 0) >= 3); };
+function drawGoal(){
+  const m = MK.get(MKEY, {}), ok = mastered(), marks = {}; STD.forEach(d => { if((m[d] || 0) >= 3) marks[d] = "ok"; else if(m[d]) marks[d] = "part"; });
+  $("goal").innerHTML = `<svg viewBox="0 0 360 360" aria-hidden="true">${radarInner({ marks })}</svg><div><h2>${T.goalT}</h2><p>${T.goalText(ok.length, T.ranks[Math.min(4, Math.floor(ok.length / 4))], ok.length < 16)}</p></div>`;
+}
+
+/* ============================== žaidimo eiga ============================== */
+const app = $("app"), menu = $("menu"), play = $("play"), ansEl = $("ans"), fb = $("fb"), radar = $("radar");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: saved === 11 ? 11 : 12 }));
+$("h1").innerHTML = T.h1; $("heroP").textContent = T.hero; $("note").textContent = T.note; $("check").textContent = T.check; $("quit").setAttribute("aria-label", T.quit); $("modeHint").textContent = T.modeHint;
+const lvArt = ["α", "sin", "α = ?", "+ −", "x ∈", "VBE"];
+const LEVELS = T.levels.map((l, i) => ({ id: l.id, name: l.name, sub: l.sub, art: `<svg viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="23" fill="#fff" stroke="${K}" stroke-width="2.5"/><path d="M28 28L${f1(28 + 23 * Math.cos(i * .9 + .5))} ${f1(28 - 23 * Math.sin(i * .9 + .5))}" stroke="#0e8f7e" stroke-width="3" stroke-linecap="round"/><text x="28" y="${lvArt[i].length > 3 ? 33 : 34}" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="${lvArt[i].length > 3 ? 12 : lvArt[i].length > 1 ? 15 : 22}" fill="${K}" stroke="#fff" stroke-width="3" paint-order="stroke">${lvArt[i]}</text></svg>` }));
+
+let lvl = 0, ti = 0, N = 8, round = [], cur = null, pts = 0, okN = 0, dots = null, tries = 0, done = false, sel = new Set(), marks = {};
+function drawSeg(){ $("seg").innerHTML = [[false, T.modeDeg], [true, T.modeRad]].map(([v, t]) => `<button type="button" data-r="${v ? 1 : 0}" aria-pressed="${RAD === v}">${t}</button>`).join(""); }
+$("seg").onclick = e => { const b = e.target.closest("button"); if(!b) return; RAD = b.dataset.r === "1"; MK.set("mk-" + GAME + "-rad", RAD); MK.sfx.tap(); showMenu(); };
+function showMenu(){
+  play.hidden = true; menu.hidden = false; $("heroArt").innerHTML = heroSvg(); drawSeg(); drawGoal();
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  const tb = document.querySelector("[data-tbl]");
+  if(tb) tb.innerHTML = `<table><tr><th>α</th>${[0, 30, 45, 60, 90].map(d => `<th>${A(d)}</th>`).join("")}</tr>${["sin", "cos", "tg"].map(f => `<tr><th>${f} α</th>${[0, 30, 45, 60, 90].map(d => `<td>${exact(f, d) === "nd" ? "–" : vH(exact(f, d))}</td>`).join("")}</tr>`).join("")}</table>`;
+  window.scrollTo(0, 0);
+}
+function start(i){
+  MK.music.stop(); lvl = i; ti = 0; pts = 0; okN = 0; round = ROUNDS[LEVELS[i].id](); N = round.length;
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), N); startTask(); window.scrollTo(0, 0);
+}
+function drawRadar(o){ radar.innerHTML = radarInner(o); }
+function startTask(){
+  cur = round[ti]; tries = 0; done = false; sel = new Set(); marks = {};
+  dots.cur(ti); $("pts").textContent = `${T.points}: ${pts}`; fb.innerHTML = ""; $("next").hidden = true; play.classList.remove("done");
+  $("q").innerHTML = cur.q; const k = cur.kind;
+  radar.classList.toggle("sm", k === "ch" || k === "multi");
+  $("check").hidden = !(k === "pts" || k === "multi"); $("check").disabled = true;
+  ansEl.innerHTML = k === "ch" ? `<div class="opts${cur.g2 ? " g2" : ""}">${cur.opts.map((o, i) => `<button type="button" class="opt" data-o="${i}"><span>${o}</span></button>`).join("")}</div>`
+    : k === "multi" ? `<div class="chips">${cur.chips.map(c => `<button type="button" class="chipb" data-c="${c}" aria-pressed="false">${A(c)}</button>`).join("")}</div>` : "";
+  redraw();
+}
+function redraw(){ drawRadar(Object.assign({ dots: cur.kind === "pt" || cur.kind === "pts", sel, marks }, cur.show || {})); }
+function fail(msg){ tries++; MK.sfx.bad(); if(tries >= 2) return finish(false); fb.innerHTML = MK.why({ ok: false, head: msg || T.retry }); }
+radar.addEventListener("click", e => {
+  const h = e.target.closest(".hit"); if(!h || done) return; const d = +h.dataset.d;
+  if(cur.kind === "pt"){ if(marks[d]) return; if(d === cur.ans[0]) return finish(true); marks[d] = "bad"; redraw(); fail(); }
+  else { sel.has(d) ? sel.delete(d) : sel.add(d); MK.sfx.tap(); $("check").disabled = !sel.size; redraw(); }
+});
+ansEl.addEventListener("click", e => {
+  if(done) return;
+  const o = e.target.closest(".opt"); if(o){ if(+o.dataset.o === cur.ans) return finish(true); o.classList.add("wrongb"); return fail(); }
+  const c = e.target.closest(".chipb"); if(c){ const d = +c.dataset.c, on = !sel.has(d); on ? sel.add(d) : sel.delete(d); c.setAttribute("aria-pressed", on); MK.sfx.tap(); $("check").disabled = !sel.size; }
+});
+$("check").onclick = () => {
+  if(done) return; const miss = cur.ans.filter(x => !sel.has(x)).length, extra = [...sel].filter(x => !cur.ans.includes(x)).length;
+  if(!miss && !extra) return finish(true); fail(T.retryPts(miss, extra));
+};
+function finish(ok){
+  done = true; play.classList.add("done"); const k = cur.kind, first = ok && tries === 0, gain = first ? 10 : ok ? 5 : 0;
+  pts += gain; if(first) okN++; dots.mark(ti, first); $("pts").textContent = `${T.points}: ${pts}`; $("check").hidden = true;
+  if(first && cur.angles.length){ const m = MK.get(MKEY, {}); cur.angles.forEach(d => { if(STD.includes(d)) m[d] = Math.min(9, (m[d] || 0) + 1); }); MK.set(MKEY, m); }
+  const mk = {};
+  if(k === "pt" || k === "pts"){ [...sel].forEach(d => { if(!cur.ans.includes(d)) mk[d] = "bad"; }); Object.keys(marks).forEach(d => mk[d] = "bad"); cur.ans.forEach(d => mk[d] = "ok"); }
+  (cur.reveal.ok || []).forEach(d => mk[d] = "ok");
+  if(k === "ch") ansEl.querySelectorAll(".opt").forEach((x, i) => x.classList.toggle("right", i === cur.ans));
+  if(k === "multi") ansEl.querySelectorAll(".chipb").forEach(x => { const d = +x.dataset.c, a = cur.ans.includes(d), s = sel.has(d); x.setAttribute("aria-pressed", "false"); x.classList.add(a ? (s || ok ? "right" : "miss") : s ? "wrongb" : "x"); });
+  drawRadar(Object.assign({ labels: true, marks: mk, anim: true }, cur.reveal));
+  fb.innerHTML = MK.why({ ok, head: ok ? T.okHead(MK.praise(), gain) : T.failHead, body: cur.why });
+  if(ok) MK.sfx.good();
+  $("next").hidden = false; $("next").textContent = ti === N - 1 ? T.results : T.next;
+}
+function next(){
+  ti++; if(ti < N){ startTask(); window.scrollTo(0, 0); return; }
+  const stars = MK.starsFor(okN, N), L = LEVELS[lvl]; MK.best(GAME, L.id, stars);
+  MK.result({ stars, title: T.resTitle(okN, N), text: T.resText(pts, mastered().length), next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+$("next").onclick = () => { MK.sfx.tap(); next(); }; $("quit").onclick = showMenu;
+window.__KR = { G, ROUNDS, exact, num, norm, STD, range, setRad: v => { RAD = v; }, state: () => ({ cur, done, ti, tries, okN, pts, N }) };
+showMenu();
+</script>
+</body>
+</html>
