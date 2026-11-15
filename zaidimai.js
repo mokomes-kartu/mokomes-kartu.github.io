@@ -300,6 +300,17 @@ window.MK_ZAIDIMAI = [
   "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM1YjRjZTAiLz48cmVjdCB4PSI3IiB5PSI3IiB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHJ4PSIxMCIgZmlsbD0iI2Y3ZjhmZiIvPjxwYXRoIGQ9Ik0xMiA0NGg0ME0yMiAxMnY0MCIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9Ii41NSIvPjxwYXRoIGQ9Ik0xMiAxNVEzMCA3MCA1MiAxNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNWI0Y2UwIiBzdHJva2Utd2lkdGg9IjMuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHBhdGggZD0iTTEyIDUyIDUyIDIwIiBzdHJva2U9IiNlODYwNGIiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtZGFzaGFycmF5PSI1IDQiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjQyLjUiIHI9IjQuNCIgZmlsbD0iI2ZmZDg0YSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjEuOCIvPjxjaXJjbGUgY3g9IjQ2IiBjeT0iMjUiIHI9IjQuNCIgZmlsbD0iI2ZmZDg0YSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjEuOCIvPjwvc3ZnPg=="
  },
  {
+  "id": "turgaus-aikste",
+  "subject": "eko",
+  "grades": [
+   10
+  ],
+  "title": "Turgaus aikštė",
+  "desc": "Nustatyk kainą ir atidaryk turgų: paklausa ir pasiūla, rinkos pusiausvyra, veiksniai, pelnas ir lūžio taškas.",
+  "url": "/turgaus-aikste/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMwZjhhNWYiLz48cGF0aCBkPSJNMTQgMTB2NDBoNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yMCAxOGwyOCAyNiIgc3Ryb2tlPSIjOWJkMGZmIiBzdHJva2Utd2lkdGg9IjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yMCA0NGwyOC0yNiIgc3Ryb2tlPSIjZmZjNjFhIiBzdHJva2Utd2lkdGg9IjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjM0IiBjeT0iMzEiIHI9IjUuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjwvc3ZnPg=="
+ },
+ {
   "id": "archimedo-uostas",
   "subject": "fiz",
   "grades": [
