@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Atomų kalvė – MokomėsKartu.lt</title>
+<meta name="description" content="8 klasės chemijos žaidimas: atomo sandara, masės skaičius, elektronų sluoksniai, periodinė elementų sistema, izotopai ir jonai – nukalk atomą iš protonų, neutronų ir elektronų.">
+<meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/atomu-kalve/tekstai.lt.js"></script>
+<style>
+/* Meniu: kalvės piešinys, „Kalvės lentyna“ (20 elementų periodinė sistema), lygiai, „Noriu pasimokyti“.
+   Užduotys: kalimas (protonų, neutronų, elektronų skaitikliai arba elektronai pagal sluoksnius), pasirinkimas, elemento paieška periodinėje sistemoje. */
+body{--ac:#d9480f;--ac-ink:#fff;--ac-soft:#ffe8d6;--pc:#ff6b5e;--nc:#aeb6c9;--ec:#2f6bff}
+@media (max-width:380px){.mk-title{font-size:17px}}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(32px,8.4vw,54px)}
+.mk-hero p{max-width:44ch;font-size:16.5px}
+.hero-art{width:min(100%,480px);border-radius:26px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15)}
+.hero-art svg{display:block;width:100%;height:auto}
+.hero-art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 12px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 18px/1.2 var(--kid);display:flex;gap:8px;align-items:center}
+.col h2 svg{width:30px;height:30px;flex:none}
+.col p{margin:4px 0 10px;color:var(--soft);font-weight:700;font-size:14px}
+
+/* periodinė elementų sistema */
+.pt{display:grid;grid-template-columns:14px repeat(8,minmax(0,1fr));gap:3px;align-items:stretch;user-select:none;-webkit-user-select:none}
+.pt .gh{font:800 11px/1.05 var(--body);text-align:center;color:var(--soft);padding-bottom:1px}
+.pt .gh small{display:block;font:700 8.5px/1.1 var(--body);opacity:.8}
+.pt .ph{font:800 11px/1 var(--body);color:var(--soft);display:grid;place-items:center}
+.pc{position:relative;min-height:46px;padding:2px 0 1px;border:0;border-radius:8px;background:#fff;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink);display:grid;justify-items:center;align-content:center;font:inherit;margin:0}
+.pc small{position:absolute;left:4px;top:2px;font:800 9px/1 var(--body);color:var(--soft)}
+.pc b{font:800 16px/1 var(--kid);margin-top:7px}
+.pc i{font:700 9px/1.1 var(--body);font-style:normal;color:var(--soft)}
+button.pc{cursor:pointer;touch-action:manipulation}
+.pc.m{background:#fff1c9}.pc.nm{background:#e2f1ff}.pc.x{background:#ecebe4}
+.pc.sel{background:#ffc61a;box-shadow:inset 0 0 0 3px var(--ink)}
+.pc.ok{background:#b9efcd;box-shadow:inset 0 0 0 3px var(--good)}
+.pc.no{background:#ffd3c8;box-shadow:inset 0 0 0 3px var(--bad)}
+.pc.off{background:#f3efe2;box-shadow:inset 0 0 0 2px #cfc4a2}.pc.off b,.pc.off small{opacity:.35}
+.pc.br{background:linear-gradient(160deg,#ffd9b0,#e9a565)}
+.pc.au{background:linear-gradient(160deg,#fff3a8,#ffc61a)}
+.pc.au::after{content:"";position:absolute;right:3px;top:3px;width:8px;height:8px;background:#fff;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+.pc.new{animation:mkPop .7s cubic-bezier(.2,1.6,.4,1)}
+.ptleg{display:flex;flex-wrap:wrap;gap:4px 12px;margin:8px 0 0;font:700 12px/1.3 var(--body);color:var(--soft)}
+.ptleg span::before{content:"";display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px;box-shadow:inset 0 0 0 1.5px var(--ink);background:var(--c)}
+.names{margin:8px 0 0;font:600 12.5px/1.5 var(--body);color:var(--ink)}
+.names b{font-weight:800}
+
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.tbl{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;max-width:560px;margin:0 auto 8px;min-height:42px;border:0;border-radius:14px;background:#fff7df;cursor:pointer;
+  font:800 14.5px/1 var(--body);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink);touch-action:manipulation}
+.tbl svg{width:20px;height:20px}
+.card{width:100%;max-width:560px;margin:0 auto 10px;padding:12px 14px 14px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12)}
+.txt{margin:0 0 10px;font:700 16px/1.5 var(--body)}
+.txt b{font-weight:800}
+.nuc{display:inline-flex;align-items:center;font:800 1.18em/1 var(--kid);white-space:nowrap;vertical-align:middle;padding:0 2px}
+.nuc .ix{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:.6em;line-height:1.05;margin-right:1px}
+.nuc .ix sup,.nuc .ix sub{font-size:1em;line-height:1.05;vertical-align:baseline;position:static}
+.nuc sup.q{font-size:.6em;align-self:flex-start;margin-left:1px;line-height:1}
+.txt .nuc{font-size:1.5em;padding:0 4px}
+.forge{max-width:260px;margin:0 auto 6px;position:relative}
+.forge svg{display:block;width:100%;height:auto}
+.fig{max-width:220px;margin:0 auto 10px}
+.fig svg{display:block;width:100%;height:auto}
+.sp{transform-origin:120px 120px;animation:spin 60s linear infinite}
+.sp.r{animation-direction:reverse;animation-duration:80s}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wave{transform-origin:120px 120px;animation:wave .9s ease-out forwards}
+@keyframes wave{from{transform:scale(.2);opacity:1}to{transform:scale(1.12);opacity:0}}
+.forge.done svg{animation:mkPop .5s cubic-bezier(.2,1.6,.4,1)}
+.lockn{margin:0 0 8px;text-align:center;font:800 13.5px/1.3 var(--body);color:var(--soft)}
+.sts{display:grid;gap:7px}
+.st{display:grid;grid-template-columns:minmax(0,1fr) repeat(2,40px) 40px repeat(2,40px);gap:5px;align-items:center}
+.st-l{display:flex;align-items:center;gap:6px;font:800 13.5px/1.1 var(--body);min-width:0}
+.dot{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 2px var(--ink);background:var(--c)}
+.st button{height:42px;border:0;border-radius:11px;background:#fff;cursor:pointer;font:800 17px/1 var(--kid);color:var(--ink);padding:0;
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 rgba(18,26,51,.18);touch-action:manipulation}
+.st button.f{font-size:13.5px;background:#fff7df}
+.st button:active{transform:translateY(2px);box-shadow:inset 0 0 0 2.5px var(--ink)}
+.st b{font:800 22px/1 var(--kid);text-align:center}
+@media (max-width:379px){.st{grid-template-columns:minmax(0,1fr) repeat(5,37px);gap:4px}.st-l{font-size:12.5px;gap:4px}.dot{width:12px;height:12px}}
+.sh4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
+.st.s{grid-template-columns:42px minmax(0,1fr) 42px;gap:4px 5px}
+.st.s .st-l{grid-column:1/-1;justify-content:center}
+.sts.lockd .st button{pointer-events:none;opacity:.4}
+.ans{display:grid;gap:8px}
+.ans.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.a{min-height:52px;padding:9px 12px;border:0;border-radius:14px;background:#fff;cursor:pointer;text-align:left;font:800 16px/1.3 var(--body);color:var(--ink);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16);transition:transform .1s;touch-action:manipulation}
+.ans.two .a{text-align:center;font:800 19px/1.2 var(--kid)}
+.a .nuc{font-size:1.25em}
+.a:active{transform:translateY(3px)}
+.a.ok{background:#dff7e6;box-shadow:inset 0 0 0 3.5px var(--good),0 4px 0 rgba(18,26,51,.16)}
+.a.no{background:#ffe6df;box-shadow:inset 0 0 0 3.5px var(--bad),0 4px 0 rgba(18,26,51,.16)}
+.ans.done .a{pointer-events:none}
+.ans.done .a:not(.ok):not(.no){opacity:.5}
+.go{display:flex;width:100%;max-width:560px;margin:4px auto 0}
+.mk-why{max-width:560px;margin-inline:auto}
+.mk-why-m p{margin:4px 0}.mk-why-m ul{margin:4px 0;padding-left:18px}
+.fade{animation:mkIn .4s cubic-bezier(.2,1.2,.4,1)}
+.note{min-height:22px;margin:8px 0;text-align:center;font:800 14.5px/1.35 var(--body);color:var(--soft)}
+.note.good{color:#1c8a52}.note.warn{color:#b8531a}
+.bigbtn{display:flex;width:100%;min-height:54px;font-size:20px}
+.ovc{width:min(460px,100%);max-height:calc(100dvh - 24px);overflow:auto;background:#fff;border-radius:24px;padding:14px 12px;box-shadow:inset 0 0 0 3px var(--ink),0 10px 0 rgba(18,26,51,.18);animation:mkIn .3s}
+.ovc h2{margin:0 0 4px;font:800 18px/1.2 var(--kid)}
+.ovc p{margin:0 0 8px;font:600 13px/1.4 var(--body);color:var(--soft)}
+.ovc .mk-btn{width:100%;margin-top:10px;min-height:48px;font-size:18px}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="hero-art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="col" id="col"></div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="ptsChip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <button type="button" class="tbl" id="tblB"></button>
+    <div id="stage"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, GAME = "atomu-kalve", GRADES = [8];
+const R = MK.rnd, P = MK.pick, SH = MK.shuffle;
+const K = "#121a33", S = `stroke="${K}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"`;
+const $ = id => document.getElementById(id);
+const r1 = x => +x.toFixed(1);
+const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+const uniq = a => a.filter((x, i) => a.indexOf(x) === i);
+const d1 = x => x.toFixed(1).replace(".", ",");
+
+/* ================= duomenys ================= */
+/* Gamtoje randami (arba mokykloje minimi) izotopai; pirmas – labiausiai paplitęs. */
+const ISO = [null, [1, 2, 3], [4, 3], [7, 6], [9], [11, 10], [12, 13, 14], [14, 15], [16, 17, 18], [19], [20, 21, 22],
+  [23], [24, 25, 26], [27], [28, 29, 30], [31], [32, 33, 34, 36], [35, 37], [40, 36, 38], [39, 40, 41], [40, 42, 43, 44, 46, 48]];
+const AR = [0, "1", "4", "7", "9", "11", "12", "14", "16", "19", "20", "23", "24", "27", "28", "31", "32", "35,5", "40", "39", "40"];
+const GR = [0, 1, 18, 1, 2, 13, 14, 15, 16, 17, 18, 1, 2, 13, 14, 15, 16, 17, 18, 1, 2];
+const GCOL = [1, 2, 13, 14, 15, 16, 17, 18];
+const PER = z => z <= 2 ? 1 : z <= 10 ? 2 : z <= 18 ? 3 : 4;
+const cfg = e => { const c = []; for(const cap of [2, 8, 8, 2]){ if(e <= 0) break; c.push(Math.min(cap, e)); e -= cap; } return c; };
+const METAL = [3, 4, 11, 12, 13, 19, 20], NONMETAL = [1, 2, 6, 7, 8, 9, 10, 15, 16, 17, 18];
+const IONS = [[3, 1], [11, 1], [19, 1], [9, -1], [17, -1], [4, 2], [12, 2], [20, 2], [13, 3], [8, -2], [16, -2], [7, -3], [15, -3]];
+const ABUND = [[3, 6.9, 7, 6], [5, 10.8, 11, 10], [6, 12.0, 12, 13], [7, 14.0, 14, 15], [8, 16.0, 16, 18], [10, 20.2, 20, 22], [12, 24.3, 24, 26], [14, 28.1, 28, 29],
+  [16, 32.1, 32, 34], [17, 35.5, 35, 37], [18, 39.9, 40, 36], [19, 39.1, 39, 41], [20, 40.1, 40, 44]];
+const ARC = [[17, [[35, 75], [37, 25]]], [5, [[10, 20], [11, 80]]], [3, [[6, 8], [7, 92]]], [10, [[20, 90], [22, 10]]], [12, [[24, 79], [25, 10], [26, 11]]],
+  [19, [[39, 93], [41, 7]]], [14, [[28, 92], [29, 5], [30, 3]]], [16, [[32, 95], [34, 5]]], [6, [[12, 99], [13, 1]]]];
+const sy = z => T.els[z][0], nm = z => T.els[z][1], gn = z => T.els[z][2];
+const qs = q => (Math.abs(q) > 1 ? Math.abs(q) : "") + (q > 0 ? "+" : "−");
+const nucRaw = (s, top, bot, q) => `<span class="nuc"><span class="ix"><sup>${top}</sup><sub>${bot}</sub></span>${s}${q ? `<sup class="q">${qs(q)}</sup>` : ""}</span>`;
+const nuc = (z, A, q) => nucRaw(sy(z), A, z, q);
+const ionS = (z, q) => `<span class="nuc">${sy(z)}<sup class="q">${qs(q)}</sup></span>`;
+const elO = z => `${sy(z)} – ${nm(z)}`;
+
+/* ================= piešiniai ================= */
+const SR = [44, 64, 84, 104];
+function atomSvg(o){
+  /* o: { p, n, sh: [..], nucText, build } */
+  const sh = o.sh || [], rings = o.build ? 4 : Math.max(sh.length, 1); let s = "";
+  for(let k = 0; k < rings; k++){
+    const m = sh[k] || 0, r = SR[k];
+    s += `<circle cx="120" cy="120" r="${r}" fill="none" stroke="${m ? "#8d97b5" : "#d9cfae"}" stroke-width="${m ? 2 : 1.6}"${m ? "" : ' stroke-dasharray="3 5"'}/>`;
+    if(m){
+      let e = "";
+      for(let j = 0; j < m; j++){ const a = -Math.PI / 2 + j * 2 * Math.PI / m; e += `<circle cx="${r1(120 + r * Math.cos(a))}" cy="${r1(120 + r * Math.sin(a))}" r="5.6" fill="var(--ec)" stroke="${K}" stroke-width="1.6"/>`; }
+      s += o.build ? `<g class="sp${k % 2 ? " r" : ""}">${e}</g>` : e;
+    }
+  }
+  if(o.nucText != null) s += `<circle cx="120" cy="120" r="25" fill="#ffd9c7" stroke="${K}" stroke-width="2.2"/><text x="120" y="${o.nucText.length > 2 ? 125 : 128}" text-anchor="middle" font-family="Manrope,sans-serif" font-weight="800" font-size="${o.nucText.length > 2 ? 14 : 22}" fill="${K}">${o.nucText}</text>`;
+  else {
+    const p = o.p || 0, n = o.n || 0, tot = p + n;
+    if(!tot) s += `<circle cx="120" cy="120" r="14" fill="none" stroke="#b9ab84" stroke-width="2" stroke-dasharray="4 4"/>`;
+    else {
+      const big = tot > 34, pr = big ? 3.7 : 4.4, c = big ? 4.35 : 5;
+      for(let i = tot - 1; i >= 0; i--){
+        const isP = Math.floor((i + 1) * p / tot) > Math.floor(i * p / tot), rr = tot === 1 ? 0 : c * Math.sqrt(i + .35), a = i * 2.39996;
+        s += `<circle cx="${r1(120 + rr * Math.cos(a))}" cy="${r1(120 + rr * Math.sin(a))}" r="${pr}" fill="${isP ? "var(--pc)" : "var(--nc)"}" stroke="${K}" stroke-width="1.2"/>`;
+      }
+    }
+  }
+  return `<svg viewBox="0 0 240 240" role="img" aria-label="${T.atomAria}">${o.glow ? `<circle class="wave" cx="120" cy="120" r="110" fill="none" stroke="#ffb020" stroke-width="7"/>` : ""}${s}</svg>`;
+}
+function heroSvg(){
+  const cube = (x, y, c, t) => `<rect x="${x}" y="${y}" width="26" height="26" rx="5" fill="${c}" ${S}/><text x="${x + 13}" y="${y + 18.5}" text-anchor="middle" font-family="Grandstander,Manrope,sans-serif" font-weight="800" font-size="14" fill="${K}">${t}</text>`;
+  return `<svg viewBox="0 0 480 232" role="img" aria-label="${T.heroAria}">
+  <rect width="480" height="232" fill="#fff1d6"/>
+  <g stroke="#f1dcae" stroke-width="2"><path d="M0 40h480M0 80h480M0 120h480M0 160h480M60 0v40M180 0v40M300 0v40M420 0v40M120 40v40M240 40v40M360 40v40M60 80v40M180 80v40M300 80v40M420 80v40M120 120v40M240 120v40M360 120v40M60 160v46M180 160v46M300 160v46M420 160v46"/></g>
+  <rect y="204" width="480" height="28" fill="#e2c08a"/><path d="M0 204h480" stroke="${K}" stroke-width="2.5"/>
+  <!-- žaizdras -->
+  <path d="M30 70l12-40h44l12 40z" fill="#8d97a8" ${S}/>
+  <rect x="14" y="70" width="100" height="134" rx="8" fill="#cf7650" ${S}/>
+  <g stroke="#a9563a" stroke-width="2"><path d="M14 96h100M14 122h18M96 122h18M14 148h14M100 148h14M14 176h14M100 176h14M48 70v26M82 70v26"/></g>
+  <path d="M30 204v-52q0-34 34-34t34 34v52z" fill="#3b2a2a" ${S}/>
+  <path d="M42 204q-8-24 8-40q2 14 9 17q-3-24 9-36q12 18 9 34q7-6 7-15q12 20 0 40z" fill="#ff8a1f" stroke="${K}" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M54 204q-4-14 6-22q2 10 8 10q0-10 5-15q8 14 1 27z" fill="#ffd43b"/>
+  <!-- lentynos -->
+  <path d="M362 62h104M362 112h104" stroke="#9a6a3a" stroke-width="7" stroke-linecap="round"/>
+  ${cube(370, 33, "#e2f1ff", "H")}${cube(402, 33, "#e2f1ff", "C")}${cube(434, 33, "#fff1c9", "Na")}
+  ${cube(378, 83, "#fff1c9", "Mg")}${cube(410, 83, "#e2f1ff", "O")}
+  <!-- priekalas -->
+  <path d="M232 152h104l16 12h-38v8q0 12 10 16v4h14v12h-80v-12h14v-4q10-4 10-16v-8h-50z" fill="#6c7689" ${S}/>
+  <path d="M238 156h92" stroke="#aab3c4" stroke-width="3" stroke-linecap="round"/>
+  <!-- atomas -->
+  <circle cx="288" cy="102" r="44" fill="#ffd43b" opacity=".28"/><circle cx="288" cy="102" r="30" fill="#ffd43b" opacity=".35"/>
+  <g fill="none" stroke="${K}" stroke-width="2"><ellipse cx="288" cy="102" rx="40" ry="14" transform="rotate(-28 288 102)"/><ellipse cx="288" cy="102" rx="40" ry="14" transform="rotate(28 288 102)"/></g>
+  <g stroke="${K}" stroke-width="1.6"><circle cx="283" cy="99" r="6.5" fill="#ff6b5e"/><circle cx="293" cy="100" r="6.5" fill="#aeb6c9"/><circle cx="288" cy="107" r="6.5" fill="#ff6b5e"/><circle cx="287" cy="95" r="5.5" fill="#aeb6c9"/>
+  <circle cx="253" cy="121" r="5" fill="#2f6bff"/><circle cx="323" cy="121" r="5" fill="#2f6bff"/><circle cx="300" cy="71" r="5" fill="#2f6bff"/></g>
+  <g stroke="#ff8a1f" stroke-width="3" stroke-linecap="round"><path d="M236 138l-8-6M342 140l9-6M250 150l-4-9M328 150l5-9"/></g>
+  <!-- meistrė -->
+  <path d="M152 170v28M172 170v28" stroke="#3b4a6b" stroke-width="12" stroke-linecap="round"/>
+  <rect x="141" y="194" width="20" height="11" rx="5" fill="#5a3a22" ${S}/><rect x="164" y="194" width="20" height="11" rx="5" fill="#5a3a22" ${S}/>
+  <path d="M144 124q-16 16-10 36" fill="none" stroke="${K}" stroke-width="15" stroke-linecap="round"/><path d="M144 124q-16 16-10 36" fill="none" stroke="#12a594" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="134" cy="163" r="6.5" fill="#f6c9a0" ${S}/>
+  <rect x="140" y="112" width="44" height="64" rx="15" fill="#12a594" ${S}/>
+  <path d="M148 128h28v44q-14 7-28 0z" fill="#b9733a" ${S}/><path d="M150 128l4-15M174 128l-4-15" stroke="${K}" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="155" y="140" width="14" height="10" rx="3" fill="#99602f" stroke="${K}" stroke-width="1.6"/>
+  <path d="M182 124q20-4 28-28" fill="none" stroke="${K}" stroke-width="15" stroke-linecap="round"/><path d="M182 124q20-4 28-28" fill="none" stroke="#12a594" stroke-width="10" stroke-linecap="round"/>
+  <path d="M207 104l18-44" stroke="${K}" stroke-width="8" stroke-linecap="round"/><path d="M207 104l18-44" stroke="#a9763f" stroke-width="4" stroke-linecap="round"/>
+  <rect x="210" y="44" width="34" height="18" rx="4" transform="rotate(22 227 53)" fill="#7d8597" ${S}/>
+  <circle cx="210" cy="96" r="6.5" fill="#f6c9a0" ${S}/>
+  <circle cx="162" cy="62" r="9" fill="#6b3f1d" ${S}/>
+  <circle cx="162" cy="92" r="21" fill="#f6c9a0" ${S}/>
+  <path d="M141 92q-2-24 21-24t21 24q-8-12-21-12t-21 12z" fill="#6b3f1d" ${S}/>
+  <path d="M143 80h38" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="153" cy="79" r="6.5" fill="#bfe9ff" ${S}/><circle cx="171" cy="79" r="6.5" fill="#bfe9ff" ${S}/>
+  <circle cx="154" cy="95" r="2.5" fill="${K}"/><circle cx="170" cy="95" r="2.5" fill="${K}"/>
+  <path d="M155 103q7 6 14 0" fill="none" stroke="${K}" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="147" cy="101" r="4" fill="#ff8aa0" opacity=".55"/><circle cx="177" cy="101" r="4" fill="#ff8aa0" opacity=".55"/>
+  </svg>`;
+}
+const la = s => `<svg viewBox="0 0 56 56" aria-hidden="true">${s}</svg>`;
+const LART = [
+  la(`<circle cx="28" cy="28" r="20" fill="none" stroke="${K}" stroke-width="2"/><circle cx="24" cy="26" r="6" fill="#ff6b5e" stroke="${K}" stroke-width="1.8"/><circle cx="32" cy="27" r="6" fill="#aeb6c9" stroke="${K}" stroke-width="1.8"/><circle cx="28" cy="33" r="6" fill="#ff6b5e" stroke="${K}" stroke-width="1.8"/><circle cx="28" cy="8" r="4.5" fill="#2f6bff" stroke="${K}" stroke-width="1.8"/>`),
+  la(`<g fill="none" stroke="${K}" stroke-width="2"><circle cx="28" cy="28" r="10"/><circle cx="28" cy="28" r="17"/><circle cx="28" cy="28" r="24"/></g><circle cx="28" cy="28" r="5" fill="#ff6b5e" stroke="${K}" stroke-width="1.8"/><g fill="#2f6bff" stroke="${K}" stroke-width="1.5"><circle cx="28" cy="18" r="3.4"/><circle cx="28" cy="38" r="3.4"/><circle cx="45" cy="28" r="3.4"/><circle cx="11" cy="28" r="3.4"/><circle cx="28" cy="4" r="3.4"/></g>`),
+  la(`<g stroke="${K}" stroke-width="2"><rect x="6" y="8" width="12" height="12" rx="3" fill="#fff1c9"/><rect x="38" y="8" width="12" height="12" rx="3" fill="#e2f1ff"/><rect x="6" y="22" width="12" height="12" rx="3" fill="#fff1c9"/><rect x="22" y="22" width="12" height="12" rx="3" fill="#ffc61a"/><rect x="38" y="22" width="12" height="12" rx="3" fill="#e2f1ff"/><rect x="6" y="36" width="12" height="12" rx="3" fill="#fff1c9"/><rect x="22" y="36" width="12" height="12" rx="3" fill="#e2f1ff"/><rect x="38" y="36" width="12" height="12" rx="3" fill="#e2f1ff"/></g>`),
+  la(`<g stroke="${K}" stroke-width="1.8"><circle cx="14" cy="26" r="5.5" fill="#ff6b5e"/><circle cx="20" cy="32" r="5.5" fill="#aeb6c9"/><circle cx="36" cy="22" r="5.5" fill="#ff6b5e"/><circle cx="44" cy="26" r="5.5" fill="#aeb6c9"/><circle cx="38" cy="32" r="5.5" fill="#aeb6c9"/><circle cx="45" cy="35" r="5.5" fill="#aeb6c9"/></g><path d="M25 44h6M25 48h6" stroke="${K}" stroke-width="2.4" stroke-linecap="round" transform="rotate(20 28 46)"/>`),
+  la(`<circle cx="26" cy="30" r="17" fill="none" stroke="${K}" stroke-width="2"/><circle cx="26" cy="30" r="7" fill="#ff6b5e" stroke="${K}" stroke-width="1.8"/><circle cx="26" cy="13" r="4" fill="#2f6bff" stroke="${K}" stroke-width="1.6"/><circle cx="9" cy="30" r="4" fill="#fff" stroke="${K}" stroke-width="1.6" stroke-dasharray="2 2"/><path d="M40 12h12M46 6v12" stroke="${K}" stroke-width="3.4" stroke-linecap="round"/>`),
+  la(`<path d="M18 46l14-26" stroke="${K}" stroke-width="7" stroke-linecap="round"/><path d="M18 46l14-26" stroke="#a9763f" stroke-width="3.4" stroke-linecap="round"/><rect x="20" y="8" width="26" height="14" rx="4" transform="rotate(26 33 15)" fill="#7d8597" stroke="${K}" stroke-width="2"/><path d="M44 30l2.6 5.6 6.1.7-4.5 4.1 1.2 6L44 43.4l-5.4 3 1.2-6-4.5-4.1 6.1-.7z" fill="#ffc61a" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/>`)
+];
+const TICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9.5h18M3 14.5h18M9 4v16M15 4v16"/></g></svg>`;
+
+/* periodinė elementų sistema: mode – "ref" (žinynas), "tap" (užduotis), "shelf" (kolekcija) */
+function ptable(mode, shelf, fresh){
+  let h = `<div class="pt"><span></span>${GCOL.map(g => { const m = T.GRP[g].match(/^(\d+) \((.+)\)$/); return `<span class="gh">${m[1]}<small>${m[2]}</small></span>`; }).join("")}`;
+  for(let per = 1; per <= 4; per++){
+    h += `<span class="ph">${per}</span>`;
+    for(const g of GCOL){
+      const z = range(1, 20).find(x => PER(x) === per && GR[x] === g);
+      if(!z){ h += "<span></span>"; continue; }
+            if(mode === "shelf"){ const c = shelf[z] || 0; h += `<div class="pc ${c >= 3 ? "au" : c ? "br" : "off"}${fresh && fresh.includes(z) ? " new" : ""}" title="${nm(z)}"><small>${z}</small><b>${sy(z)}</b></div>`; }
+      else h += `<${mode === "tap" ? 'button type="button"' : "div"} class="pc" data-z="${z}" aria-label="${z} ${nm(z)}"><small>${z}</small><b>${sy(z)}</b><i>${AR[z]}</i></${mode === "tap" ? "button" : "div"}>`;
+    }
+  }
+  return h + "</div>";
+}
+
+/* ================= užduočių generatoriai ================= */
+let shelf = {}, usedZ = [];
+const pickZ = pool => { let best = null; for(let i = 0; i < 4; i++){ const z = P(pool); if(usedZ.includes(z)) continue; if(best == null || (shelf[z] || 0) < (shelf[best] || 0)) best = z; } best = best == null ? P(pool) : best; usedZ.push(best); return best; };
+const isoA = z => Math.random() < .6 ? ISO[z][0] : P(ISO[z]);
+const MULTI = range(1, 20).filter(z => ISO[z].length > 1);
+/* pasirinkimo užduotis: teisingas + 3 klaidingi (be pasikartojimų) */
+function mc(text, right, wrongs, why, x){
+  wrongs = uniq(wrongs.map(String)).filter(w => w !== String(right)).slice(0, 3);
+  const opts = SH([String(right)].concat(wrongs));
+  return Object.assign({ type: "choice", text, opts, right: opts.indexOf(String(right)), why, ans: String(right) }, x || {});
+}
+const numSort = t => { const r = t.opts[t.right]; t.opts = t.opts.slice().sort((a, b) => a - b); t.right = t.opts.indexOf(r); t.two = true; return t; };
+const ansB = (p, n, e) => `${p} p⁺, ${n} n⁰, ${e} e⁻`;
+const fillFrom = (first, z) => { const c = [first]; let e = z - first; for(const cap of [8, 8, 2]){ if(e <= 0) break; c.push(Math.min(cap, e)); e -= cap; } return c; };
+
+const G = {
+  /* ---- 1: atomo sandara ---- */
+  build(){ const z = pickZ(range(1, 20)), A = isoA(z); return { type: "build", id: "build", mode: "full", el: z, text: T.q.build(nuc(z, A)), tp: z, tn: A - z, te: z, ans: ansB(z, A - z, z), why: T.w.build(nuc(z, A), z, A, z, 0), name: T.atomOf(nuc(z, A)) }; },
+  buildW(){ const z = pickZ(range(3, 20)), A = isoA(z); return { type: "build", id: "buildW", mode: "full", el: z, text: T.q.buildW(gn(z), A), tp: z, tn: A - z, te: z, ans: ansB(z, A - z, z), why: T.w.build(nuc(z, A), z, A, z, 0), name: T.atomOf(nuc(z, A)) }; },
+  count(){
+    let z, A, i = 0; do { z = R(3, 20); A = isoA(z); } while(A === 2 * z && ++i < 12);
+    const kind = R(0, 2), right = [z, A - z, z][kind];
+    return numSort(mc(T.q.count(kind, nuc(z, A)), right, SH([A, z, A - z, A + z]).concat([right + 1, right + 2, right - 1]).filter(v => v > 0), T.w.count(kind, z, A), { id: "count" + kind }));
+  },
+  readAtom(){
+    let z, A, i = 0; do { z = R(3, 20); A = isoA(z); } while(A === 2 * z && ++i < 12);
+    const n = A - z, w = [nucRaw(sy(z), n, z), nucRaw(sy(z), z, A), nucRaw(sy(z - 1), A, z - 1), nucRaw(sy(z), A + z, z)];
+    if(z < 20) w.push(nucRaw(sy(z + 1), A, z + 1));
+    if(n <= 20) w.unshift(nucRaw(sy(n), A, n));
+    return mc(T.q.readAtom, nuc(z, A), SH(w), T.w.readAtom(nuc(z, A), z, n), { id: "readAtom", fig: atomSvg({ p: z, n, sh: cfg(z) }), figNote: `${z} p⁺ · ${n} n⁰ · ${z} e⁻`, two: true });
+  },
+  massOf(){ const z = R(3, 20), A = isoA(z), n = A - z; return numSort(mc(T.q.massOf(z, n), A, SH([A + z, 2 * z, z, n, A + n]).concat([A + 1, A - 1]), T.w.massOf(z, n), { id: "massOf" })); },
+  whichEl(){
+    const z = R(3, 20), A = isoA(z), n = A - z, c = [z + 1, z - 1, z + 2, z - 2, z - 3, z + 3].filter(v => v >= 1 && v <= 20);
+    if(n <= 20 && n >= 1) c.unshift(n); if(A <= 20) c.unshift(A);
+    return mc(T.q.whichEl(A, n), elO(z), uniq(c).filter(v => v !== z).map(elO), T.w.whichEl(A, n, nm(z), sy(z)), { id: "whichEl" });
+  },
+  stmt(k){ const s = T.stmts[k], t = P(s.t), f = SH(s.f).slice(0, 3); return mc(T.q.stmt, t, f.map(x => x[0]), T.w.stmt(t, f.map(x => x[1])), { id: "stmt" + k }); },
+  /* ---- 2: elektronų sluoksniai ---- */
+  shells(){ const z = pickZ(range(3, 20)), A = ISO[z][0], c = cfg(z); return { type: "build", id: "shells", mode: "shell", el: z, text: T.q.shells(gn(z)), lock: { p: z, n: A - z }, tc: c, te: z, ans: T.cfgT(c), why: T.w.shells(gn(z), z, c), name: T.atomOf(sy(z)) }; },
+  whoScheme(){
+    const z = R(3, 20), c = cfg(z), same = range(1, 20).filter(x => GR[x] === GR[z] && x !== z);
+    return mc(T.q.whoScheme, elO(z), SH([z + 1, z - 1, z + 2, z - 2].concat(same).filter(v => v >= 1 && v <= 20)).map(elO), T.w.whoScheme(c, z, nm(z)), { id: "whoScheme", fig: atomSvg({ sh: c, nucText: "?" }), two: true });
+  },
+  outer(){ const z = R(3, 20), c = cfg(z), o = c[c.length - 1]; return numSort(mc(T.q.outer(nm(z)), o, uniq([c.length, z, c[c.length - 2] || 3, o + 1, o - 1, 8, 2]).filter(v => v > 0), T.w.outer(nm(z), c), { id: "outer" })); },
+  nShells(){ const z = R(3, 20), c = cfg(z); return { type: "choice", id: "nShells", text: T.q.nShells(nm(z)), opts: ["1", "2", "3", "4"], right: c.length - 1, two: true, ans: "" + c.length, why: T.w.nShells(nm(z), c, PER(z)) }; },
+  whichCfg(){
+    const z = R(5, 20), c = cfg(z), v = [cfg(z + 1), cfg(z - 1), c.slice().reverse(), fillFrom(3, z), fillFrom(1, z)];
+    if(z > 10) v.push([2, z - 2], [2, 9].concat(z > 11 ? [z - 11] : []));
+    if(z > 18) v.push([2, 8, z - 10]);
+    if(z <= 10) v.push([z], [z - 2, 2]);
+    return mc(T.q.whichCfg(gn(z)), T.cfgT(c), SH(v.filter(a => a.every(x => x > 0)).map(T.cfgT)), T.w.whichCfg(gn(z), z, c), { id: "whichCfg", two: true });
+  },
+  findErr(){
+    const z = R(5, 17), c = cfg(z), kind = P(z >= 11 ? ["none", "e1", "e2", "tot", "gap"] : z <= 9 ? ["none", "e1", "tot", "gap"] : ["none", "e1", "tot"]);
+    const k = R(1, 2), bad = { none: c, e1: fillFrom(3, z), e2: z >= 11 ? [2, 9].concat(z > 11 ? [z - 11] : []) : c, tot: cfg(z + P([-1, 1])), gap: z >= 11 ? [2, 8 - Math.min(k, 18 - z), z - 10 + Math.min(k, 18 - z)] : [1, z - 1] }[kind];
+    const lab = { none: T.o.errNone, e1: T.o.err1, e2: T.o.err2, tot: T.o.errTot, gap: T.o.errGap };
+    const others = SH(["e1", "e2", "tot", "gap"].filter(x => x !== kind)).slice(0, kind === "none" ? 3 : 2);
+    const order = ["none", "e1", "e2", "tot", "gap"].filter(x => x === "none" || x === kind || others.includes(x));
+    return { type: "choice", id: "findErr-" + kind, text: T.q.findErr(gn(z)), fig: atomSvg({ sh: bad, nucText: z + " p⁺" }), opts: order.map(x => lab[x]), right: order.indexOf(kind), ans: lab[kind], why: T.w.findErr(kind === "e1" ? "e1" : kind, z, c, kind === "none" ? null : bad), _bad: bad, _z: z, _kind: kind };
+  },
+  samePair(){
+    const grp = P([1, 2, 13, 14, 15, 16, 17, 18]), mem = SH(range(3, 20).filter(z => GR[z] === grp)).slice(0, 2).sort((a, b) => a - b), w = [];
+    let i = 0; while(w.length < 3 && i++ < 60){ const a = R(3, 20), b = R(3, 20); if(a < b && GR[a] !== GR[b] && !w.some(x => x[0] === a && x[1] === b)) w.push([a, b]); }
+    const pt = q => `${sy(q[0])} ir ${sy(q[1])}`, c = cfg(mem[0]);
+    return mc(T.q.samePair, pt(mem), w.map(pt), T.w.samePair(sy(mem[0]), sy(mem[1]), c[c.length - 1], grp), { id: "samePair", two: true });
+  },
+  /* ---- 3: periodinė elementų sistema ---- */
+  tapCfg(){ const z = pickZ(range(3, 20)), c = cfg(z); return { type: "tap", id: "tapCfg", el: z, ans: z, text: T.q.tapCfg(c), why: T.w.tapCfg(c, z, nm(z), sy(z)) }; },
+  tapPG(){ const z = pickZ(range(3, 20)); return { type: "tap", id: "tapPG", el: z, ans: z, text: T.q.tapPG(PER(z), GR[z]), why: T.w.tapPG(PER(z), GR[z], nm(z), sy(z)) }; },
+  tapSO(){ const z = pickZ(range(1, 20).filter(x => x !== 2)), c = cfg(z); return { type: "tap", id: "tapSO", el: z, ans: z, text: T.q.tapSO(c.length, c[c.length - 1]), why: T.w.tapSO(c.length, c[c.length - 1], nm(z), sy(z), PER(z), GR[z]) }; },
+  tapRel(){
+    const z = pickZ(range(3, 20)), a = P(range(1, 20).filter(x => PER(x) === PER(z) && x !== z)), b = P(range(1, 20).filter(x => GR[x] === GR[z] && x !== z));
+    return { type: "tap", id: "tapRel", el: z, ans: z, text: T.q.tapRel(nm(a), nm(b)), why: T.w.tapRel(PER(z), GR[z], nm(z), sy(z)) };
+  },
+  tapMass(){ const z = pickZ(range(3, 20)), A = isoA(z); return { type: "tap", id: "tapMass", el: z, ans: z, text: T.q.tapMass(A, A - z), why: T.w.tapMass(A, A - z, nm(z), sy(z)) }; },
+  posToShell(){
+    const z = P(range(3, 20)), per = PER(z), c = cfg(z), o = c[c.length - 1], w = [];
+    if(o !== per && o <= 4) w.push(T.o.shellOuter(o, per));
+    if(GR[z] > 12) w.push(T.o.shellOuter(per, GR[z]));
+    w.push(T.o.shellOuter(per + 1, o), T.o.shellOuter(per, o === 8 ? 7 : o + 1), T.o.shellOuter(per - 1, o));
+    return mc(T.q.posToShell(nm(z), per, GR[z]), T.o.shellOuter(per, o), w, T.w.posToShell(per, GR[z], o), { id: "posToShell" });
+  },
+  similar(){
+    const mem = SH(P([[3, 11, 19], [4, 12, 20], [7, 15], [8, 16], [9, 17], [2, 10, 18]])), a = mem[0], b = mem[1];
+    const w = uniq([a + 1, a - 1, b + 1, b - 1].concat(SH(range(1, 20)))).filter(v => v >= 1 && v <= 20 && GR[v] !== GR[a]);
+    return mc(T.q.similar(gn(a)), elO(b), w.map(elO), T.w.similar(nm(a), nm(b), GR[a]), { id: "similar", two: true });
+  },
+  metal(){
+    const m = Math.random() < .5, right = P(m ? METAL : NONMETAL);
+    return mc(m ? T.q.metal : T.q.nonmetal, elO(right), SH(m ? NONMETAL : METAL).map(elO), T.w.metal(nm(right), m), { id: m ? "metal" : "nonmetal", two: true });
+  },
+  /* ---- 4: izotopai ---- */
+  iso(){ const z = pickZ(MULTI), A = Math.random() < .75 ? P(ISO[z].slice(1)) : ISO[z][0]; return { type: "build", id: "iso", mode: "full", el: z, text: T.q.iso(gn(z), A), tp: z, tn: A - z, te: z, ans: ansB(z, A - z, z), why: T.w.iso(gn(z), z, A), name: T.atomOf(nuc(z, A)) }; },
+  isoOf(){
+    const z = P(MULTI.filter(x => x >= 3 && x <= 19)), [A1, A2] = SH(ISO[z]);
+    return mc(T.q.isoOf(nuc(z, A1)), nuc(z, A2), SH([nuc(z + 1, A1), nuc(z - 1, A1), nuc(z + 1, A2), nuc(z - 1, A2)]), T.w.isoOf(nuc(z, A1), nuc(z, A2)), { id: "isoOf", two: true });
+  },
+  isoPair(){
+    const z = P(MULTI.filter(x => x >= 3)), [A1, A2] = SH(ISO[z]).slice(0, 2).sort((a, b) => a - b), pt = (a, b) => `${a} ir ${b}`, w = [];
+    let i = 0; while(w.length < 3 && i++ < 60){ const y = R(3, 19), A = P(ISO[y]); if(y === z || y + 1 === z) continue; const s = w.length === 2 ? pt(nuc(y, A), nuc(y + 1, A + 1)) : pt(nuc(y, A), nuc(y + 1, A)); if(!w.includes(s)) w.push(s); }
+    return mc(T.q.isoPair, pt(nuc(z, A1), nuc(z, A2)), w, T.w.isoOf(nuc(z, A1), nuc(z, A2)), { id: "isoPair" });
+  },
+  isoDiff(){ const z = P(MULTI), [A1, A2] = SH(ISO[z]).slice(0, 2).sort((a, b) => a - b); return mc(T.q.isoDiff(nuc(z, A1), nuc(z, A2)), T.o.dN, [T.o.dP, T.o.dE, T.o.dS], T.w.isoDiff(nuc(z, A1), nuc(z, A2), A1 - z, A2 - z), { id: "isoDiff" }); },
+  isoN(){
+    const z = P(MULTI), [A1, A2] = SH(ISO[z]).slice(0, 2).sort((a, b) => a - b), d = A2 - A1;
+    return numSort(mc(T.q.isoN(nuc(z, A1), nuc(z, A2)), d, uniq([A2 - z, A1 - z, z, A2, d + 1, d + 2, d + 3]).filter(v => v > 0), T.w.isoN(nuc(z, A1), nuc(z, A2), z, A1, A2), { id: "isoN" }));
+  },
+  isoWho(){
+    const z = P(MULTI.filter(x => x >= 3)), A = P(ISO[z]), n = A - z, w = [nuc(z, P(ISO[z].filter(x => x !== A))), nucRaw(sy(z), n, z), nuc(z, A + 1), nuc(z, A - 1)];
+    if(n <= 20 && n !== z) w.unshift(nucRaw(sy(n), A, n));
+    return mc(T.q.isoWho(z, n), nuc(z, A), w, T.w.isoWho(z, n, nuc(z, A)), { id: "isoWho", two: true });
+  },
+  abund(){
+    const [z, ar, A, B] = P(ABUND), lo = Math.min(A, B), hi = Math.max(A, B), opts = [nuc(z, lo), nuc(z, hi), T.o.both];
+    return { type: "choice", id: "abund", text: T.q.abund(gn(z), d1(ar), nuc(z, lo), nuc(z, hi)), opts, right: A === lo ? 0 : 1, ans: nuc(z, A), why: T.w.abund(d1(ar), A, nuc(z, A)), _d: [z, ar, A, B] };
+  },
+  arCalc(){
+    const [z, parts] = P(ARC), val = parts.reduce((s, q) => s + q[0] * q[1], 0) / 100, mean = parts.reduce((s, q) => s + q[0], 0) / parts.length;
+    const pc = parts.map(q => q[1]).reverse(), sw = parts.reduce((s, q, i) => s + q[0] * pc[i], 0) / 100;
+    const calc = parts.map(q => `${q[0]} · ${(q[1] / 100).toFixed(2).replace(".", ",")}`).join(" + ");
+    return numSort2(mc(T.q.arCalc(nm(z), parts.map(q => T.q.arPart(q[1], nuc(z, q[0]))).join(", ")), d1(val), uniq([d1(mean), d1(sw), d1(val + 1), d1(val - 1), d1(mean + 1)]), T.w.arCalc(calc, d1(val)), { id: "arCalc", _v: val, _z: z }));
+  },
+  /* ---- 5: jonai ---- */
+  ionPick(){ return Math.random() < .6 ? P(IONS.slice(0, 5)) : P(IONS.slice(5)); },
+  ion(){ const [z, q] = G.ionPick(), A = z === 17 && Math.random() < .3 ? 37 : ISO[z][0]; usedZ.push(z); return { type: "build", id: "ion", mode: "full", ion: true, el: z, text: T.q.ion(nuc(z, A, q)), tp: z, tn: A - z, te: z - q, ans: ansB(z, A - z, z - q), why: T.w.build(nuc(z, A, q), z, A, z - q, q), name: T.ionOf(ionS(z, q)) }; },
+  ionShells(){ const [z, q] = G.ionPick(), A = ISO[z][0], c = cfg(z - q); usedZ.push(z); return { type: "build", id: "ionShells", mode: "shell", ion: true, el: z, text: T.q.ionShells(ionS(z, q)), lock: { p: z, n: A - z }, tc: c, te: z - q, ans: T.cfgT(c), why: T.w.shells(gn(z), z - q, c, ionS(z, q)), name: T.ionOf(ionS(z, q)) }; },
+  ionE(){ const [z, q] = G.ionPick(), e = z - q; return numSort(mc(T.q.ionE(ionS(z, q)), e, uniq([z, z + q, ISO[z][0], Math.abs(q), e + 1, e - 1]).filter(v => v > 0), T.w.ionE(ionS(z, q), z, q, e), { id: "ionE" })); },
+  whoPart(){
+    const neutral = Math.random() < .25, fig = Math.random() < .5; let z, q, right, w;
+    if(neutral){ z = P([10, 18, 2, 11, 17, 12, 8]); q = 0; right = T.atomOf(sy(z)); w = IONS.filter(i => i[0] - i[1] === z).map(i => T.ionOf(ionS(i[0], i[1]))).concat([T.ionOf(ionS(z, 1)), T.ionOf(ionS(z, -1)), T.atomOf(sy(z + 1)), T.atomOf(sy(z - 1))]); w = SH(w.slice(0, 2)).concat(w.slice(2)); }
+    else { [z, q] = G.ionPick(); right = T.ionOf(ionS(z, q)); w = [T.atomOf(sy(z)), T.atomOf(sy(z - q)), T.ionOf(ionS(z, -q)), T.ionOf(ionS(z - q, q))]; }
+    const e = z - q;
+    return mc(fig ? T.q.whoPartFig : T.q.whoPart(z, e), right, w, T.w.whoPart(z, e, right), { id: "whoPart" + (fig ? "Fig" : ""), two: true, fig: fig ? atomSvg({ sh: cfg(e), nucText: z + " p⁺" }) : "", _p: z, _e: e });
+  },
+  howIon(){ const [z, q] = G.ionPick(), n = Math.abs(q); return mc(T.q.howIon(gn(z), ionS(z, q)), q > 0 ? T.o.gives(n) : T.o.takes(n), [q > 0 ? T.o.takes(n) : T.o.gives(n), T.o.givesP(n), T.o.takesP(n)], T.w.howIon(ionS(z, q), q, z), { id: "howIon" }); },
+  whichIon(){
+    const z = Math.random() < .65 ? P([3, 11, 19, 9, 17]) : P([4, 12, 20, 8, 16]), q = { 1: 1, 2: 2, 16: -2, 17: -1 }[GR[z]], qs4 = [1, 2, -1, -2];
+    return { type: "choice", id: "whichIon", two: true, text: T.q.whichIon(nm(z), GR[z]), opts: qs4.map(x => ionS(z, x)), right: qs4.indexOf(q), ans: ionS(z, q), why: T.w.whichIon(GR[z], ionS(z, q), q), _z: z, _q: q };
+  },
+  sameAs(){
+    const g = P([10, 18]), ok = IONS.filter(i => i[0] - i[1] === g), no = IONS.filter(i => i[0] - i[1] !== g), r = P(ok);
+    return mc(T.q.sameAs(gn(g)), ionS(r[0], r[1]), SH(no).map(i => ionS(i[0], i[1])), T.w.sameAs(ionS(r[0], r[1]), g, gn(g)), { id: "sameAs", two: true });
+  }
+};
+function numSort2(t){ const r = t.opts[t.right]; t.opts = t.opts.slice().sort((a, b) => parseFloat(a.replace(",", ".")) - parseFloat(b.replace(",", "."))); t.right = t.opts.indexOf(r); t.two = true; return t; }
+const one = (...f) => P(f)();
+const LV = [
+  () => [G.build(), G.count(), G.readAtom(), G.buildW(), G.stmt(0), one(G.massOf, G.whichEl), G.build(), one(G.count, G.readAtom, G.whichEl)],
+  () => [G.shells(), G.whoScheme(), one(G.outer, G.nShells), G.shells(), G.whichCfg(), G.findErr(), one(G.samePair, () => G.stmt(1)), G.shells()],
+  () => [G.tapPG(), G.tapCfg(), G.posToShell(), G.tapSO(), G.similar(), G.metal(), one(G.tapRel, G.tapMass), G.stmt(2)],
+  () => [G.iso(), G.isoOf(), one(G.isoDiff, G.isoN), G.iso(), G.isoWho(), G.abund(), one(G.isoPair, G.arCalc), G.stmt(3)],
+  () => [G.ion(), G.ionE(), G.howIon(), G.ionShells(), G.whoPart(), G.whichIon(), one(G.sameAs, () => G.stmt(4)), one(G.ion, G.ionShells)],
+  () => [G.buildW()].concat(SH([one(G.findErr, G.whichCfg), one(G.tapSO, G.tapRel, G.tapMass), G.iso(), one(G.isoPair, G.isoOf, G.isoWho), one(G.arCalc, G.abund), G.ion(), G.ionShells(), one(G.whoPart, G.sameAs), G.stmt(R(0, 4))]))
+];
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: LART[i] }));
+
+/* ================= meniu ir kolekcija ================= */
+const menu = $("menu"), play = $("play"), stage = $("stage"), app = $("app");
+const saved = MK.get("mokomeskartu-klase", 0), KEY = "mk-" + GAME + "-lentyna";
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("ptsL").textContent = T.pts;
+$("tblB").innerHTML = TICON + T.tableBtn;
+const gotN = () => Object.keys(shelf).filter(z => shelf[z] > 0).length;
+function renderCol(fresh){
+  shelf = MK.get(KEY, {});
+  const got = gotN(), gold = Object.keys(shelf).filter(z => shelf[z] >= 3).length, ri = Math.min(4, Math.floor(got / 5));
+  $("col").innerHTML = `<h2>${LART[5]}${T.colH}</h2><p>${T.colP(got, gold, T.ranks[ri], ri < 4 ? T.colNext((ri + 1) * 5 - got, T.ranks[ri + 1]) : "")}</p>${ptable("shelf", shelf, fresh)}`;
+}
+function showMenu(fresh){
+  play.hidden = true; menu.hidden = false; $("heroArt").innerHTML = heroSvg(); renderCol(fresh);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+function showTable(){
+  const ov = document.createElement("div"); ov.className = "mk-ov";
+  ov.innerHTML = `<div class="ovc" role="dialog" aria-modal="true"><h2>${T.tableH}</h2><p>${T.tableP}</p>${ptable("ref")}
+    <p class="names">${range(1, 20).map(z => `<b>${sy(z)}</b> – ${nm(z)}`).join(", ")}</p><button type="button" class="mk-btn" id="ovX">${T.tableClose}</button></div>`;
+  document.body.appendChild(ov);
+  ov.onclick = e => { if(e.target === ov || e.target.id === "ovX"){ MK.sfx.tap(); ov.remove(); } };
+}
+$("tblB").onclick = () => { MK.unlock(); MK.sfx.tap(); showTable(); };
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, pts = 0, dots = null, gain = [];
+function start(i){
+  shelf = MK.get(KEY, {}); usedZ = [];
+  L = i; tasks = LV[i](); ti = 0; okN = 0; pts = 0; gain = []; $("pts").textContent = 0;
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+function award(n){ if(n){ pts += n; const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); } }
+function first(ok){
+  dots.mark(ti, ok); if(!ok) return; okN++;
+  if(cur.el){ const z = cur.el; shelf = MK.get(KEY, {}); if(!shelf[z]) gain.push(z); shelf[z] = Math.min(3, (shelf[z] || 0) + 1); MK.set(KEY, shelf); }
+}
+function addWhy(ok, w, ans){ const d = document.createElement("div"); d.innerHTML = MK.why({ ok, head: ok ? MK.praise() : (ans ? T.bad(ans) : T.badPlain), body: w.body, more: w.more, sum: T.rule, open: !ok }); $("flow").appendChild(d.firstElementChild); }
+function nextBtn(){
+  const go = document.createElement("button"); go.type = "button"; go.className = "mk-btn go"; go.id = "next"; go.textContent = ti < tasks.length - 1 ? T.next : T.finish;
+  go.onclick = () => { MK.sfx.tap(); ti++; ti < tasks.length ? show() : finish(); };
+  $("flow").appendChild(go); setTimeout(() => go.scrollIntoView({ behavior: "smooth", block: "nearest" }), 120);
+}
+function close(ok, tries, why, ans){ first(ok && tries === 1); if(ok){ award(tries === 1 ? 10 : 5); MK.sfx.good(); } else MK.sfx.bad(); addWhy(ok, why, ok ? "" : ans); nextBtn(); }
+function note(cls, s){ const n = $("note"); n.className = "note " + (cls || ""); n.innerHTML = s; }
+function show(){
+  cur = tasks[ti]; dots.cur(ti); window.scrollTo({ top: 0 }); $("tblB").hidden = cur.type === "tap";
+  ({ build: showBuild, choice: showChoice, tap: showTap })[cur.type]();
+}
+function showChoice(){
+  stage.innerHTML = `<div class="card fade"><p class="txt">${cur.text}</p>${cur.fig ? `<div class="fig">${cur.fig}</div>` : ""}${cur.figNote ? `<p class="lockn">${cur.figNote}</p>` : ""}
+    <div class="ans${cur.two ? " two" : ""}" id="ans">${cur.opts.map((o, i) => `<button type="button" class="a" data-i="${i}">${o}</button>`).join("")}</div></div><div id="flow"></div>`;
+  $("ans").onclick = e => {
+    const b = e.target.closest(".a"), ans = $("ans"); if(!b || ans.classList.contains("done")) return;
+    ans.classList.add("done"); MK.unlock(); const ok = +b.dataset.i === cur.right;
+    b.classList.add(ok ? "ok" : "no"); if(!ok) ans.children[cur.right].classList.add("ok");
+    close(ok, 1, cur.why, cur.ans);
+  };
+}
+function showTap(){
+  const c = cur; let sel = null, tries = 0, done = false;
+  stage.innerHTML = `<div class="card fade"><p class="txt">${c.text}</p><div id="ptw">${ptable("tap")}</div>
+    <p class="note" id="note" role="status" aria-live="polite">${T.selNone}</p><button type="button" class="mk-btn bigbtn" id="goB" disabled>${T.checkTap}</button></div><div id="flow"></div>`;
+  const cell = z => $("ptw").querySelector(`[data-z="${z}"]`);
+  const setSel = z => { if(sel) cell(sel).classList.remove("sel"); sel = z; if(z){ cell(z).classList.add("sel"); note("", T.sel(sy(z), nm(z))); } $("goB").disabled = !z; };
+  $("ptw").onclick = e => { const b = e.target.closest(".pc"); if(!b || done || b.classList.contains("no")) return; MK.unlock(); MK.sfx.tap(); setSel(+b.dataset.z); };
+  $("goB").onclick = () => {
+    if(done || !sel) return; MK.unlock(); tries++; const z = sel, ok = z === c.ans; setSel(null);
+    if(ok){ done = true; cell(z).classList.add("ok"); $("goB").hidden = true; note("good", T.found(nm(z))); close(true, tries, c.why); }
+    else if(tries < 2){ cell(z).classList.add("no"); MK.sfx.bad(); note("warn", T.againTap); }
+    else { done = true; cell(z).classList.add("no"); cell(c.ans).classList.add("ok"); $("goB").hidden = true; note("", "&nbsp;"); close(false, tries, c.why, elO(c.ans)); }
+  };
+}
+function showBuild(){
+  const c = cur, shell = c.mode === "shell", MAXV = { p: 20, n: 30, e: 20 };
+  const st = shell ? { p: c.lock.p, n: c.lock.n, sh: [0, 0, 0, 0] } : { p: 0, n: 0, e: 0 };
+  let tries = 0, done = false;
+  const row = (k, lbl, col) => `<div class="st" data-k="${k}"><span class="st-l"><i class="dot" style="--c:var(--${col})"></i>${lbl}</span><button type="button" class="f" data-d="-5" aria-label="${lbl} −5">−5</button><button type="button" data-d="-1" aria-label="${lbl} −1">−</button><b id="v-${k}">0</b><button type="button" data-d="1" aria-label="${lbl} +1">+</button><button type="button" class="f" data-d="5" aria-label="${lbl} +5">+5</button></div>`;
+  const srow = i => `<div class="st s" data-k="s${i}"><span class="st-l"><i class="dot" style="--c:var(--ec)"></i>${T.lblSh(i + 1)}</span><button type="button" data-d="-1" aria-label="${T.lblSh(i + 1)} −1">−</button><b id="v-s${i}">0</b><button type="button" data-d="1" aria-label="${T.lblSh(i + 1)} +1">+</button></div>`;
+  stage.innerHTML = `<div class="card fade"><p class="txt">${c.text}</p><div class="forge" id="forge"></div>${shell ? `<p class="lockn">${T.locked(c.lock.p, c.lock.n)}</p>` : ""}
+    <div class="sts" id="sts">${shell ? `<div class="sh4">${[0, 1, 2, 3].map(srow).join("")}</div>` : row("p", T.lblP, "pc") + row("n", T.lblN, "nc") + row("e", T.lblE, "ec")}</div>
+    <p class="note" id="note" role="status" aria-live="polite">&nbsp;</p><button type="button" class="mk-btn bigbtn" id="goB">${T.check}</button></div><div id="flow"></div>`;
+  const draw = glow => {
+    $("forge").innerHTML = atomSvg({ p: st.p, n: st.n, sh: shell ? st.sh : cfg(st.e), build: true, glow });
+    if(shell) st.sh.forEach((v, i) => { $("v-s" + i).textContent = v; }); else ["p", "n", "e"].forEach(k => { $("v-" + k).textContent = st[k]; });
+  };
+  draw();
+  $("sts").onclick = e => {
+    const b = e.target.closest("button"); if(!b || done) return; MK.unlock();
+    const k = b.parentNode.dataset.k, d = +b.dataset.d;
+    if(k[0] === "s"){ const i = +k[1]; st.sh[i] = Math.max(0, Math.min(10, st.sh[i] + d)); } else st[k] = Math.max(0, Math.min(MAXV[k], st[k] + d));
+    MK.sfx.tap(); note("", "&nbsp;"); draw();
+  };
+  const judge = () => {
+    if(shell){ const tot = st.sh.reduce((a, b) => a + b, 0); if(tot !== c.te) return c.ion ? T.hTotalIon : T.hTotalAtom; return st.sh.every((v, i) => v === (c.tc[i] || 0)) ? "" : T.hShell; }
+    return st.p !== c.tp ? T.hP : st.n !== c.tn ? T.hN : st.e !== c.te ? (c.ion ? T.hEIon : T.hEAtom) : "";
+  };
+  const end = ok => { done = true; $("sts").classList.add("lockd"); $("goB").hidden = true; if(ok) $("forge").classList.add("done"); draw(ok); };
+  $("goB").onclick = () => {
+    if(done) return; MK.unlock(); tries++; const h = judge();
+    if(!h){ end(true); note("good", T.forged(c.name)); close(true, tries, c.why); }
+    else if(tries < 2){ MK.sfx.bad(); note("warn", h); $("forge").classList.remove("mk-shake"); void $("forge").offsetWidth; $("forge").classList.add("mk-shake"); }
+    else { if(shell) st.sh = [0, 1, 2, 3].map(i => c.tc[i] || 0); else { st.p = c.tp; st.n = c.tn; st.e = c.te; } end(false); note("", "&nbsp;"); close(false, tries, c.why, c.ans); }
+  };
+}
+function finish(){
+  const total = tasks.length, stars = MK.starsFor(okN, total); MK.best(GAME, LEVELS[L].id, stars);
+  const g = gain.slice();
+  MK.result({ stars, title: `${okN} / ${total}`, text: T.res(okN, total, pts, g.map(z => `${nm(z)} (${sy(z)})`)),
+    next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(g) });
+}
+Object.defineProperty(window, "__cur", { get: () => cur });
+window.__MK_TEST = { LV, G, T, cfg, ISO, GR, PER, IONS, ABUND, ARC, METAL, NONMETAL, sy, nm, setShelf: s => { shelf = s; } };
+showMenu();
+})();
+</script>
+</body>
+</html>
