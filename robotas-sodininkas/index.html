@@ -6,12 +6,13 @@
 <title>Robotas sodininkas – MokomėsKartu.lt</title>
 <meta name="description" content="5–6 klasių informatikos žaidimas: sudėliok programą iš komandų – komandų seka, kartojimo ir pasirinkimo komandos, paprogramės, programos testavimas ir taisymas.">
 <meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
 <link rel="icon" href="/logo/mk-ikona.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
 <script src="/bendra/mk.js"></script>
-<script src="/robotas-sodininkas/tekstai.lt.js"></script>
+<script src="tekstai.lt.js"></script>
 <style>
 /* Meniu: robotas sode, kolekcija (sodas + roboto spalvos), lygiai, „Noriu pasimokyti“.
    Užduotis: sodo žemėlapis → programa iš blokų → „Paleisti“ → robotas vykdo komandas po vieną (vykdomas blokas paryškinamas). */
@@ -83,43 +84,61 @@ body{--ac:#1f9d55;--ac-ink:#fff;--ac-soft:#dcf5e5}
 .prog.p2{background:#fbf6ff}
 .prog .ph{margin:-2px 2px 6px;font:700 13px/1.35 var(--body);color:var(--soft)}
 .lst{display:grid;gap:4px}
-.row{display:flex;align-items:center;gap:8px;min-height:42px;padding:4px 4px 4px 6px;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 2px var(--bc,#9aa6bf),0 2px 0 rgba(18,26,51,.12);cursor:pointer;font:800 15.5px/1.2 var(--body);touch-action:manipulation;user-select:none;-webkit-user-select:none}
-.row .ic{width:30px;height:30px;border-radius:9px;background:var(--bg,#e8edf7);display:grid;place-items:center;flex:none}
-.row .ic svg{width:22px;height:22px}
+.row{display:flex;align-items:center;gap:8px;min-height:50px;padding:4px 4px 4px 4px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--bc,#9aa6bf),0 3px 0 rgba(18,26,51,.14);cursor:pointer;font:800 16.5px/1.2 var(--body);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.row .grip{width:26px;height:42px;border-radius:9px;display:grid;place-items:center;color:#a0a9bd;font:800 18px/1 var(--body);touch-action:none;cursor:grab;flex:none;letter-spacing:-2px}
+.row .grip:active{cursor:grabbing;background:rgba(0,0,0,.05)}
+.row .ic{width:38px;height:38px;border-radius:11px;background:var(--bg,#e8edf7);display:grid;place-items:center;flex:none}
+.row .ic svg{width:28px;height:28px}
 .row .lb{flex:1;min-width:0}
-.row .x{width:34px;height:34px;border:0;border-radius:10px;background:transparent;cursor:pointer;display:grid;place-items:center;color:#8a93a8;font:800 20px/1 var(--body);flex:none}
+.row .x{width:38px;height:38px;border:0;border-radius:10px;background:transparent;cursor:pointer;display:grid;place-items:center;color:#8a93a8;font:800 22px/1 var(--body);flex:none}
 .row .x:active{background:#ffe6df;color:var(--bad)}
 .stp{display:inline-flex;align-items:center;gap:2px;margin-left:6px;vertical-align:middle}
-.stp button{width:32px;height:32px;border:0;border-radius:9px;background:#fff;box-shadow:inset 0 0 0 2px var(--bc);font:800 18px/1 var(--body);cursor:pointer;padding:0}
-.stp output{min-width:26px;text-align:center;font:800 18px/1 var(--kid)}
-.box{border-radius:14px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 2px var(--bc);padding:0 0 5px}
-.box>.row{box-shadow:none;background:var(--bg);border-radius:12px 12px 0 0}
-.kids{display:grid;gap:4px;margin:5px 5px 0 16px;padding-left:8px;border-left:4px solid var(--bc)}
+.stp button{width:36px;height:36px;border:0;border-radius:10px;background:#fff;box-shadow:inset 0 0 0 2px var(--bc);font:800 20px/1 var(--body);cursor:pointer;padding:0}
+.stp output{min-width:28px;text-align:center;font:800 20px/1 var(--kid)}
+.box{border-radius:16px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 2.5px var(--bc);padding:0 0 6px}
+.box>.row{box-shadow:none;background:var(--bg);border-radius:14px 14px 0 0}
+.kids{display:grid;gap:0;margin:5px 6px 0 14px;padding-left:8px;border-left:5px solid var(--bc)}
 .els{margin:6px 0 0 8px;font:800 13px/1 var(--body);color:var(--bc2,#555);text-transform:uppercase;letter-spacing:.05em}
-.slot{min-height:34px;border-radius:10px;border:2px dashed #c3cbd9;display:flex;align-items:center;padding:0 10px;font:700 13px/1.2 var(--body);color:#8a93a8;cursor:pointer}
-.slot.cur{border-color:var(--ac);color:var(--ac);background:var(--ac-soft)}
-.caret{height:4px;border-radius:2px;background:var(--ac);margin:-2px 0;box-shadow:0 0 0 2px var(--ac-soft)}
-.row.cur{box-shadow:inset 0 0 0 3px #ffb000,0 0 0 3px #ffe08a}
-.row.err{box-shadow:inset 0 0 0 3px var(--bad),0 0 0 3px #ffc9bd}
+.gap{height:6px;border-radius:8px;transition:height .12s,background .12s}
+.slot{min-height:40px;border-radius:12px;border:2.5px dashed #b3bdd0;display:flex;align-items:center;justify-content:center;padding:0 10px;font:800 14px/1.2 var(--body);color:#8a93a8;cursor:pointer;margin-top:2px}
+.slot.cur{border-color:var(--ac);color:var(--ac);background:var(--ac-soft);animation:slotPulse 1.6s infinite}
+@keyframes slotPulse{50%{box-shadow:0 0 0 4px rgba(31,157,85,.18)}}
+.dragging .gap{height:28px;border:2.5px dashed #b3bdd0;margin:2px 0}
+.dragging .gap.hot,.dragging .slot.hot{background:var(--ac-soft);border-color:var(--ac);color:var(--ac);border-style:solid}
+.dragging .slot{min-height:46px}
+.row.cur{box-shadow:inset 0 0 0 3.5px #ffb000,0 0 0 3px #ffe08a}
+.row.err{box-shadow:inset 0 0 0 3.5px var(--bad),0 0 0 3px #ffc9bd}
+.row.ghost-src{opacity:.35}
 .running .row,.running .slot,.running .stp button{pointer-events:none}
-.running .x,.running .slot,.running .caret{visibility:hidden}
+.running .x,.running .slot,.running .grip{visibility:hidden}
+.running .gap{display:none}
 .k-F{--bc:#3f7fe0;--bg:#e2ecff}.k-L,.k-R{--bc:#7a5be0;--bg:#ece6ff}.k-W{--bc:#16a0c8;--bg:#ddf4fb}
 .k-rep{--bc:#e08a1a;--bg:#fff0d9}.k-if{--bc:#d43f7a;--bg:#ffe3ef;--bc2:#b52e64}.k-P{--bc:#2f9e5b;--bg:#dcf5e5}
 /* paletė */
 .pal{position:sticky;bottom:0;z-index:5;width:100%;max-width:600px;margin:0 auto;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));border-radius:18px 18px 0 0;background:#fff9e6;box-shadow:0 -2px 0 #e7d9ad,0 -10px 18px rgba(255,249,230,.9)}
-.pal h4{margin:0 2px 6px;font:800 12px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.pal h4{margin:0 2px 2px;font:800 12px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.pal .pn{margin:0 2px 6px;font:700 12.5px/1.3 var(--body);color:var(--soft)}
 .pb{display:flex;flex-wrap:wrap;gap:6px}
-.pk{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:4px 10px 4px 5px;border:0;border-radius:12px;background:#fff;cursor:pointer;font:800 14.5px/1.1 var(--body);box-shadow:inset 0 0 0 2px var(--bc),0 3px 0 rgba(18,26,51,.16);touch-action:manipulation}
-.pk .ic{width:30px;height:30px;border-radius:9px;background:var(--bg);display:grid;place-items:center}
-.pk .ic svg{width:22px;height:22px}
+.pk{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:68px;min-height:68px;padding:6px 8px 5px;border:0;border-radius:14px;background:#fff;cursor:grab;font:800 13.5px/1.1 var(--body);box-shadow:inset 0 0 0 2.5px var(--bc),0 3px 0 rgba(18,26,51,.16);touch-action:none;user-select:none;-webkit-user-select:none}
+.pk .ic{width:38px;height:38px;border-radius:11px;background:var(--bg);display:grid;place-items:center}
+.pk .ic svg{width:30px;height:30px}
 .pk:active{transform:translateY(2px)}
 .pk[disabled]{opacity:.35;pointer-events:none}
 .running .pk{opacity:.35;pointer-events:none}
+.pal.trash-hot{background:#ffe6df}
+.pal .trash{display:none;text-align:center;font:800 15px/1.3 var(--body);color:var(--bad);padding:18px 0}
+.mk-dragging .pal .trash{display:block}.mk-dragging .pal .pb,.mk-dragging .pal h4,.mk-dragging .pal .pn{display:none}
+.dgh{position:fixed;z-index:80;pointer-events:none;left:0;top:0;display:flex;align-items:center;gap:8px;padding:4px 14px 4px 6px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 3px var(--bc),0 10px 18px rgba(18,26,51,.3);font:800 16px/1.2 var(--body);transform:translate(-50%,-60%) rotate(-3deg)}
+.dgh .ic{width:38px;height:38px;border-radius:11px;background:var(--bg);display:grid;place-items:center}
+.dgh .ic svg{width:28px;height:28px}
+.coach{margin:0 0 10px}
+.coach .mk-bubble{font:700 15px/1.4 var(--body)}
+.demo{display:flex;width:100%;margin-top:8px;min-height:46px;font-size:17px}
 .go{display:flex;width:100%;max-width:600px;margin:4px auto 10px}
 .mk-why{max-width:600px;margin-inline:auto}
 .code{margin:6px 0;padding:8px 10px;border-radius:10px;background:#f3f6fb;font:800 14px/1.5 var(--body);white-space:pre-wrap}
 .fade{animation:mkIn .4s cubic-bezier(.2,1.2,.4,1)}
-@media (max-width:380px){.row{font-size:14.5px}.pk{font-size:13.5px;padding-right:8px}.stp button{width:30px}}
+@media (max-width:380px){.row{font-size:15px}.pk{min-width:62px;font-size:12.5px}}
 </style>
 </head>
 <body>
@@ -473,14 +492,14 @@ function lvlArt(i){
 }
 /* robotas iš viršaus (žiūri į viršų), centras 0,0 */
 function botTop(col){
-  return `<g class="bb"><rect x="-15" y="-11" width="6" height="22" rx="3" fill="#3a4256"/><rect x="9" y="-11" width="6" height="22" rx="3" fill="#3a4256"/>
+  return `<g class="bb"><g transform="scale(.84)"><path d="M-9-19 0-31 9-19Z" fill="#ffb000" stroke="${K}" stroke-width="2" stroke-linejoin="round"/><rect x="-15" y="-11" width="6" height="22" rx="3" fill="#3a4256"/><rect x="9" y="-11" width="6" height="22" rx="3" fill="#3a4256"/>
     <path d="M-14-8.5h4M-14-3h4M-14 2.5h4M-14 8h4M10-8.5h4M10-3h4M10 2.5h4M10 8h4" stroke="#6b7590" stroke-width="1.4"/>
     <rect x="-11" y="-12" width="22" height="24" rx="7" fill="${col[0]}" stroke="${K}" stroke-width="1.8"/>
     <rect x="-7" y="-14.5" width="14" height="7" rx="3.5" fill="#20283c" stroke="${K}" stroke-width="1.4"/>
     <circle cx="-3.4" cy="-11" r="1.9" fill="#7ff0ff"/><circle cx="3.4" cy="-11" r="1.9" fill="#7ff0ff"/>
     <circle cx="0" cy="2" r="5.5" fill="#fff" stroke="${K}" stroke-width="1.4"/><circle cx="0" cy="2" r="2.3" fill="${col[1]}"/>
     <path d="M-4-16 0-19.5 4-16" fill="none" stroke="${K}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M7.5-2 13-9" stroke="#0e7fa3" stroke-width="2.4" stroke-linecap="round"/><circle cx="13.5" cy="-9.5" r="2" fill="#7fd4ec" stroke="#0e7fa3" stroke-width="1.2"/></g>`;
+    <path d="M7.5-2 13-9" stroke="#0e7fa3" stroke-width="2.4" stroke-linecap="round"/><circle cx="13.5" cy="-9.5" r="2" fill="#7fd4ec" stroke="#0e7fa3" stroke-width="1.2"/></g></g>`;
 }
 /* robotas iš šono – pilnas veikėjas (meniu ir kolekcija) */
 function botSide(col, s){
@@ -526,6 +545,9 @@ function mapSvg(m, col, idp){
     s += `<g class="fl" id="${idp}f${x}_${y}" transform="translate(${x * C + C / 2} ${y * C + C / 2 + 2})"><g class="dry">${flowerSvg(FLC[j % 5], false)}</g><g class="wet">${flowerSvg(FLC[(x + y) % 5], true)}</g>
       <g class="drop" id="${idp}d${x}_${y}"><path d="M-6-14q2 4 0 6-2-2 0-6M2-17q2 4 0 6-2-2 0-6M8-13q2 4 0 6-2-2 0-6" fill="#3fb6e0"/></g></g>`;
   });
+  const sx = m.start.x * C + C / 2, sy = m.start.y * C + C / 2;
+  s += `<g transform="translate(${sx} ${sy}) rotate(${m.start.d * 90})" opacity=".55"><circle r="17" fill="none" stroke="#1f9d55" stroke-width="2.6" stroke-dasharray="4 4"/></g>`;
+  s += `<g id="${idp}trail"></g>`;
   s += `<g class="bot" id="${idp}bot">${botTop(col)}</g>`;
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Sodo žemėlapis">${s}</svg>`;
 }
@@ -604,13 +626,16 @@ function show(){
     </div>
     <div id="progs"></div>
     <div id="flow"></div>
-    <div class="pal" id="pal"><h4>${T.palette}</h4><div class="pb">${pal.map(p => {
+    <div class="pal" id="pal"><h4>${T.palette}</h4><p class="pn">${pal.includes("L") ? T.palSide : T.paletteHint}</p><div class="trash">${T.trash}</div><div class="pb">${pal.map(p => {
       const t = PK[p], lab = p === "ifF" ? T.b.ifShortF : p === "ifW" ? T.b.ifShortW : p === "rep" ? T.b.repShort : T.b[p];
       return `<button type="button" class="pk k-${t}" data-p="${p}" title="${T.bTip[p] || ""}"><span class="ic">${IC[p]}</span>${lab}</button>`; }).join("")}</div></div>`;
+  const co = cur.lvl === 0 && ti < 2 && T.coach[ti];
+  if(co) $("tcard").insertAdjacentHTML("afterbegin", `<div class="coach">${MK.guide(co)}</div>`);
+  if(co){ const b = document.createElement("button"); b.type = "button"; b.className = "mk-btn alt demo"; b.id = "demo"; b.textContent = "👀 " + T.demo; b.onclick = runDemo; $("solw").appendChild(b); }
   $("spd").classList.toggle("on", fast);
   drawMap(0);
   renderProg();
-  $("pal").onclick = e => { const b = e.target.closest(".pk"); if(!b || running || solved) return; MK.unlock(); addBlock(b.dataset.p); };
+  $("pal").onpointerdown = e => { const b = e.target.closest(".pk"); if(!b || running || solved || b.disabled) return; MK.unlock(); beginPress(e, { kind: "new", p: b.dataset.p, el: b }); };
   $("run").onclick = () => { MK.unlock(); running ? (stopReq = true) : runProg(); };
   $("spd").onclick = () => { fast = !fast; $("spd").classList.toggle("on", fast); $("spd").setAttribute("aria-pressed", fast); MK.sfx.tap(); };
   $("clr").onclick = () => { if(running || solved) return; MK.sfx.tap(); prog = cur.pre ? { main: clone(cur.pre.main), proc: clone(cur.pre.proc) } : { main: [], proc: [] }; cursor = { list: prog.main, idx: prog.main.length }; renderProg(); drawMap(gi); note(""); };
@@ -643,23 +668,29 @@ function listOwner(list){ // pagrindinė ar paprogramė
   let r = null; const go = (l, o) => { if(l === list) r = o; l.forEach(b => { if(b.body) go(b.body, o); if(b.els) go(b.els, o); }); };
   go(prog.main, "main"); go(prog.proc, "proc"); return r;
 }
-function addBlock(p){
-  if(count(prog.main) + count(prog.proc) >= MAXB) return;
-  const owner = listOwner(cursor.list);
-  if(p === "P" && owner === "proc") return;
+function makeBlock(p){
   let b;
   if(p === "rep") b = rep(cur.lvl >= 2 ? 4 : 3, []);
   else if(p === "ifF") b = ifn("f", []);
   else if(p === "ifW") b = ifn("w", []);
   else b = nd(p);
-  cursor.list.splice(cursor.idx, 0, b);
+  return b;
+}
+function addBlock(p, list, idx){
+  if(count(prog.main) + count(prog.proc) >= MAXB) return null;
+  list = list || cursor.list; idx = idx == null ? (list === cursor.list ? cursor.idx : list.length) : idx;
+  const owner = listOwner(list);
+  if(p === "P" && owner === "proc") return null;
+  const b = makeBlock(p);
+  list.splice(idx, 0, b);
   MK.sfx.tap();
-  if(b.body) cursor = { list: b.body, idx: 0 }; else cursor = { list: cursor.list, idx: cursor.idx + 1 };
+  if(b.body) cursor = { list: b.body, idx: 0 }; else cursor = { list, idx: idx + 1 };
   renderProg(b.id);
+  return b;
 }
 function rowHtml(b){
   const del = `<button type="button" class="x" data-del="${b.id}" aria-label="${T.del}">×</button>`;
-  const head = `<div class="row k-${b.t}" data-id="${b.id}"><span class="ic">${blockIcon(b)}</span><span class="lb">${blockLabel(b)}${b.t === "rep" ? `<span class="stp"><button type="button" data-dec="${b.id}" aria-label="−">−</button><output>${b.n}</output><button type="button" data-inc="${b.id}" aria-label="+">+</button></span>` : ""}</span>${del}</div>`;
+  const head = `<div class="row k-${b.t}" data-id="${b.id}"><span class="grip" data-grip="${b.id}" aria-label="Tempk">⋮⋮</span><span class="ic">${blockIcon(b)}</span><span class="lb">${blockLabel(b)}${b.t === "rep" ? `<span class="stp"><button type="button" data-dec="${b.id}" aria-label="−">−</button><output>${b.n}</output><button type="button" data-inc="${b.id}" aria-label="+">+</button></span>` : ""}</span>${del}</div>`;
   if(b.t === "rep") return `<div class="box k-rep">${head}<div class="kids">${listHtml(b.body)}</div></div>`;
   if(b.t === "if") return `<div class="box k-if">${head}<div class="kids">${listHtml(b.body)}</div><div class="els">${T.b.els}</div><div class="kids">${listHtml(b.els)}</div></div>`;
   return head;
@@ -668,10 +699,9 @@ const LREG = new Map(); let lregN = 0;
 function listHtml(list){
   const lid = "L" + (lregN++); LREG.set(lid, list);
   let s = "";
-  list.forEach((b, j) => { if(cursor.list === list && cursor.idx === j && j > 0) s += `<div class="caret"></div>`; s += rowHtml(b); });
+  list.forEach((b, j) => { s += `<div class="gap" data-l="${lid}" data-i="${j}"></div>`; if(cursor.list === list && cursor.idx === j && j > 0) s += `<div class="caret"></div>`; s += rowHtml(b); });
   const isCur = cursor.list === list && cursor.idx === list.length;
-  s += `<div class="slot${isCur ? " cur" : ""}" data-l="${lid}">${list.length || isCur ? T.slotIn : T.slotIn}</div>`;
-  if(cursor.list === list && cursor.idx === 0 && list.length) s = `<div class="caret"></div>` + s;
+  s += `<div class="slot${isCur ? " cur" : ""}" data-l="${lid}" data-i="${list.length}">${T.slotIn}</div>`;
   return s;
 }
 function renderProg(focusId){
@@ -683,10 +713,14 @@ function renderProg(focusId){
   let h = `<div class="prog" id="pm"><h3>${IC.F.replace("<svg", '<svg width="18" height="18"')}${T.main}</h3><div class="lst">${listHtml(prog.main)}</div></div>`;
   if(cur.hasProc) h += `<div class="prog p2" id="pp"><h3>${IC.P.replace("<svg", '<svg width="20" height="20"')}${T.proc}</h3><p class="ph">${T.procHint}</p><div class="lst">${listHtml(prog.proc)}</div></div>`;
   const pg = $("progs"); pg.innerHTML = h; pg.classList.toggle("running", running || solved);
-  pg.onclick = onProgClick;
+  pg.onclick = onProgClick; pg.onpointerdown = onProgDown;
   const pal = $("pal"); pal.classList.toggle("running", running || solved);
   const pb = pal.querySelector('[data-p="P"]'); if(pb) pb.disabled = listOwner(cursor.list) === "proc";
   if(focusId){ const r = pg.querySelector(`[data-id="${focusId}"]`); if(r && r.scrollIntoView){ const rc = r.getBoundingClientRect(); const pbx = pal.getBoundingClientRect(); if(rc.bottom > pbx.top - 6 || rc.top < 0) r.scrollIntoView({ block: "center", behavior: "smooth" }); } }
+}
+function onProgDown(e){
+  if(running || solved) return; const g = e.target.closest("[data-grip]"); if(!g) return;
+  beginPress(e, { kind: "move", nid: +g.dataset.grip });
 }
 function onProgClick(e){
   if(running || solved) return;
@@ -706,6 +740,72 @@ function markRow(id, cls){
   if(id == null) return; const r = document.querySelector(`#progs [data-id="${id}"]`); if(r) r.classList.add(cls || "cur");
 }
 
+
+/* ----- tempimas ----- */
+let press = null, dragSt = null;
+function blockHtml(p){ const t = PK[p], lab = p === "ifF" ? T.b.ifShortF : p === "ifW" ? T.b.ifShortW : p === "rep" ? T.b.repShort : T.b[p]; return `<span class="dgh k-${t}"><span class="ic">${IC[p]}</span>${lab}</span>`; }
+function beginPress(e, info){
+  if(e.button > 0) return; e.preventDefault();
+  press = Object.assign({ x: e.clientX, y: e.clientY, id: e.pointerId }, info);
+  window.addEventListener("pointermove", onPM); window.addEventListener("pointerup", onPU); window.addEventListener("pointercancel", onPC);
+}
+function zoneAt(x, y){
+  if(dragSt && dragSt.ghost) dragSt.ghost.style.display = "none";
+  const el = document.elementFromPoint(x, y); if(dragSt && dragSt.ghost) dragSt.ghost.style.display = "";
+  if(!el) return null; const z = el.closest(".gap, .slot[data-l]"); if(z && z.closest("#progs")) return z;
+  return el.closest("#pal") ? "trash" : null;
+}
+function onPM(e){
+  if(!press || e.pointerId !== press.id) return;
+  if(!dragSt){
+    if(Math.hypot(e.clientX - press.x, e.clientY - press.y) < 8) return;
+    let ghost;
+    if(press.kind === "new"){ const d = document.createElement("div"); d.innerHTML = blockHtml(press.p); ghost = d.firstElementChild; }
+    else { const f = findNode(press.nid); if(!f) { endDrag(); return; } const d = document.createElement("div"); d.innerHTML = blockHtml(f.b.t === "if" ? (f.b.c === "f" ? "ifF" : "ifW") : f.b.t); ghost = d.firstElementChild;
+      const r = document.querySelector(`#progs [data-id="${press.nid}"]`); if(r) r.classList.add("ghost-src"); }
+    const pl0 = $("pal"); pl0.style.minHeight = pl0.offsetHeight + "px"; document.body.appendChild(ghost); dragSt = { ghost, hot: null };
+    $("progs").classList.add("dragging"); document.body.classList.add("mk-dragging"); MK.sfx.tap();
+    dragSt.timer = setInterval(() => { const y = dragSt.y || 0; if(y && y < 90) window.scrollBy(0, -14); else if(y && y > window.innerHeight - 170) window.scrollBy(0, 14); }, 30);
+  }
+  dragSt.x = e.clientX; dragSt.y = e.clientY;
+  dragSt.ghost.style.left = e.clientX + "px"; dragSt.ghost.style.top = e.clientY + "px";
+  const z = zoneAt(e.clientX, e.clientY);
+  if(dragSt.hot && dragSt.hot !== z && dragSt.hot !== "trash") dragSt.hot.classList.remove("hot");
+  $("pal").classList.toggle("trash-hot", z === "trash" && press.kind === "move");
+  dragSt.hot = z; if(z && z !== "trash") z.classList.add("hot");
+}
+function endDrag(){
+  window.removeEventListener("pointermove", onPM); window.removeEventListener("pointerup", onPU); window.removeEventListener("pointercancel", onPC);
+  if(dragSt){ clearInterval(dragSt.timer); dragSt.ghost.remove(); if(dragSt.hot && dragSt.hot !== "trash") dragSt.hot.classList.remove("hot"); }
+  document.body.classList.remove("mk-dragging"); const pg = $("progs"); if(pg) pg.classList.remove("dragging"); const pl = $("pal"); if(pl){ pl.classList.remove("trash-hot"); pl.style.minHeight = ""; }
+  document.querySelectorAll(".ghost-src").forEach(r => r.classList.remove("ghost-src"));
+  const d = dragSt; dragSt = null; press = null; return d;
+}
+function onPC(){ endDrag(); }
+function onPU(e){
+  if(!press || e.pointerId !== press.id) return;
+  const p = press, d = dragSt;
+  if(!d){ endDrag(); // bakstelėjimas
+    if(p.kind === "new") addBlock(p.p); return; }
+  const z = d.hot; endDrag();
+  if(!z) return;
+  if(z === "trash"){ if(p.kind === "move"){ const f = findNode(p.nid); if(f){ f.list.splice(f.j, 1); if(!listAlive(cursor.list)) cursor = { list: f.list, idx: f.j }; MK.sfx.tap(); renderProg(); } } return; }
+  const list = LREG.get(z.dataset.l), idx = +z.dataset.i; if(!list) return;
+  if(p.kind === "new"){ addBlock(p.p, list, idx); return; }
+  const f = findNode(p.nid); if(!f) return;
+  // negalima dėti bloko į save pačią
+  const inside = (node, target) => { let r = false; const go = l => { if(l === target) r = true; l.forEach(b => { if(b.body) go(b.body); if(b.els) go(b.els); }); }; if(node.body) go(node.body); if(node.els) go(node.els); return r; };
+  if(inside(f.b, list)) { MK.sfx.bad(); return; }
+  f.list.splice(f.j, 1); let i2 = idx; if(f.list === list && f.j < idx) i2--;
+  list.splice(i2, 0, f.b); cursor = { list, idx: i2 + 1 }; MK.sfx.tap(); renderProg(f.b.id);
+}
+async function runDemo(){
+  if(running || solved) return; showed = true; const bt = $("demo"); if(bt) bt.remove();
+  prog = { main: [], proc: [] }; cursor = { list: prog.main, idx: 0 }; renderProg(); drawMap(0); note("");
+  for(const b of clone(cur.sol.main)){ prog.main.push(b); cursor = { list: prog.main, idx: prog.main.length }; MK.sfx.tap(); renderProg(b.id); await MK.wait(520); }
+  note(T.demoDone, "good");
+}
+
 /* ----- vykdymas ----- */
 function msgFor(res){
   const r = T.r;
@@ -713,11 +813,11 @@ function msgFor(res){
 }
 async function animate(g, e){
   const m = cur.maps[g]; drawMap(g); await MK.wait(fast ? 150 : 380);
-  let ang = m.start.d * 90;
+  let ang = m.start.d * 90, px = m.start.x, py = m.start.y;
   for(const s of e.tr){
     if(stopReq) return "stop";
     markRow(s.id);
-    if(s.e === "move"){ setBot(s.x, s.y, ang); MK.sfx.hop(Math.abs(s.x + s.y)); }
+    if(s.e === "move"){ const tl = $("mtrail"); if(tl) tl.insertAdjacentHTML("beforeend", `<circle cx="${px * C + C / 2}" cy="${py * C + C / 2}" r="5" fill="#1f9d55" opacity=".35"/>`); px = s.x; py = s.y; setBot(s.x, s.y, ang); MK.sfx.hop(Math.abs(s.x + s.y)); }
     else if(s.e === "turn"){ ang += s.s * 90; setBot(s.x, s.y, ang); MK.sfx.tap(); }
     else if(s.e === "water"){ const [x, y] = s.k.split(","); const f = $(`mf${x}_${y}`), d = $(`md${x}_${y}`); if(d){ d.classList.remove("dgo"); void d.getBBox; d.classList.add("dgo"); } MK.sfx.whoosh(); setTimeout(() => f && f.classList.add("on"), fast ? 120 : 300); }
     else if(s.e === "bump"){ const b = $("mbot"); b.classList.remove("bump"); void b.getBoundingClientRect(); b.classList.add("bump"); MK.sfx.bad(); }
@@ -802,7 +902,7 @@ function finish(){
     next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(planted) });
 }
 Object.defineProperty(window, "__cur", { get: () => cur });
-window.__MK_TEST = { t1, t2, t3, t4, t5, genLevel, exec, count, flat, solves, clone, get prog(){ return prog; }, set prog(v){ prog = v; cursor = { list: prog.main, idx: prog.main.length }; renderProg(); }, runProg, LEVELS };
+window.__MK_TEST = { get cur(){ return cur; }, t1, t2, t3, t4, t5, genLevel, exec, count, flat, solves, clone, get prog(){ return prog; }, set prog(v){ prog = v; cursor = { list: prog.main, idx: prog.main.length }; renderProg(); }, runProg, LEVELS };
 showMenu();
 })();
 </script>

@@ -40,9 +40,18 @@ window.MK_T = {
   main: "Programa", proc: "Paprogramė P",
   procHint: "Čia aprašyk, ką robotas darys, kai bus iškviesta paprogramė P.",
   emptySlot: "Paliesk komandą apačioje – ji atsiras čia",
-  slotIn: "+ dėti čia",
+  slotIn: "Tempk komandą čia",
   palette: "Komandos",
-  paletteHint: "Paliesk komandą – ji įsidės pažymėtoje vietoje. Paliesk bloką programoje, kad naujas bloką dėtum po juo.",
+  paletteHint: "Tempk komandą į programą (arba paliesk – ji įsidės į pažymėtą vietą).",
+  palSide: "Kairėn ir Dešinėn – paties roboto pusės, tarsi tu stovėtum jo vietoje.",
+  coach: [
+    "Tempk komandas iš apačios į „Programa“. „Pirmyn“ – robotas pažengia vieną langelį ten, kur žiūri geltona rodyklė. Tada spausk „Paleisti“.",
+    "Robotui reikia pasisukti. „Kairėn“ ir „Dešinėn“ – roboto pusės (kaip tavo rankos, jei stovėtum jo vietoje). Geltona rodyklė rodo, kur jis žiūri."
+  ],
+  demo: "Parodyk, kaip",
+  demoDone: "Programa sudėta. Spausk „Paleisti“ ir stebėk, kaip robotas eina – vykdomas blokas paryškinamas.",
+  trash: "Nuvilk čia, kad ištrintum",
+  startMark: "Pradžia",
   del: "Ištrinti",
   /* blokų pavadinimai */
   b: {
