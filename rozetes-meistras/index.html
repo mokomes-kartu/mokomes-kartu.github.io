@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rozetės meistras – MokomėsKartu.lt</title>
+<meta name="description" content="9 klasės matematikos žaidimas: centriniai ir įbrėžtiniai kampai, lankai, liestinės ir susikertančios stygos. Spręsk apskritimo brėžinių galvosūkius ir sudėk katedros rozetės vitražą.">
+<meta name="theme-color" content="#fff9e6">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/rozetes-meistras/tekstai.lt.js"></script>
+<script src="/rozetes-meistras/uzduotys.js"></script>
+<style>
+/* Meniu: dirbtuvės piešinys, „Katedros rozetė“ (kolekcija), lygiai, „Noriu pasimokyti“.
+   Užduotis: tikslus apskritimo brėžinys, atsakymo langeliai (x, y, P …), skaičių klaviatūra, 3 bandymai. */
+body{--ac:#7a3fb8;--ac-ink:#fff;--ac-soft:#eadffa}
+.mk-title{font-size:clamp(16px,4.4vw,24px)}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(32px,8.4vw,52px)}
+.mk-hero p{max-width:46ch;font-size:16px}
+.art{width:min(100%,480px);border-radius:24px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15);background:#efe3cf}
+.art svg{display:block;width:100%;height:auto}
+.art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 18px/1.2 var(--kid)}
+.col p{margin:4px 0 8px;color:var(--soft);font-weight:700;font-size:14.5px}
+.col p b{color:var(--ink)}
+.rose{display:block;width:min(100%,300px);height:auto;margin:0 auto}
+.rose .new{animation:glassIn .9s cubic-bezier(.2,1.5,.4,1) backwards}
+@keyframes glassIn{from{opacity:0;transform:scale(.6)}}
+.rose .pane{transform-box:fill-box;transform-origin:center}
+.mk-lvl-t b{font-size:19px}
+
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.card{width:100%;max-width:560px;margin:0 auto 10px;padding:12px 14px 14px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12)}
+.fade{animation:mkIn .35s backwards}
+.txt{margin:0 0 8px;font:700 16px/1.45 var(--body)}
+.txt .mk-fr{font-family:var(--body);margin:0 .2em}
+.ex{display:block;margin:6px 0;padding:6px 10px;border-radius:9px;background:var(--ac-soft);font:800 15.5px/1.45 var(--body)}
+.fig{margin:0 auto 10px;border-radius:14px;overflow:hidden;box-shadow:0 0 0 2.5px var(--ink);background:#fbf7ec;max-width:400px}
+.fig svg{display:block;width:100%;height:auto}
+.fig .glass{transition:fill .6s}
+.fig.done .shine{animation:shine 1.1s ease-out .15s backwards}
+@keyframes shine{from{opacity:.9;transform:translate(-40%,-40%)}to{opacity:0;transform:translate(40%,40%)}}
+.lfig{max-width:260px;margin:8px auto;border-radius:12px;overflow:hidden;box-shadow:0 0 0 2px var(--ink);background:#fbf7ec}
+.lfig svg{display:block;width:100%;height:auto}
+.boxes{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 0 8px}
+.bx{display:inline-flex;align-items:center;gap:6px;height:52px;padding:0 12px 0 14px;border:0;border-radius:14px;background:#fff7d6;cursor:pointer;
+  box-shadow:inset 0 0 0 2.5px var(--ink);font:800 20px/1 var(--body);touch-action:manipulation}
+.bx i{font-style:italic;color:#b9360c}
+.bx output{display:inline-block;min-width:58px;height:36px;padding:0 6px;border-radius:9px;background:#fff;box-shadow:inset 0 0 0 2px #cbbf9a;font:800 22px/36px var(--kid);text-align:center}
+.bx.on{background:#ffe88a}.bx.on output{box-shadow:inset 0 0 0 2.5px var(--ac)}
+.bx.on output::after{content:"";display:inline-block;width:2px;height:20px;margin-left:2px;background:var(--ac);vertical-align:-3px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.bx.no{background:#ffe1da}.bx.no output{box-shadow:inset 0 0 0 2.5px #e5484d;color:#b3261e}
+.bx.ok{background:#dff7e8;pointer-events:none}.bx.ok output{box-shadow:inset 0 0 0 2.5px var(--good);color:#17703f}
+.bx.shown{background:#eef1f6;pointer-events:none}.bx.shown output{color:#17703f}
+.bx[disabled]{pointer-events:none}
+.pad{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:0 0 6px}
+.pad button{height:48px;border:0;border-radius:12px;background:#fff;cursor:pointer;font:800 22px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 rgba(18,26,51,.16);touch-action:manipulation;padding:0}
+.pad button:active{transform:translateY(2px);box-shadow:inset 0 0 0 2.5px var(--ink)}
+.pad .del{background:#f4f1e8}
+.pad .del svg{width:26px;height:26px;display:block;margin:0 auto}
+.pad .go{background:var(--ac);color:#fff;box-shadow:0 3px 0 rgba(18,26,51,.3);font-size:15px;font-family:var(--body)}
+.pad .go svg{width:26px;height:26px;display:block;margin:0 auto}
+.pad button[disabled]{opacity:.4;pointer-events:none}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;font:800 13.5px/1.2 var(--body);color:var(--soft)}
+.note{margin:0 0 8px;min-height:22px;font:700 15px/1.4 var(--body);text-align:center}
+.note:empty{min-height:0;margin:0}
+.note.bad{color:#b3261e}.note.ok{color:#17703f}
+.note i{display:block;font-style:normal;color:var(--ink);margin-top:3px;text-align:left;padding:7px 10px;border-radius:10px;background:#fff7d6}
+#flow .mk-btn{width:100%;max-width:560px;display:flex;margin:0 auto 14px}
+.mk-why-t p{line-height:1.55}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="col" id="col"></div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="ptsChip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="stage"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, U = window.MK_RZ, GAME = "rozetes-meistras", GRADES = [9];
+const $ = id => document.getElementById(id), K = "#121a33", f1 = x => Math.round(x * 10) / 10;
+const rad = d => d * Math.PI / 180;
+const FT = `font-family="Manrope,system-ui,sans-serif" font-weight="800"`;
+const LC = ["#e5484d", "#f08c1a", "#d9a400", "#2fb36b", "#2f8fe5", "#8b5cf6"];           /* lygių (žiedlapių) spalvos */
+const TINT = ["#ffe1e2", "#ffe9cf", "#fff2bf", "#d9f5e4", "#d8ebfd", "#e8e0fe"];
+
+/* ================= brėžinys ================= */
+const dSeg = (p, s) => { const vx = s[2] - s[0], vy = s[3] - s[1], l2 = vx * vx + vy * vy; let t = l2 ? ((p[0] - s[0]) * vx + (p[1] - s[1]) * vy) / l2 : 0; t = Math.max(0, Math.min(1, t)); return Math.hypot(p[0] - s[0] - t * vx, p[1] - s[1] - t * vy); };
+function draw(t, solved, lvl, mini){
+  const d = t.d, pad = 31, W = 340, P = d.P;
+  const segs = d.seg.filter(s => solved || s.k !== "s").map(s => { const A = P[s.a], B = P[s.b], L = Math.hypot(B[0] - A[0], B[1] - A[1]), ux = (B[0] - A[0]) / L, uy = (B[1] - A[1]) / L; return { k: s.k, p: [A[0] - ux * s.e1, A[1] - uy * s.e1], q: [B[0] + ux * s.e2, B[1] + uy * s.e2] }; });
+  let x0 = -1, x1 = 1, y0 = -1, y1 = 1;
+  const ext = q => { x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]); };
+  Object.values(P).forEach(ext); segs.forEach(s => { ext(s.p); ext(s.q); });
+  const sc = Math.min((W - 2 * pad) / (x1 - x0), 250 / (y1 - y0), 106), H = Math.round((y1 - y0) * sc + 2 * pad);
+  const X = x => W / 2 + (x - (x0 + x1) / 2) * sc, Y = y => pad + (y1 - y) * sc, XY = q => [X(q[0]), Y(q[1])], C = XY([0, 0]), Rp = sc;
+  const obs = segs.map(s => XY(s.p).concat(XY(s.q))), lab = [];
+  const score = q => { let m = 99; for(const s of obs) m = Math.min(m, dSeg(q, s)); m = Math.min(m, Math.abs(Math.hypot(q[0] - C[0], q[1] - C[1]) - Rp)); for(const l of lab) m = Math.min(m, Math.hypot(q[0] - l[0], q[1] - l[1]) - l[2]); return m; };
+  const cl = k => k === "q" ? (solved ? "#17703f" : "#b9360c") : K;
+  const lt = (o, deg) => o.k === "q" ? (solved ? o.val + deg : o.id) : o.val + deg;
+  const txt = (q, s, col, it, size) => `<text x="${f1(q[0])}" y="${f1(q[1])}" text-anchor="middle" dominant-baseline="central" ${FT} font-size="${size || 13}" fill="${col}"${it ? ` font-style="italic"` : ""} stroke="#fbf7ec" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">${s}</text>`;
+  let under = "", over = "", labels = "";
+  /* nuspalvinta išpjova */
+  d.sec.forEach(s => { const a = XY(P[s.a]), b = XY(P[s.b]), v = (d.th[s.b] - d.th[s.a] + 360) % 360; under += `<path d="M${f1(C[0])} ${f1(C[1])}L${f1(a[0])} ${f1(a[1])}A${f1(Rp)} ${f1(Rp)} 0 ${v > 180 ? 1 : 0} 0 ${f1(b[0])} ${f1(b[1])}Z" fill="#c9b4ee"/>`; });
+  /* kampai */
+  const grp = {}, rOf = v => v < 30 ? 31 : v < 60 ? 23 : v <= 110 ? 18 : 14;
+  d.ang.forEach(o => { if(o.k !== "s" && o.k !== "r") (grp[o.v] = grp[o.v] || []).push(o); });
+  d.ang.forEach(o => {
+    if(o.k === "s" && !solved) return;
+    const V = XY(P[o.v]), A = XY(P[o.a]), B = XY(P[o.b]), a1 = Math.atan2(A[1] - V[1], A[0] - V[0]), a2 = Math.atan2(B[1] - V[1], B[0] - V[0]);
+    let df = a2 - a1; while(df > Math.PI) df -= 2 * Math.PI; while(df <= -Math.PI) df += 2 * Math.PI;
+    if(o.k === "s" || o.k === "r"){ const u = 9, c1 = Math.cos(a1), s1 = Math.sin(a1), c2 = Math.cos(a2), s2 = Math.sin(a2);
+      under += `<path d="M${f1(V[0] + u * c1)} ${f1(V[1] + u * s1)}L${f1(V[0] + u * (c1 + c2))} ${f1(V[1] + u * (s1 + s2))}L${f1(V[0] + u * c2)} ${f1(V[1] + u * s2)}" fill="none" stroke="${o.k === "s" ? "#17703f" : K}" stroke-width="1.6"/>`;
+      lab.push([V[0] + u * (c1 + c2) * .6, V[1] + u * (s1 + s2) * .6, 8]); return; }
+    const g = grp[o.v], mid = a1 + df * (o.lf || .5); let r = rOf(o.val), lr = r + 12.5;
+    if(g.length >= 3){ r = 20; lr = 40; }
+    else if(g.length === 2){ const w = g[0] === o ? g[1] : g[0]; if(o.val > w.val){ const b1 = Math.atan2(XY(P[w.a])[1] - V[1], XY(P[w.a])[0] - V[0]), b2 = Math.atan2(XY(P[w.b])[1] - V[1], XY(P[w.b])[0] - V[0]); let e = b2 - b1; while(e > Math.PI) e -= 2 * Math.PI; while(e <= -Math.PI) e += 2 * Math.PI;
+      let dm = Math.abs(a1 + df / 2 - (b1 + e / 2)) % (2 * Math.PI); if(dm > Math.PI) dm = 2 * Math.PI - dm; if(dm <= rad((o.val - w.val) / 2 + 1)){ r = rOf(w.val) + 14; lr = r + 12.5; } } }
+    const fill = o.k === "q" ? (solved ? "#bdeccd" : "#ffd95e") : "#cfe6f7";
+    under += `<path d="M${f1(V[0])} ${f1(V[1])}L${f1(V[0] + r * Math.cos(a1))} ${f1(V[1] + r * Math.sin(a1))}A${r} ${r} 0 0 ${df > 0 ? 1 : 0} ${f1(V[0] + r * Math.cos(a2))} ${f1(V[1] + r * Math.sin(a2))}Z" fill="${fill}" stroke="${K}" stroke-width="1.2" stroke-linejoin="round"/>`;
+    const q = [V[0] + lr * Math.cos(mid), V[1] + lr * Math.sin(mid)];
+    labels += txt(q, lt(o, "°"), cl(o.k), o.k === "q" && !solved, o.k === "q" && !solved ? 15 : 12.5);
+    lab.push([q[0], q[1], 11], [V[0] + r * .6 * Math.cos(mid), V[1] + r * .6 * Math.sin(mid), r * .5]);
+  });
+  /* lankai */
+  d.arc.forEach(o => { const a = XY(P[o.a]), b = XY(P[o.b]), m = rad(d.th[o.a] + o.val / 2), col = o.k === "q" ? (solved ? "#2fb36b" : "#f59e0b") : "#2f8fe5";
+    over += `<path d="M${f1(a[0])} ${f1(a[1])}A${f1(Rp)} ${f1(Rp)} 0 ${o.val > 180 ? 1 : 0} 0 ${f1(b[0])} ${f1(b[1])}" fill="none" stroke="${col}" stroke-width="5.5" stroke-linecap="round"/>`;
+    const q = [C[0] + (Rp + 17) * Math.cos(m), C[1] - (Rp + 17) * Math.sin(m)]; labels += txt(q, lt(o, "°"), o.k === "q" ? cl("q") : "#175fa8", o.k === "q" && !solved, o.k === "q" && !solved ? 15 : 12.5); lab.push([q[0], q[1], 12]); });
+  /* atkarpos */
+  let lines = "";
+  segs.forEach(s => { const a = XY(s.p), b = XY(s.q); lines += `<path d="M${f1(a[0])} ${f1(a[1])}L${f1(b[0])} ${f1(b[1])}" stroke="${s.k === "s" ? "#17703f" : K}" stroke-width="${s.k === "r" ? 1.9 : 2.3}" stroke-linecap="round"${s.k === "s" ? ` stroke-dasharray="5 4"` : ""}/>`; });
+  d.tk.forEach(o => { const a = XY(P[o.a]), b = XY(P[o.b]), mx = a[0] + (b[0] - a[0]) * .3, my = a[1] + (b[1] - a[1]) * .3, L = Math.hypot(b[0] - a[0], b[1] - a[1]), ux = (b[0] - a[0]) / L, uy = (b[1] - a[1]) / L;
+    for(let i = 0; i < o.n; i++){ const o2 = (i - (o.n - 1) / 2) * 4; lines += `<path d="M${f1(mx + ux * o2 - uy * 5)} ${f1(my + uy * o2 + ux * 5)}L${f1(mx + ux * o2 + uy * 5)} ${f1(my + uy * o2 - ux * 5)}" stroke="#e5484d" stroke-width="2.2" stroke-linecap="round"/>`; }
+    lab.push([mx, my, 6]); });
+  /* ilgiai */
+  d.len.forEach(o => { const a = XY(P[o.a]), b = XY(P[o.b]), mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, L = Math.hypot(b[0] - a[0], b[1] - a[1]), nx = -(b[1] - a[1]) / L, ny = (b[0] - a[0]) / L;
+    const c = [[mx + nx * 12, my + ny * 12], [mx - nx * 12, my - ny * 12]], q = score(c[0]) >= score(c[1]) ? c[0] : c[1];
+    labels += txt(q, o.k === "q" ? (solved ? o.val : o.id) : o.val, cl(o.k), o.k === "q" && !solved, o.k === "q" && !solved ? 15 : 13); lab.push([q[0], q[1], 10]); });
+  /* taškai ir jų raidės */
+  let pts = d.dots.map(q => { const a = XY(q); return `<circle cx="${f1(a[0])}" cy="${f1(a[1])}" r="2.6" fill="#fff" stroke="${K}" stroke-width="1.6"/>`; }).join("");
+  Object.keys(P).forEach(n => { const a = XY(P[n]), onC = Math.abs(Math.hypot(P[n][0], P[n][1]) - 1) < 1e-6, pr = n === "O" ? null : Math.atan2(a[1] - C[1], a[0] - C[0]);
+    pts += `<circle cx="${f1(a[0])}" cy="${f1(a[1])}" r="${n === "O" ? 2.8 : 3.3}" fill="${K}"/>`;
+    let best = null, bs = -1e9; for(let i = 0; i < 24; i++){ const g = i * Math.PI / 12, q = [a[0] + 14 * Math.cos(g), a[1] + 14 * Math.sin(g)]; if(q[0] < 9 || q[0] > W - 9 || q[1] < 9 || q[1] > H - 9) continue;
+      const s = Math.min(score(q), 13) + (pr == null ? 0 : Math.cos(g - pr) * (onC ? 5 : 2)); if(s > bs){ bs = s; best = q; } }
+    labels += txt(best, n, K, false, 13.5); lab.push([best[0], best[1], 9]); });
+  const tint = solved && lvl != null ? TINT[lvl] : "#fff";
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${T.figAria}">${mini ? "" : `<defs><clipPath id="cc"><circle cx="${f1(C[0])}" cy="${f1(C[1])}" r="${f1(Rp)}"/></clipPath></defs>`}
+    <circle class="glass" cx="${f1(C[0])}" cy="${f1(C[1])}" r="${f1(Rp)}" fill="${tint}"/>
+    ${solved && !mini ? `<g clip-path="url(#cc)"><rect class="shine" x="${f1(C[0] - Rp)}" y="${f1(C[1] - Rp)}" width="${f1(2 * Rp)}" height="${f1(2 * Rp)}" fill="url(#sh)" opacity="0" style="transform-box:fill-box"/></g><defs><linearGradient id="sh" x1="0" y1="0" x2="1" y2="1"><stop offset=".35" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".95"/><stop offset=".65" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>` : ""}
+    ${under}<circle cx="${f1(C[0])}" cy="${f1(C[1])}" r="${f1(Rp)}" fill="none" stroke="${K}" stroke-width="2.6"/>${over}${lines}${pts}${labels}</svg>`;
+}
+
+/* ================= piešiniai ================= */
+const ring = (cx, cy, r0, r1, a0, a1) => { const p = (r, a) => `${f1(cx + r * Math.sin(rad(a)))} ${f1(cy - r * Math.cos(rad(a)))}`; return `M${p(r0, a0)}L${p(r1, a0)}A${r1} ${r1} 0 0 1 ${p(r1, a1)}L${p(r0, a1)}A${r0} ${r0} 0 0 0 ${p(r0, a0)}Z`; };
+function roseSvg(st, prev){
+  const B = [[33, 62], [66, 96], [100, 128]], OP = [.55, .78, 1]; let s = "", n = 0, tot = st.reduce((a, b) => a + b, 0);
+  for(let i = 0; i < 6; i++) for(let j = 0; j < 3; j++){ const on = st[i] > j, fresh = on && prev && prev[i] <= j;
+    s += `<path class="pane${fresh ? " new" : ""}" d="${ring(150, 150, B[j][0], B[j][1], i * 60 + 3.5 - j, i * 60 + 56.5 + j)}" fill="${on ? LC[i] : "#e6e0d0"}" fill-opacity="${on ? OP[j] : 1}" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"${fresh ? ` style="animation-delay:${.25 + n++ * .25}s"` : ""}/>`;
+    if(on) s += `<path d="${ring(150, 150, B[j][0] + 5, B[j][0] + 9, i * 60 + 10, i * 60 + 30)}" fill="#fff" opacity=".55"/>`; }
+  let knobs = ""; for(let i = 0; i < 12; i++) knobs += `<circle cx="${f1(150 + 139 * Math.sin(rad(i * 30)))}" cy="${f1(150 - 139 * Math.cos(rad(i * 30)))}" r="4.2" fill="#f4ecd9" stroke="${K}" stroke-width="1.6"/>`;
+  let fl = ""; for(let i = 0; i < 6; i++) fl += `<ellipse cx="150" cy="136" rx="6.5" ry="12" fill="${tot >= 18 ? "#ffc61a" : tot ? "#f6e3a1" : "#efe9da"}" stroke="${K}" stroke-width="1.6" transform="rotate(${i * 60} 150 150)"/>`;
+  return `<svg class="rose" viewBox="0 0 300 300" role="img" aria-label="${T.colAria(tot)}"><circle cx="150" cy="150" r="147" fill="#cbbb9a" stroke="${K}" stroke-width="2.6"/><circle cx="150" cy="150" r="132" fill="#b7a583" stroke="${K}" stroke-width="2"/>${knobs}
+    <circle cx="150" cy="150" r="30" fill="#b7a583"/>${s}<circle cx="150" cy="150" r="29" fill="#fbf4e2" stroke="${K}" stroke-width="2.2"/>${fl}<circle cx="150" cy="150" r="6" fill="${tot >= 18 ? "#e5484d" : "#cbbb9a"}" stroke="${K}" stroke-width="1.6"/></svg>`;
+}
+function heroSvg(){
+  const S = `stroke="${K}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"`; let w = "", rays = "";
+  for(let i = 0; i < 6; i++){ w += `<path d="${ring(88, 84, 16, 34, i * 60 + 4, i * 60 + 56)}" fill="${LC[i]}" fill-opacity=".75" ${S} stroke-width="1.6"/><path d="${ring(88, 84, 38, 58, i * 60 + 3, i * 60 + 57)}" fill="${LC[(i + 3) % 6]}" ${S} stroke-width="1.6"/>`; }
+  [["#e5484d", 40, 150, 96], ["#2f8fe5", 96, 150, 150], ["#f08c1a", 150, 150, 196]].forEach(c => { rays += `<path d="M${c[1] === 40 ? 52 : c[1] === 96 ? 76 : 104} 130L${c[3] === 96 ? 96 : c[3] === 150 ? 124 : 140} 124L${c[3] + 30} 190H${c[1]}Z" fill="${c[0]}" opacity=".16"/>`; });
+  return `<svg viewBox="0 0 340 196" role="img" aria-label="${T.heroAria}">
+    <rect width="340" height="196" fill="#efe3cf"/><path d="M0 40H340M0 80H20M156 80H340M0 120H16M160 120H340M40 0V40M120 0V40M200 0V40M280 0V40M180 40V80M250 40V80M320 40V80M215 80V120M290 80V120M180 120V160M255 120V160M325 120V160" stroke="#dccdb0" stroke-width="2"/>
+    <rect y="160" width="340" height="36" fill="#c9a57a"/><path d="M0 160H340" stroke="${K}" stroke-width="2"/><path d="M60 160l-14 36M150 160l-4 36M240 160l8 36" stroke="#b08a5c" stroke-width="2"/>${rays}
+    <circle cx="88" cy="84" r="68" fill="#cbbb9a" ${S} stroke-width="2.4"/><circle cx="88" cy="84" r="61" fill="#b7a583" ${S} stroke-width="1.6"/>${w}<circle cx="88" cy="84" r="13" fill="#ffc61a" ${S}/><circle cx="88" cy="84" r="4" fill="#e5484d" ${S} stroke-width="1.4"/>
+    <!-- brėžinio lenta -->
+    <path d="M268 62l-10 104M312 62l10 104M290 60v-10" stroke="#8a5a2b" stroke-width="4" stroke-linecap="round"/><rect x="254" y="56" width="72" height="78" rx="4" fill="#fffdf6" ${S}/>
+    <circle cx="290" cy="94" r="25" fill="#f3ecff" stroke="${K}" stroke-width="1.8"/><path d="M270 109L310 109L282 70.300Z" fill="none" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/><path d="M270 109L290 94L310 109" fill="none" stroke="#7a3fb8" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M285.500 77L288 81.500L282 84" fill="#ffd95e" stroke="${K}" stroke-width="1"/><circle cx="290" cy="94" r="1.8" fill="${K}"/><circle cx="270" cy="109" r="2" fill="${K}"/><circle cx="310" cy="109" r="2" fill="${K}"/><circle cx="282" cy="70.300" r="2" fill="${K}"/>
+    <!-- meistrė Rūta -->
+    <g transform="translate(206 0)">
+      <ellipse cx="0" cy="178" rx="26" ry="5" fill="#000" opacity=".12"/>
+      <path d="M-9 128L-11 170M9 128L11 170" stroke="#2c3e63" stroke-width="11" stroke-linecap="round"/><path d="M-19 174q8-9 15 0zM5 174q8-9 15 0z" fill="#7a4b2a" ${S}/>
+      <path d="M-15 84q15-8 30 0l5 50h-40z" fill="#3aa7a0" ${S}/><path d="M-11 96h22l5 46h-32z" fill="#f3e2bd" ${S}/><path d="M-11 96l-3-12M11 96l3-12" stroke="${K}" stroke-width="2"/><rect x="-6" y="112" width="12" height="10" rx="2" fill="#e7d19d" ${S} stroke-width="1.5"/>
+      <path d="M-15 88q-14 14-12 34" fill="none" stroke="#3aa7a0" stroke-width="9" stroke-linecap="round"/><path d="M-15 88q-14 14-12 34" fill="none" ${S} stroke-width="0"/><circle cx="-27" cy="124" r="5" fill="#f2c9a0" ${S}/>
+      <path d="M15 88q16 0 30-12" fill="none" stroke="#3aa7a0" stroke-width="9" stroke-linecap="round"/><circle cx="46" cy="75" r="5" fill="#f2c9a0" ${S}/>
+      <!-- skriestuvas -->
+      <path d="M-27 122L-37 160M-27 122L-17 160" stroke="#8a5a2b" stroke-width="3.2" stroke-linecap="round"/><path d="M-37 160l-1 6M-17 160l1 6" stroke="${K}" stroke-width="2" stroke-linecap="round"/><circle cx="-27" cy="119" r="3.2" fill="#ffc61a" ${S} stroke-width="1.5"/>
+      <rect x="-4" y="72" width="8" height="10" fill="#f2c9a0" ${S}/><circle cx="0" cy="62" r="14" fill="#f2c9a0" ${S}/>
+      <path d="M-14 62q-2-17 14-17q16 0 14 17q-6-9-14-9q-8 0-14 9z" fill="#7a3b1e" ${S}/><circle cx="0" cy="43" r="6.500" fill="#7a3b1e" ${S}/>
+      <circle cx="-5" cy="63" r="1.7" fill="${K}"/><circle cx="6" cy="63" r="1.7" fill="${K}"/><path d="M-4 69q4 3.500 9 0" fill="none" stroke="${K}" stroke-width="1.7" stroke-linecap="round"/><circle cx="-9" cy="67" r="2.6" fill="#ff8aa0" opacity=".6"/><circle cx="10" cy="67" r="2.6" fill="#ff8aa0" opacity=".6"/>
+    </g></svg>`;
+}
+const ico = s => `<svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="20" fill="#fff" stroke="${K}" stroke-width="2.4"/>${s}</svg>`, IS = `fill="none" stroke="${K}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"`;
+const ICONS = [
+  ico(`<path d="M28 28L48 28A20 20 0 0 0 38 10.700Z" fill="${LC[0]}" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"/><circle cx="28" cy="28" r="2.4" fill="${K}"/>`),
+  ico(`<path d="M12.700 40.900L43.300 40.900M12.700 40.900L33.200 8.700L43.300 40.900" ${IS}/><path d="M33.200 8.700l-4.300 6.800a8 8 0 0 0 6.700 0.800z" fill="${LC[1]}" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/>`),
+  ico(`<path d="M8 28H48M8 28L38 10.700L48 28" ${IS}/><path d="M33.700 13.200l2.500 4.300 4.300-2.500" fill="none" stroke="${LC[0]}" stroke-width="2.2"/><circle cx="28" cy="28" r="2.2" fill="${K}"/>`),
+  ico(`<path d="M28 28L42.100 13.900" ${IS}/><path d="M30 1.800L54 25.800" stroke="${LC[3]}" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="28" r="2.2" fill="${K}"/><circle cx="42.100" cy="13.900" r="2.6" fill="${K}"/>`),
+  ico(`<path d="M10 20L46.300 36M17 44.700L41 12.800" ${IS}/><circle cx="30.800" cy="29.200" r="3" fill="${LC[4]}" stroke="${K}" stroke-width="1.6"/>`),
+  `<svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="22" fill="#cbbb9a" stroke="${K}" stroke-width="2.4"/>${[0, 1, 2, 3, 4, 5].map(i => `<path d="${ring(28, 28, 7, 18, i * 60 + 5, i * 60 + 55)}" fill="${LC[i]}" stroke="${K}" stroke-width="1.5" stroke-linejoin="round"/>`).join("")}<circle cx="28" cy="28" r="4.500" fill="#ffc61a" stroke="${K}" stroke-width="1.5"/></svg>`
+];
+const LEVELS = T.levels.map((l, i) => Object.assign({ art: ICONS[i] }, l));
+function termsSvg(){
+  const lb = (x, y, s, c) => `<text x="${x}" y="${y}" text-anchor="middle" ${FT} font-size="11.500" fill="${c || K}" stroke="#fbf7ec" stroke-width="3" paint-order="stroke">${s}</text>`, t = T.terms;
+  return `<svg viewBox="0 0 340 250" role="img" aria-label="${T.learn[0].name}"><path d="M150 120L231.300 73A94 94 0 0 0 150 26Z" fill="#c9b4ee"/><path d="M68.600 167A94 94 0 0 0 231.400 167Z" fill="#bfe3f7"/>
+    <circle cx="150" cy="120" r="94" fill="none" stroke="${K}" stroke-width="2.6"/><path d="M150 120L231.300 73M150 120V26M68.600 167H231.400M56 120H244" stroke="${K}" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M176.500 13.500L286.500 123.500" stroke="#2fb36b" stroke-width="2.6" stroke-linecap="round"/><path d="M30 150L120 8" stroke="#e5484d" stroke-width="2.6" stroke-linecap="round"/><circle cx="150" cy="120" r="3" fill="${K}"/><circle cx="216.500" cy="53.500" r="3.200" fill="${K}"/>
+    ${lb(183, 62, t.ispjova)}${lb(150, 198, t.nuopjova)}${lb(150, 160, t.styga)}${lb(104, 114, t.skersmuo)}${lb(200, 108, t.spindulys)}${lb(292, 84, t.liestine, "#17703f")}${lb(46, 44, t.kirstine, "#b3261e")}${lb(141, 132, "O")}</svg>`;
+}
+
+/* ================= meniu ================= */
+const menu = $("menu"), play = $("play"), stage = $("stage"), app = $("app");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("ptsL").textContent = T.pts;
+const stars = () => { const b = MK.best(GAME); return LEVELS.map(l => Math.min(3, b[l.id] || 0)); };
+function renderCol(prev){ const st = stars(), n = st.reduce((a, b) => a + b, 0); $("col").innerHTML = `<h2>${T.colH}</h2><p>${T.colP(n, T.ranks[n >= 18 ? 3 : n >= 10 ? 2 : n >= 4 ? 1 : 0])}</p>${roseSvg(st, prev)}`; }
+function showMenu(prev){
+  play.hidden = true; menu.hidden = false; $("heroArt").innerHTML = heroSvg(); renderCol(prev);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  $("learn").querySelectorAll(".lfig").forEach(el => { const k = el.dataset.f; el.innerHTML = k === "terms" ? termsSvg() : draw(U.G[k](), true, null, true); });
+  window.scrollTo(0, 0);
+}
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, pts = 0, dots = null, st0 = null, tries = 0, locked = true, vals = {}, done = {}, stale = {}, act = null;
+function start(i){
+  L = i; const rec = MK.get("mk-" + GAME + "-eile", {}), r = rec[i] || [];
+  tasks = U.round(i, r); rec[i] = r.concat(tasks.map(t => t.sk)).slice(-40); MK.set("mk-" + GAME + "-eile", rec);
+  ti = 0; okN = 0; pts = 0; $("pts").textContent = 0; st0 = stars();
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+function award(n){ if(n){ pts += n; const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); } }
+function note(cls, s){ const n = $("note"); if(n){ n.className = "note " + (cls || ""); n.innerHTML = s; } }
+function boxes(){
+  cur.unk.forEach(u => { const b = $("bx-" + u.id); b.querySelector("output").textContent = vals[u.id] || ""; b.classList.toggle("on", !locked && act === u.id); });
+}
+function show(){
+  cur = tasks[ti]; dots.cur(ti); tries = 0; locked = false; vals = {}; done = {}; stale = {}; act = cur.unk[0].id; window.scrollTo({ top: 0 });
+  stage.innerHTML = `<div class="card fade"><p class="txt">${cur.q}</p><div class="fig" id="fig">${draw(cur, false, L)}</div>
+    <div class="boxes" id="boxes">${cur.unk.map(u => `<button type="button" class="bx" id="bx-${u.id}" data-id="${u.id}" aria-label="${T.boxAria(u.id)}"><i>${u.id}</i> = <output></output>${u.unit}</button>`).join("")}</div>
+    <p class="note" id="note" role="status" aria-live="polite"></p>
+    <div class="pad" id="pad">${[1, 2, 3, 4, 5].map(n => `<button type="button" data-k="${n}">${n}</button>`).join("")}<button type="button" class="del" data-k="del" aria-label="${T.del}"><svg viewBox="0 0 24 24"><path d="M9 5h11v14H9l-6-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 9.500l5 5M17 9.500l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      ${[6, 7, 8, 9, 0].map(n => `<button type="button" data-k="${n}">${n}</button>`).join("")}<button type="button" class="go" data-k="go" id="go" aria-label="${T.check}"><svg viewBox="0 0 24 24"><path d="M5 12.500l4.500 4.500L19 7.500" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    <div class="row"><span id="tr">${T.tries(0)}</span><span>${T.check}: ✓</span></div></div><div id="flow"></div>`;
+  $("boxes").onclick = e => { const b = e.target.closest(".bx"); if(!b || locked || done[b.dataset.id]) return; act = b.dataset.id; b.classList.remove("no"); MK.sfx.tap(); boxes(); };
+  $("pad").onclick = e => { const b = e.target.closest("button"); if(b) key(b.dataset.k); };
+  boxes();
+}
+function key(k){
+  if(locked || !cur) return;
+  if(k === "go") return check();
+  const b = $("bx-" + act); b.classList.remove("no"); let v = vals[act] || "";
+  if(stale[act]){ v = ""; stale[act] = 0; }
+  if(k === "del") v = v.slice(0, -1); else if(v.length < 3) v = (v === "0" ? "" : v) + k;
+  vals[act] = v; MK.sfx.tap(); note("", ""); boxes();
+}
+document.addEventListener("keydown", e => {
+  if(play.hidden || locked || e.ctrlKey || e.metaKey || e.altKey) return;
+  if(/^[0-9]$/.test(e.key)) key(e.key); else if(e.key === "Backspace"){ e.preventDefault(); key("del"); } else if(e.key === "Enter"){ if(document.activeElement && document.activeElement.id === "next") return; e.preventDefault(); key("go"); }
+  else if(e.key === "Tab" && cur.unk.length > 1){ e.preventDefault(); const open = cur.unk.filter(u => !done[u.id]), i = open.findIndex(u => u.id === act); act = open[(i + 1) % open.length].id; boxes(); }
+});
+function check(){
+  const open = cur.unk.filter(u => !done[u.id]), miss = open.find(u => !vals[u.id]);
+  if(miss){ act = miss.id; boxes(); return note("bad", T.empty); }
+  let wrong = 0;
+  open.forEach(u => { const b = $("bx-" + u.id); if(+vals[u.id] === u.val){ done[u.id] = 1; b.classList.add("ok"); b.classList.remove("on", "no"); } else { wrong++; b.classList.add("no"); stale[u.id] = 1; } });
+  if(!wrong) return close(true);
+  tries++; $("tr").textContent = T.tries(tries); MK.sfx.bad();
+  const fb = $("boxes"); fb.classList.remove("mk-shake"); void fb.offsetWidth; fb.classList.add("mk-shake");
+  if(tries >= 3){ cur.unk.forEach(u => { if(!done[u.id]){ const b = $("bx-" + u.id); vals[u.id] = String(u.val); b.classList.remove("no", "on"); b.classList.add("shown"); } }); boxes(); return close(false); }
+  act = cur.unk.find(u => !done[u.id]).id; boxes();
+  note("bad", (wrong < open.length || Object.keys(done).length ? T.missPart : T.miss) + (tries === 2 ? `<i><b>${T.hint}</b> ${cur.hint}</i>` : ""));
+}
+function close(ok){
+  locked = true; boxes(); const first = ok && tries === 0; dots.mark(ti, first); if(first) okN++;
+  if(ok){ award([10, 6, 3][tries]); MK.sfx.good(); } else MK.sfx.bad();
+  note("", ""); $("pad").hidden = true; $("tr").parentNode.hidden = true;
+  const fg = $("fig"); fg.innerHTML = draw(cur, true, L); fg.classList.add("done");
+  const d = document.createElement("div"); d.innerHTML = MK.why({ ok, head: ok ? MK.praise() : T.shown, body: cur.why });
+  $("flow").appendChild(d.firstElementChild);
+  const go = document.createElement("button"); go.type = "button"; go.className = "mk-btn"; go.id = "next"; go.textContent = ti < tasks.length - 1 ? T.next : T.finish;
+  go.onclick = () => { MK.sfx.tap(); ti++; ti < tasks.length ? show() : finish(); };
+  $("flow").appendChild(go); setTimeout(() => go.scrollIntoView({ behavior: "smooth", block: "nearest" }), 120);
+}
+function finish(){
+  const n = tasks.length, s = MK.starsFor(okN, n); MK.best(GAME, LEVELS[L].id, s); cur = null;
+  MK.result({ stars: s, title: `${okN} / ${n}`, text: T.res(okN, n, pts), next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(st0) });
+}
+window.__mk = { U, T, draw, get cur(){ return cur; } };
+showMenu();
+})();
+</script>
+</body>
+</html>
