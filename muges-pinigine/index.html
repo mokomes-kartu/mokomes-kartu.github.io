@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mugės piniginė – MokomėsKartu.lt</title>
+<meta name="description" content="2 klasės matematikos žaidimas apie pinigus: sumokėk tiksliai monetomis ir banknotais, sudėk tą pačią sumą kitaip, apskaičiuok naują kainą, dviejų pirkinių kainą ir grąžą.">
+<meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/muges-pinigine/tekstai.lt.js"></script>
+<style>
+/* Meniu: mugės prekystalis, pirkinių kolekcija, lygiai. Užduotis: prekystalio scena, klausimas, padėklas „Ant prekystalio“,
+   piniginė (baigtiniai pinigai) arba kasa (neriboti pinigai), pelėdžiuko užuomina ir mygtukas. */
+body{--ac:#e8590c;--ac-ink:#fff;--ac-soft:#ffe8d6}
+@media (max-width:380px){.mk-title{font-size:17px}}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(34px,8.6vw,54px)}
+.mk-hero p{max-width:40ch;font-size:16.5px}
+.art{width:min(100%,480px);border-radius:24px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15);background:#cfeefc}
+.art svg{display:block;width:100%;height:auto}
+.art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 19px/1.2 var(--kid)}
+.col p{margin:4px 0 10px;color:var(--soft);font-weight:700;font-size:14.5px}
+.shelf{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.gd{border-radius:12px;background:#fff6ea;box-shadow:inset 0 0 0 2px var(--ink);padding:3px;aspect-ratio:1;display:grid;place-items:center}
+.gd svg{display:block;width:100%;height:auto}
+.gd.off{background:#f3efe2;box-shadow:inset 0 0 0 2px #cfc4a2}
+.gd.off svg{opacity:.22;filter:grayscale(1)}
+.gd.new{animation:mkPop .6s cubic-bezier(.2,1.6,.4,1)}
+
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.wrap{width:100%;max-width:520px;margin:0 auto}
+.scn{margin-bottom:8px}
+.q{margin:0 0 8px;padding:10px 14px;border-radius:18px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 18px/1.35 var(--kid)}
+.q b{color:var(--ac);white-space:nowrap}
+.box{position:relative;margin:0 0 8px;padding:20px 8px 8px;border-radius:18px;min-height:86px}
+.box h3{position:absolute;left:12px;top:-9px;margin:0;padding:1px 10px;border-radius:999px;background:var(--ink);color:#fff;font:800 12.5px/1.5 var(--body)}
+.tray{background:#f4e2c4;box-shadow:inset 0 0 0 2.5px var(--ink),inset 0 -6px 0 #dcc194}
+.wal{background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.ms{display:flex;flex-wrap:wrap;gap:3px 4px;align-items:center;justify-content:center;min-height:54px}
+.ms i{font:700 14.5px/1.3 var(--body);color:var(--soft);font-style:normal;text-align:center;padding:0 6px}
+.info{margin:6px 4px 0;font:800 15.5px/1.3 var(--body);text-align:center;color:var(--ink)}
+.info b{color:var(--ac)}
+.m{border:0;background:none;padding:2px;margin:0;cursor:pointer;border-radius:50%;touch-action:manipulation;transition:transform .1s;animation:mIn .25s backwards}
+.m.n{border-radius:8px}
+.m:active{transform:scale(.9)}
+.m svg{display:block;filter:drop-shadow(0 2.5px 0 rgba(18,26,51,.25))}
+.m[disabled]{cursor:default}
+.m.gone{visibility:hidden;animation:none}
+.c1 svg{width:40px}.c2 svg{width:43px}.c5 svg{width:47px}.c10 svg{width:44px}.c20 svg{width:48px}.c50 svg{width:52px}.c100 svg{width:50px}.c200 svg{width:54px}
+.n svg{width:86px}
+@keyframes mIn{from{transform:scale(.6);opacity:0}}
+.piles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.pile{position:relative;padding:20px 4px 8px;border-radius:18px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);min-height:120px}
+.pile h3{position:absolute;left:12px;top:-9px;margin:0;padding:1px 10px;border-radius:999px;background:var(--ink);color:#fff;font:800 12.5px/1.5 var(--body)}
+.pile .m{animation:none;cursor:default}
+.ans{display:grid;gap:8px;margin-bottom:8px}
+.ans.r3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ans.r4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.a{min-height:58px;padding:8px 6px;border:0;border-radius:16px;background:#fff;cursor:pointer;font:800 19px/1.2 var(--kid);color:var(--ink);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.16);transition:transform .1s;touch-action:manipulation}
+.a:active{transform:translateY(3px)}
+.a.ok{background:#d9f7e6;box-shadow:inset 0 0 0 3px var(--good),0 5px 0 rgba(18,26,51,.1)}
+.a.no{background:#ffe6df;box-shadow:inset 0 0 0 3px var(--bad);opacity:.7}
+.a[disabled]{pointer-events:none}
+.mk-guide{margin:2px 0 10px}
+.mk-guide .mk-owl{width:60px;height:62px}
+.mk-guide{grid-template-columns:60px minmax(0,1fr)}
+.mk-bubble{font-size:16.5px}
+.mk-bubble b{color:var(--ac)}
+.go{width:100%}
+.fly{animation:fly .7s cubic-bezier(.3,.8,.4,1) forwards}
+@keyframes fly{40%{transform:translate(-20px,-34px) scale(1.25)}100%{transform:translate(-128px,6px) scale(.5);opacity:.2}}
+.fade{animation:mkIn .35s backwards}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="col" id="col"></div>
+    <div id="levels"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="bChip"><small id="bL"></small><span id="bN">0</span></span></div>
+    <div class="wrap" id="stage"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, GAME = "muges-pinigine", GRADES = [2], fmt = T.fmt;
+const R = MK.rnd, P = MK.pick, SH = MK.shuffle, $ = id => document.getElementById(id);
+const K = "#121a33", S = `stroke="${K}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"`;
+
+/* ================= piešiniai: prekės ================= */
+const ICON = {
+  obuolys: `<path d="M0-8c-9-6-16 2-13 11 2 8 8 12 13 9 5 3 11-1 13-9 3-9-4-17-13-11z" fill="#e5243b" ${S}/><path d="M0-8q1-6 5-8" fill="none" ${S}/><path d="M2-12q6-4 9 0-5 4-9 0z" fill="#5cc65a" ${S}/>`,
+  morka: `<path d="M-5-7 7-2-11 16z" fill="#ff8a1f" ${S}/><path d="M1-5q-3-9-8-9M2-5q1-10 6-11M3-4q6-6 11-4" fill="none" stroke="#2fa84f" stroke-width="2.6" stroke-linecap="round"/>`,
+  riestainis: `<circle r="13" fill="#e5a14a" ${S}/><circle r="5" fill="#fff6ea" ${S}/><path d="M-8-6l2 1M6-9l1 2M9 4l-2 1M-6 8l1-2" ${S}/>`,
+  saldainis: `<path d="M-8-5-17-9v14l9-4zM8-5l9-4v14l-9-4z" fill="#ffc61a" ${S}/><ellipse cy="-2" rx="9" ry="7" fill="#ff4f5e" ${S}/><path d="M-3-8q4 6 0 12" fill="none" stroke="#fff" stroke-width="2"/>`,
+  piestukas: `<path d="M-13 9 8-12l6 6-21 21-8 2z" fill="#ffc61a" ${S}/><path d="M8-12l3-3q3-1 5 1t1 5l-3 3z" fill="#ff8ab0" ${S}/><path d="M-15 17l2-8 6 6z" fill="#f6dcae" ${S}/>`,
+  balionas: `<ellipse cy="-4" rx="11" ry="13" fill="#6b4dff" ${S}/><path d="M-2 9h4l-2-3z" fill="#6b4dff" ${S}/><path d="M0 9q-4 5 1 9" fill="none" ${S}/><path d="M-5-10q2-4 6-4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`,
+  svilpukas: `<path d="M-13 4q0-10 10-10 4 0 6-4 3-5 8-3l5 4-6 1q0 14-12 16-11 1-11-4z" fill="#d98a4a" ${S}/><circle cx="9" cy="-9" r="1.3" fill="${K}"/><path d="M-13 4l-5 4" ${S}/><circle cx="-3" cy="3" r="2" fill="${K}"/><path d="M-9 9q5 3 10 0" fill="none" stroke="#fff" stroke-width="1.4"/>`,
+  pienas: `<path d="M-8-8l4-7h8l4 7v22h-16z" fill="#fff" ${S}/><path d="M-8-8h16" ${S}/><rect x="-8" y="-1" width="16" height="8" fill="#13a8d6" ${S}/>`,
+  ledai: `<path d="M-8-2 0 17 8-2z" fill="#e5a14a" ${S}/><circle cy="-7" r="9" fill="#ff8ab0" ${S}/><circle cx="-3" cy="-10" r="1.6" fill="#fff"/>`,
+  duona: `<path d="M-15 10v-12q0-10 15-10t15 10v12z" fill="#d9a05b" ${S}/><path d="M-7-9l3 5M0-10l3 5M7-9l3 5" fill="none" ${S}/>`,
+  gele: `<path d="M0 2v15" ${S}/><path d="M0 12q-7-1-8-7 7 0 8 7z" fill="#5cc65a" ${S}/><g fill="#ff8ab0" ${S}><circle cy="-13" r="5"/><circle cx="7" cy="-8" r="5"/><circle cx="5" cy="0" r="5"/><circle cx="-5" cy="0" r="5"/><circle cx="-7" cy="-8" r="5"/></g><circle cy="-6" r="4" fill="#ffc61a" ${S}/>`,
+  kojines: `<path d="M-13-14h9v13l7 5q3 3 0 6t-7 1l-9-7z" fill="#ff8a1f" ${S}/><path d="M3-12h9v13l4 4q3 3 0 6t-7 1l-6-6z" fill="#ffc61a" ${S}/><path d="M-13-9h9M3-7h9" ${S}/>`,
+  suris: `<path d="M-15 8v-9l22-11 8 11v9z" fill="#ffc61a" ${S}/><path d="M-15-1h30" ${S}/><circle cx="-5" cy="4" r="2.2" fill="#e8a400"/><circle cx="6" cy="3" r="3" fill="#e8a400"/><circle cx="4" cy="-6" r="2" fill="#e8a400"/>`,
+  puodelis: `<path d="M-11-8h18v14q0 7-7 7h-4q-7 0-7-7z" fill="#ff3d9a" ${S}/><path d="M7-4h3q5 0 5 5t-5 5h-3" fill="none" ${S}/><path d="M-6-12q2-2 0-5M0-12q2-2 0-5" fill="none" ${S}/>`,
+  masinele: `<path d="M-16 6v-7l6-1 4-7h11l5 7 6 2v6z" fill="#e5243b" ${S}/><path d="M-5-7h4v5h-6zM2-7h3l3 5h-6z" fill="#bfe9ff" ${S}/><circle cx="-8" cy="7" r="4" fill="${K}"/><circle cx="9" cy="7" r="4" fill="${K}"/>`,
+  pyragas: `<path d="M-15 12v-12l30-6v18z" fill="#f6dcae" ${S}/><path d="M-15 0l30-6-12-7z" fill="#ff8ab0" ${S}/><path d="M-15 6l30-3" ${S}/><circle cx="4" cy="-9" r="2.5" fill="#e5243b" ${S}/>`,
+  laivelis: `<path d="M-16 5h32l-5 9h-22z" fill="#a8693a" ${S}/><path d="M0 5v-21l11 16z" fill="#fff" ${S}/><path d="M-2 3v-14l-8 14z" fill="#ffc61a" ${S}/>`,
+  kamuolys: `<circle r="14" fill="#fff" ${S}/><path d="M0-6l6 4-2 7h-8l-2-7z" fill="${K}"/><path d="M0-6v-8M6-2l7-3M4 5l5 7M-4 5l-5 7M-6-2l-7-3" ${S}/>`,
+  medus: `<rect x="-10" y="-8" width="20" height="23" rx="5" fill="#ffb41f" ${S}/><rect x="-11" y="-14" width="22" height="7" rx="2" fill="#fff" ${S}/><rect x="-6" y="-1" width="12" height="8" rx="2" fill="#fff6ea" ${S}/>`,
+  knyga: `<path d="M-14-12h24q4 0 4 4v20h-24q-4 0-4-4z" fill="#2f6bff" ${S}/><path d="M-14 8q0-4 4-4h24" fill="none" ${S}/><path d="M-6-6h12M-6-1h8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`,
+  kepure: `<path d="M-12 6q-2-18 12-18t12 18z" fill="#2fa84f" ${S}/><rect x="-14" y="5" width="28" height="7" rx="3.5" fill="#fff" ${S}/><circle cy="-14" r="3.5" fill="#fff" ${S}/>`,
+  aitvaras: `<path d="M0-17 11-3 0 9-11-3z" fill="#13a8d6" ${S}/><path d="M0-17v26M-11-3h22" ${S}/><path d="M0 9q-5 4 0 7t-2 3" fill="none" ${S}/>`,
+  meskiukas: `<circle cx="-9" cy="-11" r="5" fill="#a8693a" ${S}/><circle cx="9" cy="-11" r="5" fill="#a8693a" ${S}/><ellipse cy="9" rx="10" ry="9" fill="#a8693a" ${S}/><circle cy="-5" r="10" fill="#a8693a" ${S}/><ellipse cy="-2" rx="4.5" ry="3.5" fill="#f6dcae"/><circle cx="-4" cy="-7" r="1.3" fill="${K}"/><circle cx="4" cy="-7" r="1.3" fill="${K}"/><circle cy="-3" r="1.4" fill="${K}"/>`,
+  bugnelis: `<path d="M-13-4v12q0 5 13 5t13-5v-12" fill="#e5243b" ${S}/><ellipse cy="-4" rx="13" ry="5" fill="#fff6ea" ${S}/><path d="M-9 2l5 9 4-9 4 9 5-9" fill="none" stroke="#ffc61a" stroke-width="1.6"/><path d="M-4-6-14-16M4-6l10-10" ${S}/>`
+};
+const GOODS = T.goods.map(g => ({ id: g[0], nom: g[1], acc: g[2], lo: g[3], hi: g[4] }));
+const gsvg = id => `<svg viewBox="-20 -20 40 40" aria-hidden="true">${ICON[id]}</svg>`;
+
+/* ================= piešiniai: pinigai (savi, apibendrinti) ================= */
+const NOTE = { 500: ["#c3cdb8", "#8f9d80"], 1000: ["#f6b1a6", "#d9756a"], 2000: ["#a9cbf2", "#5d93d6"], 5000: ["#f7c98a", "#de9a3c"] };
+function msvg(v){
+  if(v >= 500){
+    const c = NOTE[v], e = v / 100;
+    return `<svg viewBox="0 0 90 48" aria-hidden="true"><rect x="1.5" y="1.5" width="87" height="45" rx="6" fill="${c[0]}" stroke="${K}" stroke-width="2.4"/><rect x="6" y="6" width="78" height="36" rx="3" fill="none" stroke="${c[1]}" stroke-width="1.6"/>
+      <path d="M58 40v-14q0-8 8-8t8 8v14" fill="none" stroke="${c[1]}" stroke-width="3"/><circle cx="18" cy="14" r="4" fill="${c[1]}"/>
+      <text x="34" y="33" text-anchor="middle" font-family="Grandstander,Arial,sans-serif" font-weight="800" font-size="24" fill="${K}">${e}</text><text x="34" y="43" text-anchor="middle" font-family="Arial,sans-serif" font-weight="800" font-size="8.5" fill="${K}">Eur</text></svg>`;
+  }
+  const eur = v >= 100, n = eur ? v / 100 : v;
+  const [o, i] = v === 100 ? ["#e8b93a", "#e3e7ee"] : v === 200 ? ["#dfe3ea", "#f0c64a"] : v >= 10 ? ["#f0c64a", "#f0c64a"] : ["#d58f5c", "#d58f5c"];
+  return `<svg viewBox="0 0 50 50" aria-hidden="true"><circle cx="25" cy="25" r="23" fill="${o}" stroke="${K}" stroke-width="2.4"/><circle cx="25" cy="25" r="${eur ? 15.5 : 19}" fill="${i}" stroke="${eur ? K : "rgba(18,26,51,.3)"}" stroke-width="${eur ? 1.4 : 1.2}"/>
+    <text x="25" y="${eur ? 29 : 28}" text-anchor="middle" font-family="Grandstander,Arial,sans-serif" font-weight="800" font-size="${n >= 10 ? 18 : 20}" fill="${K}">${n}</text><text x="25" y="${eur ? 38 : 38.5}" text-anchor="middle" font-family="Arial,sans-serif" font-weight="800" font-size="${eur ? 7.5 : 8.5}" fill="${K}">${eur ? "Eur" : "ct"}</text></svg>`;
+}
+const mbtn = (v, attr, cls) => `<button type="button" class="m ${v >= 500 ? "n" : "c" + v} ${cls || ""}" ${attr || ""} aria-label="${v >= 500 ? T.aria.note(fmt(v)) : T.aria.coin(fmt(v))}">${msvg(v)}</button>`;
+
+/* ================= piešiniai: žmogeliukai ir prekystalis ================= */
+function person(o){
+  const sk = o.skin || "#f6c9a0", girl = o.girl;
+  const arm = o.up ? "M14-64q14-6 17-22" : "M14-64q10 12 7 28", hand = o.up ? [31, -88] : [21, -35];
+  return `<g transform="translate(${o.x} ${o.y}) scale(${o.s || 1})">
+    <ellipse rx="22" ry="4.5" fill="#000" opacity=".13"/>
+    <path d="M-8-36v32M8-36v32" stroke="${o.pants}" stroke-width="10" stroke-linecap="round"/>
+    <path d="M-15-2h11M4-2h11" stroke="${K}" stroke-width="6.5" stroke-linecap="round"/>
+    ${girl ? `<path d="M-13-70q13-7 26 0l9 44h-44z" fill="${o.shirt}" ${S}/>` : `<path d="M-14-70q14-7 28 0l2 38h-32z" fill="${o.shirt}" ${S}/>`}
+    <path d="M-14-64q-10 12-7 28" fill="none" stroke="${o.shirt}" stroke-width="8.5" stroke-linecap="round"/><path d="${arm}" fill="none" stroke="${o.shirt}" stroke-width="8.5" stroke-linecap="round"/>
+    <circle cx="-21" cy="-35" r="5" fill="${sk}" ${S}/><circle cx="${hand[0]}" cy="${hand[1]}" r="5" fill="${sk}" ${S}/>
+    ${girl ? `<path d="M-17-84q-5 22 3 30M17-84q5 22-3 30" fill="none" stroke="${o.hair}" stroke-width="9" stroke-linecap="round"/>` : ""}
+    <circle cy="-86" r="15.5" fill="${sk}" ${S}/>
+    <path d="${girl ? "M-16-86q-1-18 16-18t16 18q-8-10-16-10t-16 10z" : "M-15-88q-2-15 15-16t15 16q-6-8-15-7t-15 7z"}" fill="${o.hair}" ${S}/>
+    ${o.hat ? `<path d="M-17-97h34l-4-9h-26z" fill="${o.hat}" ${S}/>` : ""}
+    <circle cx="-5.5" cy="-85" r="1.9" fill="${K}"/><circle cx="5.5" cy="-85" r="1.9" fill="${K}"/><path d="M-5-79q5 5 10 0" fill="none" ${S}/>
+    <circle cx="-10" cy="-80" r="2.6" fill="#ff8aa0" opacity=".6"/><circle cx="10" cy="-80" r="2.6" fill="#ff8aa0" opacity=".6"/>
+    ${o.extra || ""}</g>`;
+}
+const SELLERS = [
+  { girl: 1, shirt: "#2fa84f", pants: "#6b4b2a", hair: "#7a4b2a", hat: "" },
+  { girl: 0, shirt: "#2f6bff", pants: "#3b3f55", hair: "#3a2a1c", hat: "#ffc61a" },
+  { girl: 1, shirt: "#b04dff", pants: "#3b3f55", hair: "#e0a23a", hat: "" },
+  { girl: 0, shirt: "#e5243b", pants: "#6b4b2a", hair: "#c9c9c9", hat: "#2fa84f", skin: "#eab98c" }
+];
+const tag = (x, y, s, o) => { o = o || {}; const w = Math.max(44, s.length * 7.4 + 14);
+  return `<g transform="translate(${x} ${y})"><path d="M0 12v10" stroke="${K}" stroke-width="1.6"/><rect x="${-w / 2}" y="-12" width="${w}" height="24" rx="6" fill="${o.acc ? "#e8590c" : "#fff"}" stroke="${K}" stroke-width="2"/>
+    <text y="5" text-anchor="middle" font-family="Grandstander,Arial,sans-serif" font-weight="800" font-size="13.5" fill="${o.acc ? "#fff" : K}">${s}</text>${o.old ? `<path d="M${-w / 2 + 5} 4L${w / 2 - 5}-4" stroke="#e5243b" stroke-width="2.4" stroke-linecap="round"/>` : ""}</g>`; };
+/* sc: { items:[{id, tag, old}], newTag, paid, seller, hero } */
+function scene(sc){
+  const n = sc.items.length, xs = n === 1 ? [186] : n === 2 ? [150, 222] : [128, 186, 244], sel = SELLERS[sc.seller || 0];
+  let it = "";
+  sc.items.forEach((g, i) => {
+    it += `<g class="it" transform="translate(${xs[i]} 100)"><g transform="scale(${n === 3 ? 1.15 : 1.4})">${ICON[g.id]}</g></g>`;
+    if(g.tag) it += tag(xs[i] + (sc.newTag && n === 1 ? -36 : 0), 50, g.tag, { old: g.old });
+  });
+  if(sc.newTag) it += tag(n === 1 ? xs[0] + 42 : 186, n === 1 ? 50 : 22, sc.newTag, { acc: 1 });
+  const paid = sc.paid ? `<g transform="translate(${sc.paid >= 500 ? 62 : 72} 62)"><svg x="0" y="0" width="${sc.paid >= 500 ? 46 : 28}" height="${sc.paid >= 500 ? 25 : 28}" viewBox="${sc.paid >= 500 ? "0 0 90 48" : "0 0 50 50"}">${msvg(sc.paid).replace(/^<svg[^>]*>|<\/svg>$/g, "")}</svg></g>` : "";
+  const flags = ["#e5243b", "#ffc61a", "#2fa84f", "#13a8d6", "#b04dff"];
+  let bunt = ""; for(let i = 0; i < 12; i++){ const x = 8 + i * 30, y = 6 + Math.sin(i / 11 * Math.PI) * 7; bunt += `<path d="M${x} ${y}h18l-9 14z" fill="${flags[i % 5]}" ${S}/>`; }
+  let aw = ""; for(let i = 0; i < 8; i++) aw += `<path d="M${98 + i * 22} 22h22v18q-11 9-22 0z" fill="${i % 2 ? "#fff" : "#e8590c"}" ${S}/>`;
+  return `<div class="art scn"><svg viewBox="0 0 360 172" role="img" aria-label="${sc.hero ? T.heroAria : T.aria.scene}">
+    <rect width="360" height="172" fill="#cfeefc"/><circle cx="330" cy="26" r="15" fill="#ffd95a"/>
+    <path d="M0 132q90-14 180-4t180-6v50H0z" fill="#b7e39a"/><path d="M0 150q120-10 360 0v22H0z" fill="#9fd581"/>
+    ${sc.hero ? `<path d="M0 8q180 14 360 0" fill="none" ${S}/>${bunt}` : ""}
+    <path d="M104 40v96M268 40v96" stroke="#8a5a2b" stroke-width="6" stroke-linecap="round"/>${aw}
+    <rect x="98" y="112" width="176" height="10" rx="3" fill="#c98d4b" ${S}/><path d="M104 122h164v32H104z" fill="#f4e2c4" ${S}/><path d="M104 122h164" stroke="${K}" stroke-width="1.6"/>
+    <path d="M124 122v32M164 122v32M208 122v32M248 122v32" stroke="#e8590c" stroke-width="5" opacity=".35"/>
+    ${it}
+    ${person({ x: 52, y: 160, s: .78, girl: 0, shirt: "#ffc61a", pants: "#2f6bff", hair: "#a8693a", up: !!sc.paid || sc.hero,
+      extra: `<g transform="translate(-21 -30)"><path d="M-9-2h18l-3 16h-12z" fill="#e5a14a" ${S}/><path d="M-7-2q7-14 14 0" fill="none" ${S}/></g>` })}${paid}
+    ${person(Object.assign({ x: 312, y: 160, s: .86 }, sel))}
+  </svg></div>`;
+}
+
+/* ================= pinigų skaičiavimai ================= */
+const D = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
+const sum = a => a.reduce((s, v) => s + v, 0);
+const greedy = a => { const r = []; for(let i = D.length - 1; i >= 0; i--) while(a >= D[i]){ r.push(D[i]); a -= D[i]; } return r; };
+const SPL = { 2: [1, 1], 5: [2, 2, 1], 10: [5, 5], 20: [10, 10], 50: [20, 20, 10], 100: [50, 50], 200: [100, 100], 500: [200, 200, 100], 1000: [500, 500], 2000: [1000, 1000], 5000: [2000, 2000, 1000] };
+function split(arr, k, minD, max){
+  arr = arr.slice();
+  for(let i = 0; i < k; i++){
+    const c = arr.map((v, j) => j).filter(j => SPL[arr[j]] && SPL[arr[j]].every(x => x >= minD) && arr.length + SPL[arr[j]].length - 1 <= (max || 7));
+    if(!c.length) break; const j = P(c); arr.splice(j, 1, ...SPL[arr[j]]);
+  }
+  return arr.sort((a, b) => b - a);
+}
+const minDen = t => t % 5 ? 1 : t % 10 ? 5 : 10;
+/* piniginė: sprendinys (ne visada akivaizdžiausias) + nereikalingi pinigai */
+function wallet(t){
+  const md = minDen(t), sol = split(greedy(t), R(1, 3), md), top = D.find(d => d >= t) || 5000;
+  const pool = D.filter(d => d >= md && d <= top && d <= Math.max(t, 50)), ex = [];
+  for(let i = Math.max(2, Math.min(R(3, 4), 11 - sol.length)); i > 0; i--) ex.push(P(pool));
+  return { sol, w: sol.concat(ex).sort((a, b) => b - a) };
+}
+/* lygiai n pinigų iš leistinų nominalų: grąžina derinį arba null */
+function exact(t, n, pal){
+  const memo = {};
+  (function f(a, k, i){ const key = a + "," + k + "," + i; if(key in memo) return memo[key];
+    let r = null;
+    if(a === 0 && k === 0) r = [];
+    else if(a > 0 && k > 0 && i < pal.length){
+      if(pal[i] <= a){ const x = f(a - pal[i], k - 1, i); if(x) r = [pal[i]].concat(x); }
+      if(!r) r = f(a, k, i + 1);
+    }
+    return memo[key] = r; })(t, n, 0);
+  return memo[t + "," + n + ",0"];
+}
+const expr = a => a.slice().sort((x, y) => y - x).map(fmt).join(" + ");
+
+/* ================= užduočių generatoriai ================= */
+let used = [];
+const owned = () => MK.get("mk-" + GAME + "-pirkiniai", []);
+function good(f){
+  let c = GOODS.filter(g => !used.includes(g.id) && (!f || f(g))); if(!c.length) c = GOODS.filter(g => !f || f(g));
+  const own = owned(), fresh = c.filter(g => !own.includes(g.id)); const g = P(fresh.length && Math.random() < .75 ? fresh : c); used.push(g.id); return g;
+}
+const price = (g, step, lo, hi) => { lo = Math.max(g.lo, lo || 0); hi = Math.min(g.hi, hi || 1e9); const a = Math.ceil(lo / step), b = Math.floor(hi / step); return R(a, Math.max(a, b)) * step; };
+const G = {
+  pay(i){
+    const step = i < 3 ? 10 : i < 6 ? 5 : 1, g = good(); let p;
+    do p = price(g, step); while((step === 5 && p % 10 === 0) || (step === 1 && p % 5 === 0));
+    const w = wallet(p);
+    return { type: "pay", goods: [g], target: p, text: T.q.pay(g.nom, fmt(p)), sc: { items: [{ id: g.id, tag: fmt(p) }] }, wallet: w.w, sol: w.sol, hide: i >= 2 };
+  },
+  count(hard){
+    for(;;){
+      const a = hard ? R(11, 80) * 10 : R(3, 40) * 10, pal = [500, 200, 100, 50, 20, 10].filter(d => d <= a), base = greedy(a), m = base.length;
+      const shown = Math.random() < .5 ? base : split(base, 1, 10), c = [];
+      for(let n = m; n <= Math.min(8, m + 3); n++) if(n !== shown.length && n >= 2 && exact(a, n, pal)) c.push(n);
+      if(!c.length || shown.length > 6) continue;
+      const n = P(c);
+      return { type: "count", target: a, n, shown, text: T.q.count(fmt(a), n, n === m), till: pal.slice().reverse(), sol: exact(a, n, pal), max: 10 };
+    }
+  },
+  half(){ return { type: "choice", kind: "coins", text: T.q.half, opts: SH(T.q.halfO), ans: T.q.halfO[0], show: [50, 100], why: T.whyHalf }; },
+  coins(){ const c = P([50, 20, 10, 5]), n = 100 / c, o = SH([2, 4, 5, 10, 20].filter(x => x !== n)).slice(0, 3).concat(n).sort((a, b) => a - b);
+    return { type: "choice", kind: "coins", text: T.q.coins(c), opts: o.map(String), ans: String(n), show: [c, 100], why: n <= 5 ? T.whyCoins(c, n) : T.whyCoinsN(c, n), r4: 1 }; },
+  cmp(){
+    for(;;){
+      const l = []; for(let i = R(2, 5); i > 0; i--) l.push(P([10, 20, 20, 50, 50, 100, 100, 200]));
+      const d = P([0, 0, 10, -10, 20, -20, 50, -50, 100, -100]), rs = sum(l) + d; if(rs < 30) continue;
+      const r = split(greedy(rs), R(0, 2), 10, 6); l.sort((a, b) => b - a);
+      if(r.length > 6 || (r.join() === l.join()) || (d === 0 && Math.abs(r.length - l.length) < 1 && Math.random() < .5)) continue;
+      const O = T.q.cmpO;
+      return { type: "choice", kind: "cmp", text: T.q.cmp, opts: O, ans: d < 0 ? O[0] : d > 0 ? O[1] : O[2], l, r, why: T.whyCmp(fmt(sum(l)), fmt(rs)), r3: 1 };
+    }
+  },
+  delta(kind, cross, step){
+    step = step || 10;
+    for(;;){
+      const g = good(x => x.hi >= 150), old = price(g, step, 100), d = R(2, cross ? 19 : 15) * 10 + (step === 5 && Math.random() < .5 ? 5 : 0);
+      const up = kind === "up", oc = old % 100, dc = d % 100;
+      if(!up && d >= old - 20) { used.pop(); continue; }
+      const cr = up ? oc + dc >= 100 : oc < dc;
+      if(cr !== !!cross || (up && oc + dc === 100 && Math.random() < .7)) { used.pop(); continue; }
+      const t = up ? old + d : old - d, w = wallet(t);
+      return { type: "pay", goods: [g], target: t, text: T.q[kind](g.nom, fmt(old), fmt(d)), calc: `${fmt(old)} ${up ? "+" : "−"} ${fmt(d)}`,
+        sc: { items: [{ id: g.id, tag: fmt(old), old: 1 }], newTag: "?" }, wallet: w.w, sol: w.sol };
+    }
+  },
+  two(cross, step, three){
+    step = step || 10;
+    for(;;){
+      const n = three ? 3 : 2, gs = [], ps = []; const u0 = used.length;
+      for(let i = 0; i < n; i++){ const g = good(x => three ? x.lo <= 300 : true); gs.push(g); ps.push(price(g, step, 0, three ? 400 : 900)); }
+      const cs = sum(ps.map(p => p % 100)), cr = cs >= 100;
+      if(cr !== !!cross || cs % 100 === 0 && cr && Math.random() < .6){ used.length = u0; continue; }
+      const t = sum(ps), w = wallet(t);
+      return { type: "pay", goods: gs, target: t, calc: ps.map(fmt).join(" + "),
+        text: three ? T.q.three(gs[0].acc, fmt(ps[0]), gs[1].acc, fmt(ps[1]), gs[2].acc, fmt(ps[2])) : T.q.two(gs[0].acc, fmt(ps[0]), gs[1].acc, fmt(ps[1])),
+        sc: { items: gs.map((g, i) => ({ id: g.id, tag: three ? "" : fmt(ps[i]) })), newTag: "?" }, wallet: w.w, sol: w.sol };
+    }
+  },
+  change(i){
+    const step = i < 5 ? 10 : 5;
+    for(;;){
+      const g = good(), p = price(g, step, 0, 1800); if(p % 100 === 0 || (step === 5 && p % 10 === 0 && Math.random() < .7)){ used.pop(); continue; }
+      const o = [100, 200, 500, 1000, 2000].filter(x => x > p), paid = i < 4 ? o[0] : P(o.slice(0, 2)), t = paid - p, sol = greedy(t);
+      if(sol.length > 6){ used.pop(); continue; }
+      const md = minDen(t);
+      return { type: "pay", change: 1, goods: [g], target: t, text: T.q.change(g.nom, fmt(p), fmt(paid)), calc: `${fmt(paid)} − ${fmt(p)}`,
+        sc: { items: [{ id: g.id, tag: fmt(p) }], paid }, till: D.filter(d => d >= md && d < paid && d <= 1000), sol, max: 10 };
+    }
+  }
+};
+const LV = [
+  () => [0, 1, 2, 3, 4, 5, 6, 7].map(i => G.pay(i)),
+  () => [G.count(), G.half(), G.count(), G.cmp(), G.count(), G.coins(), G.count(1), G.cmp()],
+  () => ["up", "down", "disc", "up", "down", "disc", "down", "up"].map((k, i) => G.delta(k, i >= 4, i >= 6 ? 5 : 10)),
+  () => [0, 1, 2, 3, 4, 5, 6, 7].map(i => i === 7 ? G.two(1, 10, 1) : G.two(i >= 4, i >= 5 ? 5 : 10)),
+  () => [0, 1, 2, 3, 4, 5, 6, 7].map(i => G.change(i)),
+  () => [G.pay(7), G.delta("down", 1), G.count(1), G.two(1, 5), G.change(4), G.cmp(), G.delta("up", 1, 5), G.two(1, 10, 1), G.change(6), G.change(7)]
+];
+const mini = (a, b) => `<svg viewBox="0 0 56 56" aria-hidden="true">${a}${b || ""}</svg>`;
+const sub = (v, x, y, w) => `<svg x="${x}" y="${y}" width="${w}" height="${v >= 500 ? w * 48 / 90 : w}" viewBox="${v >= 500 ? "0 0 90 48" : "0 0 50 50"}">${msvg(v).replace(/^<svg[^>]*>|<\/svg>$/g, "")}</svg>`;
+const tx = (s, x, y, z, c) => `<text x="${x}" y="${y}" text-anchor="middle" font-family="Grandstander,Arial,sans-serif" font-weight="800" font-size="${z}" fill="${c || K}">${s}</text>`;
+const LART = [
+  mini(sub(100, 4, 6, 30), sub(20, 26, 24, 26)),
+  mini(sub(100, 2, 2, 24) + tx("=", 28, 34, 18), sub(50, 12, 30, 22) + sub(50, 32, 30, 22)),
+  mini(`<path d="M16 46V14M6 24l10-12 10 12" fill="none" stroke="#e5243b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 10v32M30 32l10 12 10-12" fill="none" stroke="#2fa84f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`),
+  mini(`<g transform="translate(16 20) scale(.75)">${ICON.obuolys}</g><g transform="translate(40 36) scale(.75)">${ICON.duona}</g>` + tx("+", 31, 26, 20)),
+  mini(sub(500, 4, 6, 40), sub(50, 6, 28, 24) + sub(20, 28, 30, 22)),
+  mini(`<path d="M10 24h36l-5 24H15z" fill="#e5a14a" ${S} stroke-width="2.2"/><path d="M16 24q12-26 24 0" fill="none" ${S} stroke-width="2.2"/><g transform="translate(22 22) scale(.55)">${ICON.obuolys}</g><g transform="translate(35 21) scale(.55)">${ICON.pienas}</g>`)
+];
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: LART[i] }));
+
+/* ================= meniu ir kolekcija ================= */
+const menu = $("menu"), play = $("play"), stage = $("stage"), app = $("app");
+const saved = MK.get("mokomeskartu-klase", 0), KEY = "mk-" + GAME + "-pirkiniai";
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("bL").textContent = T.basket;
+function renderCol(fresh){
+  const own = owned();
+  $("col").innerHTML = `<h2>${T.colH}</h2><p>${T.colP(own.length, GOODS.length)}</p><div class="shelf">${GOODS.map(g => `<div class="gd${own.includes(g.id) ? (fresh && fresh.includes(g.id) ? " new" : "") : " off"}" title="${own.includes(g.id) ? g.nom : "?"}">${gsvg(g.id)}</div>`).join("")}</div>`;
+}
+function showMenu(fresh){
+  play.hidden = true; menu.hidden = false;
+  $("heroArt").outerHTML = scene({ hero: 1, seller: 0, items: [{ id: "riestainis", tag: "" }, { id: "meskiukas", tag: fmt(650) }, { id: "medus", tag: "" }] }).replace('class="art scn"', 'class="art" id="heroArt"');
+  renderCol(fresh); MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); window.scrollTo(0, 0);
+}
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, dots = null, tray = [], tries = 0, locked = false, got = [];
+function start(i){
+  L = i; used = []; tasks = LV[i](); ti = 0; okN = 0; got = []; $("bN").textContent = 0;
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+const say = (h, mood) => MK.say($("guide"), h, mood);
+function show(){
+  cur = tasks[ti]; cur.seller = cur.seller == null ? ti % SELLERS.length : cur.seller; dots.cur(ti); tray = []; tries = 0; locked = false; window.scrollTo({ top: 0 });
+  if(cur.type === "choice") return showChoice();
+  const sc = Object.assign({ seller: cur.seller }, cur.sc || { items: [] });
+  stage.innerHTML = `<div class="fade">${cur.type === "count" ? `<div class="box wal" style="margin-top:10px"><h3>${fmt(cur.target)}</h3><div class="ms">${cur.shown.map(v => mbtn(v, "disabled tabindex=-1")).join("")}</div></div>` : scene(sc)}
+    <p class="q">${cur.text}</p>
+    <div class="box tray"><h3>${T.trayH}</h3><div class="ms" id="tray"></div><p class="info" id="info"></p></div>
+    <div class="box wal"><h3>${cur.wallet ? T.walletH : T.tillH}</h3><div class="ms" id="src"></div></div>
+    ${MK.guide(T.trayEmpty)}<div id="flow"><button type="button" class="mk-btn go" id="pay">${cur.type === "count" ? T.check : T.pay}</button></div></div>`;
+  stage.querySelector(".mk-guide").id = "guide";
+  if(cur.wallet) cur.used = cur.wallet.map(() => false);
+  $("src").onclick = e => { const b = e.target.closest(".m"); if(!b || locked) return; add(+b.dataset.v, b.dataset.i == null ? -1 : +b.dataset.i); };
+  $("tray").onclick = e => { const b = e.target.closest(".m"); if(!b || locked) return; const t = tray.splice(+b.dataset.k, 1)[0]; if(t.w >= 0) cur.used[t.w] = false; MK.sfx.tap(); money(); };
+  $("pay").onclick = check; money();
+}
+function add(v, w){
+  if(tray.length >= (cur.max || 99)) return;
+  if(w >= 0){ if(cur.used[w]) return; cur.used[w] = true; }
+  tray.push({ v, w }); MK.sfx.tap(); money(true);
+}
+function money(last){
+  const tr = $("tray");
+  tr.innerHTML = tray.length ? tray.map((t, k) => mbtn(t.v, `data-k="${k}"`, last && k === tray.length - 1 ? "" : "old")).join("") : `<i>${T.trayEmpty}</i>`;
+  tr.querySelectorAll(".old").forEach(b => b.style.animation = "none");
+  $("src").innerHTML = cur.wallet ? cur.wallet.map((v, i) => mbtn(v, `data-v="${v}" data-i="${i}"`, cur.used[i] ? "gone" : "")).join("") : cur.till.map(v => mbtn(v, `data-v="${v}"`)).join("");
+  $("src").querySelectorAll(".m").forEach(b => b.style.animation = "none");
+  const s = sum(tray.map(t => t.v));
+  $("info").innerHTML = cur.type === "count" ? `${T.sum(fmt(s))} · ${T.cnt(tray.length)}` : cur.hide && !locked ? T.sumHidden : T.sum(fmt(s));
+}
+function check(){
+  if(locked) return;
+  if(!tray.length){ say(T.empty, "bad"); return; }
+  const s = sum(tray.map(t => t.v)), t = cur.target, ok = s === t && (cur.type !== "count" || tray.length === cur.n);
+  if(ok) return done(true);
+  tries++; MK.sfx.bad();
+  if(tries >= 3) return done(false);
+  let h;
+  if(cur.type === "count" && s === t) h = T.cntBad(cur.n);
+  else if(tries === 1) h = s < t ? T.low : T.high;
+  else h = cur.calc ? T.calc(cur.calc) + " " + (s < t ? T.low : T.high) : s < t ? T.lowBy(fmt(t - s)) : T.highBy(fmt(s - t));
+  say(h, "bad");
+}
+function done(ok){
+  locked = true; dots.mark(ti, ok && tries === 0); if(ok && tries === 0) okN++;
+  if(!ok){ /* parodomas sprendimas */
+    tray = [];
+    if(cur.wallet){ cur.used = cur.wallet.map(() => false); cur.sol.forEach(v => { const i = cur.wallet.findIndex((x, j) => x === v && !cur.used[j]); cur.used[i] = true; tray.push({ v, w: i }); }); }
+    else tray = cur.sol.map(v => ({ v, w: -1 }));
+  }
+  money();
+  const e = T.eq(expr(tray.map(x => x.v)), fmt(cur.target)), pre = cur.calc ? T.eq(cur.calc, fmt(cur.target)) + "<br>" : "";
+  if(ok){
+    MK.sfx.good(); say(`${cur.change ? T.okChange : cur.type === "count" ? T.okSame : P(T.okPay)}<br>${pre}${e}`);
+    if(cur.goods){ const own = owned(); cur.goods.forEach(g => { if(!own.includes(g.id)){ own.push(g.id); got.push(g.id); } }); MK.set(KEY, own);
+      const c = $("bChip"); $("bN").textContent = +$("bN").textContent + cur.goods.length; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop");
+      stage.querySelectorAll(".it").forEach(x => { x.style.transformBox = "fill-box"; x.firstElementChild.classList.add("fly"); }); MK.sfx.coins(); }
+  } else say(`${T.show}<br>${pre}${e}`, "bad");
+  nextBtn();
+}
+function nextBtn(){
+  $("flow").innerHTML = `<button type="button" class="mk-btn go" id="next">${ti < tasks.length - 1 ? T.next : T.finish}</button>`;
+  const go = $("next"); go.onclick = () => { MK.sfx.tap(); ti++; ti < tasks.length ? show() : finish(); };
+  setTimeout(() => go.scrollIntoView({ behavior: "smooth", block: "nearest" }), 150);
+}
+function showChoice(){
+  const pic = cur.kind === "cmp"
+    ? `<div class="piles" style="margin-top:10px"><div class="pile"><h3>${T.q.cmpL}</h3><div class="ms">${cur.l.map(v => mbtn(v, "disabled tabindex=-1")).join("")}</div></div><div class="pile"><h3>${T.q.cmpR}</h3><div class="ms">${cur.r.map(v => mbtn(v, "disabled tabindex=-1")).join("")}</div></div></div>`
+    : `<div class="box wal" style="margin-top:4px;padding-top:10px"><div class="ms">${mbtn(cur.show[0], "disabled tabindex=-1")}<i>?</i>${mbtn(cur.show[1], "disabled tabindex=-1")}</div></div>`;
+  stage.innerHTML = `<div class="fade">${pic}<p class="q">${cur.text}</p>
+    <div class="ans ${cur.r4 ? "r4" : "r3"}" id="ans">${cur.opts.map((o, i) => `<button type="button" class="a" data-i="${i}">${o}</button>`).join("")}</div>
+    <div class="mk-guide" id="guide" hidden>${MK.owl()}<div class="mk-bubble" role="status" aria-live="polite"></div></div><div id="flow"></div></div>`;
+  $("ans").onclick = e => {
+    const b = e.target.closest(".a"); if(!b || locked || b.disabled) return;
+    const ok = cur.opts[+b.dataset.i] === cur.ans; $("guide").hidden = false;
+    if(ok){ b.classList.add("ok"); fin(true); }
+    else { tries++; b.classList.add("no"); b.disabled = true; MK.sfx.bad();
+      if(tries >= 2){ [...$("ans").children].forEach(x => { if(cur.opts[+x.dataset.i] === cur.ans) x.classList.add("ok"); }); fin(false); } else say(T.bad, "bad"); }
+  };
+  function fin(ok){ locked = true; dots.mark(ti, ok && tries === 0); if(ok && tries === 0) okN++; [...$("ans").children].forEach(x => x.disabled = true);
+    if(ok) MK.sfx.good(); say((ok ? MK.praise() + " " : "") + cur.why, ok ? "" : "bad"); nextBtn(); }
+}
+function finish(){
+  const total = tasks.length, stars = MK.starsFor(okN, total); MK.best(GAME, LEVELS[L].id, stars);
+  const fresh = got.slice();
+  MK.result({ stars, title: `${okN} / ${total}`, text: T.res(okN, total, fresh.length), next: L < LV.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(fresh) });
+}
+window.__mk = { G, LV, D, sum, exact, greedy, fmt, get cur(){ return cur; }, get tray(){ return tray; } };
+showMenu();
+})();
+</script>
+</body>
+</html>
