@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Trajektorijų laboratorija – MokomėsKartu.lt</title>
+<meta name="description" content="11–12 klasės fizikos žaidimas (kinematika, VBE kartojimas): tolygiai kintamas judėjimas, greičio grafikai, laisvasis kritimas, horizontaliai ir kampu į horizontą mestas kūnas. Pirma apskaičiuok, tada paleisk bandymą.">
+<meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/trajektoriju-laboratorija/tekstai.lt.js"></script>
+<style>
+/* Meniu: poligono piešinys, bandymų žurnalas (ženkleliai), lygiai, „Noriu pasimokyti“.
+   Užduotys: „nustatyk ir paleisk“ (parametras − / +, bandymo animacija, 3 bandymai) ir pasirinkimo (4 variantai, po atsakymo – animacija). */
+body{--ac:#3b5bdb;--ac-ink:#fff;--ac-soft:#e1e8ff}
+.mk-title{font-size:clamp(15px,4.2vw,24px)}
+@media (max-width:520px){.mk-title{white-space:normal;font-size:15px;line-height:1.08;text-wrap:balance}}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(30px,8vw,52px)}
+.mk-hero p{max-width:46ch;font-size:16px}
+.art{width:min(100%,480px);border-radius:24px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15);background:#dff1fb}
+.art svg{display:block;width:100%;height:auto}
+.art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 18px/1.2 var(--kid)}
+.col p{margin:4px 0 10px;color:var(--soft);font-weight:700;font-size:14.5px}
+.bds{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.bd{text-align:center}
+.bd svg{display:block;width:78%;margin:0 auto;height:auto}
+.bd small{display:block;font:800 9.5px/1.15 var(--body);color:var(--soft);min-height:22px}
+.bd.off svg{opacity:.25;filter:grayscale(1)}
+.bd.new svg{animation:mkPop .6s cubic-bezier(.2,1.6,.4,1)}
+.mk-lvl-t b{font-size:19px}
+
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.card{width:100%;max-width:560px;margin:0 auto 10px;padding:12px 14px 14px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12)}
+.txt{margin:0 0 6px;font:700 16px/1.5 var(--body)}
+.txt small{display:block;color:var(--soft);font-size:13.5px;font-weight:700}
+.ex{display:inline-block;padding:1px 10px;border-radius:9px;background:var(--ac-soft);font:800 17px/1.5 var(--body);white-space:nowrap}
+.gn{margin:0 0 8px;color:var(--soft);font:700 13.5px/1.4 var(--body)}
+.sim{margin:0 auto 10px;border-radius:14px;overflow:hidden;box-shadow:0 0 0 2.5px var(--ink);background:#eaf6fd;max-width:520px}
+.sim svg{display:block;width:100%;height:auto}
+.ctl{display:grid;grid-template-columns:52px minmax(0,1fr) 52px;gap:8px;align-items:center;margin:0 0 8px}
+.ctl button{height:52px;border:0;border-radius:14px;background:#fff;cursor:pointer;font:800 28px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16);touch-action:manipulation}
+.ctl button:active{transform:translateY(3px)}
+.ctl button[disabled]{opacity:.35;pointer-events:none}
+.ctl output{display:block;text-align:center;padding:5px 6px;border-radius:14px;background:var(--ac-soft);font:800 22px/1.15 var(--kid)}
+.ctl output small{display:block;font:800 11.5px/1.2 var(--body);letter-spacing:.04em;text-transform:uppercase;color:var(--soft)}
+.note{margin:0 0 8px;min-height:22px;font:700 15px/1.45 var(--body)}
+.note.ok{color:#177245}.note.bad{color:#b3261e}
+.note i{font-style:normal;color:var(--ink);display:block}
+.row{display:flex;align-items:center;gap:10px}
+.row .mk-btn{flex:1}
+.row span{font:800 13px/1.2 var(--body);color:var(--soft);white-space:nowrap}
+.ans{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.ans.one{grid-template-columns:1fr}
+.a{min-height:52px;padding:8px 10px;border:0;border-radius:14px;background:#fff;cursor:pointer;text-align:center;font:800 17.5px/1.25 var(--body);color:var(--ink);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16);transition:transform .1s;touch-action:manipulation}
+.a:active{transform:translateY(3px)}
+.a.ok{background:#d9f7e6;box-shadow:inset 0 0 0 3px var(--good),0 4px 0 rgba(18,26,51,.1)}
+.a.no{background:#ffe6df;box-shadow:inset 0 0 0 3px var(--bad);opacity:.75}
+.a[disabled]{pointer-events:none}
+.go{width:100%}
+.mk-why{max-width:560px;margin-inline:auto}
+.mk-why sub,.txt sub,.mk-lt sub,.note sub{font-size:.7em}
+.fade{animation:mkIn .35s backwards}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="col" id="col"></div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="ptsChip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="stage"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, GAME = "trajektoriju-laboratorija", GRADES = [11, 12], nf = T.nf;
+const R = MK.rnd, P = MK.pick, SH = MK.shuffle, $ = id => document.getElementById(id);
+const K = "#121a33", S = `stroke="${K}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"`;
+const U = (x, u) => nf(x) + " " + u, r1 = x => Math.round(x * 10) / 10;
+const FT = `font-family="Manrope,Arial,sans-serif" font-weight="800"`;
+
+/* ================= bandymo schema ================= */
+const PL = { l: 34, r: 332, t: 14, b: 186 };
+function geo(sp){ const k = Math.min((PL.r - PL.l) / sp.W, (PL.b - PL.t) / sp.H), ox = sp.xc ? (PL.l + PL.r) / 2 : PL.l; return { k, X: x => ox + x * k, Y: y => PL.b - y * k }; }
+const posAt = (sp, t) => ({ x: sp.x0 + sp.vx * t + (sp.ax || 0) * t * t / 2, y: sp.y0 + sp.vy * t - sp.g * t * t / 2 });
+const flight = sp => sp.T != null ? sp.T : (sp.vy + Math.sqrt(sp.vy * sp.vy + 2 * sp.g * sp.y0)) / sp.g;
+function droneSvg(x, y){ return `<g transform="translate(${r1(x)} ${r1(y)})"><path d="M-13-13h26M-9-13v5M9-13v5" ${S} stroke-width="1.6"/><ellipse cx="-13" cy="-14" rx="7" ry="1.8" fill="#9aa3b5"/><ellipse cx="13" cy="-14" rx="7" ry="1.8" fill="#9aa3b5"/><rect x="-10" y="-9" width="20" height="7" rx="3.5" fill="#3b5bdb" ${S} stroke-width="1.6"/></g>`; }
+function bodySvg(b, x, y){
+  x = r1(x); y = r1(y);
+  if(b === "cart") return `<g transform="translate(${x} ${y})"><rect x="-11" y="-13" width="22" height="9" rx="2.5" fill="#ff8a1f" ${S} stroke-width="1.6"/><circle cx="-6" cy="-3" r="3" fill="${K}"/><circle cx="6" cy="-3" r="3" fill="${K}"/></g>`;
+  if(b === "box") return `<g transform="translate(${x} ${y})"><rect x="-5.5" y="-5.5" width="11" height="11" rx="1.5" fill="#c98d4b" ${S} stroke-width="1.6"/><path d="M-5.5 0h11M0-5.5v11" stroke="${K}" stroke-width="1.2"/></g>`;
+  return `<circle cx="${x}" cy="${y}" r="5.5" fill="#ff8a1f" ${S} stroke-width="1.6"/>`;
+}
+function simSvg(sp, ghosts){
+  const g = geo(sp), M = Math.max(sp.W, sp.H), st = [1, 2, 5, 10, 20, 25, 50, 100, 200].find(s => M / s <= 7) || 500;
+  let grid = "", lab = "";
+  const xa = sp.xc ? -Math.floor(sp.W / 2 / st) * st : 0, xb = sp.xc ? -xa : sp.W;
+  for(let x = xa; x <= xb + 1e-9; x += st){ const X = r1(g.X(x)); if(X > PL.r + 1) break; grid += `<path d="M${X} ${PL.t}V${PL.b}"/>`; if(!sp.xc && X < 316) lab += `<text x="${X}" y="200" text-anchor="middle">${x}</text>`; }
+  for(let y = 0; y <= sp.H + 1e-9; y += st){ const Y = r1(g.Y(y)); if(Y < PL.t - 1) break; grid += `<path d="M${PL.l} ${Y}H${PL.r}"/>`; if(y > 0) lab += `<text x="${PL.l - 5}" y="${Y + 4}" text-anchor="end">${y}</text>`; }
+  let tg = "";
+  if(sp.target){ const tx = r1(g.X(sp.target.x)), ty = r1(g.Y(sp.target.y || 0));
+    if(sp.target.type === "gate") tg = `<path d="M${tx} ${PL.b}v-30" stroke="${K}" stroke-width="2.4"/><path d="M${tx} ${PL.b - 30}h14l-4 5 4 5h-14z" fill="#e5243b" ${S} stroke-width="1.6"/>`;
+    else if(sp.target.type === "ring") tg = `<path d="M${tx + 16} ${ty}h14" stroke="${K}" stroke-width="2.4"/><ellipse cx="${tx}" cy="${ty}" rx="16" ry="4.5" fill="none" stroke="#e5243b" stroke-width="3.2"/>`;
+    else tg = `<ellipse cx="${tx}" cy="${PL.b}" rx="13" ry="4.5" fill="#fff" ${S} stroke-width="1.6"/><ellipse cx="${tx}" cy="${PL.b}" rx="8" ry="2.8" fill="#e5243b"/><ellipse cx="${tx}" cy="${PL.b}" rx="3" ry="1.1" fill="#fff"/>`; }
+  let ln = "";
+  if(sp.launcher === "machine"){ const a = sp.ang || 45; ln = `<g transform="translate(${g.X(0)} ${PL.b})"><g transform="rotate(${-a})"><rect x="-3" y="-4.5" width="24" height="9" rx="3" fill="#3b5bdb" ${S} stroke-width="1.6"/></g><path d="M-11 0q0-11 11-11t11 11z" fill="#9aa3b5" ${S} stroke-width="1.6"/></g>`; }
+  if(sp.launcher === "pad") ln = `<rect x="${g.X(0) - 9}" y="${PL.b - 4}" width="18" height="4" rx="1.5" fill="#3b5bdb" ${S} stroke-width="1.4"/>`;
+  return `<svg viewBox="0 0 340 208" role="img" aria-label="${T.simAria}"><defs><clipPath id="cp"><rect x="${PL.l - 14}" y="0" width="${PL.r - PL.l + 22}" height="${PL.b + 1}"/></clipPath></defs>
+    <rect width="340" height="208" fill="#eaf6fd"/><rect y="${PL.b}" width="340" height="22" fill="#cfe6b8"/>
+    <g fill="none" stroke="#b9d3e6" stroke-width="1">${grid}</g><path d="M${PL.l - 14} ${PL.b}H340" stroke="${K}" stroke-width="2"/>
+    <g ${FT} font-size="9.5" fill="#5f5a45">${lab}<text x="336" y="200" text-anchor="end">${T.unitM}</text></g>
+    ${tg}${ln}<g clip-path="url(#cp)"><g fill="none" stroke="#e5243b" stroke-width="1.8" stroke-dasharray="4 4" opacity=".65">${(ghosts || []).map(p => `<polyline points="${p}"/>`).join("")}</g><g id="dyn"></g></g>
+    <text id="tm" x="330" y="26" text-anchor="end" ${FT} font-size="12.5" fill="${K}"></text></svg>`;
+}
+function trail(sp, t){ const g = geo(sp), n = 28, a = []; for(let i = 0; i <= n; i++){ const p = posAt(sp, t * i / n); a.push(r1(g.X(p.x)) + "," + r1(g.Y(p.y))); } return a.join(" "); }
+function frame(sp, t){
+  const g = geo(sp), p = posAt(sp, t), d = $("dyn"); if(!d) return;
+  d.innerHTML = (t > 0 ? `<polyline points="${trail(sp, t)}" fill="none" stroke="#3b5bdb" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="1 5"/>` : "")
+    + (sp.launcher === "drone" ? droneSvg(g.X(sp.x0 + sp.vx * t), g.Y(sp.y0) - 8) : "") + bodySvg(sp.body, g.X(p.x), g.Y(Math.max(0, p.y)));
+  const tm = $("tm"); if(tm) tm.textContent = T.timer(Math.round(t * 10) / 10);
+}
+let animId = 0;
+function playSim(sp){
+  const Tt = flight(sp), dur = Math.max(1100, Math.min(3200, Tt * 650)), id = ++animId;
+  return new Promise(res => { const t0 = performance.now();
+    (function step(now){ if(id !== animId) return res(); const u = Math.min(1, (now - t0) / dur); frame(sp, Tt * u); u < 1 ? requestAnimationFrame(step) : res(); })(t0); });
+}
+/* schemų ruošiniai */
+const cart = (v0, a, Tt, W, gate) => ({ W, H: W * .34, x0: 0, y0: 0, vx: v0, vy: 0, ax: a, g: 0, T: Tt, body: "cart", target: gate != null ? { type: "gate", x: gate } : null });
+const fall = (h, Hm) => ({ xc: 1, W: (Hm || h) * .9, H: (Hm || h) * 1.18, x0: 0, y0: h, vx: 0, vy: 0, g: 10, body: "ball", launcher: "drone" });
+const upS = (v0, Hm, ring) => ({ xc: 1, W: Hm * .9, H: Hm * 1.15, x0: 0, y0: 0, vx: 0, vy: v0, g: 10, T: v0 / 5, body: "ball", launcher: "pad", target: ring != null ? { type: "ring", x: 0, y: ring } : null });
+const hor = (v, h, W, Hm, tx) => ({ W, H: (Hm || h) * 1.2, x0: 0, y0: h, vx: v, vy: 0, g: 10, body: "box", launcher: "drone", target: tx != null ? { type: "pad", x: tx } : null });
+const ang = (vx, vy, W, H, tx) => ({ W, H, x0: 0, y0: 0, vx, vy, g: 10, T: vy / 5, body: "ball", launcher: "machine", ang: Math.atan2(vy, vx) * 180 / Math.PI, target: tx != null ? { type: "pad", x: tx } : null });
+const angAuto = (vx, vy) => { const L = vx * vy / 5, H = vy * vy / 20; return ang(vx, vy, Math.max(L * 1.15, H * .8), Math.max(H * 1.3, L * .3)); };
+
+/* ================= v(t) grafikas ================= */
+function mkGraph(){
+  for(;;){
+    const kinds = SH([0, 1, 2]), pts = [[0, 0]]; let v = P([0, 2, 4, 6, 8]), t = 0, ok = true; pts[0][1] = v;
+    for(const k of kinds){ const dt = P([2, 2, 3, 4]), a = k === 0 ? P([1, 2, 3]) : k === 1 ? 0 : -P([1, 2, 3]); v += a * dt; t += dt; if(v < 0 || v > 14 || (k === 1 && v === 0)) ok = false; pts.push([t, v]); }
+    if(ok) return { pts, kinds, tt: t, seg: i => ({ v1: pts[i][1], v2: pts[i + 1][1], dt: pts[i + 1][0] - pts[i][0], a: (pts[i + 1][1] - pts[i][1]) / (pts[i + 1][0] - pts[i][0]), s: (pts[i][1] + pts[i + 1][1]) / 2 * (pts[i + 1][0] - pts[i][0]) }) };
+  }
+}
+function graphSvg(G){
+  const vm = Math.max(8, Math.ceil((Math.max(...G.pts.map(p => p[1])) + 1) / 2) * 2), X = t => 40 + t * 280 / G.tt, Y = v => 172 - v * 150 / vm;
+  let grid = "", lab = "";
+  for(let t = 0; t <= G.tt; t++){ grid += `<path d="M${r1(X(t))} 22V172"/>`; lab += `<text x="${r1(X(t))}" y="186" text-anchor="middle">${t}</text>`; }
+  for(let v = 0; v <= vm; v += 2){ grid += `<path d="M40 ${r1(Y(v))}H320"/>`; lab += `<text x="34" y="${r1(Y(v)) + 4}" text-anchor="end">${v}</text>`; }
+  let segs = "";
+  for(let i = 0; i < 3; i++){ const a = G.pts[i], b = G.pts[i + 1]; segs += `<text x="${r1((X(a[0]) + X(b[0])) / 2)}" y="16" text-anchor="middle" ${FT} font-size="12" fill="#3b5bdb">${T.ROM[i]}</text>`; if(i) segs += `<path d="M${r1(X(a[0]))} 8V172" stroke="#3b5bdb" stroke-width="1.4" stroke-dasharray="4 4"/>`; }
+  return `<div class="sim"><svg viewBox="0 0 340 204" role="img" aria-label="${T.graphAria}"><rect width="340" height="204" fill="#fff"/><g fill="none" stroke="#d5dfea" stroke-width="1">${grid}</g>
+    <path d="M40 10V172H330" fill="none" stroke="${K}" stroke-width="2"/><g ${FT} font-size="10" fill="#5f5a45">${lab}<text x="332" y="200" text-anchor="end">${T.axT}</text><text x="6" y="12">${T.axV}</text></g>${segs}
+    <polyline points="${G.pts.map(p => r1(X(p[0])) + "," + r1(Y(p[1]))).join(" ")}" fill="none" stroke="#e8590c" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/>
+    ${G.pts.map(p => `<circle cx="${r1(X(p[0]))}" cy="${r1(Y(p[1]))}" r="3.6" fill="#fff" stroke="#e8590c" stroke-width="2.4"/>`).join("")}</svg></div>`;
+}
+
+/* ================= užduočių generatoriai ================= */
+function choice(text, c, wrong, why, o){
+  const opts = [c]; for(const w of wrong) if(w != null && !opts.includes(w) && opts.length < 4) opts.push(w);
+  if(opts.length < 3) return null;
+  return Object.assign({ kind: "choice", text, opts: o && o.keep ? o.keep : SH(opts), ans: c, why }, o || {});
+}
+const pos = (a, u) => a.filter(x => x > 0 && Number.isFinite(x) && Math.abs(x * 100 - Math.round(x * 100)) < 1e-6).map(x => U(x, u));
+function vals(ansA, traps, pool, n){
+  const s = new Set(ansA), cap = Math.max(...ansA) * 1.7; for(const x of traps) if(x > 0 && x <= cap && s.size < (n || 7) - 1 && Math.abs(x * 2 - Math.round(x * 2)) < 1e-9) s.add(x);
+  for(const x of SH(pool)) if(s.size < (n || 7) && x > 0) s.add(x);
+  return [...s].sort((a, b) => a - b);
+}
+const around = (x, st) => [-3, -2, -1, 1, 2, 3, 4].map(k => x + k * st);
+function setT(text, par, unit, vs, ans, build, res, why, hint, o){
+  let i0; do i0 = R(0, vs.length - 1); while(ans.includes(vs[i0]));
+  return Object.assign({ kind: "set", text, par, unit, vals: vs, ans, i0, build, res, why, hint }, o || {});
+}
+const FALL = [[5, 1], [20, 2], [45, 3], [80, 4], [125, 5]], FALL2 = FALL.concat([[180, 6], [245, 7]]), HS = [5, 10, 20, 30, 45, 60, 80, 100, 125];
+const win = (list, a, n) => { const i = list.indexOf(a), s = Math.max(0, Math.min(list.length - n, i - R(0, n - 1))); return list.slice(s, s + n); };
+const ANG = { 37: [.6, .8], 53: [.8, .6], 30: [.5, Math.sqrt(3) / 2] };
+const GN = { gn: 1 };
+const G = {
+  v(){ const v0 = P([0, 0, 2, 4, 6, 8]), a = R(1, 4), t = R(2, 6), v = v0 + a * t, s = v0 * t + a * t * t / 2;
+    return choice(T.q.v(v0, a, t), U(v, "m/s"), pos([v0 ? a * t : 0, v0 + a, v0 * t + a, s, v + a, v * 2], "m/s"), T.w.v(v0, a, t, v), { sim: cart(v0, a, t, s * 1.15) }); },
+  acc(){ const v1 = R(1, 10) * 2, t = P([2, 4, 5]), a = P([-3, -2, -1, 1, 2, 3, 4]), v2 = v1 + a * t, s = v1 * t + a * t * t / 2; if(v2 < 0 || s <= 0) return null;
+    return choice(T.q.acc(v1, v2, t), U(a, "m/s²"), [U(-a, "m/s²"), U(v2 - v1, "m/s²"), U((v1 + v2) / t, "m/s²"), U(a * 2, "m/s²")], T.w.acc(v1, v2, t, a), { sim: cart(v1, a, t, s * 1.15) }); },
+  pos(m){ const v0 = m ? P([2, 4, 6]) : 0, a = R(1, 4), t = R(2, 5), s = v0 * t + a * t * t / 2; if(s > 80 || s < 4) return null;
+    const vs = vals([s], [v0 * t + a * t * t, v0 * t + a * t, v0 ? a * t * t / 2 : a * t, s / 2], around(s, s < 20 ? 2 : 5)), W = Math.max(...vs) * 1.12;
+    return setT(T.q.pos(v0, a, t), T.par.x, "m", vs, [s], x => cart(v0, a, t, W, x), x => T.r.pos(t, s, x), T.w.pos(v0, a, t, s), T.h.pos); },
+  tstop(){ const v0 = P([6, 8, 10, 12, 15, 20, 24, 30]), a = P([2, 3, 4, 5, 6]), t = v0 / a; if(t * 2 % 1) return null;
+    return choice(T.q.tstop(v0, a), U(t, "s"), pos([v0 / (2 * a), v0 * v0 / (2 * a), t * 2, v0 * a, t + 1], "s"), T.w.tstop(v0, a, t), { sim: cart(v0, -a, t, v0 * v0 / (2 * a) * 1.15) }); },
+  sstop(){ const v0 = P([4, 6, 8, 10, 12, 20]), a = P([1, 2, 4, 5, 8]), s = v0 * v0 / (2 * a); if(s > 100 || s < 4 || s * 2 % 1) return null;
+    const vs = vals([s], [v0 * v0 / a, v0 / a, s / 2, v0 * a / 2, v0], around(s, s < 20 ? 2 : 5)), W = Math.max(...vs) * 1.12;
+    return setT(T.q.sstop(v0, a), T.par.xs, "m", vs, [s], x => cart(v0, -a, v0 / a, W, x), x => T.r.sstop(s, x), T.w.sstop(v0, a, s), T.h.sstop); },
+  afrom(){ const a = R(1, 6), t = R(2, 5), s = a * t * t / 2;
+    return choice(T.q.afrom(s, t), U(a, "m/s²"), pos([s / (t * t), s / t, 2 * s / t, a * 2, a + 1], "m/s²"), T.w.afrom(s, t, a), { sim: cart(0, a, t, s * 1.15) }); },
+  aset(){ const [v0, a, s] = P([[10, 1, 50], [10, 2, 25], [10, 5, 10], [20, 2, 100], [20, 4, 50], [20, 5, 40], [20, 8, 25], [30, 5, 90], [30, 9, 50], [12, 2, 36], [12, 4, 18], [8, 2, 16], [8, 4, 8], [6, 1, 18], [6, 2, 9], [6, 3, 6]]);
+    const vs = win([1, 2, 3, 4, 5, 6, 8, 9, 10, 12], a, 6), W = s * 1.7;
+    return setT(T.q.aset(v0, s), T.par.a, "m/s²", vs, [a], x => cart(v0, -x, v0 / x, W, s), x => T.r.aset(x, v0 * v0 / (2 * x)), T.w.aset(v0, s, a), T.h.aset); },
+  gAcc(){ const g = mkGraph(), i = R(0, 2), e = g.seg(i);
+    return choice(T.q.gAcc(T.ROM[i]), U(e.a, "m/s²"), [U(-e.a, "m/s²"), U(e.v2 - e.v1, "m/s²"), U(r1(e.v2 / e.dt), "m/s²"), U(e.a + 1, "m/s²"), U(e.dt, "m/s²")], T.w.gAcc(e.v1, e.v2, e.dt, e.a), { graph: g }); },
+  gWhich(){ const g = mkGraph(), w = R(0, 2), o = [0, 1, 2].map(T.q.gOpt);
+    return choice(T.q.gWhich(w), o[g.kinds.indexOf(w)], o, T.w.gWhich, { graph: g, keep: o, one: 1 }); },
+  gPath(){ const g = mkGraph(), i = R(0, 2), e = g.seg(i);
+    return choice(T.q.gPath(T.ROM[i]), U(e.s, "m"), pos([Math.max(e.v1, e.v2) * e.dt, Math.abs(e.v2 - e.v1) * e.dt / 2, (e.v1 + e.v2) * e.dt, Math.min(e.v1, e.v2) * e.dt, e.s + e.dt], "m"), T.w.gPath(e.v1, e.v2, e.dt, e.s), { graph: g }); },
+  gTotal(){ const g = mkGraph(), p = [0, 1, 2].map(i => g.seg(i).s), s = p[0] + p[1] + p[2], vm = Math.max(...g.pts.map(x => x[1]));
+    return choice(T.q.gTotal(g.tt), U(s, "m"), pos([vm * g.tt, s - p[R(0, 2)], vm * g.tt / 2, s + g.tt, s * 2], "m"), T.w.gTotal(p, s), { graph: g }); },
+  gAvg(){ const g = mkGraph(), s = g.seg(0).s + g.seg(1).s + g.seg(2).s, v = s / g.tt; if(Math.abs(v * 10 - Math.round(v * 10)) > 1e-9) return null;
+    const vm = Math.max(...g.pts.map(x => x[1]));
+    return choice(T.q.gAvg(g.tt), U(v, "m/s"), pos([r1((g.pts[0][1] + g.pts[3][1]) / 2), vm / 2, vm, r1(g.pts.reduce((x, y) => x + y[1], 0) / 4), v + 1], "m/s"), T.w.gAvg(s, g.tt, v), { graph: g }); },
+  gEq(){ const g = mkGraph(), e = g.seg(0); if(e.a === 0 || e.v1 === 0 || Math.abs(e.a) === e.v1) return null;
+    const A = Math.abs(e.a), eq = (v0, a) => `v = ${v0} ${a < 0 ? "−" : "+"} ${Math.abs(a) === 1 ? "" : Math.abs(a)}t`, c = eq(e.v1, e.a);
+    return choice(T.q.gEq, c, [eq(e.v1, -e.a), eq(A, e.v1), `v = ${A === 1 ? "" : A}t`, eq(e.v1, e.v2)], T.w.gEq(e.v1, e.a, c), { graph: g }); },
+  xEq(){ const x0 = R(0, 9), v0 = R(1, 9), k = P([1, 2, 3, 4, 5, .5, 1.5, 2.5]), a = 2 * k, what = R(0, 1); if(v0 === a || v0 === k || x0 === v0) return null;
+    const eq = `x = ${x0 ? x0 + " + " : ""}${v0}t + ${k === 1 ? "" : nf(k)}t²`;
+    return what ? choice(T.q.xEq(eq, 1), U(a, "m/s²"), pos([k, v0, 4 * k, x0], "m/s²"), T.w.xEq(v0, k, a, 1)) : choice(T.q.xEq(eq, 0), U(v0, "m/s"), pos([x0, k, a, v0 * 2], "m/s"), T.w.xEq(v0, k, a, 0)); },
+  ft(){ const [h, t] = P(FALL2); return choice(T.q.ft(h), U(t, "s"), pos([h / 10, 2 * t, t + 1, t - 1, h / 5], "s"), T.w.ft(h, t), { sim: fall(h), gn: 1 }); },
+  fv(){ const [h, t] = P(FALL2), v = 10 * t; return choice(T.q.fv(h), U(v, "m/s"), pos([5 * t, 20 * t, h, 2 * h, v + 10], "m/s"), T.w.fv(h, t, v), { sim: fall(h), gn: 1 }); },
+  fh(){ const [h, t] = P(FALL.slice(1)), vs = win(HS, h, 6), Hm = Math.max(...vs);
+    return setT(T.q.fh(t), T.par.h, "m", vs, [h], x => fall(x, Hm), x => T.r.fh(x, Math.sqrt(x / 5)), T.w.fh(t, h), T.h.fh, GN); },
+  flast(){ const t = R(2, 7), h = 5 * t * t, h1 = 5 * (t - 1) * (t - 1), d = h - h1;
+    return choice(T.q.flast(t), U(d, "m"), pos([5, 10, 10 * t, 5 * t, h], "m"), T.w.flast(t, h, h1, d), { sim: fall(h), gn: 1 }); },
+  uT(){ const v0 = P([10, 15, 20, 25, 30, 40]), Tt = v0 / 5; return choice(T.q.uT(v0), U(Tt, "s"), pos([v0 / 10, v0 / 20, Tt * 2, Tt + 1, v0 / 4], "s"), T.w.uT(v0, Tt), { sim: upS(v0, v0 * v0 / 20), gn: 1 }); },
+  uSet(){ const v0 = P([10, 20, 30, 40]), H = v0 * v0 / 20, vs = win([5, 10, 15, 20, 25, 30, 35, 40, 45], v0, 6), Hm = Math.max(H * 1.25, Math.min(Math.max(...vs) ** 2 / 20, H * 2.2));
+    return setT(T.q.uSet(H), T.par.v0, "m/s", vs, [v0], x => upS(x, Hm, H), x => T.r.uSet(x, x * x / 20), T.w.uSet(H, v0), T.h.uSet, GN); },
+  uV(){ const v0 = P([20, 30, 40]), t = R(1, v0 / 5 - 1), v = v0 - 10 * t, f = x => x === 0 ? "0 m/s" : `${Math.abs(x)} m/s ${x > 0 ? T.up : T.down}`;
+    return choice(T.q.uV(v0, t), f(v), [f(-v), f(v0), "0 m/s", f(v0 - 5 * t), f(-10 * t), f(v0 + 10 * t)].filter(x => x !== f(0) || v !== 0), T.w.uV(v0, t, v), { sim: upS(v0, v0 * v0 / 20), gn: 1 }); },
+  uY(){ const v0 = P([20, 30, 40]), t = R(1, v0 / 5 - 1), y = v0 * t - 5 * t * t;
+    return choice(T.q.uY(v0, t), U(y, "m"), pos([v0 * t, v0 * t - 10 * t * t, 5 * t * t, v0 * t - 5 * t, y + 5], "m"), T.w.uY(v0, t, y), { sim: upS(v0, v0 * v0 / 20), gn: 1 }); },
+  ht(){ const [h, t] = P(FALL), v = P([5, 8, 10, 12, 15, 20]);
+    return choice(T.q.ht(v, h), U(t, "s"), pos([r1(h / v), 2 * t, t + 1, h / 10, v / 10], "s"), T.w.ht(h, t), { sim: hor(v, h, Math.max(v * t * 1.2, h * .5)), gn: 1 }); },
+  hx(){ const [h, t] = P(FALL.slice(0, 4)), v = P([4, 5, 6, 8, 10, 12, 15]), L = v * t; if(L > 80) return null;
+    const vs = vals([L], [v * h / 10, v * 2 * t, v * (t + 1), h, L / 2, v], around(L, L < 20 ? 2 : 5)), W = Math.max(...vs, h * .5) * 1.1;
+    return setT(T.q.hx(v, h), T.par.xt, "m", vs, [L], x => hor(v, h, W, h, x), x => T.r.hx(L, x), T.w.hx(v, h, t, L), T.h.hx, GN); },
+  hv(){ const [h, t] = P(FALL.slice(0, 4)), SP = [2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30], v = P(SP.slice(2, 10)), L = v * t, vs = win(SP, v, 6), W = Math.max(L * 1.7, h * .6);
+    return setT(T.q.hv(h, L), T.par.v, "m/s", vs, [v], x => hor(x, h, W, h, L), x => T.r.hv(x, x * t), T.w.hv(h, L, t, v), T.h.hv, GN); },
+  hh(){ const [h, t] = P(FALL.slice(0, 4)), v = P([5, 8, 10, 12, 15, 20]), L = v * t, vs = win(HS.slice(0, 7), h, 5), Hm = Math.max(...vs), W = Math.max(v * Math.sqrt(Hm / 5) * 1.1, Hm * .6);
+    return setT(T.q.hh(v, L), T.par.h, "m", vs, [h], x => hor(v, x, W, Hm, L), x => T.r.hh(x, v * Math.sqrt(x / 5)), T.w.hh(v, L, t, h), T.h.hh, GN); },
+  hy(){ const [h, t] = P(FALL.slice(1)), v = P([5, 8, 10, 12, 15]), t1 = R(1, t - 1), d = 5 * t1 * t1, y = h - d;
+    return choice(T.q.hy(v, h, t1), U(y, "m"), pos([d, h - 10 * t1, h - v * t1, h - 5 * t1, h - 10 * t1 * t1], "m"), T.w.hy(h, t1, d, y), { sim: hor(v, h, Math.max(v * t * 1.2, h * .5)), gn: 1 }); },
+  hs(){ const [vx, vy, v] = P([[24, 10, 26], [15, 20, 25], [21, 20, 29], [40, 30, 50], [16, 30, 34], [30, 40, 50], [9, 40, 41]]), t = vy / 10, h = 5 * t * t;
+    return choice(T.q.hs(vx, h), U(v, "m/s"), pos([vx + vy, vy, vx, Math.abs(vx - vy), h], "m/s"), T.w.hs(vx, t, vy, v), { sim: hor(vx, h, Math.max(vx * t * 1.2, h * .5)), gn: 1 }); },
+  hc(){ const c = P(T.q.hc); return choice(c[0], c[1][0], c[1].slice(1), c[2], { sim: hor(10, 20, 26), gn: 1, one: 1 }); },
+  comp(){ const v0 = P([10, 20, 25, 30, 50]), al = P([37, 53]), ax = R(0, 1), [s, c] = ANG[al], r = v0 * (ax ? s : c);
+    return choice(T.q.comp(v0, al, ax), U(r, "m/s"), pos([v0 * (ax ? c : s), v0, v0 / 2, r / 2, v0 * s * c], "m/s"), T.w.comp(v0, ax ? s : c, r, ax), { sim: angAuto(v0 * c, v0 * s), gn: 1 }); },
+  aT(){ const [v0, al] = P([[20, 30], [40, 30], [60, 30], [10, 37], [25, 37], [50, 37], [10, 53], [25, 53], [50, 53]]), [s, c] = ANG[al], vy = v0 * s, Tt = vy / 5;
+    return choice(T.q.aT(v0, al), U(Tt, "s"), pos([vy / 10, v0 / 5, v0 / 10, Tt * 2, v0 * c / 5], "s"), T.w.aT(vy, Tt), { sim: angAuto(v0 * c, vy), gn: 1 }); },
+  aH(){ const [v0, al] = P([[20, 30], [40, 30], [60, 30], [25, 37], [50, 37], [25, 53], [50, 53]]), [s, c] = ANG[al], vy = v0 * s, H = vy * vy / 20;
+    return choice(T.q.aH(v0, al), U(H, "m"), pos([v0 * v0 / 20, vy * vy / 10, vy / 2, H / 2, v0 * c * v0 * c / 20], "m"), T.w.aH(vy, H), { sim: angAuto(v0 * c, vy), gn: 1 }); },
+  aL(){ let vx, vy, text, why;
+    const m = R(0, 3);
+    if(m < 2){ vx = P([4, 5, 6, 8, 10, 12]); vy = P([10, 15, 20, 25, 30]); text = T.q.aL(vx, vy); }
+    else if(m === 2){ const v0 = 25, al = P([37, 53]), [s, c] = ANG[al]; vx = v0 * c; vy = v0 * s; text = T.q.aL2(v0, al); }
+    else { const v0 = P([10, 20, 30]); vx = vy = v0 * Math.SQRT1_2; text = T.q.aL2(v0, 45); why = T.w.aL45(v0, v0 * v0 / 10); }
+    const Tt = vy / 5, L = Math.round(vx * Tt * 100) / 100; if(L > 100 || L < 6) return null;
+    const vs = vals([L], [L / 2, L * 2, Math.round(vx * vy), Math.round(vx * (Tt + 1))], around(L, L < 20 ? 2 : L < 50 ? 4 : 10)), W = Math.max(...vs) * 1.08, H = Math.max(vy * vy / 20 * 1.3, W * .3);
+    return setT(text, T.par.xt, "m", vs, [L], x => ang(vx, vy, W, H, x), x => T.r.aL(L, x), why || T.w.aL(vx, vy, Tt, L, m === 2), T.h.aL, GN); },
+  aAng(){ const v0 = P([10, 20, 30]), half = R(0, 1), L = v0 * v0 / (half ? 20 : 10), W = v0 * v0 / 10 * 1.15, H = v0 * v0 / 20 * 1.12;
+    return setT(T.q.aAng(v0, L), T.par.al, "°", [15, 30, 45, 60, 75], half ? [15, 75] : [45], x => ang(v0 * Math.cos(x * Math.PI / 180), v0 * Math.sin(x * Math.PI / 180), W, H, L),
+      x => T.r.aAng(x, v0 * v0 * Math.sin(2 * x * Math.PI / 180) / 10), half ? T.w.aAngHalf() : T.w.aAngMax(v0, L), T.h.aAng, GN); },
+  aTop(){ if(R(0, 2) === 0) return choice(T.q.aAcc, T.q.aAccO[0], T.q.aAccO.slice(1), T.w.aAcc, { sim: angAuto(12, 20), gn: 1, one: 1 });
+    const v0 = P([10, 20, 25, 30, 50]), al = P([37, 53]), [s, c] = ANG[al];
+    return choice(T.q.aTop(v0, al), U(v0 * c, "m/s"), ["0 m/s", U(v0 * s, "m/s"), U(v0, "m/s")], T.w.aTop(v0, c, v0 * c), { sim: angAuto(v0 * c, v0 * s), gn: 1 }); },
+  aAt(){ const vx = P([4, 5, 6, 8, 10, 12]), vy = P([20, 25, 30]), t = R(1, vy / 5 - 1), y = R(0, 2) > 0, ry = vy * t - 5 * t * t, rx = vx * t;
+    return y ? choice(T.q.aAt(vx, vy, t, 1), U(ry, "m"), pos([vy * t, vy * t - 10 * t * t, rx, 5 * t * t, ry + 5], "m"), T.w.aAt(vx, vy, t, ry, 1), { sim: angAuto(vx, vy), gn: 1 })
+      : choice(T.q.aAt(vx, vy, t, 0), U(rx, "m"), pos([ry, rx / 2, rx * 2, vy * t, rx + vx], "m"), T.w.aAt(vx, vy, t, rx, 0), { sim: angAuto(vx, vy), gn: 1 }); }
+};
+const mk = (k, ...a) => { for(let i = 0; i < 400; i++){ const t = G[k](...a); if(t){ t.id = k; return t; } } throw new Error("gen " + k); };
+const LV = [
+  () => [mk("v"), mk("acc"), mk("pos"), mk("tstop"), mk("sstop"), mk("afrom"), mk("aset"), mk("pos", 1)],
+  () => [mk("gAcc"), mk("gWhich"), mk("gPath"), mk("gEq"), mk("gPath"), mk("gTotal"), mk("xEq"), mk("gAvg")],
+  () => [mk("ft"), mk("fv"), mk("fh"), mk("flast"), mk("uT"), mk("uSet"), mk("uV"), mk("uY")],
+  () => [mk("ht"), mk("hx"), mk("hc"), mk("hv"), mk("hy"), mk("hs"), mk("hh"), mk("hx")],
+  () => [mk("comp"), mk("aT"), mk("aTop"), mk("aH"), mk("aL"), mk("aAt"), mk("aAng"), mk("aL")],
+  () => [mk("aset"), mk("gPath"), mk("uSet"), mk("hv"), mk("aL"), mk("gTotal"), mk("uV"), mk("hs"), mk("aAng"), mk("hh")]
+];
+
+/* ================= piešiniai: ženkleliai, lygiai, poligonas ================= */
+const GL = [
+  `<path d="M-5-8l12 8-12 8z" fill="#fff" ${S}/>`,
+  `<rect x="-10" y="-6" width="20" height="9" rx="2.5" fill="#fff" ${S}/><circle cx="-5" cy="6" r="3" fill="#fff" ${S}/><circle cx="5" cy="6" r="3" fill="#fff" ${S}/>`,
+  `<path d="M-10 8V-9M-10 8h20" fill="none" ${S}/><path d="M-10 4l6-9h7l7 9" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`,
+  `<circle cy="2" r="9" fill="#fff" ${S}/><path d="M0 2v-5M0 2l4 2M-3-11h6M0-11v4" fill="none" ${S}/>`,
+  `<path d="M0-11q9 11 9 15a9 9 0 0 1-18 0q0-4 9-15z" fill="#fff" ${S}/>`,
+  `<path d="M-11-6h22M-7-6v4M7-6v4" fill="none" ${S}/><rect x="-8" y="-2" width="16" height="7" rx="3.5" fill="#fff" ${S}/><rect x="-3" y="7" width="6" height="5" fill="#fff" ${S}/>`,
+  `<path d="M-11 9q11-30 22 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 5"/><circle cx="-11" cy="9" r="3" fill="#fff" ${S}/>`,
+  `<circle r="10" fill="#fff" ${S}/><circle r="6" fill="#e5243b"/><circle r="2.2" fill="#fff"/>`,
+  `<path d="M-9 8 8-7" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><path d="M9-9l-9 2 7 7z" fill="#fff" ${S}/>`,
+  `<path d="M-8-10h16v6q0 8-8 8t-8-8z" fill="#fff" ${S}/><path d="M-8-7h-4q0 6 5 7M8-7h4q0 6-5 7M0 4v5M-5 10h10" fill="none" ${S}/>`
+];
+const BC = ["#2fa84f", "#ff8a1f", "#e8590c", "#13a8d6", "#3b5bdb", "#6b4dff", "#b04dff", "#e5243b", "#0a7abf", "#e8a400"];
+const badge = i => `<svg viewBox="-22 -22 44 44" aria-hidden="true"><path d="M-8 10-13 21l6-3 3 4 4-9zM8 10l5 11-6-3-3 4-4-9z" fill="${BC[i]}" ${S} stroke-width="1.6"/><circle r="17" cy="-3" fill="${BC[i]}" ${S}/><g transform="translate(0 -3)">${GL[i]}</g></svg>`;
+const lart = i => `<svg viewBox="-22 -22 44 44" aria-hidden="true"><circle r="19" fill="${BC[i]}" ${S}/>${GL[i]}</svg>`;
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: lart([1, 2, 4, 5, 6, 9][i]) }));
+function heroSvg(){
+  let grid = ""; for(let x = 40; x < 480; x += 40) grid += `<path d="M${x} 20V196"/>`; for(let y = 36; y < 196; y += 40) grid += `<path d="M0 ${y}H480"/>`;
+  let arc = ""; for(let i = 0; i <= 24; i++){ const u = i / 24, x = 150 + u * 262, y = 188 - 4 * 132 * u * (1 - u); arc += `${i ? "L" : "M"}${r1(x)} ${r1(y)}`; }
+  return `<svg viewBox="0 0 480 240" role="img" aria-label="${T.heroAria}"><rect width="480" height="240" fill="#dff1fb"/><g fill="none" stroke="#bcd9ec" stroke-width="1">${grid}</g>
+    <rect y="196" width="480" height="44" fill="#cfe6b8"/><path d="M0 196H480" stroke="${K}" stroke-width="2.5"/>
+    <path d="${arc}" fill="none" stroke="#3b5bdb" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="1 9"/>
+    <circle cx="281" cy="56" r="8" fill="#ff8a1f" ${S}/><path d="M281 56h34M281 56v30" stroke="#e5243b" stroke-width="2.4"/><path d="M315 56l-7-4v8zM281 86l-4-7h8z" fill="#e5243b"/>
+    <g transform="translate(150 196)"><g transform="rotate(-62)"><rect x="-4" y="-8" width="40" height="16" rx="5" fill="#3b5bdb" ${S}/></g><path d="M-20 0q0-20 20-20t20 20z" fill="#9aa3b5" ${S}/><circle cx="-12" cy="0" r="6" fill="${K}"/><circle cx="12" cy="0" r="6" fill="${K}"/></g>
+    <ellipse cx="412" cy="196" rx="26" ry="8" fill="#fff" ${S}/><ellipse cx="412" cy="196" rx="16" ry="5" fill="#e5243b"/><ellipse cx="412" cy="196" rx="6" ry="2" fill="#fff"/>
+    <g transform="translate(396 62) scale(1.7)"><path d="M-13-13h26M-9-13v5M9-13v5" ${S} stroke-width="1.4"/><ellipse cx="-13" cy="-14" rx="7" ry="1.8" fill="#9aa3b5"/><ellipse cx="13" cy="-14" rx="7" ry="1.8" fill="#9aa3b5"/><rect x="-10" y="-9" width="20" height="7" rx="3.5" fill="#3b5bdb" ${S} stroke-width="1.4"/><rect x="-4" y="0" width="8" height="8" rx="1" fill="#c98d4b" ${S} stroke-width="1.2"/></g>
+    <g transform="translate(66 226) scale(1.22)"><ellipse rx="24" ry="4.5" fill="#000" opacity=".13"/>
+      <path d="M-8-38v34M8-38v34" stroke="#2b3350" stroke-width="10" stroke-linecap="round"/><path d="M-15-2h11M4-2h11" stroke="${K}" stroke-width="6.5" stroke-linecap="round"/>
+      <path d="M-15-76q15-7 30 0l3 42h-36z" fill="#fff" ${S}/><path d="M0-78v44M-6-70l6 8 6-8" fill="none" ${S} stroke-width="1.5"/>
+      <path d="M-15-70q-9 12-4 26" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/><path d="M-15-70q-9 12-4 26" fill="none" stroke="${K}" stroke-width="1"/><path d="M15-70q10 8 16 22" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
+      <rect x="14" y="-58" width="26" height="18" rx="3" fill="#2b3350" ${S} transform="rotate(-12 27 -49)"/><path d="M19-48q6-10 14 0" fill="none" stroke="#7bd13a" stroke-width="2" transform="rotate(-12 27 -49)"/>
+      <circle cx="-19" cy="-43" r="5" fill="#f6c9a0" ${S}/><circle cx="31" cy="-47" r="5" fill="#f6c9a0" ${S}/>
+      <path d="M-17-92q-6 22 2 32M17-92q6 22-2 32" fill="none" stroke="#7a4b2a" stroke-width="9" stroke-linecap="round"/>
+      <circle cy="-93" r="16" fill="#f6c9a0" ${S}/><path d="M-16-94q-1-18 16-18t16 18q-8-10-16-10t-16 10z" fill="#7a4b2a" ${S}/>
+      <path d="M-13-103h26l3 5h-32z" fill="#ffc61a" ${S}/><path d="M-10-103q10-13 20 0z" fill="#ffc61a" ${S}/>
+      <circle cx="-5.5" cy="-92" r="1.9" fill="${K}"/><circle cx="5.5" cy="-92" r="1.9" fill="${K}"/><path d="M-5-86q5 5 10 0" fill="none" ${S}/></g></svg>`;
+}
+
+/* ================= meniu ir žurnalas ================= */
+const menu = $("menu"), play = $("play"), stage = $("stage"), app = $("app");
+const saved = MK.get("mokomeskartu-klase", 0), KEY = "mk-" + GAME + "-taskai", TH = [10, 60, 130, 220, 330, 460, 620, 800, 1000, 1250];
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("ptsL").textContent = T.pts;
+const total = () => MK.get(KEY, 0), gotN = n => TH.filter(t => n >= t).length;
+function renderCol(prev){
+  const n = total(), got = gotN(n), rank = T.ranks[got >= 10 ? 4 : got >= 7 ? 3 : got >= 4 ? 2 : got >= 2 ? 1 : 0];
+  $("col").innerHTML = `<h2>${T.colH}</h2><p>${T.colP(n, got, TH.length, rank, got < TH.length ? TH[got] - n : 0)}</p>
+    <div class="bds">${TH.map((t, i) => `<div class="bd${i < got ? (prev != null && i >= prev ? " new" : "") : " off"}">${badge(i)}<small>${i < got ? T.badges[i] : t + " tšk."}</small></div>`).join("")}</div>`;
+}
+function showMenu(prev){
+  animId++; play.hidden = true; menu.hidden = false; $("heroArt").innerHTML = heroSvg(); renderCol(prev);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, pts = 0, dots = null, got0 = 0, tries = 0, locked = false, idx = 0, ghosts = [];
+function start(i){
+  L = i; tasks = LV[i](); ti = 0; okN = 0; pts = 0; $("pts").textContent = 0; got0 = gotN(total());
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+function award(n){ if(n){ pts += n; MK.set(KEY, total() + n); const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); } }
+function close(ok, p){
+  locked = true; const first = ok && tries === 0; dots.mark(ti, first); if(first) okN++;
+  if(ok){ award(p); MK.sfx.good(); } else MK.sfx.bad();
+  const d = document.createElement("div"); d.innerHTML = MK.why({ ok, head: ok ? MK.praise() : cur.kind === "set" ? T.shown : T.bad2(cur.ans), body: cur.why });
+  $("flow").appendChild(d.firstElementChild);
+  const go = document.createElement("button"); go.type = "button"; go.className = "mk-btn go"; go.id = "next"; go.textContent = ti < tasks.length - 1 ? T.next : T.finish;
+  go.onclick = () => { MK.sfx.tap(); animId++; ti++; ti < tasks.length ? show() : finish(); };
+  $("flow").appendChild(go); setTimeout(() => go.scrollIntoView({ behavior: "smooth", block: "nearest" }), 120);
+}
+function note(cls, s){ const n = $("note"); if(n){ n.className = "note " + (cls || ""); n.innerHTML = s; } }
+function show(){
+  cur = tasks[ti]; dots.cur(ti); tries = 0; locked = false; ghosts = []; animId++; window.scrollTo({ top: 0 });
+  cur.kind === "set" ? showSet() : showChoice();
+}
+const head = () => `<p class="txt">${cur.text}</p>${cur.gn ? `<p class="gn">${T.gnote}</p>` : ""}`;
+function drawSet(){ const sp = cur.build(cur.vals[idx]); $("sim").innerHTML = simSvg(sp, ghosts); frame(sp, 0); $("tm").textContent = "";
+  $("val").innerHTML = `<small>${cur.par}</small>${nf(cur.vals[idx])}${cur.unit === "°" ? "°" : " " + cur.unit}`; $("dec").disabled = locked || idx === 0; $("inc").disabled = locked || idx === cur.vals.length - 1; }
+function showSet(){
+  idx = cur.i0;
+  stage.innerHTML = `<div class="card fade">${head()}<div class="sim" id="sim"></div>
+    <div class="ctl"><button type="button" id="dec" aria-label="−">−</button><output id="val"></output><button type="button" id="inc" aria-label="+">+</button></div>
+    <p class="note" id="note" role="status" aria-live="polite"></p>
+    <div class="row"><button type="button" class="mk-btn" id="run">${T.launch}</button><span id="tr">${T.tries(0)}</span></div></div><div id="flow"></div>`;
+  $("dec").onclick = () => { if(!locked && idx > 0){ idx--; MK.sfx.tap(); drawSet(); } };
+  $("inc").onclick = () => { if(!locked && idx < cur.vals.length - 1){ idx++; MK.sfx.tap(); drawSet(); } };
+  $("run").onclick = run; drawSet();
+}
+async function run(){
+  if(locked) return; locked = true; let my; const v = cur.vals[idx], sp = cur.build(v), hit = cur.ans.includes(v);
+  $("run").disabled = true; drawSet(); note("", ""); MK.sfx.whoosh(); const p1 = playSim(sp); my = animId; await p1; if(my !== animId) return;
+  if(hit){ note("ok", `${T.hit} <i>${cur.res(v)}</i>`); $("run").hidden = true; $("tr").hidden = true; locked = false; return close(true, [10, 6, 3][tries]); }
+  tries++; $("tr").textContent = T.tries(tries); ghosts.push(trail(sp, flight(sp))); MK.sfx.bad();
+  if(tries >= 3){
+    note("bad", `${T.miss} <i>${cur.res(v)}</i>`); await MK.wait(900); if(my !== animId) return;
+    idx = cur.vals.indexOf(cur.ans[0]); drawSet(); const p2 = playSim(cur.build(cur.vals[idx])); my = animId; await p2; if(my !== animId) return;
+    $("run").hidden = true; return close(false, 0);
+  }
+  note("bad", `${T.miss} <i>${cur.res(v)}</i>` + (tries === 2 ? `<i><b>${T.hint}</b> ${cur.hint}</i>` : ""));
+  locked = false; $("run").disabled = false; $("run").textContent = T.again; drawSet(); frame(sp, flight(sp));
+}
+function showChoice(){
+  stage.innerHTML = `<div class="card fade">${head()}${cur.graph ? graphSvg(cur.graph) : cur.sim ? `<div class="sim" id="sim">${simSvg(cur.sim)}</div>` : ""}
+    <div class="ans${cur.one ? " one" : ""}" id="ans">${cur.opts.map((o, i) => `<button type="button" class="a" data-i="${i}">${o}</button>`).join("")}</div>
+    <p class="note" id="note" role="status" aria-live="polite" style="margin-top:8px"></p></div><div id="flow"></div>`;
+  if(cur.sim){ frame(cur.sim, 0); $("tm").textContent = ""; }
+  $("ans").onclick = e => {
+    const b = e.target.closest(".a"); if(!b || locked || b.disabled) return;
+    const ok = cur.opts[+b.dataset.i] === cur.ans;
+    if(!ok){ b.classList.add("no"); b.disabled = true; tries++; if(tries < 2){ MK.sfx.bad(); note("bad", T.bad); return; } }
+    [...$("ans").children].forEach(x => { x.disabled = true; if(cur.opts[+x.dataset.i] === cur.ans) x.classList.add("ok"); });
+    note("", ""); if(cur.sim) playSim(cur.sim);
+    ok ? close(true, tries ? 4 : 10) : close(false, 0);
+  };
+}
+function finish(){
+  const n = tasks.length, stars = MK.starsFor(okN, n); MK.best(GAME, LEVELS[L].id, stars);
+  MK.result({ stars, title: `${okN} / ${n}`, text: T.res(okN, n, pts), next: L < LV.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(got0) });
+}
+window.__mk = { G, LV, mk, posAt, flight, get cur(){ return cur; }, get idx(){ return idx; } };
+showMenu();
+})();
+</script>
+</body>
+</html>
