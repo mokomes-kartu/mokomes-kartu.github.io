@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Gyvybės tinklas – MokomėsKartu.lt</title>
+<meta name="description" content="8 klasės biologijos žaidimas: mitybos grandinės ir tinklai, gamintojai, gyvėdžiai ir skaidytojai, mitybos lygmenys, energijos kelias, ekosistemų stabilumas ir invazinės rūšys.">
+<meta name="theme-color" content="#fff9e6">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/gyvybes-tinklas/tekstai.lt.js"></script>
+<script src="/gyvybes-tinklas/tinklai.js"></script>
+<style>
+/* Meniu: piešinys su gamtininke, „Rasos lauko užrašai“ (kolekcija), lygiai, „Noriu pasimokyti“.
+   Užduotys: grandinės dėliojimas, skirstymas į grupes, tinklo jungimas rodyklėmis, pasirinkimo klausimai su tinklu ar piramide. */
+body{--ac:#2f8f5b;--ac-ink:#fff;--ac-soft:#dff3e3}
+.mk-title{font-size:clamp(16px,4.4vw,24px)}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(32px,8.4vw,54px)}
+.mk-hero p{max-width:46ch;font-size:16px}
+.art{width:min(100%,480px);border-radius:24px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15);background:#cfeefa}
+.art svg{display:block;width:100%;height:auto}
+.art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 18px/1.2 var(--kid)}
+.col p{margin:4px 0 8px;color:var(--soft);font-weight:700;font-size:14.5px}
+.col p b{color:var(--ink)}
+.col details summary{cursor:pointer;font:800 15px/1 var(--body);color:var(--ac);min-height:36px;display:flex;align-items:center;gap:6px;list-style:none}
+.col details summary::-webkit-details-marker{display:none}
+.col details summary::before{content:"▸"}.col details[open] summary::before{content:"▾"}
+.bar{height:14px;border-radius:99px;background:#efe6c8;box-shadow:inset 0 0 0 2px var(--ink);overflow:hidden;margin:0 0 6px}
+.bar i{display:block;height:100%;background:var(--ac);border-right:2px solid var(--ink);min-width:8px}
+.atl h3{margin:10px 0 4px;font:800 13px/1.2 var(--body);letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
+.atl div{display:flex;flex-wrap:wrap;gap:5px}
+.atl span{width:42px;height:42px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2px var(--ink);display:grid;place-items:center}
+.atl span.off{background:#f1ead2;box-shadow:inset 0 0 0 2px #cfc39a}
+.atl span.off svg{filter:grayscale(1) brightness(1.6) contrast(.25);opacity:.45}
+.mk-lvl-t b{font-size:19px}
+
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.card{width:100%;max-width:560px;margin:0 auto 10px;padding:12px 12px 14px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12)}
+.eco{display:inline-block;margin:0 0 6px;padding:3px 10px;border-radius:99px;background:var(--ac-soft);font:800 12px/1.4 var(--body);letter-spacing:.04em;text-transform:uppercase;color:#1c5c3a}
+.txt{margin:0 0 10px;font:700 16px/1.5 var(--body)}
+.note{margin:8px 0;min-height:22px;font:700 14.5px/1.45 var(--body);color:var(--soft)}
+.note.ok{color:#177245}.note.bad{color:#b3261e}.note b{color:var(--ink)}
+.go{width:100%}
+.mk-why{max-width:560px;margin-inline:auto}
+.mk-why .mk-ex{font-size:14.5px}
+.fade{animation:mkIn .35s backwards}
+
+/* organizmo žetonas */
+.tk{display:inline-flex;flex-direction:column;align-items:center;gap:2px;width:58px;padding:0;border:0;background:none;color:var(--ink);font:inherit;vertical-align:top}
+button.tk{cursor:pointer;touch-action:manipulation}
+.ti{width:50px;height:50px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 rgba(18,26,51,.16);display:grid;place-items:center;font:800 24px/1 var(--kid);position:relative}
+.ti svg{width:40px;height:40px;display:block}
+.tk small,.slot small{display:block;width:calc(100% + 10px);margin:0 -5px;font:800 10.5px/1.15 var(--body);text-align:center;hyphens:manual}
+button.tk:active .ti{transform:translateY(2px)}
+.tk.sel .ti{box-shadow:inset 0 0 0 3.5px #2f6bff,0 0 0 4px #c9d9ff}
+.tk.err .ti{box-shadow:inset 0 0 0 3.5px var(--bad);background:#ffe9e3}
+.tk.good .ti{box-shadow:inset 0 0 0 3.5px var(--good);background:#e9faf1}
+.tk.q .ti{background:#fff3c4;color:#b3261e;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.tk .bd{position:absolute;right:-5px;bottom:-4px;min-width:20px;height:20px;padding:0 4px;border-radius:10px;background:var(--ink);color:#fff;font:800 11px/20px var(--body);text-align:center}
+.strip{display:flex;align-items:flex-start;justify-content:center;gap:1px;margin:0 0 10px}
+.ar{flex:none;font:800 20px/50px var(--body);font-style:normal;color:var(--ink);width:14px;text-align:center}
+.ar.err{color:var(--bad)}.ar.good{color:var(--good)}
+.slots{display:flex;align-items:flex-start;justify-content:center;gap:1px;margin:0 0 6px;padding:10px 2px 6px;border-radius:14px;background:#f4f8ee;box-shadow:inset 0 0 0 2px #c9d8b8}
+.slot{width:58px;min-height:68px;padding:0;border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;color:var(--ink);touch-action:manipulation}
+.slot .ti.empty{background:#fff;box-shadow:inset 0 0 0 2.5px #b9c7a8;color:#9aa88a;font-size:18px}
+.tray{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 6px;min-height:72px;margin:10px 0 0}
+.tray .tk.used{visibility:hidden}
+@media (max-width:379px){.tk,.slot{width:52px}.ti{width:46px;height:46px}.ti svg{width:36px;height:36px}.ar{width:11px;font-size:17px;line-height:46px}.tk small,.slot small{font-size:10px}}
+.grid6{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 4px;justify-items:center;margin:0 0 10px}
+.grid6 .tk{width:92px}.grid6 .tk small{font-size:12px}
+.bins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.bin{min-height:44px;padding:4px 4px;border:0;border-radius:12px;cursor:pointer;font:800 13.5px/1.15 var(--body);color:var(--ink);box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 rgba(18,26,51,.16);touch-action:manipulation}
+.bin:active{transform:translateY(2px)}
+.bin b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:#fff;font-size:11px;margin-right:4px}
+.gG{background:#d6f2c4}.gA{background:#ffe9a8}.gP{background:#ffd0c4}.gS{background:#e3d6c4}.gZ{background:#e6d4f7}
+.tk .bd.gG{background:#d6f2c4}.tk .bd.gA{background:#ffe9a8}.tk .bd.gP{background:#ffd0c4}.tk .bd.gS{background:#e3d6c4}.tk .bd.gZ{background:#e6d4f7}
+.tk .bd{color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.ans{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.ans.one{grid-template-columns:1fr}
+.a{min-height:52px;padding:8px 10px;border:0;border-radius:14px;background:#fff;cursor:pointer;text-align:center;font:800 16.5px/1.25 var(--body);color:var(--ink);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16);transition:transform .1s;touch-action:manipulation;display:flex;align-items:center;justify-content:center;gap:8px}
+.ans.one .a{font-size:15.5px}
+.a svg{flex:none}.a span{min-width:0;hyphens:manual}.a.tko{font-size:15.5px;padding-inline:6px;gap:6px}
+.a:active{transform:translateY(3px)}
+.a.ok{background:#d9f7e6;box-shadow:inset 0 0 0 3px var(--good),0 4px 0 rgba(18,26,51,.1)}
+.a.no{background:#ffe6df;box-shadow:inset 0 0 0 3px var(--bad);opacity:.75}
+.a[disabled]{pointer-events:none}
+.web{margin:0 auto 8px;border-radius:14px;overflow:hidden;box-shadow:0 0 0 2.5px var(--ink);background:#f4f8ee;max-width:420px}
+.web svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.web .nd{cursor:default}.web.live .nd{cursor:pointer}
+.web .nd.shake{animation:mkShake .45s}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.row .chip{height:32px;font:800 14px/32px var(--body)}
+.row .mk-btn{margin-left:auto;min-height:40px;font-size:15px;padding:6px 10px}
+.pyr{margin:0 auto 10px;max-width:380px}
+.pyr svg{display:block;width:100%;height:auto}
+.mk-lt-b ul{margin:6px 0;padding-left:20px}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="col" id="col"></div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="ptsChip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="stage"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, D = window.MK_TINKLAI, O = T.org, GAME = "gyvybes-tinklas", GRADES = [8], AK = "mk-" + GAME + "-atlasas";
+const R = MK.rnd, P = MK.pick, SH = MK.shuffle, $ = id => document.getElementById(id), cap = T.cap, nf = T.nf;
+const K = "#121a33", S = `stroke="${K}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"`;
+const FT = `font-family="Manrope,Arial,sans-serif" font-weight="800"`;
+
+/* ================= ekosistemų grafai ================= */
+function graph(e, inv){
+  const eats = {}; for(const k in e.eats) eats[k] = e.eats[k].slice();
+  if(inv && e.inv){ eats[e.inv.id] = e.inv.eats.slice(); e.inv.by.forEach(b => eats[b] = (eats[b] || []).concat(e.inv.id)); }
+  const by = {}, links = [], set = new Set();
+  for(const k in eats) eats[k].forEach(f => { (by[f] = by[f] || []).push(k); links.push([f, k]); set.add(f); set.add(k); });
+  return { e, eats, by, links, nodes: [...set], has: (f, k) => !!(eats[k] && eats[k].includes(f)) };
+}
+const GS = D.ECO.map(e => graph(e)), GI = D.ECO.filter(e => e.inv).map(e => graph(e, true));
+const eatP = (e, f) => T.part[e + ">" + f] || O[f].i;
+function paths(g, len){ const out = []; const go = p => { if(p.length === len){ out.push(p); return; } (g.by[p[p.length - 1]] || []).forEach(n => go(p.concat(n))); }; g.nodes.filter(D.isG).forEach(s => go([s])); return out; }
+const validChain = (g, p) => D.isG(p[0]) && p.every((x, i) => !i || g.has(p[i - 1], x));
+/* jungus potinklis iš n organizmų: kiekvienas ne gamintojas turi maisto, 3–5 lygmenys */
+function sub(g, n, must){
+  for(let t = 0; t < 600; t++){
+    const set = new Set(must || []); if(!set.size) set.add(P(g.nodes.filter(x => !D.isG(x))));
+    let guard = 0;
+    while(set.size < n && guard++ < 120){ const u = P([...set]), c = [...(g.eats[u] || []), ...(g.eats[u] || []), ...(g.by[u] || [])].filter(x => !set.has(x)); if(c.length) set.add(P(c)); }
+    if(set.size !== n) continue;
+    const nodes = [...set], ln = g.links.filter(l => set.has(l[0]) && set.has(l[1]));
+    if(nodes.some(x => !D.isG(x) && !ln.some(l => l[1] === x)) || nodes.some(x => D.isG(x) && !ln.some(l => l[0] === x))) continue;
+    if(ln.length < n - 1 || ln.length > n + 3) continue;
+    const sw = { g, nodes, links: ln, lvl: {}, lens: {} };
+    const lens = x => sw.lens[x] || (sw.lens[x] = D.isG(x) ? [1] : [...new Set([].concat(...ln.filter(l => l[1] === x).map(l => lens(l[0]).map(v => v + 1))))].sort());
+    nodes.forEach(x => { sw.lvl[x] = Math.max(...lens(x)); });
+    sw.maxL = Math.max(...nodes.map(x => sw.lvl[x]));
+    if(sw.maxL < 3 || sw.maxL > 5) continue;
+    if(nodes.filter(D.isG).length > 3) continue;
+    return sw;
+  }
+  return null;
+}
+const foods = (sw, x) => sw.links.filter(l => l[1] === x).map(l => l[0]), eaters = (sw, x) => sw.links.filter(l => l[0] === x).map(l => l[1]);
+function pathTo(sw, x, len){ if(D.isG(x)) return len === 1 ? [x] : null; for(const f of foods(sw, x)){ const p = pathTo(sw, f, len - 1); if(p) return p.concat(x); } return null; }
+function allTo(sw, x){ if(D.isG(x)) return [[x]]; return [].concat(...foods(sw, x).map(f => allTo(sw, f).map(p => p.concat(x)))); }
+
+/* ================= piešiniai ================= */
+const lab = id => O[id].n.replace("planktonas", "\u00adplanktonas");
+const tok = (id, cls, tag, extra) => `<${tag || "span"} class="tk ${cls || ""}" data-id="${id}"${tag === "button" ? ' type="button"' : ""}><span class="ti">${D.icon(id, 40)}${extra || ""}</span><small>${lab(id)}</small></${tag || "span"}>`;
+const strip = (ids, gap) => `<div class="strip">${ids.map((id, i) => (i ? '<i class="ar">→</i>' : "") + (i === gap ? '<span class="tk q"><span class="ti">?</span><small>&nbsp;</small></span>' : tok(id))).join("")}</div>`;
+const optTok = id => `${D.icon(id, 32)}<span>${lab(id)}</span>`;
+const chainTxt = p => p.map(x => O[x].n).join(" → ");
+
+function lay(sw){
+  if(sw.pos) return sw;
+  const rows = []; sw.nodes.forEach(n => { const i = sw.lvl[n] - 1; (rows[i] = rows[i] || []).push(n); });
+  for(let i = 0; i < rows.length; i++) rows[i] = SH(rows[i] || []);
+  const W = 340, RH = 82, H = (rows.length - 1) * RH + 96, pos = {};
+  const place = () => rows.forEach((r, i) => { const k = r.length; r.forEach((n, j) => { pos[n] = { x: Math.round(W * (j + .5) / k + (k < 4 && i % 2 ? (k === 1 ? 26 : 14) : 0) - (k < 4 && i % 2 === 0 && k === 1 ? 26 : 0)), y: H - 62 - i * RH }; }); });
+  place();
+  const avg = a => a.reduce((s, v) => s + v, 0) / a.length;
+  for(let s = 0; s < 3; s++){
+    for(let i = 1; i < rows.length; i++){ const b = n => avg(foods(sw, n).map(f => pos[f].x)); rows[i].sort((a, c) => b(a) - b(c)); place(); }
+    for(let i = rows.length - 2; i >= 0; i--){ const b = n => { const e = eaters(sw, n).map(f => pos[f].x); return e.length ? avg(e) : W / 2; }; rows[i].sort((a, c) => b(a) - b(c)); place(); }
+  }
+  sw.pos = pos; sw.H = H; sw.W = W; return sw;
+}
+function arrow(sw, a, b){
+  const p = sw.pos[a], q = sw.pos[b], dx = q.x - p.x, dy = q.y - p.y, len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len;
+  const obs = []; sw.nodes.forEach(n => { if(n !== a && n !== b){ obs.push([sw.pos[n].x, sw.pos[n].y, 29]); obs.push([sw.pos[n].x, sw.pos[n].y + 34, 20]); } });
+  obs.push([p.x, p.y + 36, 14]);
+  let c = null;
+  for(const off of [0, 30, -30, 55, -55, 80, -80, 110, -110]){
+    const cx = (p.x + q.x) / 2 - uy * off, cy = (p.y + q.y) / 2 + ux * off; let ok = cx > 8 && cx < sw.W - 8;
+    for(let t = .12; ok && t <= .9; t += .04){ const x = (1 - t) * (1 - t) * p.x + 2 * t * (1 - t) * cx + t * t * q.x, y = (1 - t) * (1 - t) * p.y + 2 * t * (1 - t) * cy + t * t * q.y; if(obs.some(o => Math.hypot(o[0] - x, o[1] - y) < o[2])) ok = false; }
+    if(ok){ c = [cx, cy]; break; }
+  }
+  if(!c) c = [(p.x + q.x) / 2, (p.y + q.y) / 2];
+  const t1 = Math.hypot(c[0] - p.x, c[1] - p.y) || 1, t2 = Math.hypot(c[0] - q.x, c[1] - q.y) || 1;
+  const sx = p.x + (c[0] - p.x) / t1 * 26, sy = p.y + (c[1] - p.y) / t1 * 26, up = Math.max(0, (q.y - c[1]) / t2 * -1), er = 31 + up * up * (O[b].n.length > 11 && O[b].n.includes(" ") ? 30 : 17), ex = q.x + (c[0] - q.x) / t2 * er, ey = q.y + (c[1] - q.y) / t2 * er;
+  return `M${sx.toFixed(1)} ${sy.toFixed(1)}Q${c[0].toFixed(1)} ${c[1].toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`;
+}
+/* o: links – kuriuos ryšius piešti; sel – pasirinktas; marks {id: "x"|"up"|"dn"}; hot – paryškinti organizmai */
+function webSvg(sw, o){
+  lay(sw); o = o || {}; const ln = o.links || sw.links, mk = o.marks || {};
+  let s = `<svg viewBox="0 0 ${sw.W} ${sw.H}" role="img"><defs><marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#3d6b4f"/></marker><marker id="ahr" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#e0902a"/></marker></defs>`;
+  ln.forEach(l => { const late = o.late && o.late.has(l[0] + ">" + l[1]); s += `<path class="lnk" d="${arrow(sw, l[0], l[1])}" fill="none" stroke="${late ? "#e0902a" : "#3d6b4f"}" stroke-width="2.6" stroke-linecap="round" marker-end="url(#${late ? "ahr" : "ah"})"/>`; });
+  sw.nodes.forEach(n => { const p = sw.pos[n], m = mk[n], w = O[n].n.split(" "), two = w.length > 1 && O[n].n.length > 11;
+    s += `<g class="nd" data-id="${n}" ${o.live ? 'tabindex="0" role="button"' : ""} aria-label="${O[n].n}"><circle cx="${p.x}" cy="${p.y}" r="24" fill="${m === "x" ? "#e9e4d6" : o.sel === n ? "#dbe6ff" : "#fff"}" stroke="${o.sel === n ? "#2f6bff" : o.hot && o.hot.includes(n) ? "#e0902a" : K}" stroke-width="${o.sel === n || (o.hot && o.hot.includes(n)) ? 4 : 2.5}"/>
+      <g transform="translate(${p.x - 20} ${p.y - 20}) scale(.625)" ${m === "x" ? 'opacity=".35"' : ""}>${D.inner(n)}</g>
+      <text x="${p.x}" y="${p.y + 37}" text-anchor="middle" font-size="11.5" ${FT} fill="${K}" stroke="#f4f8ee" stroke-width="4" paint-order="stroke" stroke-linejoin="round">${two ? `<tspan x="${p.x}">${w.slice(0, -1).join(" ")}</tspan><tspan x="${p.x}" dy="12">${w[w.length - 1]}</tspan>` : O[n].n}</text>`;
+    if(m === "x") s += `<path d="M${p.x - 15} ${p.y - 15}l30 30M${p.x + 15} ${p.y - 15}l-30 30" stroke="#d3382c" stroke-width="5" stroke-linecap="round"/>`;
+    if(m === "up" || m === "dn") s += `<g transform="translate(${p.x + 19} ${p.y - 19})"><circle r="11" fill="${m === "up" ? "#2fb36b" : "#ff6b4a"}" ${S}/><path d="${m === "up" ? "M0 6V-5M-5 0l5-6l5 6" : "M0-6V5M-5 0l5 6l5-6"}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+    s += `</g>`; });
+  return s + `</svg>`;
+}
+function pyrSvg(vals){
+  const n = vals.length, W = 340, bh = 40, H = n * bh + 16, cols = ["#8fd45a", "#ffd76a", "#ffab7a", "#f08a8a"]; let s = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  vals.forEach((v, i) => { const w = 316 - i * (n === 3 ? 84 : 66), y = H - 8 - (i + 1) * bh; s += `<rect x="${(W - w) / 2}" y="${y}" width="${w}" height="${bh - 4}" rx="7" fill="${cols[i]}" ${S}/><text x="${W / 2}" y="${y + 23}" text-anchor="middle" font-size="13.5" ${FT} fill="${K}">${T.rom[i + 1]} · ${T.kj(v)}</text>`; });
+  return s + `</svg>`;
+}
+function heroSvg(){
+  const node = (x, y, id) => `<circle cx="${x}" cy="${y}" r="27" fill="#fff" stroke="${K}" stroke-width="3"/><g transform="translate(${x - 22} ${y - 22}) scale(.69)">${D.inner(id)}</g>`;
+  const fir = (x, y, k, c) => `<path d="M${x} ${y - 46 * k}l${15 * k} ${46 * k}h${-30 * k}Z" fill="${c}" ${S}/>`;
+  let s = `<svg viewBox="0 0 480 270" role="img" aria-label="${T.heroAria}"><rect width="480" height="270" fill="#cfeefa"/><circle cx="62" cy="50" r="24" fill="#ffd94a" ${S}/>
+    <path d="M300 34q14-12 30-2q16-8 26 6q14 2 12 14h-76q-6-12 8-18Z" fill="#fff" ${S} opacity=".9" transform="translate(-250 62) scale(.8)"/>`;
+  [[10, 1], [40, 1.25], [74, .95], [104, 1.2], [300, 1], [332, 1.3], [366, 1.05], [398, 1.25], [432, 1], [462, 1.2]].forEach(([x, k], i) => { s += fir(x, 150, k, i % 2 ? "#2f7d4f" : "#3a9460"); });
+  s += `<path d="M0 148H480V270H0Z" fill="#8fd16a"/><path d="M0 148H480" stroke="${K}" stroke-width="2.5"/>
+    <path d="M236 196q10-34 110-36q104 0 134 26v84H250q-22-34-14-74Z" fill="#6cc0e8" ${S}/><path d="M290 196q14-6 28 0M344 222q16-6 32 0M410 192q14-6 28 0M300 246q16-6 32 0M420 240q14-6 28 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+    <g transform="translate(246 150) scale(.8)"><path d="M10 70V20M24 70V8M38 70V26" stroke="#4a8a3c" stroke-width="3" stroke-linecap="round"/><rect x="7" y="12" width="6" height="18" rx="3" fill="#8a5a2b" ${S}/><rect x="21" y="0" width="6" height="20" rx="3" fill="#8a5a2b" ${S}/><rect x="35" y="18" width="6" height="17" rx="3" fill="#8a5a2b" ${S}/></g>
+    <path d="M20 250q3-16 8-22q0 14 2 22ZM36 252q4-18 10-24q-1 14 0 24ZM200 258q3-16 8-22q0 14 2 22ZM214 260q4-18 10-24q-1 14 0 24Z" fill="#4fa843" ${S}/>
+    <g transform="translate(176 232)"><path d="M0 0V-16" stroke="#2f7d4f" stroke-width="3" stroke-linecap="round"/>${[0, 1, 2, 3, 4, 5].map(i => `<circle cx="${7 * Math.cos(i * 1.047)}" cy="${-22 + 7 * Math.sin(i * 1.047)}" r="4.5" fill="#fff" ${S} stroke-width="1.5"/>`).join("")}<circle cx="0" cy="-22" r="4" fill="#ffd21f" ${S} stroke-width="1.5"/></g>`;
+  /* gamtininkė Rasa */
+  s += `<g transform="translate(112 96)">
+    <ellipse cx="0" cy="160" rx="34" ry="6" fill="rgba(18,26,51,.16)"/>
+    <path d="M-20 60q-8 26 2 46q10 6 22-2q-6-20-4-44Z" fill="#8a6a3c" ${S}/>
+    <path d="M-13 108h12l1 42h-13Z M2 108h12l0 42h-13Z" fill="#6b7a4a" ${S}/>
+    <path d="M-17 148h18v10h-22q-2-8 4-10Z M1 148h15q6 2 6 10h-21Z" fill="#7a4b2a" ${S}/>
+    <path d="M-18 56q18-8 36 0l3 54q-21 8-42 0Z" fill="#4f8a5b" ${S}/><path d="M0 54v60" stroke="${K}" stroke-width="2"/><rect x="5" y="88" width="10" height="9" rx="2" fill="#3f7350" ${S} stroke-width="1.6"/>
+    <path d="M-18 60q-12 12-10 30l14 14l7-7l-9-11q0-8 4-14Z" fill="#4f8a5b" ${S}/><path d="M18 60q12 10 10 24l-10 12l-8-6l7-10q-2-6-4-10Z" fill="#4f8a5b" ${S}/>
+    <circle cx="-10" cy="101" r="5.5" fill="#f6c9a0" ${S}/><circle cx="14" cy="94" r="5.5" fill="#f6c9a0" ${S}/>
+    <rect x="-22" y="86" width="20" height="24" rx="2" fill="#fff" ${S} transform="rotate(-10 -12 98)"/><path d="M-19 93l12-2M-18 98l12-2M-17 103l8-1.4" stroke="#8a93a8" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M-7 46h14v12q-7 5-14 0Z" fill="#f6c9a0" ${S}/>
+    <circle cx="0" cy="30" r="19" fill="#f6c9a0" ${S}/>
+    <path d="M-19 30q-4 18 2 26q4-10 2-22ZM19 30q4 18-2 26q-4-10-2-22Z" fill="#9a5a2a" ${S}/>
+    <path d="M-18 24q4-18 18-18q14 0 18 18q-18-8-36 0Z" fill="#9a5a2a" ${S}/>
+    <ellipse cx="0" cy="17" rx="29" ry="6.5" fill="#c9a86a" ${S}/><path d="M-17 15q2-17 17-17q15 0 17 17q-17 5-34 0Z" fill="#d9bb7c" ${S}/><path d="M-16.5 11q16.5 5 33 0" fill="none" stroke="#7a4b2a" stroke-width="3"/>
+    <circle cx="-7" cy="31" r="2.2" fill="${K}"/><circle cx="7" cy="31" r="2.2" fill="${K}"/><path d="M-6 39q6 5 12 0" fill="none" stroke="${K}" stroke-width="2" stroke-linecap="round"/><circle cx="-12" cy="37" r="3" fill="#ff8aa0" opacity=".6"/><circle cx="12" cy="37" r="3" fill="#ff8aa0" opacity=".6"/>
+    <path d="M-9 52q-3 12 2 20M9 52q3 12-2 20" fill="none" stroke="#3a3020" stroke-width="2"/>
+    <rect x="-13" y="68" width="11" height="15" rx="4" fill="#3a3f52" ${S}/><rect x="2" y="68" width="11" height="15" rx="4" fill="#3a3f52" ${S}/><rect x="-3" y="72" width="6" height="6" fill="#3a3f52" ${S}/><circle cx="-7.500" cy="80" r="3" fill="#9ad0f0"/><circle cx="7.500" cy="80" r="3" fill="#9ad0f0"/>
+  </g>`;
+  s += `<path d="M239 62h26M327 62h26" stroke="#3d6b4f" stroke-width="4" stroke-linecap="round"/><path d="M262 54l12 8l-12 8ZM350 54l12 8l-12 8Z" fill="#3d6b4f"/>${node(206, 62, "zole")}${node(300, 62, "kiskis")}${node(394, 62, "lape")}`;
+  return s + `</svg>`;
+}
+const ART = [
+  `<svg viewBox="0 0 64 64"><circle cx="12" cy="46" r="9" fill="#8fd45a" ${S}/><circle cx="32" cy="30" r="9" fill="#ffd76a" ${S}/><circle cx="52" cy="14" r="9" fill="#ff9a7a" ${S}/><path d="M19 40l6-5M39 24l6-5" stroke="${K}" stroke-width="3" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 64 64"><rect x="6" y="8" width="24" height="22" rx="6" fill="#d6f2c4" ${S}/><rect x="34" y="8" width="24" height="22" rx="6" fill="#ffe9a8" ${S}/><rect x="6" y="34" width="24" height="22" rx="6" fill="#ffd0c4" ${S}/><rect x="34" y="34" width="24" height="22" rx="6" fill="#e3d6c4" ${S}/><circle cx="18" cy="19" r="5" fill="#5fb84a" ${S}/><circle cx="46" cy="19" r="5" fill="#f0a800" ${S}/><circle cx="18" cy="45" r="5" fill="#e63946" ${S}/><circle cx="46" cy="45" r="5" fill="#8a5a2b" ${S}/></svg>`,
+  `<svg viewBox="0 0 64 64"><path d="M14 50 32 34 50 50M32 34 20 14M32 34 46 12M20 14h26" fill="none" stroke="#3d6b4f" stroke-width="3" stroke-linecap="round"/><circle cx="14" cy="50" r="7" fill="#8fd45a" ${S}/><circle cx="50" cy="50" r="7" fill="#8fd45a" ${S}/><circle cx="32" cy="34" r="7" fill="#ffd76a" ${S}/><circle cx="20" cy="14" r="7" fill="#ff9a7a" ${S}/><circle cx="46" cy="12" r="7" fill="#ff9a7a" ${S}/></svg>`,
+  `<svg viewBox="0 0 64 64"><rect x="4" y="46" width="56" height="12" rx="3" fill="#8fd45a" ${S}/><rect x="12" y="32" width="40" height="12" rx="3" fill="#ffd76a" ${S}/><rect x="20" y="18" width="24" height="12" rx="3" fill="#ffab7a" ${S}/><rect x="26" y="5" width="12" height="11" rx="3" fill="#f08a8a" ${S}/></svg>`,
+  `<svg viewBox="0 0 64 64"><path d="M16 46 32 20 48 46" fill="none" stroke="#3d6b4f" stroke-width="3" stroke-linecap="round"/><circle cx="16" cy="48" r="9" fill="#8fd45a" ${S}/><circle cx="48" cy="48" r="9" fill="#ffd76a" ${S}/><circle cx="32" cy="18" r="11" fill="#e9e4d6" ${S}/><path d="M26 12l12 12M38 12 26 24" stroke="#d3382c" stroke-width="4" stroke-linecap="round"/><text x="48" y="53" text-anchor="middle" font-size="14" ${FT} fill="${K}">?</text></svg>`,
+  `<svg viewBox="0 0 64 64"><rect x="12" y="10" width="40" height="48" rx="6" fill="#fff" ${S}/><rect x="24" y="5" width="16" height="10" rx="4" fill="#c9a86a" ${S}/><path d="M20 28l5 5l9-10M20 44l5 5l9-10" fill="none" stroke="#2fb36b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M39 30h7M39 46h7" stroke="${K}" stroke-width="2.5" stroke-linecap="round"/></svg>`
+];
+const LEVELS = T.levels.map((l, i) => ({ id: l.id, name: l.name, sub: l.sub, art: ART[i] }));
+
+/* ================= užduočių generatoriai ================= */
+let used = new Set(), conQ = [];
+const fresh = (key, make) => { for(let i = 0; i < 40; i++){ const t = make(); if(t && !used.has(t[key])){ used.add(t[key]); return t; } } return make(); };
+const ecoName = g => T.eco[g.e.id], ecoIn = g => T.ecoIn[g.e.id];
+const ALLP = len => [].concat(...GS.map(g => paths(g, len).map(p => ({ g, p }))));
+const P3 = ALLP(3), P4 = ALLP(4), P5 = ALLP(5);
+const chainWhy = (g, p) => T.chainWhy(p.map(x => O[x].n), " " + p.slice(1).map((x, i) => T.eatS(O[x].d, eatP(x, p[i]))).join(" "));
+function mkOrder(len){ return fresh("key", () => { const c = P(len === 5 ? P5 : P4); return { kind: "order", key: "o" + c.p.join(), g: c.g, path: c.p, items: SH(c.p), text: T.ordQ(ecoIn(c.g)), eco: ecoName(c.g), why: chainWhy(c.g, c.p), orgs: c.p }; }); }
+function mkMissing(){ return fresh("key", () => {
+  const c = P(R(0, 2) ? P4 : P3), g = c.g, p = c.p, gap = R(0, p.length - 1);
+  const fits = x => (gap === 0 ? D.isG(x) : g.has(p[gap - 1], x)) && (gap === p.length - 1 || g.has(x, p[gap + 1])) && (gap > 0 || true);
+  const pool = SH(g.nodes.filter(x => !p.includes(x) && !fits(x))); if(pool.length < 3) return null;
+  /* klaidingi variantai – kuo panašesni: tos pačios grupės organizmai pirmiau */
+  pool.sort((a, b) => (D.ROLE[a] === D.ROLE[p[gap]] ? 0 : 1) - (D.ROLE[b] === D.ROLE[p[gap]] ? 0 : 1));
+  const opts = SH([p[gap]].concat(pool.slice(0, 2), P(pool.slice(2)))), x = p[gap];
+  return { kind: "choice", key: "m" + p.join() + gap, text: T.misQ, eco: ecoName(g), pre: strip(p, gap), opts: opts.map(optTok), ans: optTok(x), al: O[x].n,
+    why: T.misWhy(O[x].n, gap > 0 ? T.misP(O[x].d, eatP(x, p[gap - 1])) : "", gap < p.length - 1 ? T.misN(O[p[gap + 1]].d, eatP(p[gap + 1], x)) : "") + strip(p), orgs: p };
+}); }
+function mkRight(){ return fresh("key", () => {
+  const c = P(R(0, 1) ? P4 : P3), g = c.g, p = c.p, cand = [p.slice().reverse(), [p[1], p[0]].concat(p.slice(2)), [p[p.length - 1]].concat(p.slice(0, -1)), p.slice(0, -2).concat(p[p.length - 1], p[p.length - 2])];
+  const bad = []; cand.forEach(q => { if(!validChain(g, q) && !bad.some(b => b.join() === q.join())) bad.push(q); }); if(bad.length < 3) return null;
+  return { kind: "choice", key: "r" + p.join(), one: true, text: T.rightQ, opts: SH([p].concat(bad.slice(0, 3))).map(chainTxt), ans: chainTxt(p), why: T.rightWhy + " " + chainWhy(g, p), orgs: p };
+}); }
+const roleOf = id => D.ROLE[id];
+const sortWhy = (g, id) => { const r = roleOf(id); return T.sortLine(O[id].n, T.GR[r], r === "G" ? T.sortWhyG : r === "S" || r === "Z" ? T.sortWhyX[id] : T.sortWhyE(g.eats[id].map(f => eatP(id, f)).join(", "))); };
+const poolOf = g => g.nodes.filter(x => roleOf(x) !== "M").concat(g.e.sk, g.e.par);
+function mkSort(){ return fresh("key", () => {
+  const g = P(GS), pool = SH(poolOf(g)), by = r => pool.filter(x => roleOf(x) === r);
+  let items = [by("G")[0], by("A")[0], by("P")[0], by("S")[0]]; if(by("Z").length && R(0, 1)) items.push(by("Z")[0]);
+  SH(pool.filter(x => !items.includes(x))).forEach(x => { if(items.length < 6 && items.filter(y => roleOf(y) === roleOf(x)).length < 2) items.push(x); });
+  items = SH(items.filter(Boolean)); if(items.length < 6) return null;
+  return { kind: "sort", key: "s" + items.slice().sort().join(), g, items, text: T.sortQ(ecoName(g)), why: items.map(x => sortWhy(g, x)).join("<br>"), orgs: items };
+}); }
+function mkOdd(){ return fresh("key", () => {
+  const g = P(GS), pool = poolOf(g), r = P(["G", "A", "P"]), same = SH(pool.filter(x => roleOf(x) === r)).slice(0, 3), other = P(pool.filter(x => roleOf(x) !== r)); if(same.length < 3) return null;
+  return { kind: "choice", key: "d" + same.concat(other).sort().join(), text: T.oddQ, opts: SH(same.concat(other)).map(optTok), ans: optTok(other), al: O[other].n, why: T.oddWhy(O[other].n, T.GR[roleOf(other)], T.GRD[r]) + "<br>" + same.concat(other).map(x => sortWhy(g, x)).join("<br>"), orgs: same.concat(other) };
+}); }
+function mkPick(){ return fresh("key", () => {
+  const g = P(GS), pool = poolOf(g), r = P(["G", "A", "P", "S", "S"].concat(g.e.par.length ? ["Z", "Z"] : [])), a = P(pool.filter(x => roleOf(x) === r)), rest = SH(pool.filter(x => roleOf(x) !== r)).slice(0, 3); if(!a) return null;
+  return { kind: "choice", key: "p" + a + r, text: T.pickQ(r), opts: SH(rest.concat(a)).map(optTok), ans: optTok(a), al: O[a].n, why: rest.concat(a).map(x => sortWhy(g, x)).join("<br>"), orgs: rest.concat(a) };
+}); }
+function mkNet(n){ return fresh("key", () => { const g = P(GS), sw = sub(g, n); if(!sw) return null;
+  return { kind: "net", key: "n" + sw.nodes.slice().sort().join(), g, sw, text: T.netQ(ecoIn(g), sw.links.length), eco: ecoName(g), why: T.netWhy(sw.links.length, sw.links.map(l => `${O[l[0]].n} → ${O[l[1]].n}`).join("; ")), orgs: sw.nodes }; }); }
+function mkCon(lv){ if(!conQ.length) conQ = SH(T.con.map((_, i) => i)); let i = conQ.findIndex(j => lv == null || T.con[j].lv === lv); if(i < 0){ conQ = conQ.concat(SH(T.con.map((_, k) => k))); i = conQ.findIndex(j => lv == null || T.con[j].lv === lv); }
+  const c = T.con[conQ.splice(i, 1)[0]]; return { kind: "choice", one: true, text: c.q, opts: SH([c.a].concat(c.x)), ans: c.a, why: c.w, orgs: [] }; }
+function mkLvl(){ return fresh("key", () => { const c = P(R(0, 1) ? P5 : P4), p = c.p, i = R(1, p.length - 1), all = [1, 2, 3, 4, 5].slice(0, Math.max(4, p.length)), opts = all.length > 4 ? all.filter(v => v === i + 1 || v !== (i + 1 === 1 ? 5 : 1)).slice(0, 4) : all;
+  return { kind: "choice", key: "l" + p.join() + i, text: T.lvlQ(O[p[i]].n), eco: ecoName(c.g), pre: strip(p), opts: opts.map(T.lvlOpt), ans: T.lvlOpt(i + 1), why: T.lvlWhy(O[p[i]].n, i + 1), orgs: p }; }); }
+function mkTwo(){ return fresh("key", () => { const g = P(GS), sw = sub(g, R(6, 7)); if(!sw) return null; const multi = sw.nodes.filter(x => sw.lens[x].length > 1), single = sw.nodes.filter(x => !D.isG(x) && sw.lens[x].length === 1); if(multi.length !== 1 || single.length < 3) return null;
+  const x = multi[0], a = sw.lens[x][0], b = sw.lens[x][1];
+  return { kind: "choice", key: "t" + sw.nodes.slice().sort().join(), text: T.twoQ, eco: ecoName(g), web: sw, opts: SH([x].concat(SH(single).slice(0, 3))).map(optTok), ans: optTok(x), al: O[x].n, hot: [x], why: T.twoWhy(O[x].n, a, b, chainTxt(pathTo(sw, x, a)), chainTxt(pathTo(sw, x, b))), orgs: sw.nodes }; }); }
+function mkCount(){ return fresh("key", () => { const g = P(GS), sw = sub(g, R(6, 7)); if(!sw) return null; const tops = sw.nodes.filter(x => !eaters(sw, x).length && sw.lvl[x] >= 3).map(x => ({ x, ps: allTo(sw, x) })).filter(o => o.ps.length >= 2 && o.ps.length <= 5); if(!tops.length) return null;
+  const t = P(tops), n = t.ps.length, opts = [n - 1, n, n + 1, n + 2].map(v => v < 1 ? n + 3 : v);
+  return { kind: "choice", key: "c" + sw.nodes.slice().sort().join() + t.x, text: T.cntQ(O[t.x].n), eco: ecoName(g), web: sw, hot: [t.x], marks0: {}, opts: SH(opts).map(String), ans: String(n), why: T.cntWhy(n, t.ps.map(chainTxt).join("<br>")), orgs: sw.nodes }; }); }
+const four = (ans, cand, fmt) => { const o = [ans]; cand.forEach(v => { if(o.length < 4 && v > 0 && Number.isInteger(v) && !o.includes(v)) o.push(v); }); let k = 2; while(o.length < 4){ if(!o.includes(ans * k)) o.push(ans * k); k++; } return { opts: SH(o).map(fmt), ans: fmt(ans) }; };
+function mkE1(){ const id = P(["pelenas", "kiskis", "skeriukas", "viksras", "amaras", "sliuzas", "bebras"]), E = P([2000, 3000, 4000, 5000, 6000, 8000]); let rp, wp; do { rp = P([50, 55, 60, 65, 70]); wp = P([20, 25, 30]); } while(100 - rp - wp < 5);
+  const r = E * rp / 100, w = E * wp / 100, s = E - r - w, sp = 100 - rp - wp;
+  if(R(0, 1)){ const f = four(s, [E - r, E - w, r + w, r, w], T.kj); return { kind: "choice", text: T.e1Q(O[id].d, E, r, w), opts: f.opts, ans: f.ans, why: T.e1Why(E, r, w, s), orgs: [id] }; }
+  const f = four(sp, [100 - sp, rp, wp, sp * 2, sp + 10], T.pct); return { kind: "choice", text: T.e1bQ(O[id].d, E, r, w), opts: f.opts, ans: f.ans, why: T.e1bWhy(E, r, w, s, sp), orgs: [id] }; }
+function mkE2(){ const c = P(P4), p = c.p, E = P([10000, 20000, 50000, 80000]), t = R(2, 3), ans = E / Math.pow(10, t), f = four(ans, [ans * 10, ans / 10, E * (10 - t) / 10, E / (t + 1)], T.kj);
+  return { kind: "choice", text: T.e2Q(chainTxt(p), E, O[p[t]].n, t + 1), eco: ecoName(c.g), pre: strip(p), opts: f.opts, ans: f.ans, why: T.e2Why(p.slice(0, t + 1).map((x, i) => `${O[x].n} ${T.kj(E / Math.pow(10, i))}`).join(" → ")), orgs: p }; }
+function mkE3(){ const c = P(P4), p = c.p, i = R(0, 2), A = P([2000, 4000, 5000, 6000, 8000, 10000]), pc = P([5, 8, 10, 12, 15, 20]), B = A * pc / 100, f = four(pc, [100 - pc, pc * 2, Math.round(A / B), pc + 10, pc * 5], T.pct);
+  return { kind: "choice", text: T.e3Q(O[p[i]].d, A, O[p[i + 1]].d, B), eco: ecoName(c.g), pre: strip(p), opts: f.opts, ans: f.ans, why: T.e3Why(A, B, pc), orgs: p }; }
+function mkPyr(){ let v, rs; do { const n = R(3, 4), E = P([20000, 40000, 60000, 80000, 120000]); rs = SH([4, 5, 8, 10]).slice(0, n - 1); v = [E]; rs.forEach(r => v.push(v[v.length - 1] / r)); } while(v.some(x => !Number.isInteger(x)));
+  const l = R(3, v.length), ratio = v[0] / v[l - 1], f = four(ratio, [rs[0], rs.slice(0, l - 1).reduce((a, b) => a + b, 0), ratio * 2, ratio / 2, rs[1]], T.times);
+  return { kind: "choice", text: T.pyrQ(l), pre: `<div class="pyr">${pyrSvg(v)}</div>`, opts: f.opts, ans: f.ans, why: T.pyrWhy(v[0], v[l - 1], ratio), orgs: [] }; }
+/* „Kas nutiks, jei…?“: X – pasikeitusi rūšis, Y – klausiama. Tinka tik tada, kai X ir Y sieja vienas ryšio tipas ir nėra bendro plėšrūno. */
+function rels(sw, X, Y){
+  const fX = foods(sw, X), fY = foods(sw, Y), eX = eaters(sw, X), eY = eaters(sw, Y), out = [];
+  if(fX.includes(Y)) out.push(["prey", null]); if(fY.includes(X)) out.push(["pred", null]);
+  const sh = fX.filter(f => fY.includes(f)); if(sh.length) out.push(["comp", sh[0]]);
+  const d2 = fX.filter(z => foods(sw, z).includes(Y)); if(d2.length) out.push(["down2", d2[0]]);
+  const u2 = eX.filter(z => fY.includes(z)); if(u2.length) out.push(["up2", u2[0]]);
+  if(eX.some(z => eY.includes(z))) out.push(["shared", null]);
+  const u3 = eX.filter(z => eaters(sw, z).some(q => q === Y)); void u3;
+  return out;
+}
+const EFFECT = { gone: { prey: "upE", pred: "dnF", comp: "upF", down2: "dnE", up2: "dnF" }, more: { prey: "dnE", pred: "upF", comp: "dnF", down2: "upE", up2: "upF" } };
+function mkWhat(kind, inv){ return fresh("key", () => {
+  kind = kind || P(["gone", "more"]); const g = inv ? P(GI) : P(GS), sw = sub(g, R(6, 7), inv ? [g.e.inv.id] : null); if(!sw) return null;
+  const pairs = []; (inv ? [g.e.inv.id] : sw.nodes).forEach(X => sw.nodes.forEach(Y => { if(X === Y) return; const r = rels(sw, X, Y); if(r.length === 1 && r[0][0] !== "shared") pairs.push({ X, Y, type: r[0][0], Z: r[0][1] }); })); if(!pairs.length) return null;
+  const type = P([...new Set(pairs.map(p => p.type))]), c = P(pairs.filter(p => p.type === type)), k = inv ? "more" : kind, eff = EFFECT[k][c.type], up = eff[0] === "u";
+  const marks = { [c.X]: k === "gone" ? "x" : "up", [c.Y]: up ? "up" : "dn" }; if(c.type === "down2" || c.type === "up2") marks[c.Z] = (c.type === "down2") === (k === "gone") ? "up" : "dn";
+  const text = inv ? `${T.wInv[c.X]} ${T.wInvQ(O[c.Y].k)}` : k === "gone" ? T.wGone(O[c.X].d, O[c.Y].k, ecoIn(g)) : T.wMore(O[c.X].k, O[c.Y].k, ecoIn(g));
+  return { kind: "choice", key: "w" + k + c.X + c.Y + sw.nodes.slice().sort().join(), one: true, text, eco: ecoName(g), web: sw, hot: [c.X], marks0: k === "gone" ? { [c.X]: "x" } : { [c.X]: "up" }, marks, late: inv ? new Set(sw.links.filter(l => l[0] === c.X || l[1] === c.X).map(l => l.join(">"))) : null,
+    opts: ["upE", "upF", "dnF", "dnE"].map(o => T.wOpt[o]), ans: T.wOpt[eff], why: T.wWhy[k][c.type](O[c.X], O[c.Y], c.Z ? O[c.Z] : null) + T.wTail, orgs: sw.nodes, rel: c };
+}); }
+const LV = [
+  () => [mkOrder(4), mkCon(0), mkMissing(), mkOrder(4), mkRight(), mkMissing(), mkOrder(4), mkOrder(5)],
+  () => [mkPick(), mkSort(), mkCon(1), mkOdd(), mkSort(), mkCon(1), mkPick(), mkSort()],
+  () => [mkNet(5), mkNet(5), mkCon(2), mkNet(6), mkNet(6), mkNet(7)],
+  () => [mkLvl(), mkCon(3), mkCount(), mkTwo(), mkE1(), mkE2(), mkE3(), mkPyr()],
+  () => [mkWhat("gone"), mkCon(4), mkWhat("gone"), mkWhat("more"), mkCon(4), mkWhat("more", true), mkWhat("gone"), mkWhat("more")],
+  () => [mkOrder(5), mkSort(), mkNet(6), mkTwo(), mkE2(), mkCount(), mkWhat(), mkWhat("more", true), mkCon(), mkNet(7)]
+];
+
+/* ================= meniu ir kolekcija ================= */
+const menu = $("menu"), play = $("play"), stage = $("stage"), app = $("app");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("ptsL").textContent = T.pts;
+const ATL = D.ECO.map(e => { const g = graph(e, true); return { id: e.id, ids: g.nodes.concat(e.sk, e.par) }; });
+const ALLIDS = [...new Set([].concat(...ATL.map(a => a.ids)))];
+const atlas = () => { const a = MK.get(AK, []); return new Set(Array.isArray(a) ? a.filter(x => ALLIDS.includes(x)) : []); };
+function renderCol(){
+  const a = atlas(), n = a.size, all = ALLIDS.length, rank = T.ranks[n >= all ? 3 : n >= 45 ? 2 : n >= 18 ? 1 : 0], seen = new Set();
+  $("col").innerHTML = `<h2>${T.colH}</h2><p>${T.colP(n, all, rank)}</p><div class="bar"><i style="width:${Math.round(n / all * 100)}%"></i></div>
+    <details><summary>${T.colOpen}</summary><div class="atl">${ATL.map(e => { const ids = e.ids.filter(x => !seen.has(x)); ids.forEach(x => seen.add(x)); return `<h3>${T.eco[e.id]}</h3><div>${ids.map(x => `<span class="${a.has(x) ? "" : "off"}" title="${a.has(x) ? O[x].n : "?"}">${D.icon(x, 32)}</span>`).join("")}</div>`; }).join("")}</div></details>`;
+}
+function showMenu(){
+  play.hidden = true; menu.hidden = false; $("heroArt").innerHTML = heroSvg(); renderCol();
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, pts = 0, dots = null, tries = 0, locked = false, st = null;
+function start(i){
+  L = i; used = new Set(); tasks = LV[i]().filter(Boolean); ti = 0; okN = 0; pts = 0; $("pts").textContent = 0;
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+function award(n){ if(n){ pts += n; const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); } }
+function close(ok, p, first, head){
+  locked = true; dots.mark(ti, !!first); if(first){ okN++; const a = atlas(); cur.orgs.forEach(x => { if(ALLIDS.includes(x)) a.add(x); }); MK.set(AK, [...a]); }
+  if(ok){ award(p); MK.sfx.good(); } else MK.sfx.bad();
+  const d = document.createElement("div"); d.innerHTML = MK.why({ ok, head: head || (ok ? MK.praise() : cur.kind === "choice" ? T.ans(cur.al || cur.ans) : T.shown), body: cur.why });
+  $("flow").appendChild(d.firstElementChild);
+  const go = document.createElement("button"); go.type = "button"; go.className = "mk-btn go"; go.id = "next"; go.textContent = ti < tasks.length - 1 ? T.next : T.finish;
+  go.onclick = () => { MK.sfx.tap(); ti++; ti < tasks.length ? show() : finish(); };
+  $("flow").appendChild(go); setTimeout(() => go.scrollIntoView({ behavior: "smooth", block: "nearest" }), 120);
+}
+function note(cls, s){ const n = $("note"); if(n){ n.className = "note " + (cls || ""); n.innerHTML = s; } }
+const head = () => (cur.eco ? `<span class="eco">${T.ecoTag(cur.eco)}</span>` : "") + `<p class="txt">${cur.text}</p>`;
+function show(){
+  cur = tasks[ti]; dots.cur(ti); tries = 0; locked = false; window.scrollTo({ top: 0 });
+  ({ choice: showChoice, order: showOrder, sort: showSort, net: showNet })[cur.kind]();
+}
+/* ---------- pasirinkimas ---------- */
+function showChoice(){
+  stage.innerHTML = `<div class="card fade">${head()}${cur.pre || ""}${cur.web ? `<div class="web" id="web">${webSvg(cur.web, { marks: cur.marks0, hot: cur.hot && cur.marks0 ? cur.hot : null, late: cur.late })}</div>` : ""}
+    <div class="ans${cur.one ? " one" : ""}" id="ans">${cur.opts.map((o, i) => `<button type="button" class="a${o.indexOf("<svg") === 0 ? " tko" : ""}" data-i="${i}">${o}</button>`).join("")}</div>
+    <p class="note" id="note" role="status" aria-live="polite"></p></div><div id="flow"></div>`;
+  $("ans").onclick = e => {
+    const b = e.target.closest(".a"); if(!b || locked || b.disabled) return;
+    const ok = cur.opts[+b.dataset.i] === cur.ans;
+    if(!ok){ b.classList.add("no"); b.disabled = true; tries++; if(tries < 2 && cur.opts.length > 2){ MK.sfx.bad(); note("bad", T.bad); return; } }
+    [...$("ans").children].forEach(x => { x.disabled = true; if(cur.opts[+x.dataset.i] === cur.ans) x.classList.add("ok"); });
+    note("", ""); if(cur.web && (cur.marks || cur.hot)) $("web").innerHTML = webSvg(cur.web, { marks: cur.marks, hot: cur.hot, late: cur.late });
+    ok ? close(true, tries ? 4 : 10, tries === 0) : close(false, 0, false);
+  };
+}
+/* ---------- grandinės dėliojimas ---------- */
+function showOrder(){
+  st = { slots: cur.path.map(() => null), bad: [] };
+  stage.innerHTML = `<div class="card fade">${head()}<div class="slots" id="slots"></div><div class="tray" id="tray"></div>
+    <p class="note" id="note" role="status" aria-live="polite">${T.ordHint}</p><button type="button" class="mk-btn go" id="chk" disabled>${T.check}</button></div><div id="flow"></div>`;
+  const draw = () => {
+    $("slots").innerHTML = st.slots.map((id, i) => (i ? `<i class="ar${st.bad.includes(i) ? " err" : ""}">→</i>` : "") + `<button type="button" class="slot" data-i="${i}" aria-label="${i + 1}">${id ? `<span class="ti">${D.icon(id, 40)}</span><small>${lab(id)}</small>` : `<span class="ti empty">${i + 1}</span><small>&nbsp;</small>`}</button>`).join("");
+    $("tray").innerHTML = cur.items.map(id => tok(id, st.slots.includes(id) ? "used" : "", "button")).join("");
+    $("chk").disabled = locked || st.slots.includes(null); $("tray").hidden = locked;
+  };
+  $("tray").onclick = e => { const b = e.target.closest(".tk"); if(!b || locked) return; const i = st.slots.indexOf(null); if(i < 0) return; st.slots[i] = b.dataset.id; st.bad = []; MK.sfx.tap(); draw(); };
+  $("slots").onclick = e => { const b = e.target.closest(".slot"); if(!b || locked) return; const i = +b.dataset.i; if(!st.slots[i]) return; st.slots[i] = null; st.bad = []; MK.sfx.tap(); draw(); };
+  $("chk").onclick = () => {
+    if(locked) return; const s = st.slots, bad = []; s.forEach((x, i) => { if(i && !cur.g.has(s[i - 1], x)) bad.push(i); });
+    const startBad = !D.isG(s[0]);
+    if(!bad.length && !startBad){ locked = true; draw(); $("chk").hidden = true; note("", ""); return close(true, tries ? 5 : 10, tries === 0); }
+    tries++;
+    if(tries >= 2){ locked = true; st.slots = cur.path.slice(); st.bad = []; draw(); $("chk").hidden = true; note("", ""); return close(false, 0, false); }
+    st.bad = bad; MK.sfx.bad(); draw(); note("bad", (startBad ? T.ordBadStart + " " : "") + (bad.length ? T.ordBad1(bad.length) : ""));
+  };
+  draw();
+}
+/* ---------- skirstymas į grupes ---------- */
+function showSort(){
+  const GRP = ["G", "A", "P", "S", "Z"]; st = { as: {}, sel: cur.items[0], err: [], done: false };
+  stage.innerHTML = `<div class="card fade">${head()}<div class="grid6" id="grid"></div><div class="bins" id="bins">${GRP.map(g => `<button type="button" class="bin g${g}" data-g="${g}">${T.GRD[g]}</button>`).join("")}</div>
+    <p class="note" id="note" role="status" aria-live="polite">${T.sortHint}</p><button type="button" class="mk-btn go" id="chk" disabled>${T.check}</button></div><div id="flow"></div>`;
+  const draw = () => {
+    $("grid").innerHTML = cur.items.map(id => tok(id, (st.sel === id && !locked ? "sel " : "") + (st.err.includes(id) ? "err " : "") + (st.done ? "good" : ""), "button", st.as[id] ? `<span class="bd g${st.as[id]}">${T.GRD[st.as[id]][0]}</span>` : "")).join("");
+    $("chk").disabled = locked || cur.items.some(id => !st.as[id]);
+  };
+  $("grid").onclick = e => { const b = e.target.closest(".tk"); if(!b || locked) return; st.sel = b.dataset.id; MK.sfx.tap(); draw(); };
+  $("bins").onclick = e => { const b = e.target.closest(".bin"); if(!b || locked || !st.sel) return; st.as[st.sel] = b.dataset.g; st.err = st.err.filter(x => x !== st.sel); MK.sfx.tap();
+    const i = cur.items.indexOf(st.sel), nx = cur.items.slice(i + 1).concat(cur.items.slice(0, i)).find(id => !st.as[id]); st.sel = nx || null; draw(); };
+  $("chk").onclick = () => {
+    if(locked) return; const wrong = cur.items.filter(id => st.as[id] !== roleOf(id));
+    if(!wrong.length){ locked = true; st.done = true; st.sel = null; draw(); $("chk").hidden = true; $("bins").hidden = true; note("", ""); return close(true, tries ? 5 : 10, tries === 0); }
+    tries++;
+    if(tries >= 2){ locked = true; cur.items.forEach(id => st.as[id] = roleOf(id)); st.err = wrong; st.sel = null; draw(); $("chk").hidden = true; $("bins").hidden = true; note("", ""); return close(false, 0, false); }
+    st.err = wrong; wrong.forEach(id => delete st.as[id]); st.sel = wrong[0]; MK.sfx.bad(); draw(); note("bad", T.sortBad1(wrong.length));
+  };
+  draw();
+}
+/* ---------- mitybos tinklo jungimas ---------- */
+function showNet(){
+  const sw = cur.sw, total = sw.links.length; st = { found: [], sel: null, errs: 0 };
+  stage.innerHTML = `<div class="card fade">${head()}<div class="web live" id="web"></div><p class="note" id="note" role="status" aria-live="polite">${T.netHint}</p>
+    <div class="row"><span class="chip" id="cnt"></span><span class="chip" id="err"></span><button type="button" class="mk-btn alt" id="give" hidden>${T.giveUp}</button></div></div><div id="flow"></div>`;
+  const draw = shake => { $("web").innerHTML = webSvg(sw, { links: st.found, sel: st.sel, live: !locked }); $("cnt").textContent = T.netCnt(st.found.length, total); $("err").textContent = T.netErr(st.errs);
+    if(shake){ const n = $("web").querySelector(`.nd[data-id="${shake}"]`); if(n){ n.style.transformOrigin = `${sw.pos[shake].x}px ${sw.pos[shake].y}px`; n.classList.add("shake"); } } };
+  const pick = id => {
+    if(locked) return;
+    if(!st.sel){ st.sel = id; MK.sfx.tap(); note("", T.netSel(O[id].n)); return draw(); }
+    if(st.sel === id){ st.sel = null; note("", T.netHint); return draw(); }
+    const f = st.sel, e = id; st.sel = null;
+    if(st.found.some(l => l[0] === f && l[1] === e)){ note("", T.netDup); return draw(); }
+    if(cur.g.has(f, e)){ st.found.push([f, e]); MK.sfx.hop(st.found.length); note("ok", T.netOk(O[f].n, O[e].n));
+      if(st.found.length === total){ locked = true; draw(); $("give").hidden = true; return close(true, st.errs === 0 ? 10 : st.errs === 1 ? 7 : st.errs <= 3 ? 4 : 2, st.errs <= 1); }
+      return draw(); }
+    let msg = null;
+    if(D.isG(e)) msg = T.netG(O[e].d); else if(cur.g.has(e, f)) msg = T.netRev(O[f].d, eatP(f, e));
+    else if(roleOf(e) === "A" && !D.isG(f)) msg = T.netA(O[e].d); else if(D.STRICT.includes(e) && D.isG(f)) msg = T.netP(O[e].d);
+    if(!msg){ note("", T.netSoft); return draw(); }
+    st.errs++; MK.sfx.bad(); note("bad", msg); if(st.errs >= 3) $("give").hidden = false; draw(e);
+  };
+  $("web").onclick = e => { const n = e.target.closest(".nd"); if(n) pick(n.dataset.id); };
+  $("web").onkeydown = e => { if(e.key === "Enter" || e.key === " "){ const n = e.target.closest(".nd"); if(n){ e.preventDefault(); pick(n.dataset.id); } } };
+  $("give").onclick = () => { if(locked) return; locked = true; const late = new Set(sw.links.filter(l => !st.found.some(x => x[0] === l[0] && x[1] === l[1])).map(l => l.join(">"))); st.found = sw.links.slice(); st.sel = null;
+    $("web").innerHTML = webSvg(sw, { links: st.found, late }); $("give").hidden = true; note("", ""); close(false, 0, false); };
+  draw();
+}
+function finish(){
+  const n = tasks.length, stars = MK.starsFor(okN, n); MK.best(GAME, LEVELS[L].id, stars);
+  MK.result({ stars, title: `${okN} / ${n}`, text: T.res(okN, n, pts), next: L < LV.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: showMenu });
+}
+window.__mk = { GS, GI, LV, T, D, sub, paths, rels, validChain, lay, webSvg, mk: { mkOrder, mkMissing, mkRight, mkSort, mkOdd, mkPick, mkNet, mkCon, mkLvl, mkTwo, mkCount, mkE1, mkE2, mkE3, mkPyr, mkWhat }, reset(){ used = new Set(); }, get cur(){ return cur; }, get st(){ return st; }, roleOf, P4, P5, P3 };
+showMenu();
+})();
+</script>
+</body>
+</html>
