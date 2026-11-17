@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kalnelių inžinierius – MokomėsKartu.lt</title>
+<meta name="description" content="Matematikos žaidimas 12 klasei (VBE): išvestinės, liestinė, ekstremumai, didžiausioji ir mažiausioji reikšmės, optimizavimo uždaviniai – projektuok amerikietiškus kalnelius.">
+<meta name="theme-color" content="#f2f5fb">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<script src="uzduotys.js"></script>
+<style>
+/* Kalnelių inžinierius: brėžinių lentos stilius. Trasa = funkcijos grafikas, vagonėlio polinkis = išvestinė. */
+body{--paper:#f2f5fb;--grid:#dde4f3;--soft:#4a5370;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#e0422f;--ac-ink:#fff;--ac-soft:#ffe4dc;--blue:#2b59d9;--ok:#1f8a52}
+.mk-ico[data-k="music"]{display:none}
+.mk-lvl{border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink);grid-template-columns:58px minmax(0,1fr) auto;gap:12px}
+.mk-lvl-art{width:58px;height:58px;border-radius:10px;background:#e6edff}
+.mk-lvl-art svg{width:50px;height:50px}
+.mk-lvl-t b{font-size:15.5px;letter-spacing:-.02em}
+.mk-lvl-t small{font-size:13px}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(28px,7.6vw,48px)}
+.mk-hero p{max-width:44ch}
+.mk-btn{border-radius:12px;font-size:16px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res .mk-owl{display:none}
+.mk-res h2{font-size:22px;letter-spacing:-.03em}
+.mk-sec{font-size:16px}
+.mk-hero-art{width:min(460px,100%)}
+.hero-card{background:#fff;border-radius:18px;padding:6px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.hero-card svg{display:block;width:100%;height:auto;border-radius:12px}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+i{font-family:Georgia,"Times New Roman",serif;font-style:italic}
+sup,sub{font-size:.68em;line-height:0}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .12em;font-size:.86em;line-height:1.1}
+.fr>span{padding:0 .2em;white-space:nowrap}
+.fr>span+span{border-top:.1em solid currentColor;padding-top:.06em}
+.fn{display:block;margin:6px 0 2px;padding:8px 10px;border-radius:8px;background:#eef2ff;font:800 clamp(16px,4.6vw,19px)/1.5 var(--body);box-shadow:inset 0 0 0 2px #c9d4f5;overflow-wrap:anywhere}
+
+/* parkas */
+.park{max-width:520px;margin:0 auto}
+.atts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 8px;padding:14px 10px 10px;background:#fff;border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.att{display:grid;justify-items:center;gap:4px;text-align:center}
+.att svg{width:100%;max-width:60px;height:auto;display:block}
+.att span{font:800 11px/1.15 var(--body);overflow-wrap:anywhere}
+.att.lock span{color:var(--soft);font-weight:700}
+.att.fresh svg{animation:mkPop .6s cubic-bezier(.2,1.6,.4,1)}
+.sbar{height:10px;border-radius:6px;background:#e5eafb;box-shadow:inset 0 0 0 2px var(--ink);margin:10px 0 4px;overflow:hidden}
+.sbar i{display:block;height:100%;background:var(--ac)}
+.stext{margin:0;font:700 14px/1.4 var(--body);color:var(--soft)}
+
+/* žaidimas */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;background:#fff;font:800 16px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink)}
+.chip small{font:800 11px/1 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.card{background:#fff;border-radius:14px;padding:14px 12px 16px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.chead small{display:block;font:800 12px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+.head{font:700 clamp(15px,4.2vw,17px)/1.45 var(--body);margin-top:6px}
+.gwrap{margin:10px 0 2px;border-radius:10px;background:#fbfcff;box-shadow:inset 0 0 0 2px var(--ink);overflow:hidden}
+.gwrap svg{display:block;width:100%;height:auto}
+.done{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.done li{padding:7px 10px;border-radius:8px;background:#effcf6;box-shadow:inset 0 0 0 2px #9fdcbb;font:700 14px/1.4 var(--body)}
+.done li.miss{background:#fff4f1;box-shadow:inset 0 0 0 2px #ffb3a6}
+.done li b{font-weight:800}
+.step{margin-top:12px;padding-top:12px;border-top:2px dashed #cfd6ea}
+.step small{display:block;font:800 11.5px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--soft);margin-bottom:4px}
+.q{font:800 clamp(15.5px,4.3vw,17.5px)/1.4 var(--body)}
+.flds{display:flex;flex-wrap:wrap;align-items:center;gap:8px 6px;margin:12px 0 4px;font:800 clamp(17px,4.8vw,20px)/1.2 var(--body)}
+.fg{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.fld{min-width:52px;height:46px;padding:0 8px;border:0;border-radius:8px;background:#fff;box-shadow:inset 0 0 0 2.5px #9aa5c4;font:800 19px/1 var(--body);cursor:pointer;color:var(--ink)}
+.fld.act{box-shadow:inset 0 0 0 3px var(--blue);background:#eef2ff}
+.fld.act:empty::after{content:"";display:inline-block;width:2px;height:20px;background:var(--blue);animation:blink 1s steps(2) infinite;vertical-align:middle}
+.fld.bad{box-shadow:inset 0 0 0 3px var(--ac);background:#fff1ee}
+.fld.good{box-shadow:inset 0 0 0 3px var(--ok);background:#effcf6}
+@keyframes blink{50%{opacity:0}}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px;max-width:340px}
+.pad button{height:46px;border:0;border-radius:9px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 var(--ink);font:800 19px/1 var(--body);cursor:pointer;touch-action:manipulation;color:var(--ink)}
+.pad button:active{transform:translateY(2px);box-shadow:inset 0 0 0 2.5px var(--ink),0 1px 0 var(--ink)}
+.pad .fnk{background:#e6edff}
+.pad .wide{grid-column:span 2}
+.opts{display:grid;gap:8px;margin-top:12px}
+.opt{display:flex;align-items:center;gap:10px;min-height:50px;padding:8px 12px;border:0;border-radius:10px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 clamp(15.5px,4.4vw,18px)/1.35 var(--body);text-align:left;cursor:pointer;color:var(--ink)}
+.opt::before{content:"";flex:none;width:18px;height:18px;border-radius:50%;box-shadow:inset 0 0 0 2.5px var(--ink);background:#fff}
+.opt.sel{background:#eef2ff;box-shadow:inset 0 0 0 3px var(--blue)}
+.opt.sel::before{background:var(--blue);box-shadow:inset 0 0 0 2.5px var(--ink),inset 0 0 0 5px #fff}
+.opt.x{opacity:.45;text-decoration:line-through;pointer-events:none}
+.gopts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.gopt{position:relative;padding:0;border:0;border-radius:10px;background:#fbfcff;box-shadow:inset 0 0 0 2.5px var(--ink);cursor:pointer;overflow:hidden}
+.gopt svg{display:block;width:100%;height:auto}
+.gopt b{position:absolute;left:6px;top:5px;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;background:#fff;box-shadow:inset 0 0 0 2px var(--ink);font:800 13px/1 var(--body)}
+.gopt.sel{box-shadow:inset 0 0 0 4px var(--blue)}
+.gopt.sel b{background:var(--blue);color:#fff}
+.gopt.x{opacity:.4;pointer-events:none}
+.signs{display:flex;align-items:stretch;margin:14px 0 4px}
+.sgc{flex:1 1 0;min-width:0;display:grid;justify-items:center;gap:5px}
+.sgb{width:min(100%,64px);height:48px;border:0;border-radius:10px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 var(--ink);font:800 24px/1 var(--body);cursor:pointer;color:var(--ink);touch-action:manipulation}
+.sgb.p{background:#dff6e8;color:var(--ok)}
+.sgb.m{background:#ffe4dc;color:var(--ac)}
+.sgb.z{background:#eef2ff;color:var(--blue)}
+.sgl{font:800 12.5px/1.2 var(--body);color:var(--soft);text-align:center}
+.sgl.big{font-size:16px;color:var(--ink)}
+.sgp{flex:none;width:30px;display:grid;justify-items:center;align-content:end;gap:3px;padding-bottom:0}
+.sgp i{display:block;width:3px;height:54px;background:var(--ink);border-radius:2px}
+.sgp span{font:800 13px/1.2 var(--body)}
+.hint{margin:6px 0 0;font:700 13px/1.4 var(--body);color:var(--soft)}
+.go{width:100%;margin-top:12px}
+.mk-why-m p{margin:5px 0}
+.mk-why-m b,.mk-why-t p b{font-weight:800}
+.mk-why-m{overflow-wrap:anywhere}
+.cartg{transition:none}
+@media (max-width:380px){.fld{min-width:46px}.flds{gap:8px 4px}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1 id="h1"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div id="levels"></div>
+    <div class="park" id="park"></div>
+    <div id="learn"></div>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><span class="chip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="board"></div>
+    <div id="why"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "kalneliu-inzinierius", GRADES = [12], INK = "#121a33";
+const T = window.MK_T, K = window.MK_KI, ev = K.ev, deriv = K.deriv;
+const $ = id => document.getElementById(id);
+const M = "−";
+const num = K.num;
+
+/* =================== grafikai =================== */
+let gid = 0; const GEO = {};
+function niceStep(range, n){ const raw = range / n, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; }
+function graphSvg(spec){
+  const small = !!spec.small, W = small ? 170 : 340, H = small ? 128 : 230, mL = small ? 6 : 10, mR = small ? 6 : 10, mT = small ? 6 : 12, mB = small ? 6 : 12;
+  const [xa, xb] = spec.x; let ya, yb;
+  if(spec.small || (xa === -5 && xb === 5 && !spec.auto)){ ya = -6; yb = 6; }
+  else {
+    let lo = Infinity, hi = -Infinity; const see = y => { if(y < lo) lo = y; if(y > hi) hi = y; };
+    spec.curves.forEach(c => { const [a, b] = c.dom || [xa, xb]; for(let i = 0; i <= 80; i++) see(ev(c.P, a + (b - a) * i / 80)); });
+    (spec.pts || []).forEach(p => see(p.y)); see(0);
+    if(spec.ymin != null) lo = Math.min(spec.ymin, lo);
+    const pad = (hi - lo || 2) * 0.12; ya = lo - pad; yb = hi + pad;
+  }
+  const sx = x => mL + (x - xa) / (xb - xa) * (W - mL - mR), sy = y => H - mB - (y - ya) / (yb - ya) * (H - mT - mB);
+  const id = "g" + (++gid); GEO[id] = { sx, sy, spec, xa, xb, ya, yb };
+  let s = `<svg id="${id}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${T.graphLabel}"><defs><clipPath id="${id}c"><rect x="${mL}" y="${mT}" width="${W - mL - mR}" height="${H - mT - mB}"/></clipPath></defs>`;
+  /* tinklelis */
+  const gx = niceStep(xb - xa, small ? 10 : 10), gy = niceStep(yb - ya, small ? 12 : 8);
+  let grid = "";
+  for(let x = Math.ceil(xa / gx) * gx; x <= xb + 1e-9; x += gx) grid += `M${sx(x).toFixed(1)} ${mT}V${H - mB}`;
+  for(let y = Math.ceil(ya / gy) * gy; y <= yb + 1e-9; y += gy) grid += `M${mL} ${sy(y).toFixed(1)}H${W - mR}`;
+  s += `<path d="${grid}" stroke="#dbe2f2" stroke-width="1" fill="none"/>`;
+  /* ašys */
+  const ax0 = Math.min(Math.max(0, xa), xb), ay0 = Math.min(Math.max(0, ya), yb), X0 = sx(ax0), Y0 = sy(ay0), an = spec.ax || ["x", "y"];
+  s += `<path d="M${mL} ${Y0}H${W - mR - 1}M${X0} ${H - mB}V${mT + 1}" stroke="${INK}" stroke-width="${small ? 1.4 : 1.8}" fill="none"/>`;
+  s += `<path d="M${W - mR} ${Y0}l-7-3.5v7zM${X0} ${mT}l-3.5 7h7z" fill="${INK}"/>`;
+  if(!small){
+    s += `<text x="${W - mR - 4}" y="${Y0 + 14 > H - 2 ? Y0 - 6 : Y0 + 14}" text-anchor="end" font-family="Georgia,serif" font-style="italic" font-size="13" fill="${INK}">${an[0]}</text><text x="${X0 + 8 > W - 12 ? X0 - 12 : X0 + 8}" y="${mT + 10}" font-family="Georgia,serif" font-style="italic" font-size="13" fill="${INK}">${an[1]}</text>`;
+    if(!spec.plain){
+      let lab = "";
+      for(let x = Math.ceil(xa / gx) * gx; x <= xb - gx * 0.4; x += gx){ if(Math.abs(x) < 1e-9 || x <= xa + gx * 0.2) continue; lab += `<text x="${sx(x).toFixed(1)}" y="${Math.min(Y0 + 12, H - 2)}" text-anchor="middle">${num(x)}</text>`; }
+      for(let y = Math.ceil(ya / gy) * gy; y <= yb - gy * 0.5; y += gy){ if(Math.abs(y) < 1e-9 || y <= ya + gy * 0.3) continue; lab += `<text x="${X0 - 4 < 16 ? X0 + 5 : X0 - 4}" y="${(sy(y) + 3.5).toFixed(1)}" text-anchor="${X0 - 4 < 16 ? "start" : "end"}">${num(y)}</text>`; }
+      s += `<g font-family="Manrope,Arial,sans-serif" font-weight="700" font-size="9.5" fill="#6b7493">${lab}</g>`;
+    }
+  } else {
+    let tk = ""; for(let x = Math.ceil(xa); x <= xb; x++) if(x) tk += `M${sx(x).toFixed(1)} ${Y0 - 2.5}v5`; for(let y = Math.ceil(ya); y <= yb; y++) if(y) tk += `M${X0 - 2.5} ${sy(y).toFixed(1)}h5`;
+    s += `<path d="${tk}" stroke="${INK}" stroke-width="1"/><text x="${sx(1)}" y="${Y0 + 12}" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="9" fill="#6b7493">1</text>`;
+  }
+  s += `<g clip-path="url(#${id}c)">`;
+  (spec.vl || []).forEach(x => { s += `<path d="M${sx(x)} ${mT}V${H - mB}" stroke="#8a93ad" stroke-width="1.6" stroke-dasharray="5 4"/>`; });
+  (spec.lines || []).forEach(l => { s += `<path d="M${sx(xa)} ${sy(l.k * xa + l.b)}L${sx(xb)} ${sy(l.k * xb + l.b)}" stroke="${l.color}" stroke-width="2.2" ${l.dash ? 'stroke-dasharray="6 5"' : ""} fill="none"/>`; });
+  spec.curves.forEach(c => {
+    const [a, b] = c.dom || [xa, xb]; let d = "";
+    for(let i = 0; i <= 140; i++){ const x = a + (b - a) * i / 140, y = Math.max(ya - 50 * (yb - ya), Math.min(yb + 50 * (yb - ya), ev(c.P, x))); d += (i ? "L" : "M") + sx(x).toFixed(1) + " " + sy(y).toFixed(1); }
+    if(spec.track && c.color !== "#b9c2dc") s += `<path d="${d}" stroke="${INK}" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    s += `<path d="${d}" stroke="${c.color}" stroke-width="${small ? 2.6 : spec.track ? 3.4 : 3}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  });
+  if(spec.tan){ const t = spec.tan; s += `<path d="M${sx(xa)} ${sy(t.y0 + t.k * (xa - t.x0))}L${sx(xb)} ${sy(t.y0 + t.k * (xb - t.x0))}" stroke="#e0422f" stroke-width="2.4" stroke-dasharray="7 5" fill="none"/>`; }
+  s += `</g>`;
+  (spec.pts || []).forEach(p => {
+    const px = sx(p.x), py = sy(p.y); if(py < mT - 2 || py > H - mB + 2) return;
+    s += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${small ? 3.5 : 5}" fill="${p.color || "#ffd84d"}" stroke="${INK}" stroke-width="2"/>`;
+    if(p.label){ const w = String(p.label).length * 6.4 + 8, lx = Math.min(Math.max(px, mL + w / 2 + 2), W - mR - w / 2 - 2), ly = py - 12 < mT + 10 ? py + 22 : py - 10;
+      s += `<rect x="${(lx - w / 2).toFixed(1)}" y="${(ly - 11).toFixed(1)}" width="${w.toFixed(1)}" height="15" rx="4" fill="#fff" stroke="${INK}" stroke-width="1.2"/><text x="${lx.toFixed(1)}" y="${ly}" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="11" fill="${INK}">${p.label}</text>`; }
+  });
+  if(spec.label){ const txt = spec.label.replace(/<\/?i>/g, ""); s += `<rect x="${mL + 4}" y="${mT + 2}" width="${txt.length * 7 + 12}" height="19" rx="5" fill="#fff" stroke="${INK}" stroke-width="1.4"/><text x="${mL + 10}" y="${mT + 16}" font-family="Georgia,serif" font-style="italic" font-weight="700" font-size="13" fill="${spec.curves[0].color}">${txt}</text>`; }
+  if(spec.cart) s += `<g class="cartg" id="${id}k" opacity="0"><g transform="translate(0 -9)"><rect x="-11" y="-7" width="22" height="11" rx="3" fill="#ffd84d" stroke="${INK}" stroke-width="2"/><circle cx="-5" cy="-10" r="3.6" fill="#f5c9a0" stroke="${INK}" stroke-width="1.6"/><circle cx="4" cy="-10" r="3.6" fill="#f5c9a0" stroke="${INK}" stroke-width="1.6"/><circle cx="-6" cy="5.5" r="3.2" fill="#fff" stroke="${INK}" stroke-width="2"/><circle cx="6" cy="5.5" r="3.2" fill="#fff" stroke="${INK}" stroke-width="2"/></g></g>`;
+  return s + `</svg>`;
+}
+function runCart(root){
+  const svg = root.querySelector("svg[id]"); if(!svg) return; const g = GEO[svg.id]; if(!g || !g.spec.cart) return;
+  const el = document.getElementById(svg.id + "k"), c = g.spec.cart, P = c.P, d = deriv(P);
+  let a = (c.dom || [g.xa, g.xb])[0], b = c.at != null ? c.at : (c.dom || [g.xa, g.xb])[1];
+  /* važiuojame tik matoma grafiko dalimi */
+  const vis = x => { const y = ev(P, x); return y >= g.ya && y <= g.yb; };
+  if(c.at != null){ let x = c.at; while(x > g.xa && vis(x - 0.05)) x -= 0.05; a = x; }
+  else { while(a < b && !vis(a)) a += 0.05; while(b > a && !vis(b)) b -= 0.05; }
+  const kx = g.sx(1) - g.sx(0), ky = g.sy(0) - g.sy(1), t0 = performance.now(), dur = c.at != null ? 1400 : 2600;
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches;
+  const place = x => { const ang = Math.atan2(-ev(d, x) * ky, kx) * 180 / Math.PI; el.setAttribute("transform", `translate(${g.sx(x).toFixed(1)} ${g.sy(ev(P, x)).toFixed(1)}) rotate(${ang.toFixed(1)})`); };
+  el.setAttribute("opacity", 1);
+  if(reduce){ place(b); return; }
+  (function tick(now){ if(!el.isConnected) return; const u = Math.min(1, (now - t0) / dur), e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; place(a + (b - a) * e); if(u < 1) requestAnimationFrame(tick); })(t0);
+}
+
+/* =================== piešiniai =================== */
+function heroSvg(){
+  const P = [0, 3 * 1.2 * 2 * 6.2 * 0.05, -1.5 * 0.05 * 8.2 * 1.2, 0.05 * 1.2];   // dekoratyvi kubinė trasa
+  const X = x => 30 + x * 34, Y = x => 150 - (ev(P, x) * 26 + 10);
+  let d = ""; for(let i = 0; i <= 60; i++){ const x = i / 60 * 8.6; d += (i ? "L" : "M") + X(x).toFixed(1) + " " + Y(x).toFixed(1); }
+  let sup = ""; for(let x = 0.4; x <= 8.4; x += 0.8) sup += `M${X(x).toFixed(1)} ${Y(x).toFixed(1)}V184`;
+  const cx = 2.0, k = ev(deriv(P), cx), ang = Math.atan2(-k * 26, 34) * 180 / Math.PI;
+  return `<svg viewBox="0 0 360 214" role="img" aria-label="Inžinierė su brėžiniu stovi prie amerikietiškų kalnelių trasos">
+  <rect width="360" height="214" fill="#e8eefc"/>
+  <path d="M0 40h360M0 80h360M0 120h360M0 160h360M40 0v214M80 0v214M120 0v214M160 0v214M200 0v214M240 0v214M280 0v214M320 0v214" stroke="#d3dcf3" stroke-width="1"/>
+  <circle cx="310" cy="40" r="17" fill="#ffd84d" stroke="${INK}" stroke-width="2.5"/>
+  <rect y="184" width="360" height="30" fill="#bfd3a4"/><path d="M0 184h360" stroke="${INK}" stroke-width="2.5"/>
+  <path d="${sup}" stroke="#7e8cb3" stroke-width="3"/>
+  <path d="${d}" stroke="${INK}" stroke-width="9" fill="none" stroke-linecap="round"/><path d="${d}" stroke="#2b59d9" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <path d="M${X(cx) - 62} ${Y(cx) + 62 * Math.tan(-ang * Math.PI / 180) * -1}L${X(cx) + 62} ${Y(cx) - 62 * Math.tan(-ang * Math.PI / 180) * -1}" stroke="#e0422f" stroke-width="2.6" stroke-dasharray="7 5"/>
+  <g transform="translate(${X(cx).toFixed(1)} ${Y(cx).toFixed(1)}) rotate(${ang.toFixed(1)})"><g transform="translate(0 -12)">
+    <rect x="-20" y="-10" width="40" height="17" rx="5" fill="#ffd84d" stroke="${INK}" stroke-width="2.8"/>
+    <circle cx="-9" cy="-16" r="6.5" fill="#f5c9a0" stroke="${INK}" stroke-width="2.2"/><path d="M-15.5-18q6.5-8 13 0" fill="#7a4b2a" stroke="${INK}" stroke-width="1.8"/>
+    <circle cx="8" cy="-16" r="6.5" fill="#e8b48a" stroke="${INK}" stroke-width="2.2"/><path d="M1.5-18q6.5-8 13 0" fill="#2e3a63" stroke="${INK}" stroke-width="1.8"/>
+    <path d="M-12-13l-4-12M11-13l5-12" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="-11" cy="9" r="5" fill="#fff" stroke="${INK}" stroke-width="2.6"/><circle cx="11" cy="9" r="5" fill="#fff" stroke="${INK}" stroke-width="2.6"/></g></g>
+  <rect x="150" y="18" width="92" height="26" rx="7" fill="#fff" stroke="${INK}" stroke-width="2.5"/><text x="196" y="36" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-weight="700" font-size="16" fill="#e0422f">k = f′(x₀)</text>
+  <!-- inžinierė -->
+  <ellipse cx="287" cy="196" rx="11" ry="4.5" fill="${INK}"/><ellipse cx="309" cy="196" rx="11" ry="4.5" fill="${INK}"/>
+  <rect x="280" y="156" width="13" height="38" rx="4" fill="#2e3a63" stroke="${INK}" stroke-width="2.5"/><rect x="302" y="156" width="13" height="38" rx="4" fill="#2e3a63" stroke="${INK}" stroke-width="2.5"/>
+  <rect x="274" y="106" width="46" height="58" rx="13" fill="#ff8a3d" stroke="${INK}" stroke-width="3"/>
+  <path d="M274 132h46M274 144h46" stroke="#fff6c8" stroke-width="4"/>
+  <path d="M278 116L256 132 246 120" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><path d="M278 116L256 132 246 120" fill="none" stroke="#ff8a3d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M318 118L334 138 322 150" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><path d="M318 118L334 138 322 150" fill="none" stroke="#ff8a3d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="212" y="92" width="46" height="34" rx="3" fill="#fff" stroke="${INK}" stroke-width="2.5" transform="rotate(-10 235 109)"/>
+  <path d="M219 116q9-18 17-6t16-10" fill="none" stroke="#2b59d9" stroke-width="2.6" stroke-linecap="round" transform="rotate(-10 235 109)"/>
+  <circle cx="246" cy="119" r="6.5" fill="#f5c9a0" stroke="${INK}" stroke-width="2.5"/><circle cx="321" cy="151" r="6.5" fill="#f5c9a0" stroke="${INK}" stroke-width="2.5"/>
+  <circle cx="297" cy="86" r="20" fill="#f5c9a0" stroke="${INK}" stroke-width="3"/>
+  <path d="M316 92c5 8 3 16-2 20" fill="none" stroke="#7a4b2a" stroke-width="7" stroke-linecap="round"/>
+  <path d="M275 82q0-24 22-24t22 24z" fill="#fff" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><path d="M271 82h52" stroke="${INK}" stroke-width="4.5" stroke-linecap="round"/><path d="M297 58v10" stroke="${INK}" stroke-width="2.5"/>
+  <circle cx="290" cy="90" r="2.6" fill="${INK}"/><circle cx="304" cy="90" r="2.6" fill="${INK}"/><path d="M291 98q6 5 12 0" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="284" cy="96" r="3.4" fill="#ff9aa6" opacity=".7"/><circle cx="310" cy="96" r="3.4" fill="#ff9aa6" opacity=".7"/>
+</svg>`;
+}
+const BADGE = ["f′", "k", "+ −", "[a; b]", "y′", "max", "eˣ", "VBE"];
+function lvlIcon(i){
+  return `<svg viewBox="0 0 56 56" aria-hidden="true"><rect x="4" y="6" width="48" height="44" rx="8" fill="#fff" stroke="${INK}" stroke-width="3"/>
+  <path d="M9 38q8-30 17-12t21-12" fill="none" stroke="${INK}" stroke-width="6" stroke-linecap="round"/><path d="M9 38q8-30 17-12t21-12" fill="none" stroke="#2b59d9" stroke-width="3" stroke-linecap="round"/>
+  <rect x="${BADGE[i].length > 3 ? 12 : 22}" y="31" width="${BADGE[i].length > 3 ? 40 : 30}" height="19" rx="5" fill="${i === 6 ? "#e6dcff" : i === 7 ? "#ffd0c8" : "#ffd84d"}" stroke="${INK}" stroke-width="2.4"/>
+  <text x="${BADGE[i].length > 3 ? 32 : 37}" y="45" text-anchor="middle" font-family="Georgia,serif" font-style="${i === 7 ? "normal" : "italic"}" font-weight="900" font-size="${BADGE[i].length > 3 ? 11.5 : 13}" fill="${INK}">${BADGE[i]}</text></svg>`;
+}
+const S2 = `stroke="${INK}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+const ATT = [
+  `<path d="M30 8v40" ${S2}/><path d="M10 18h40l-6 8H16z" fill="#e0422f" ${S2}/><path d="M16 26v12M44 26v12M30 26v10" ${S2}/><circle cx="16" cy="41" r="4" fill="#ffd84d" ${S2}/><circle cx="44" cy="41" r="4" fill="#2b59d9" ${S2}/><circle cx="30" cy="39" r="4" fill="#2f9e6e" ${S2}/><path d="M18 52h24" ${S2}/><path d="M30 8l9 5-9 4z" fill="#ffd84d" ${S2}/>`,
+  `<path d="M12 52L24 10h12l12 42" fill="none" ${S2}/><path d="M24 10h12" ${S2}/><path d="M27 12l-5 26M33 12l5 26" ${S2}/><rect x="17" y="38" width="26" height="7" rx="2" fill="#2b59d9" ${S2}/>`,
+  `<circle cx="30" cy="27" r="19" fill="#fff" ${S2}/><path d="M30 8v38M11 27h38M16.5 13.5l27 27M43.5 13.5l-27 27" stroke="${INK}" stroke-width="1.6"/><circle cx="30" cy="8" r="4" fill="#e0422f" ${S2}/><circle cx="49" cy="27" r="4" fill="#ffd84d" ${S2}/><circle cx="11" cy="27" r="4" fill="#2b59d9" ${S2}/><circle cx="30" cy="46" r="4" fill="#2f9e6e" ${S2}/><path d="M30 27L20 54h20z" fill="none" ${S2}/><circle cx="30" cy="27" r="3.5" fill="${INK}"/>`,
+  `<rect x="26" y="6" width="8" height="46" fill="#7e8cb3" ${S2}/><rect x="16" y="24" width="28" height="9" rx="3" fill="#e0422f" ${S2}/><path d="M22 6h16" ${S2}/><path d="M14 52h32" ${S2}/><path d="M48 14v14M45 24l3 5 3-5" ${S2}/>`,
+  `<path d="M6 14q18 0 24 18t24 14" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><path d="M6 14q18 0 24 18t24 14" fill="none" stroke="#35b5e8" stroke-width="3.6" stroke-linecap="round"/><path d="M8 50q5-5 10 0t10 0 10 0 10 0 6-2" fill="none" stroke="#2b59d9" stroke-width="2.6" stroke-linecap="round"/><rect x="22" y="12" width="13" height="8" rx="3" fill="#ffd84d" ${S2} transform="rotate(38 28 16)"/>`,
+  `<path d="M30 6q10 10 10 26H20q0-16 10-26z" fill="#fff" ${S2}/><circle cx="30" cy="22" r="4.5" fill="#35b5e8" ${S2}/><path d="M20 32l-8 10h8zM40 32l8 10h-8z" fill="#e0422f" ${S2}/><path d="M25 32h10l-2 8h-6z" fill="#7e8cb3" ${S2}/><path d="M27 42q3 8 3 10 0-2 3-10" fill="#ffd84d" ${S2}/>`,
+  `<circle cx="30" cy="26" r="17" fill="none" stroke="${INK}" stroke-width="7"/><circle cx="30" cy="26" r="17" fill="none" stroke="#2b59d9" stroke-width="3.4"/><path d="M4 48h52" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><path d="M4 48h52" stroke="#2b59d9" stroke-width="3.4" stroke-linecap="round"/><rect x="24" y="2" width="12" height="8" rx="3" fill="#ffd84d" ${S2}/>`,
+  `<path d="M4 50q6-44 16-44t10 30q0-22 9-22t9 26q2-10 8-10" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 50q6-44 16-44t10 30q0-22 9-22t9 26q2-10 8-10" fill="none" stroke="#e0422f" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 54V30M20 54V10M30 54V40M39 54V18M48 54V44" stroke="#7e8cb3" stroke-width="2"/><circle cx="50" cy="12" r="5" fill="#ffd84d" stroke="${INK}" stroke-width="2"/>`
+];
+function attSvg(i, locked){
+  if(locked) return `<svg viewBox="0 0 60 60" aria-hidden="true"><rect x="4" y="4" width="52" height="52" rx="10" fill="#e9edf8" stroke="#b4bcd6" stroke-width="2.5" stroke-dasharray="5 4"/><text x="30" y="39" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="24" fill="#b4bcd6">?</text></svg>`;
+  return `<svg viewBox="0 0 60 60" aria-hidden="true"><rect x="2" y="2" width="56" height="56" rx="10" fill="#eef7e6" stroke="${INK}" stroke-width="2.5"/>${ATT[i]}</svg>`;
+}
+
+/* =================== meniu =================== */
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: lvlIcon(i) }));
+const parkN = () => +MK.get("mk-" + GAME + "-parkas", 0) || 0;
+const attOwned = n => T.parkNeed.filter(x => n >= x).length;
+function drawPark(fresh){
+  const n = parkN(), have = attOwned(n), nxt = T.parkNeed[have], prev = have ? T.parkNeed[have - 1] : 0;
+  $("park").innerHTML = `<h2 class="mk-sec" style="margin-left:0">${T.parkTitle}</h2>
+    <div class="atts">${T.park.map((b, i) => `<div class="att${i < have ? "" : " lock"}${i === fresh ? " fresh" : ""}">${attSvg(i, i >= have)}<span>${i < have ? b : T.locked}</span></div>`).join("")}</div>
+    <div class="sbar" aria-hidden="true"><i style="width:${nxt ? Math.round((n - prev) / (nxt - prev) * 100) : 100}%"></i></div>
+    <p class="stext">${T.parkText(n, nxt ? nxt - n : 0, T.park[have])}</p>`;
+}
+const app = $("app"), menu = $("menu"), play = $("play"), board = $("board"), why = $("why");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("h1").innerHTML = T.h1; $("heroP").textContent = T.hero; $("note").textContent = T.note; $("ptsL").textContent = T.points;
+$("heroArt").innerHTML = `<div class="hero-card">${heroSvg()}</div>`;
+
+/* =================== žaidimo eiga =================== */
+let lvl = 0, Lv = null, ti = 0, N = 8, round = [], cur = null, pts = 0, okN = 0, dots = null;
+let si = 0, tries = 0, scores = [], doneLog = [], vals = [], act = 0, sel = -1, dead = new Set(), locked = false, startPark = 0;
+function showMenu(fresh){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); drawPark(fresh); MK.learn($("learn"), { topics: T.learn, onPlay: start }); window.scrollTo(0, 0); }
+function start(i){
+  lvl = i; Lv = LEVELS[i]; ti = 0; pts = 0; okN = 0; $("pts").textContent = 0; why.innerHTML = ""; startPark = parkN();
+  const all = MK.get("mk-" + GAME + "-matyta", []);
+  round = K.round(Lv.id, all); N = round.length;
+  MK.set("mk-" + GAME + "-matyta", all.concat(round.map(t => t.type)).slice(-160));
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), N); next(); window.scrollTo(0, 0);
+}
+function next(){
+  if(ti >= N) return finish();
+  cur = round[ti]; si = 0; scores = []; doneLog = []; locked = false; why.innerHTML = ""; dots.cur(ti); initStep(); draw();
+}
+function initStep(){ const st = cur.steps[si]; tries = 0; sel = -1; dead = new Set(); act = 0;
+  vals = st.kind === "num" ? st.fields.map(() => "") : st.kind === "signs" ? st.labels.map(() => "") : []; }
+const parse = s => s === "" || s === M || s === "," ? NaN : +s.replace(M, "-").replace(",", ".");
+function fieldsHtml(st, state){
+  return `<div class="flds">${st.pre ? `<span>${st.pre}</span>` : ""}${st.fields.map((f, i) => `<span class="fg">${f.pre ? `<span>${f.pre}</span>` : ""}<button type="button" class="fld${!state && i === act ? " act" : ""}${state === "bad" ? " bad" : ""}" data-f="${i}" ${state ? "disabled" : ""}>${vals[i]}</button>${f.post ? `<span>${f.post}</span>` : ""}${f.sep ? `<span>${f.sep}</span>` : ""}</span>`).join("")}</div>`;
+}
+const PADK = ["7", "8", "9", "del", "4", "5", "6", M, "1", "2", "3", ",", "0", "next"];
+function padHtml(){ return `<div class="pad">${PADK.map(k => k === "del" ? `<button type="button" class="fnk" data-k="del" aria-label="${T.keypad.del}">⌫</button>` : k === "next" ? `<button type="button" class="fnk wide" data-k="next" aria-label="${T.keypad.next}">→</button>` : `<button type="button" class="${k === "0" ? "wide" : ""}${/\d/.test(k) ? "" : " fnk"}" data-k="${k}">${k}</button>`).join("")}</div>`; }
+function signsHtml(st){
+  const cls = v => v === "+" ? " p" : v === M ? " m" : v === "0" ? " z" : "";
+  return `<div class="signs">${st.labels.map((l, i) => `${st.axis && i ? `<div class="sgp"><i></i><span>${num(st.axis[i - 1])}</span></div>` : ""}<div class="sgc"><button type="button" class="sgb${cls(vals[i])}" data-s="${i}" aria-label="${String(l).replace(/<[^>]+>/g, "")}">${vals[i] || "?"}</button><span class="sgl${st.axis ? "" : " big"}">${l}</span></div>`).join("")}</div><p class="hint">${T.signHint}</p>`;
+}
+function stepHtml(){
+  const st = cur.steps[si]; let body = "";
+  if(st.kind === "num") body = fieldsHtml(st) + padHtml();
+  else if(st.kind === "choice") body = `<div class="opts">${st.opts.map((o, i) => `<button type="button" class="opt${i === sel ? " sel" : ""}${dead.has(i) ? " x" : ""}" data-o="${i}"><span>${o}</span></button>`).join("")}</div>`;
+  else if(st.kind === "gchoice") body = `<div class="gopts">${st.opts.map((o, i) => `<button type="button" class="gopt${i === sel ? " sel" : ""}${dead.has(i) ? " x" : ""}" data-o="${i}" aria-label="${"ABCD"[i]}"><b>${"ABCD"[i]}</b>${graphSvg(o)}</button>`).join("")}</div>`;
+  else body = signsHtml(st);
+  return `<div class="step">${cur.steps.length > 1 ? `<small>${T.stepOf(si + 1, cur.steps.length)}</small>` : ""}<div class="q">${st.q}</div><div id="sbody">${body}</div><button type="button" class="mk-btn go" id="chk">${T.check}</button></div>`;
+}
+function draw(final){
+  const g = final && cur.reveal ? cur.reveal : cur.graph;
+  board.innerHTML = `<div class="card"><div class="chead"><small>${ti + 1} / ${N} · ${Lv.name}</small></div>
+    <div class="head">${cur.head}</div>
+    ${g ? `<div class="gwrap" id="gw">${graphSvg(g)}</div>` : ""}
+    ${doneLog.length ? `<ul class="done">${doneLog.map(d => `<li class="${d.ok ? "" : "miss"}">${d.q} <b>${d.a}</b></li>`).join("")}</ul>` : ""}
+    ${final ? "" : stepHtml()}</div>`;
+  if(final && cur.reveal) runCart(board);
+}
+function ansText(st){
+  if(st.kind === "num") return (st.pre ? st.pre + " " : "") + st.fields.map(f => (f.pre ? f.pre + " " : "") + num(f.ans) + (f.post ? (/^(<i>|[;)\]])/.test(f.post) ? "" : " ") + f.post : "") + (f.sep ? " " + f.sep : "")).join(" ").replace(/\+<\/span>\s*−|\+\s+−/g, m => m.includes("span") ? "</span>− " : "− ").replace(/\(\s+/g, "(").replace(/\s+([;)\]])/g, "$1");
+  if(st.kind === "choice") return st.opts[st.ans];
+  if(st.kind === "gchoice") return "ABCD"[st.ans];
+  return st.labels.map((l, i) => `${l}: ${st.ans[i]}`).join(", ");
+}
+function coefText(st){ // išvestinė be nulinių narių
+  const v = st.fields.map(f => f.ans), e = [3, 2, 1, 0], P = []; e.forEach((k, i) => P[k] = v[i]); return st.pre + " " + K.poly(P, st.fields[2].post.replace(/<[^>]+>/g, ""));
+}
+function refreshBody(){ const st = cur.steps[si], b = $("sbody"); if(!b) return;
+  if(st.kind === "num"){ b.querySelectorAll(".fld").forEach((f, i) => { f.textContent = vals[i]; f.classList.toggle("act", i === act); f.classList.remove("bad"); }); }
+  else if(st.kind === "signs"){ b.innerHTML = signsHtml(st); }
+  else b.querySelectorAll("[data-o]").forEach((o, i) => o.classList.toggle("sel", i === sel)); }
+function key(k){
+  const st = cur && cur.steps[si]; if(!st || st.kind !== "num" || locked || play.hidden) return;
+  let v = vals[act];
+  if(k === "del") v = v.slice(0, -1);
+  else if(k === "next"){ act = (act + 1) % st.fields.length; refreshBody(); return; }
+  else if(k === M) v = v.startsWith(M) ? v.slice(1) : M + v;
+  else if(k === ","){ if(!v.includes(",") && /\d$/.test(v)) v += ","; }
+  else if(v.replace(/\D/g, "").length < 5) v += k;
+  vals[act] = v; refreshBody();
+}
+board.addEventListener("click", e => {
+  MK.unlock(); if(locked) return;
+  const st = cur.steps[si], t = e.target;
+  const f = t.closest("[data-f]"); if(f){ act = +f.dataset.f; MK.sfx.tap(); refreshBody(); return; }
+  const k = t.closest("[data-k]"); if(k){ MK.sfx.tap(); key(k.dataset.k); return; }
+  const o = t.closest("[data-o]"); if(o){ sel = +o.dataset.o; MK.sfx.tap(); refreshBody(); return; }
+  const s = t.closest("[data-s]"); if(s){ const i = +s.dataset.s, n = st.vals.indexOf(vals[i]); vals[i] = st.vals[(n + 1) % st.vals.length]; MK.sfx.tap(); refreshBody(); return; }
+  if(t.closest("#chk")) check();
+});
+document.addEventListener("keydown", e => {
+  if(play.hidden || locked || !cur) return; const st = cur.steps[si]; if(st.kind !== "num") { if(e.key === "Enter" && !e.target.closest("button")) check(); return; }
+  if(/^\d$/.test(e.key)) key(e.key); else if(e.key === "-" || e.key === M) key(M); else if(e.key === "," || e.key === ".") key(","); else if(e.key === "Backspace"){ e.preventDefault(); key("del"); }
+  else if(e.key === "Tab"){ e.preventDefault(); key("next"); } else if(e.key === "Enter"){ e.preventDefault(); check(); }
+});
+function isRight(st){
+  if(st.kind === "num") return st.fields.every((f, i) => { const v = vals[i] === "" && st.coef ? 0 : parse(vals[i]); return Math.abs(v - f.ans) < 1e-6; });
+  if(st.kind === "signs") return st.ans.every((a, i) => vals[i] === a);
+  return sel === st.ans;
+}
+function filled(st){
+  if(st.kind === "num") return st.coef ? vals.some(v => v !== "") && vals.every(v => v === "" || !isNaN(parse(v))) : vals.every(v => !isNaN(parse(v)));
+  if(st.kind === "signs") return vals.every(v => v);
+  return sel >= 0;
+}
+function shake(el){ if(!el) return; el.classList.remove("mk-shake"); void el.offsetWidth; el.classList.add("mk-shake"); }
+function check(){
+  const st = cur.steps[si];
+  if(!filled(st)){ shake($("sbody")); return; }
+  const kind = st.coef ? "coef" : st.kind;
+  if(isRight(st)){ MK.sfx.good(); scores.push(tries ? 0.5 : 1); doneLog.push({ ok: true, q: st.q, a: st.coef ? coefText(st) : ansText(st) }); return advance(); }
+  MK.sfx.bad();
+  if(tries === 0){
+    tries = 1;
+    if(st.kind === "choice" || st.kind === "gchoice"){ dead.add(sel); sel = -1; $("sbody").querySelectorAll("[data-o]").forEach((o, i) => { o.classList.toggle("x", dead.has(i)); o.classList.remove("sel"); }); }
+    if(st.kind === "num") $("sbody").querySelectorAll(".fld").forEach((f, i) => { const v = vals[i] === "" && st.coef ? 0 : parse(vals[i]); f.classList.toggle("bad", Math.abs(v - st.fields[i].ans) > 1e-6 && !st.coef); });
+    shake($("sbody"));
+    why.innerHTML = MK.why({ ok: false, head: T.retryHead, body: T.retry[kind] });
+    setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+    return;
+  }
+  scores.push(0); doneLog.push({ ok: false, q: st.q, a: T.stepFail(st.coef ? coefText(st) : ansText(st)) }); advance();
+}
+function advance(){
+  why.innerHTML = "";
+  if(si < cur.steps.length - 1){ si++; initStep(); draw(); const s = board.querySelector(".step"); if(s) setTimeout(() => s.scrollIntoView({ behavior: "smooth", block: "nearest" }), 60); return; }
+  locked = true;
+  const sum = scores.reduce((a, b) => a + b, 0), p = Math.round(10 * sum / scores.length), first = scores.every(s => s === 1), solved = scores.every(s => s > 0);
+  pts += p; $("pts").textContent = pts; dots.mark(ti, first);
+  if(first){ okN++; MK.set("mk-" + GAME + "-parkas", parkN() + 1); }
+  draw(true);
+  why.innerHTML = MK.why({ ok: solved, head: first ? T.okHead(MK.praise(), p) : solved ? T.partHead(p) : T.failHead, more: cur.sol, sum: T.solution, open: !first })
+    + `<button type="button" class="mk-btn go" id="go">${ti < N - 1 ? T.next : T.results}</button>`;
+  setTimeout(() => (cur.reveal ? board : why).scrollIntoView({ behavior: "smooth", block: cur.reveal ? "start" : "nearest" }), 80);
+}
+why.addEventListener("click", e => { if(!e.target.closest("#go")) return; MK.sfx.tap(); ti++; next(); window.scrollTo(0, 0); });
+function finish(){
+  const stars = MK.starsFor(okN, N); MK.best(GAME, Lv.id, stars);
+  const have = attOwned(parkN()), had = attOwned(startPark), att = have > had ? T.park[have - 1] : "";
+  MK.result({ stars, title: T.resTitle(okN, N), text: T.resText(pts, att),
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: () => showMenu(att ? have - 1 : -1) });
+}
+window.__ki = { get cur(){ return cur; }, get si(){ return si; } };   // automatiniam testui
+showMenu();
+})();
+</script>
+</body>
+</html>
