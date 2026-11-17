@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mechanizmų aikštelė – MokomėsKartu.lt</title>
+<meta name="description" content="9 klasės fizikos žaidimas: paprastieji mechanizmai – jėgos momentas, momentų taisyklė, skridiniai, nuožulnioji plokštuma, auksinė mechanikos taisyklė ir naudingumo koeficientas.">
+<meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/mechanizmu-aikstele/tekstai.lt.js"></script>
+<style>
+/* Meniu: statybų aikštelė, „Mano bokštas“ (aukštas už kiekvieną žvaigždutę), lygiai, „Noriu pasimokyti“.
+   Užduotis: mechanizmo brėžinys → veiksmas (pakabinti krovinį ant sverto arba pasirinkti atsakymą) →
+   mechanizmas „suveikia“ → pelėdžiuko paaiškinimas → „Toliau“. Laiko spaudimo nėra. */
+body{--ac:#e8590c;--ac-ink:#fff;--ac-soft:#ffe6d2}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(31px,8.2vw,52px)}
+.mk-hero p{max-width:42ch;font-size:16px}
+.hero-art{width:min(100%,480px);border-radius:26px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15)}
+.hero-art svg{display:block;width:100%;height:auto}
+.hero-art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 18px/1.2 var(--kid);display:flex;gap:8px;align-items:center}
+.col h2 svg{width:28px;height:28px;flex:none}
+.col p{margin:4px 0 10px;color:var(--soft);font-weight:700;font-size:14.5px}
+.tower{display:block;width:100%;height:auto;border-radius:14px;box-shadow:inset 0 0 0 2px #b9d9f2}
+.tower .nw{animation:mkPop .6s cubic-bezier(.2,1.6,.4,1);transform-box:fill-box;transform-origin:center}
+
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+.card{width:100%;max-width:600px;margin:0 auto 10px;padding:12px 14px 14px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12)}
+.card sub,.mk-why sub,.mk-lt sub{font-size:.72em}
+.txt{margin:0 0 10px;font:700 16px/1.5 var(--body)}
+.txt b{font-weight:800;white-space:nowrap}
+.scnw{margin:0 0 10px;border-radius:14px;overflow:hidden;box-shadow:0 0 0 2.5px var(--ink);background:#eaf6ff}
+.scnw svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.scnw[hidden]+.hint{margin-top:0}
+.hint{margin:0 0 10px;font:800 15px/1.35 var(--body);color:var(--soft);min-height:20px}
+.hint b{color:var(--ink)}
+.hint.warn{color:#b3391f}
+.hit{cursor:pointer}
+.ans{display:grid;gap:8px}
+.ans.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.a{min-height:52px;padding:10px 12px;border:0;border-radius:14px;background:#fff;cursor:pointer;text-align:left;font:800 16px/1.3 var(--body);color:var(--ink);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16);transition:transform .1s;touch-action:manipulation}
+.ans.two .a{text-align:center;font-size:17px}
+.a:active{transform:translateY(3px)}
+.a.sel{background:var(--ac-soft);box-shadow:inset 0 0 0 3.5px var(--ac),0 4px 0 rgba(18,26,51,.16)}
+.a.ok{background:#dff7e6;box-shadow:inset 0 0 0 3.5px var(--good),0 4px 0 rgba(18,26,51,.16)}
+.a.no{background:#ffe6df;box-shadow:inset 0 0 0 3.5px var(--bad),0 4px 0 rgba(18,26,51,.16)}
+.ans.done .a{pointer-events:none}
+.ans.done .a:not(.ok):not(.no){opacity:.5}
+.go{display:flex;width:100%;max-width:600px;margin:10px auto 0}
+.mk-why{max-width:600px;margin-inline:auto}
+.mk-why-m p{margin:4px 0}
+.fade{animation:mkIn .4s cubic-bezier(.2,1.4,.4,1)}
+svg text{font-family:Manrope,system-ui,sans-serif;font-weight:800}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="hero-art" id="heroArt"></div>
+      <h1 id="heroH"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div class="col" id="col"></div>
+    <div id="levels"></div>
+    <div id="learn"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="ptsChip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div class="card" id="stage"></div>
+    <div id="flow"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, nf = T.nf, GAME = "mechanizmu-aikstele", GRADES = [9];
+const K = "#121a33", S = `stroke="${K}" stroke-width="2.4" stroke-linejoin="round"`;
+const R = MK.rnd, P = MK.pick, SH = MK.shuffle;
+const r4 = x => Math.round(x * 1e4) / 1e4;
+function find(fn){ for(let i = 0; i < 5000; i++){ const v = fn(); if(v) return v; } throw new Error("generatorius nerado užduoties"); }
+
+/* ================= piešiniai ================= */
+const FF = 'font-family="Manrope,system-ui,sans-serif" font-weight="800"';
+const lab = (x, y, s, o) => { o = o || {}; return `<text x="${x}" y="${y}" ${FF} font-size="${o.fs || 12}" text-anchor="${o.a || "middle"}" fill="${o.c || K}" stroke="#fff" stroke-width="${o.sw == null ? 3.2 : o.sw}" paint-order="stroke" stroke-linejoin="round">${s}</text>`; };
+/* jėgos rodyklė iš (x,y) kryptimi (dx,dy) – vienetinis vektorius, ilgis len */
+function arrow(x, y, dx, dy, len, col){
+  const x1 = x + dx * len, y1 = y + dy * len, px = -dy, py = dx, hx = x1 - dx * 10, hy = y1 - dy * 10;
+  const sh = `M${x} ${y}L${x1} ${y1}M${hx + px * 6.5} ${hy + py * 6.5}L${x1} ${y1}L${hx - px * 6.5} ${hy - py * 6.5}`;
+  return `<g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="${sh}" stroke="#fff" stroke-width="8"/><path d="${sh}" stroke="${col || "#d6336c"}" stroke-width="4.2"/></g>`;
+}
+const RED = "#d6336c", BLUE = "#1c6dd0";
+/* darbininkas (-ė): pilnas žmogeliukas su šalmu; (x,y) – pėdos. pose: down | push | pull | up */
+function worker(x, y, s, pose, flip, girl){
+  const arms = { down: "M-9 -42L-14 -25M9 -42L14 -25", push: "M7 -41L21 -36M7 -36L21 -31", pull: "M7 -42L18 -52M7 -38L19 -47", up: "M-9 -43L-15 -61M9 -43L15 -61" }[pose || "down"];
+  const hands = { down: [[-14, -24], [14, -24]], push: [[22, -36], [22, -31]], pull: [[19, -53], [20, -47]], up: [[-15, -62], [15, -62]] }[pose || "down"];
+  return `<g transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})">
+    <path d="M-5 -22L-6 -3M5 -22L6 -3" stroke="#2b4a7a" stroke-width="7.5" stroke-linecap="round"/>
+    <path d="M-12 -4h11v5h-11zM1 -4h11v5H1z" fill="#3a2a1a"/>
+    ${girl ? `<path d="M-7 -57q-9 4-7 17" fill="none" stroke="#8a4b22" stroke-width="5" stroke-linecap="round"/>` : ""}
+    <path d="${arms}" stroke="#ff8a1f" stroke-width="6.5" stroke-linecap="round" fill="none"/>
+    <rect x="-10" y="-46" width="20" height="27" rx="6.5" fill="#ff8a1f" stroke="${K}" stroke-width="1.8"/>
+    <path d="M-9.5 -35h19M-9.5 -29h19" stroke="#ffe86b" stroke-width="2.6"/>
+    ${hands.map(h => `<circle cx="${h[0]}" cy="${h[1]}" r="3.4" fill="#f6c9a0" stroke="${K}" stroke-width="1.2"/>`).join("")}
+    <circle cx="0" cy="-54" r="8.2" fill="#f6c9a0" stroke="${K}" stroke-width="1.8"/>
+    <circle cx="-2.6" cy="-53.5" r="1.1" fill="${K}"/><circle cx="3.4" cy="-53.5" r="1.1" fill="${K}"/>
+    <path d="M-2 -49.8q2.4 2 4.8 0" fill="none" stroke="${K}" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M-9.4 -56a9.4 9.6 0 0 1 18.8 0z" fill="#ffd21f" stroke="${K}" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M-11.5 -56h23.5" stroke="${K}" stroke-width="2.6" stroke-linecap="round"/>
+  </g>`;
+}
+const bg = inner => `<rect width="360" height="210" fill="#eaf6ff"/><path d="M0 198h360v12H0z" fill="#d9c9a3"/><path d="M0 198h360" stroke="${K}" stroke-width="2.4"/>${inner}`;
+const crate = (x, y, w, h, txt, col) => `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${col || "#cfa06a"}" ${S}/><path d="M${x + 4} ${y + 4}h${w - 8}M${x + 4} ${y + h - 4}h${w - 8}" stroke="#9a6b3a" stroke-width="1.6"/>${txt ? lab(x + w / 2, y + h / 2 + 4.4, txt, { fs: 12, sw: 0 }) : ""}</g>`;
+
+/* ---------- svertas ---------- */
+const BX = 180, BY = 70, PG = 27, GY = 198;
+const pegX = p => BX + PG * p;
+const ropeOf = p => Math.abs(p) % 2 ? 14 : 56;
+const blockH = (F, skin) => 24 + Math.min(12, skin === "lab" ? F : F / 50);
+function wtBlock(p, F, skin, a, o){
+  o = o || {}; const x = pegX(p), w = skin === "lab" ? 26 : 38, h = blockH(F, skin), y0 = BY + ropeOf(p);
+  const fill = o.ghost ? "#fff3e6" : o.q ? "#fff" : skin === "lab" ? "#f5b82e" : "#cfa06a";
+  const st = o.ghost || o.q ? `stroke="${o.q && !o.ghost ? K : "#e8590c"}" stroke-width="2.4" stroke-dasharray="${o.solid ? "0" : "5 3"}"` : S;
+  return `<g transform="rotate(${-a} ${x} ${BY})"><path d="M${x} ${BY}V${y0}" stroke="${K}" stroke-width="2"/>
+    <rect x="${x - w / 2}" y="${y0}" width="${w}" height="${h}" rx="${skin === "lab" ? 5 : 3}" fill="${fill}" ${st}/>
+    ${lab(x, y0 + h / 2 + 3.6, o.q ? "?" : nf(F) + " N", { fs: o.q ? 15 : 10.8, sw: 0 })}</g>`;
+}
+function beamSVG(sc, st){
+  st = st || {}; const a = st.angle || 0, skin = sc.skin, half = PG * 6 + 12;
+  let pegs = "", hits = "";
+  for(let p = -6; p <= 6; p++){ if(!p) continue; const x = pegX(p);
+    pegs += `<path d="M${x} ${BY - 5}v10" stroke="#fff" stroke-width="2"/>${lab(x, BY - 10, skin === "lab" ? Math.abs(p) * 10 : nf(Math.abs(p) * .5), { fs: 10.4, sw: 2.4 })}`;
+    if(st.hit && !sc.fixed.some(w => w.p === p)) hits += `<rect class="hit" data-p="${p}" x="${x - PG / 2}" y="24" width="${PG}" height="170" fill="transparent"/>`;
+  }
+  const fixed = sc.fixed.map(w => wtBlock(w.p, w.F, skin, a, { q: w.q && !sc.done })).join("");
+  let sel = "";
+  if(st.sel) sel = wtBlock(st.sel.p, st.sel.F, skin, a, { ghost: !st.solid });
+  else if(sc.mark != null) sel = wtBlock(sc.mark, 0, skin, a, { q: true, ghost: true });
+  const mk = sc.mark != null || st.sel ? `<circle cx="${pegX(st.sel ? st.sel.p : sc.mark)}" cy="${BY}" r="7" fill="none" stroke="#e8590c" stroke-width="2.6"/>` : "";
+  const props = st.props ? `<path d="M${BX - half + 4} ${BY + 6}V${GY}M${BX + half - 4} ${BY + 6}V${GY}" stroke="#8d99ae" stroke-width="6" stroke-linecap="round"/>` : "";
+  return bg(`${Math.abs(a) > 3 ? "" : lab(BX, 24, skin === "lab" ? T.beam.distCm : T.beam.distM, { fs: 11.5, c: "#5f5a45" })}
+    ${props}
+    <path d="M${BX} ${BY + 2}L${BX - 17} ${GY}h34z" fill="#8d99ae" ${S}/>
+    <g transform="rotate(${a} ${BX} ${BY})">
+      <rect x="${BX - half}" y="${BY - 6}" width="${half * 2}" height="12" rx="5" fill="${skin === "lab" ? "#4f7cff" : "#b9834a"}" ${S}/>
+      ${pegs}${mk}${fixed}${sel}
+    </g>
+    <circle cx="${BX}" cy="${BY}" r="4.6" fill="#fff" ${S}/>
+    ${st.glow ? `<circle cx="${BX}" cy="${BY + 62}" r="15" fill="#2fb36b" ${S}/><path d="M${BX - 7} ${BY + 62}l5 5.5 9-11" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>` : ""}
+    ${hits}`);
+}
+/* ---------- veržliaraktis ---------- */
+function wrenchOne(y, w, tag, done){
+  const x0 = 62, L = 70 + w.d * 4.2, x1 = x0 + L;
+  return `<rect x="${x0 - 4}" y="${y - 7}" width="${L + 10}" height="14" rx="7" fill="#9aa7bd" ${S}/>
+    <path d="M${x0} ${y - 17}l15 8.6v17L${x0} ${y + 17}l-15-8.4v-17z" fill="#5d6b85" ${S}/><circle cx="${x0}" cy="${y}" r="6" fill="#dfe6f2" ${S}/>
+    ${arrow(x1, y, 0, 1, 36, RED)}
+    ${lab(x1 - 12, y + 32, "F = " + (w.F == null ? (done ? nf(w.ans) + " N" : "?") : nf(w.F) + " N"), { a: "end", c: RED, fs: 14 })}
+    <path d="M${x0} ${y - 24}H${x1}M${x0} ${y - 29}v10M${x1} ${y - 29}v10" stroke="${BLUE}" stroke-width="1.8"/>
+    ${lab((x0 + x1) / 2, y - 29, "d = " + (w.dq ? (done ? nf(w.d) + " cm" : "?") : nf(w.d) + " cm"), { c: BLUE, fs: 14 })}
+    ${tag ? `<circle cx="22" cy="${y}" r="13" fill="#fff" ${S}/>${lab(22, y + 5, tag, { fs: 14, sw: 0 })}` : ""}`;
+}
+function wrenchSVG(sc){
+  if(sc.list.length === 2) return bg(wrenchOne(62, sc.list[0], "A", sc.done) + wrenchOne(146, sc.list[1], "B", sc.done));
+  return bg(wrenchOne(98, sc.list[0], "", sc.done) + (sc.M != null ? lab(180, 184, "M = " + (sc.M === "?" ? (sc.done ? nf(sc.ans) + " N·m" : "?") : nf(sc.M) + " N·m"), { fs: 15 }) : ""));
+}
+/* ---------- laužtuvas ---------- */
+function crowSVG(sc, t){
+  t = t || 0; const k = sc.d2 / sc.d1, total = 270, a1 = Math.max(26, total / (k + 1)), xf = 46 + a1, yf = 150, ang = 9 - 15 * t;
+  const xl = xf - a1, xr = xf + (total - a1);
+  return bg(`<path d="M${xf} ${yf}L${xf - 13} ${GY}h26z" fill="#8d99ae" ${S}/>
+    <g transform="rotate(${-ang} ${xf} ${yf})">
+      <rect x="${xl - 6}" y="${yf - 4}" width="${xr - xl + 12}" height="8" rx="4" fill="#5d6b85" ${S}/>
+      <path d="M${xl - 22} ${yf - 4}q-2-26 14-34q20-8 30 8q8 14 0 26z" fill="#b8b2a7" ${S}/>
+      ${lab(xl, yf - 18, "P", { fs: 12, sw: 0 })}
+      ${arrow(xr, yf - 6, 0, 1, 34, RED)}
+    </g>
+    ${worker(Math.min(340, xr + 16), GY, .92, "push", true, sc.girl)}
+    <path d="M${xl} 22H${xf}M${xl} 17v10M${xf} 17v10" stroke="${BLUE}" stroke-width="1.8"/><path d="M${xf} 22H${xr}M${xr} 17v10" stroke="${BLUE}" stroke-width="1.8"/>
+    ${lab(Math.max(sc.showD ? 48 : 30, (xl + xf) / 2), 42, "d₁" + (sc.showD ? " = " + nf(sc.d1) + " m" : ""), { c: BLUE, fs: 13 })}
+    ${lab((xf + xr) / 2 + 22, 42, "d₂" + (sc.showD ? " = " + nf(sc.d2) + " m" : ""), { c: BLUE, fs: 13 })}
+    ${lab(20, 70, "P = " + nf(sc.P) + " N", { fs: 14, a: "start" })}
+    ${lab(340, 70, "F = " + (sc.F == null ? (sc.done && sc.ansF != null ? nf(sc.ansF) + " N" : "?") : nf(sc.F) + " N"), { c: RED, fs: 14, a: "end" })}`);
+}
+/* ---------- skridiniai ---------- */
+function wheel(x, y, r){ return `<circle cx="${x}" cy="${y}" r="${r}" fill="#ffd27a" ${S}/><circle cx="${x}" cy="${y}" r="${r - 6}" fill="none" stroke="#c98a1a" stroke-width="2"/><circle cx="${x}" cy="${y}" r="3.4" fill="${K}"/>`; }
+function pulleySVG(sc, t){
+  t = t || 0; const ty = sc.t; let s = `<rect x="60" y="6" width="240" height="12" rx="3" fill="#8d99ae" ${S}/>`;
+  const rope = d => `<path d="${d}" fill="none" stroke="#7a5a2b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const Ftxt = sc.noF ? "s = " + (sc.done || sc.sKnown ? nf(sc.ansS) + " m" : "?") : "F = " + (sc.F == null ? (sc.done && sc.ansF != null ? nf(sc.ansF) + " N" : "?") : nf(sc.F) + " N");
+  const Ptxt = sc.P == null ? (sc.done && sc.ansP != null ? nf(sc.ansP) + " N" : "?") : nf(sc.P) + " N";
+  if(ty === "N"){
+    const yb = 128 - 44 * t, yh = 100 + 44 * t;
+    s += `<path d="M180 18v14" stroke="${K}" stroke-width="4"/>` + rope(`M158 ${yb}V52M202 52V${yh}`) + rope("M158 52a22 22 0 0 1 44 0") + wheel(180, 52, 22)
+      + crate(134, yb, 48, 36, Ptxt) + arrow(202, yh, 0, 1, 28, RED) + lab(246, 64, Ftxt, { a: "start", c: RED, fs: 14 })
+      + worker(232, GY, .95, "pull", true, sc.girl);
+  } else if(ty === "K"){
+    const yc = 126 - 26 * t, yh = 98 - 52 * t;
+    s += rope(`M148 18V${yc}M192 ${yc}V${yh}`) + rope(`M148 ${yc}a22 22 0 0 0 44 0`) + wheel(170, yc, 22) + `<path d="M170 ${yc}v26" stroke="${K}" stroke-width="3"/>`
+      + crate(146, yc + 26, 48, 36, Ptxt) + arrow(192, yh, 0, -1, 24, RED) + lab(246, 64, Ftxt, { a: "start", c: RED, fs: 14 });
+    if(sc.Ps) s += lab(132, yc + 4, nf(sc.Ps) + " N", { a: "end", fs: 12.5, c: "#8a5a00" });
+  } else {
+    const yc = 134 - 26 * t, yh = 96 + 52 * t;
+    s += `<path d="M201 18v14" stroke="${K}" stroke-width="4"/>` + rope(`M139 18V${yc}M183 ${yc}V46M219 46V${yh}`) + rope(`M139 ${yc}a22 22 0 0 0 44 0`) + rope("M183 46a18 18 0 0 1 36 0")
+      + wheel(201, 46, 18) + wheel(161, yc, 22) + `<path d="M161 ${yc}v24" stroke="${K}" stroke-width="3"/>`
+      + crate(137, yc + 24, 48, 34, Ptxt) + arrow(219, yh, 0, 1, 26, RED) + lab(262, 64, Ftxt, { a: "start", c: RED, fs: 14 })
+      + worker(250, GY, .95, "pull", true, sc.girl);
+    if(sc.Ps) s += lab(124, yc + 4, nf(sc.Ps) + " N", { a: "end", fs: 12.5, c: "#8a5a00" });
+  }
+  if(sc.h != null) s += `<path d="M96 ${GY - 4}V${GY - 60}M90 ${GY - 4}h12M90 ${GY - 60}h12" stroke="${BLUE}" stroke-width="1.8"/>` + lab(86, GY - 27, "h = " + nf(sc.h) + " m", { a: "end", c: BLUE, fs: 13.5 });
+  if(sc.note) s += lab(20, 44, sc.note, { a: "start", fs: 14 });
+  return bg(s);
+}
+/* ---------- nuožulnioji plokštuma ---------- */
+function rampSVG(sc, t){
+  t = t || 0; const k = sc.k, th = Math.asin(1 / k), maxH = 112, base = Math.min(236, maxH / Math.tan(th)), H = base * Math.tan(th);
+  const x0 = 42, x1 = x0 + base, y0 = GY, y1 = GY - H, u = .12 + .6 * t, bx = x0 + base * u, by = y0 - H * u, deg = th * 180 / Math.PI;
+  const F = "F = " + (sc.F == null ? (sc.done && sc.ansF != null ? nf(sc.ansF) + " N" : "?") : nf(sc.F) + " N");
+  return bg(`<path d="M${x0} ${y0}L${x1} ${y1}V${y0}z" fill="#e7c98f" ${S}/>
+    <rect x="${x1}" y="${y1}" width="${Math.max(40, 330 - x1)}" height="${H}" fill="#b7c2d6" ${S}/>
+    <g transform="translate(${bx} ${by}) rotate(${-deg})">${crate(0, -30, 40, 28, "")}${lab(20, -12, "P", { fs: 12, sw: 0 })}${arrow(42, -16, 1, 0, 34, RED)}</g>
+    <g transform="translate(${x0} ${y0}) rotate(${-deg}) translate(0 -42)"><path d="M0 0H${base / Math.cos(th)}M0 -5v10M${base / Math.cos(th)} -5v10" stroke="${BLUE}" stroke-width="1.8"/>
+      ${lab(base / Math.cos(th) / 2, -7, "l = " + (sc.l == null ? (sc.done ? nf(sc.ansL) + " m" : "?") : nf(sc.l) + " m"), { c: BLUE, fs: 14 })}</g>
+    <path d="M${x1 + 12} ${y0 - 3}V${y1 + 3}M${x1 + 7} ${y0 - 3}h10M${x1 + 7} ${y1 + 3}h10" stroke="${BLUE}" stroke-width="1.8"/>
+    ${lab(x1 + 19, y0 - H / 2 + 5, "h = " + nf(sc.h) + " m", { c: BLUE, fs: 13.5, a: "start" })}
+    ${lab(18, 28, "P = " + nf(sc.P) + " N", { a: "start", fs: 14 })}${lab(18, 48, F, { a: "start", fs: 14, c: RED })}
+    ${sc.eta != null ? lab(18, 68, "η = " + nf(sc.eta) + " %", { a: "start", fs: 14, c: "#1d7a46" }) : ""}`);
+}
+/* ---------- vežimėlis ---------- */
+function cartSVG(sc, t){
+  t = t || 0; const x = 70 + 130 * t;
+  return bg(`${worker(x - 14, GY - 24, 1, "push", false, sc.girl)}
+    <g transform="translate(${x} 0)"><rect x="10" y="${GY - 62}" width="54" height="30" rx="4" fill="#4f7cff" ${S}/><path d="M12 ${GY - 62}l-6-10" stroke="${K}" stroke-width="3" stroke-linecap="round"/>
+      <rect x="18" y="${GY - 80}" width="18" height="18" rx="2" fill="#cfa06a" ${S}/><rect x="38" y="${GY - 76}" width="20" height="14" rx="2" fill="#e09a5a" ${S}/>
+      <circle cx="24" cy="${GY - 31}" r="7.5" fill="#333d55" ${S}/><circle cx="52" cy="${GY - 31}" r="7.5" fill="#333d55" ${S}/>
+      ${arrow(68, GY - 48, 1, 0, 40, RED)}</g>
+    <path d="M0 ${GY - 23}h360" stroke="${K}" stroke-width="2.4"/><path d="M0 ${GY - 22}h360v34H0z" fill="#d9c9a3"/><path d="M70 ${GY - 15}h200M70 ${GY - 20}v10M270 ${GY - 20}v10" stroke="${BLUE}" stroke-width="1.8"/>
+    ${lab(170, GY + 7, "s = " + nf(sc.s) + " m", { c: BLUE, fs: 14, sw: 0 })}
+    ${lab(18, 32, "F = " + nf(sc.F) + " N", { a: "start", fs: 15, c: RED })}`);
+}
+/* ---------- darbo juosta (naudingas ir visas darbas) ---------- */
+function barSVG(sc){
+  const w = 300, x = 30, y = 70, e = sc.eta / 100, done = sc.done;
+  const an = sc.An == null ? (done ? nf(sc.ans) + " J" : "?") : nf(sc.An) + " J", av = sc.Av == null ? (done ? nf(sc.ans) + " J" : "?") : nf(sc.Av) + " J";
+  return `<rect width="360" height="210" fill="#eaf6ff"/>
+    <rect x="${x}" y="${y}" width="${w}" height="46" rx="8" fill="#ffd9c7" ${S}/><rect x="${x}" y="${y}" width="${w * e}" height="46" rx="8" fill="#8fe0ae" ${S}/>
+    ${lab(x + w * e / 2, y + 28, "η = " + nf(sc.eta) + " %", { fs: 14.5, sw: 0 })}
+    <path d="M${x} ${y + 60}h${w * e}M${x} ${y + 54}v12M${x + w * e} ${y + 54}v12" stroke="#1d7a46" stroke-width="2"/>${lab(x + w * e / 2, y + 82, T.barAn + " = " + an, { fs: 14, c: "#1d7a46" })}
+    <path d="M${x} ${y - 14}h${w}M${x} ${y - 20}v12M${x + w} ${y - 20}v12" stroke="${K}" stroke-width="2"/>${lab(x + w / 2, y - 22, T.barAv + " = " + av, { fs: 14 })}
+    ${w - w * e >= 70 ? lab(x + w * e + (w - w * e) / 2, y + 28, T.barLoss, { fs: 11.5, sw: 0, c: "#b3391f" }) : ""}`;
+}
+const DRAW = { beam: (sc, t, st) => beamSVG(sc, st), wrench: wrenchSVG, crow: crowSVG, pulley: pulleySVG, ramp: rampSVG, cart: cartSVG, bar: barSVG };
+
+/* ================= užduočių generatoriai ================= */
+const WU = [1, 2, 3, 4, 5, 6, 8, 9, 10, 12];
+const netOf = list => list.reduce((s, w) => s + w.F * w.p, 0);
+const sidesOf = (list, u) => [list.filter(w => w.p < 0).map(w => ({ F: w.F, d: r4(-w.p * u) })), list.filter(w => w.p > 0).map(w => ({ F: w.F, d: r4(w.p * u) }))];
+const skinOf = () => P(["lab", "lab", "site"]);
+function scale(skin, list){ const m = skin === "lab" ? 1 : 50; return list.map(w => ({ p: w.p, F: w.F * m })); }
+function beamTask(skin, fixedU, giveU, ansP, mode, optsU){
+  const m = skin === "lab" ? 1 : 50, u = skin === "lab" ? .1 : .5, fixed = scale(skin, fixedU), give = giveU * m;
+  const all = fixed.concat([{ p: ansP, F: give }]), sd = sidesOf(all, u);
+  const t = { type: "beam", skin, u, sc: { kind: "beam", skin, fixed }, give, ansP, mode, why: T.beam.why(sd[0], sd[1]) };
+  if(mode === "wt"){ t.sc.mark = ansP; t.opts = optsU.map(x => x * m); t.txt = T.beam.wtTxt(skin); }
+  else t.txt = mode === "any" ? T.beam.posAnyTxt(give, skin) : T.beam.posTxt(give, skin);
+  return t;
+}
+/* b1: vienas krovinys vienoje pusėje; b3: du kroviniai vienoje pusėje */
+function genB(nFixed){
+  return find(() => {
+    const skin = skinOf(), sg = P([-1, 1]), fx = [], used = new Set();
+    for(let i = 0; i < nFixed; i++){ const p = R(1, 6); if(used.has(p) || (skin === "site" && (used.has(p - 1) || used.has(p + 1)))) return null; used.add(p); fx.push({ p: -sg * p, F: P(WU) }); }
+    const M = Math.abs(netOf(fx)), W = P(WU), d = M / W;
+    if(d % 1 || d < 1 || d > 6) return null;
+    if(nFixed === 1 && (W === fx[0].F)) return null;
+    if(nFixed === 2 && fx.some(w => w.F === W && Math.abs(w.p) === d)) return null;
+    return beamTask(skin, fx, W, sg * d, "pos");
+  });
+}
+/* b4: kroviniai abiejose pusėse, svertas nepusiausviras – reikia nuspręsti ir pusę */
+function genB4(){
+  return find(() => {
+    const skin = skinOf(), fx = [], used = new Set(), n = P([2, 3]);
+    for(let i = 0; i < n; i++){ const sg = i === 0 ? -1 : i === 1 ? 1 : P([-1, 1]), p = sg * R(1, 6);
+      if(used.has(p) || (skin === "site" && (used.has(p - 1) || used.has(p + 1)))) return null; used.add(p); fx.push({ p, F: P(WU) }); }
+    const net = netOf(fx), W = P(WU); if(!net) return null;
+    const p = -net / W; if(p % 1 || Math.abs(p) < 1 || Math.abs(p) > 6 || used.has(p)) return null;
+    if(skin === "site" && (used.has(p - 1) || used.has(p + 1))) return null;
+    /* sunkesnė pagal jėgų sumą pusė neturi visada būti ta, kuri persveria */
+    return beamTask(skin, fx, W, p, "any");
+  });
+}
+/* b2: kabliukas pažymėtas – pasirinkti krovinį */
+function genB2(){
+  return find(() => {
+    const skin = skinOf(), sg = P([-1, 1]), fx = [], used = new Set(), n = P([1, 2]);
+    for(let i = 0; i < n; i++){ const p = R(1, 6); if(used.has(p) || (skin === "site" && (used.has(p - 1) || used.has(p + 1)))) return null; used.add(p); fx.push({ p: -sg * p, F: P(WU) }); }
+    const M = Math.abs(netOf(fx)), d = R(1, 6), W = M / d;
+    if(!WU.includes(W) || (n === 1 && W === fx[0].F)) return null;
+    const cand = SH(WU.filter(x => x !== W)).sort((a, b) => Math.abs(a - W) - Math.abs(b - W)).slice(0, 5);
+    const wr = SH(cand).slice(0, 3); if(n === 1 && !wr.includes(fx[0].F)) wr[0] = fx[0].F;
+    return beamTask(skin, fx, W, sg * d, "wt", [W].concat(wr).sort((a, b) => a - b));
+  });
+}
+
+/* skaitiniai atsakymų variantai: teisingas + tipinės klaidos, išrikiuoti didėjančiai */
+function mc(correct, wrongs, fmt){
+  const vals = [r4(correct)], ok = w => isFinite(w) && w > 0 && Math.abs(w * 100 - Math.round(w * 100)) < 1e-6 && !vals.some(v => Math.abs(v - w) < 1e-9);
+  for(const w0 of wrongs.concat([correct * 2, correct / 2, correct * 1.5, correct * 3, correct / 4, correct * 4, correct + 10, correct + 1])){ const w = r4(w0); if(vals.length < 4 && ok(w)) vals.push(w); }
+  vals.sort((a, b) => a - b);
+  return { opts: vals.map(fmt), right: vals.indexOf(r4(correct)), two: true };
+}
+function tx(correct, wrongs){ const o = SH([correct].concat(wrongs)); return { opts: o, right: o.indexOf(correct) }; }
+const uN = v => nf(v) + " N", uNm = v => nf(v) + " N·m", uCm = v => nf(v) + " cm", uM = v => nf(v) + " m", uJ = v => nf(v) + " J", uW = v => nf(v) + " W", uS = v => nf(v) + " s", uPc = v => nf(v) + " %";
+const task = (txt, o, sc, why, extra) => Object.assign({ type: "mc", txt, opts: o.opts, right: o.right, two: !!o.two, sc, why, ansText: o.opts[o.right] }, extra || {});
+const girl = () => Math.random() < .5;
+
+const G = {
+  m1(){ const F = P([20, 30, 40, 50, 60, 80, 100, 120]), d = P([10, 15, 20, 25, 30, 40, 50]), M = r4(F * d / 100);
+    return task(T.q.m1(P(T.q.m1ctx), F, d), mc(M, [F * d, F * d / 10, F / d * 100, F / (d / 100), M * 10, F + d], uNm), { kind: "wrench", list: [{ F, d }], M: "?", ans: M }, T.w.m1(F, d, M)); },
+  m2(){ return find(() => {
+      const a = { F: P([20, 30, 40, 50, 60, 80]), d: P([10, 15, 20, 25, 30, 40, 50]) }, b = { F: P([20, 30, 40, 50, 60, 80]), d: P([10, 15, 20, 25, 30, 40, 50]) };
+      if(a.F === b.F || a.d === b.d) return null;
+      const ma = a.F * a.d, mb = b.F * b.d, kind = P(["eq", "trap", "trap", "any"]);
+      if(kind === "eq" && ma !== mb) return null;
+      if(kind === "trap" && !((a.F > b.F && ma < mb) || (b.F > a.F && mb < ma))) return null;
+      if(kind === "any" && ma === mb) return null;
+      const right = ma > mb ? 0 : mb > ma ? 1 : 2;
+      return task(T.q.m2(a, b), { opts: T.q.m2opts, right }, { kind: "wrench", list: [a, b] }, T.w.m2(a, b));
+    }); },
+  m3(){ const F = P([20, 30, 40, 50, 60, 80, 100, 150, 200]), d = P([10, 20, 25, 40, 50]), M = r4(F * d / 100);
+    return task(T.q.m3(M, d), mc(F, [M * d / 100, M / d, M * d, M / d * 10, F / 10, F * 10], uN), { kind: "wrench", list: [{ F: null, d, ans: F }], M }, T.w.m3(M, d, F)); },
+  m4(){ const F = P([20, 40, 50, 60, 80, 100, 120]), d = P([10, 15, 20, 25, 30, 40, 50]), M = r4(F * d / 100);
+    return task(T.q.m4(M, F), mc(d, [d / 10, d / 100, M * F, d * 2, d / 2, d + 10, M * F / 10], uCm), { kind: "wrench", list: [{ F, d, dq: true }], M }, T.w.m4(M, F, d)); },
+  m5(){ const k = P([2, 3, 4, 5, 6, 8, 10]), d1 = P([.1, .15, .2, .25, .3]), d2 = r4(k * d1), F = P([40, 50, 60, 80, 100, 120, 150, 200, 250]), Pw = F * k;
+    return task(T.q.m5(Pw, d1, d2), mc(F, [Pw * k, Pw / (k + 1), Pw / (k - 1), Pw * d1, Pw - F, Pw / 2], uN), { kind: "crow", P: Pw, d1, d2, showD: true, ansF: F, girl: girl() }, T.w.m5(Pw, d1, d2, F), { anim: true }); },
+  m6(){ const k = P([2, 3, 4, 5, 6, 8]), d1 = P([.1, .2, .25, .3, .4]), d2 = r4(k * d1), Pw = P([300, 400, 600, 800, 1200]);
+    return task(T.q.m6(d1, d2), mc(k, [k + 1, k - 1, k * 2, r4(d2 - d1) * 10, k / 2], T.q.m6opt), { kind: "crow", P: Pw, d1, d2, showD: true, ansF: Pw / k, girl: girl() }, T.w.m6(d1, d2, k), { anim: true }); },
+  m7(){ return find(() => {
+      const b = genB(P([1, 2, 2])); const u = b.u, F = b.give, p = b.ansP, known = b.sc.fixed, sd = sidesOf(known, u), L = sd[0].length ? sd[0] : sd[1];
+      const sc = { kind: "beam", skin: b.skin, fixed: known.concat([{ p, F, q: true }]) }, M = L.reduce((s, w) => s + w.F * w.d, 0), d = r4(Math.abs(p) * u);
+      const sumF = known.reduce((s, w) => s + w.F, 0);
+      const o = mc(F, [sumF, M, r4(M * d), r4(M / d / 2), F * 2, F / 2, sumF / 2].map(r4), uN);
+      return task(T.q.m7(), o, sc, T.w.m7(L, [], F, d));
+    }); },
+  m8(){ return find(() => {
+      const skin = skinOf(), fx = [], used = new Set(), n = P([2, 2, 3]), kind = P(["eq", "trap", "trap", "any"]);
+      for(let i = 0; i < n; i++){ const sg = i === 0 ? -1 : i === 1 ? 1 : P([-1, 1]), p = sg * R(1, 6);
+        if(used.has(p) || (skin === "site" && (used.has(p - 1) || used.has(p + 1)))) return null; used.add(p); fx.push({ p, F: P(WU) }); }
+      const net = netOf(fx), fl = fx.filter(w => w.p < 0).reduce((s, w) => s + w.F, 0), fr = fx.filter(w => w.p > 0).reduce((s, w) => s + w.F, 0);
+      if(kind === "eq" && net) return null;
+      if(kind === "trap" && !((net < 0 && fl < fr) || (net > 0 && fr < fl))) return null;
+      if(kind === "any" && !net) return null;
+      if(fl === fr && n === 2 && !net) return null;
+      const fixed = scale(skin, fx), u = skin === "lab" ? .1 : .5, sd = sidesOf(fixed, u);
+      return task(T.q.m8(), { opts: T.q.m8opts, right: net < 0 ? 0 : net > 0 ? 2 : 1 }, { kind: "beam", skin, fixed, props: true }, T.w.m8(sd[0], sd[1]), { tilt: Math.sign(net) });
+    }); },
+  s1(t){ t = t || P(["N", "K", "KN"]); const Pw = P([100, 120, 160, 200, 240, 300, 360, 400, 500, 600, 800]), F = t === "N" ? Pw : Pw / 2;
+    return task(T.q.s1(t, Pw), mc(F, [Pw, Pw / 2, Pw * 2, Pw / 4, Pw / 3], uN), { kind: "pulley", t, P: Pw, ansF: F, girl: girl() }, T.w.s1(t, Pw, F), { anim: true }); },
+  s2(){ const t = P(["K", "KN"]), Ps = P([10, 20, 40, 50]), F = P([60, 80, 100, 120, 150, 200, 250, 300]), Pw = 2 * F - Ps;
+    return task(T.q.s2(t, Pw, Ps), mc(F, [Pw / 2, Pw + Ps, (Pw - Ps) / 2, Pw / 2 + Ps, Pw, (Pw + Ps) * 2], uN), { kind: "pulley", t, P: Pw, Ps, ansF: F, girl: girl() }, T.w.s2(Pw, Ps, F), { anim: true }); },
+  s3(){ const t = P(["N", "K", "KN", "K"]), h = P([1, 1.5, 2, 2.5, 3, 4, 5, 6]), s = t === "N" ? h : 2 * h;
+    return task(T.q.s3(t, h), mc(s, [h, 2 * h, h / 2, 4 * h, 3 * h], uM), { kind: "pulley", t, P: P([200, 300, 400]), h, noF: true, ansS: s, girl: girl() }, T.w.s3(t, h, s), { anim: true }); },
+  s4(){ const t = P(["N", "K", "KN", "K", "KN"]), Fm = P([150, 200, 250, 300, 350, 400]), Ps = t !== "N" && Math.random() < .5 ? P([20, 40, 50]) : 0, Pw = t === "N" ? Fm : 2 * Fm - Ps;
+    return task(T.q.s4(t, Fm, Ps), mc(Pw, [Fm, 2 * Fm, Fm / 2, 2 * Fm + Ps, Fm - Ps, 4 * Fm, 2 * Fm - 2 * Ps], uN), { kind: "pulley", t, P: null, ansP: Pw, Ps, F: Fm, girl: girl() }, T.w.s4(t, Fm, Ps, Pw), { anim: true }); },
+  s5(){ const t = P(["N", "K", "KN", "K"]), s = P([2, 3, 4, 5, 6, 8, 10, 12]), h = t === "N" ? s : s / 2;
+    return task(T.q.s5(t, s), mc(h, [s, s / 2, s * 2, s / 4, s * 4], uM), { kind: "pulley", t, P: P([200, 300, 400]), noF: true, ansS: s, sKnown: s, girl: girl() }, T.w.s5(t, s, h), { anim: true }); },
+  s7(){ const t = P(["K", "KN"]), Ps = P([10, 20, 30, 40, 50, 60]), F = P([80, 100, 120, 150, 200, 250, 300]), Pw = 2 * F - Ps;
+    return task(T.q.s7(t, Pw, F), mc(Ps, [F - Pw / 2, Pw - F, 2 * F, Ps * 2, Ps / 2, Pw / 2 - Ps, Ps + 10], uN), { kind: "pulley", t, P: Pw, F, girl: girl() }, T.w.s7(Pw, F, Ps), { anim: true }); },
+  s8(){ const Pw = P([300, 400, 500, 600, 800]), c = P([0, 1, 1, 2]), Fm = c === 0 ? Pw + P([50, 100]) : c === 1 ? Pw / 2 + P([20, 50, 100]) : Pw / 2 - P([20, 50]);
+    return task(T.q.s8(Pw, Fm), { opts: T.q.s8opts, right: [2, 1, 3][c] }, { kind: "pulley", t: "KN", P: Pw, F: Fm, girl: girl() }, T.w.s8(Pw, Fm, c)); },
+  s6(){ const Pw = P([200, 300, 400, 500, 600, 800]), h = P([2, 3, 4, 5, 6]), A = Pw * h;
+    return task(T.q.s6(Pw, h), mc(A, [A / 2, A * 2, Pw / 2 * h / 2, Pw + h, A / 4], uJ), { kind: "pulley", t: "K", P: Pw, h, ansF: Pw / 2 }, T.w.s6(Pw, h, A), { anim: true }); },
+  g1(){ const k = P([2, 3, 4, 5]), h = P([.5, 1, 1.5, 2]), l = r4(k * h), F = P([60, 80, 100, 120, 150, 200, 250, 300]), Pw = F * k;
+    return task(T.q.g1(P(T.q.g1ctx), Pw, h, l), mc(F, [Pw, Pw * k, Pw / (k + 1), r4(Pw * h), Pw / 2 === F ? Pw / 4 : Pw / 2, r4(Pw / l)], uN), { kind: "ramp", k, P: Pw, h, l, ansF: F }, T.w.g1(Pw, h, l, F), { anim: true }); },
+  g2(){ const k = P([2, 3, 4, 5, 6]), h = P([.5, 1, 1.5, 2]), l = r4(k * h), Fm = P([100, 150, 200, 250, 300]), Pw = Fm * k;
+    return task(T.q.g2(Pw, Fm, h), mc(l, [h, r4(k), r4(l / 2), r4(l * 2), r4(h / k), r4(l + h), r4(k * 2)], uM), { kind: "ramp", k: Math.min(k, 5), P: Pw, h, l: null, ansL: l, F: Fm }, T.w.g2(Pw, Fm, h, l), { anim: true }); },
+  g3(){ const Pw = P([150, 200, 250, 300, 400, 500, 600]), h = P([2, 3, 4, 5, 6, 8]), A = Pw * h;
+    return task(T.q.g3(Pw, h), mc(A, [Pw / h, A / 2, A * 2, Pw + h, A * 10, A / 10], uJ), { kind: "pulley", t: "N", P: Pw, h, F: Pw, girl: girl() }, T.w.g3(Pw, h, A), { anim: true }); },
+  g4(){ const k = P([2, 3, 4, 5, 6]), F = P([100, 150, 200, 250, 300]), Pw = F * k, h1 = P([2, 3, 4, 5, 6, 10]), h2 = k * h1;
+    return task(T.q.g4(Pw, F, h1), mc(h2, [h1, r4(h1 / k), h1 + k, h2 / 2, h2 * 2, h1 * (k + 1)], uCm), { kind: "crow", P: Pw, F, d1: .2, d2: .2 * k, girl: girl() }, T.w.g4(Pw, F, h1, h2), { anim: true }); },
+  g5(){ return find(() => { const Pw = P([200, 300, 400, 500, 600, 800, 1000, 1500, 2000]), h = P([2, 3, 4, 5, 6, 8, 10, 12, 15, 20]), t = P([4, 5, 8, 10, 12, 15, 20, 30, 40]), Nw = Pw * h / t;
+      if(Nw % 10 || Nw < 50) return null;
+      return task(T.q.g5(Pw, h, t), mc(Nw, [Pw * h, Pw / t, Pw * h * t, r4(Pw * t / h), Nw * 10, Nw / 10, r4(Pw * h / t / 2)], uW), { kind: "pulley", t: "N", P: Pw, h, F: Pw, note: "t = " + nf(t) + " s" }, T.w.g5(Pw, h, t, Nw), { anim: true }); }); },
+  g6(){ const Nw = P([200, 250, 400, 500, 800, 1000, 1500]), t = P([4, 6, 8, 10, 12, 15, 20, 25, 30]), A = Nw * t;
+    return task(T.q.g6(A, Nw), mc(t, [r4(Nw / A * 1000), A * Nw / 1e6, t * 10, t / 2, t * 2, t + 5, r4(t / 10)], uS), null, T.w.g6(A, Nw, t)); },
+  g7(){ const F = P([50, 80, 100, 120, 150, 200, 250, 300, 400]), s = P([2, 4, 5, 8, 10, 12, 15, 20, 30]), A = F * s;
+    return task(T.q.g7(P(T.q.g7ctx), F, s), mc(A, [r4(F / s), F + s, A / 2, A * 10, A / 10, A * 2], uJ), { kind: "cart", F, s, girl: girl() }, T.w.g7(F, s, A), { anim: true }); },
+  e1(){ return find(() => { const k = P([2, 3, 4, 5]), h = P([.5, 1, 1.5, 2]), l = r4(k * h), Pw = P([200, 300, 400, 450, 500, 600, 800, 900, 1000, 1200]), eta = P([50, 60, 75, 80, 90]), F = Pw * h / (eta / 100) / l;
+      if(F % 5 || F >= Pw) return null;
+      const An = Pw * h, Av = F * l;
+      return task(T.q.e1(Pw, h, F, l), mc(eta, [r4(Av / An * 100), r4(F / Pw * 100), 100 - eta, r4(Pw / F), r4(An / Av), 100, eta + 10].filter(x => x <= 200), uPc), { kind: "ramp", k, P: Pw, h, l, F }, T.w.e1(Pw, h, F, l, eta), { anim: true }); }); },
+  e2(){ return find(() => { const F = P([100, 125, 150, 200, 250, 300, 400, 500]), eta = P([60, 75, 80, 90]), Pw = 2 * F * eta / 100, h = P([2, 3, 4, 5]);
+      if(Pw % 10) return null;
+      return task(T.q.e2(Pw, F, h), mc(eta, [r4(Pw / F * 100) > 100 ? r4(F / Pw * 100) : r4(Pw / F * 100), 100 - eta, 50, 100, r4(eta / 2), eta + 10, eta - 10], uPc), { kind: "pulley", t: "K", P: Pw, h, F }, T.w.e2(Pw, F, h, eta), { anim: true }); }); },
+  e3(){ return find(() => { const k = P([2, 3, 4, 5]), h1 = P([.1, .2, .3, .4, .5]), h2 = r4(k * h1), eta = P([60, 75, 80, 90]), Pw = P([300, 360, 400, 450, 600, 720, 900, 1200]), F = Pw / k / (eta / 100);
+      if(F % 5) return null;
+      return task(T.q.e3(Pw, h1, F, h2), mc(eta, [100 - eta, r4(F / Pw * 100), 100, eta + 10, eta - 10, r4(eta / 2)], uPc), { kind: "crow", P: Pw, F, d1: .25, d2: .25 * k, girl: girl() }, T.w.e3(Pw, h1, F, h2, eta), { anim: true }); }); },
+  e4(){ return find(() => { const eta = P([50, 60, 75, 80, 90]), Av = P([400, 500, 600, 800, 1000, 1200, 1500, 2000, 2400, 3000, 4000]), An = Av * eta / 100;
+      if(An % 10) return null;
+      return task(T.q.e4(An, eta), mc(Av, [r4(An * eta / 100), r4(An * (1 + (100 - eta) / 100)), r4(An + eta), r4(An * (100 - eta) / 100), An * 2], uJ), { kind: "bar", eta, An, Av: null, ans: Av }, T.w.e4(An, eta, Av)); }); },
+  e5(){ return find(() => { const k = P([2, 3, 4, 5]), h = P([.5, 1, 1.5, 2]), l = r4(k * h), Pw = P([200, 300, 400, 450, 500, 600, 800, 900, 1000, 1200]), eta = P([50, 60, 75, 80, 90]), F = Pw * h / (eta / 100) / l;
+      if(F % 5 || F >= Pw) return null;
+      return task(T.q.e5(Pw, h, l, eta), mc(F, [r4(Pw / k), r4(Pw / k * eta / 100), r4(Pw * eta / 100), Pw, r4(F * 2), r4(Pw / k / 2)], uN), { kind: "ramp", k, P: Pw, h, l, eta, ansF: F }, T.w.e5(Pw, h, l, eta, F), { anim: true }); }); },
+  e6(){ return find(() => { const eta = P([50, 60, 75, 80, 90]), Av = P([400, 500, 600, 800, 1000, 1200, 1500, 2000, 2400, 3000, 4000]), An = Av * eta / 100;
+      if(An % 10) return null;
+      return task(T.q.e6(Av, eta), mc(An, [r4(Av / (eta / 100)), r4(Av * (100 - eta) / 100), r4(Av - eta), Av, r4(An / 2)], uJ), { kind: "bar", eta, Av, An: null, ans: An }, T.w.e6(Av, eta, An)); }); }
+};
+Object.keys(G).forEach(k => { const f = G[k]; G[k] = function(){ const t = f.apply(null, arguments); t.k = k; return t; }; });
+/* teorijos klausimai – nesikartoja tame pačiame raunde */
+function concept(key, used){
+  const pool = T.concepts[key].map((c, i) => i).filter(i => !used.has(key + i)), i = P(pool.length ? pool : [0]); used.add(key + i);
+  const c = T.concepts[key][i];
+  return task(c[0], tx(c[1], c[2]), null, { body: c[3] }, { concept: key + i });
+}
+const LV = [
+  () => [genB(1), genB2(), genB(1), genB(2), genB2(), genB4(), genB(2), genB4()],
+  () => { const u = new Set(); return [G.m1(), G.m8(), concept("m", u), G.m2(), G.m3(), G.m5(), G.m7(), P([G.m4, G.m6])(), G.m8()].slice(0, 9); },
+  () => { const u = new Set(); return [G.s1("N"), G.s1(P(["K", "KN"])), G.s3(), concept("s", u), G.s2(), G.s8(), G.s4(), P([G.s5, G.s7])(), G.s6(), concept("s", u)]; },
+  () => { const u = new Set(); return [G.g7(), G.g3(), concept("g", u), G.g1(), G.g4(), G.g5(), G.g2(), P([G.g6, G.g5])(), concept("g", u)]; },
+  () => { const u = new Set(); return [concept("e", u), G.e6(), G.e1(), G.e4(), G.e2(), concept("e", u), G.e3(), G.e5()]; },
+  () => { const u = new Set(); return SH([genB(2), genB4(), P([G.m5, G.m3, G.m1])(), G.m8(), P([G.s2, G.s4, G.s8, G.s7])(), P([G.s3, G.s5])(), P([G.g1, G.g2])(), P([G.g5, G.g7, G.g4])(), P([G.e1, G.e5])(), P([G.e2, G.e3, () => concept(P(["s", "g", "e"]), u)])()]); }
+];
+
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: [
+  `<svg viewBox="0 0 56 56"><path d="M28 30L19 50h18z" fill="#8d99ae" ${S}/><rect x="4" y="25" width="48" height="7" rx="3.5" fill="#4f7cff" ${S}/><rect x="7" y="34" width="12" height="11" rx="2" fill="#f5b82e" ${S}/><rect x="41" y="34" width="9" height="8" rx="2" fill="#f5b82e" ${S}/></svg>`,
+  `<svg viewBox="0 0 56 56"><rect x="12" y="24" width="38" height="8" rx="4" fill="#9aa7bd" ${S}/><path d="M14 16l9 5v10l-9 5-9-5V21z" fill="#5d6b85" ${S}/><path d="M46 32v16M40 42l6 7 6-7" fill="none" stroke="${RED}" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg viewBox="0 0 56 56"><path d="M8 6h40" stroke="${K}" stroke-width="4" stroke-linecap="round"/><path d="M18 6v22M38 28V14" stroke="#7a5a2b" stroke-width="3"/><circle cx="28" cy="28" r="10" fill="#ffd27a" ${S}/><circle cx="28" cy="28" r="2.6" fill="${K}"/><rect x="20" y="40" width="16" height="12" rx="2" fill="#cfa06a" ${S}/></svg>`,
+  `<svg viewBox="0 0 56 56"><path d="M6 48L50 22v26z" fill="#e7c98f" ${S}/><g transform="translate(22 36) rotate(-30.5)"><rect x="0" y="-14" width="16" height="13" rx="2" fill="#cfa06a" ${S}/></g><path d="M12 14l3.6 7.4 8.2 1-6 5.6 1.6 8-7.4-4-7.2 4 1.4-8-6-5.6 8.2-1z" fill="#ffc61a" stroke="${K}" stroke-width="2" stroke-linejoin="round" transform="translate(4 -8) scale(.8)"/></svg>`,
+  `<svg viewBox="0 0 56 56"><rect x="6" y="20" width="44" height="16" rx="5" fill="#ffd9c7" ${S}/><rect x="6" y="20" width="32" height="16" rx="5" fill="#8fe0ae" ${S}/><text x="28" y="52" text-anchor="middle" font-size="13" fill="${K}">η</text><text x="22" y="15" text-anchor="middle" font-size="11" fill="${K}">%</text></svg>`,
+  `<svg viewBox="0 0 56 56"><path d="M8 36a20 20 0 0 1 40 0z" fill="#ffd21f" ${S}/><path d="M4 37h48" stroke="${K}" stroke-width="5" stroke-linecap="round"/><path d="M24 17v18M32 17v18" stroke="${K}" stroke-width="2"/></svg>`][i] }));
+
+/* ================= meniu ================= */
+const $ = id => document.getElementById(id);
+const app = $("app"), menu = $("menu"), play = $("play"), stage = $("stage");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("ptsL").textContent = T.pts;
+const FLOORS = LEVELS.length * 3;
+const floorsNow = () => { const b = MK.best(GAME); return LEVELS.reduce((s, l) => s + (b[l.id] || 0), 0); };
+
+function heroSvg(){
+  return `<svg viewBox="0 0 480 230" aria-hidden="true"><rect width="480" height="230" fill="#dff1ff"/>
+    <circle cx="418" cy="44" r="24" fill="#ffd84d"/><path d="M40 52q14-16 30-4q18-10 26 6q14 2 10 14H36q-12-8 4-16z" fill="#fff" opacity=".9"/><path d="M250 34q10-12 24-3q14-6 20 6q10 2 8 10h-58q-8-8 6-13z" fill="#fff" opacity=".8"/>
+    <path d="M0 196h480v34H0z" fill="#d9c9a3"/><path d="M0 196h480" stroke="${K}" stroke-width="3"/>
+    <g ${S}><path d="M92 196V40M112 196V40" fill="none"/><path d="M92 180l20-20-20-20 20-20-20-20 20-20-20-20 20-20" fill="none" stroke-width="1.8"/>
+      <path d="M70 40h190l-10 12H112M92 40L102 22l10 18" fill="#ffd21f"/><rect x="60" y="40" width="26" height="22" rx="3" fill="#8d99ae"/></g>
+    <path d="M222 52v54" stroke="#7a5a2b" stroke-width="3"/><circle cx="222" cy="112" r="9" fill="#ffd27a" ${S}/><path d="M222 121v10" stroke="${K}" stroke-width="3"/>
+    ${crate(204, 131, 36, 28, "")}
+    <path d="M330 196l-16-34h32z" fill="#8d99ae" ${S}/><g transform="rotate(-8 330 160)"><rect x="236" y="155" width="204" height="9" rx="4.5" fill="#b9834a" ${S}/>${crate(244, 125, 40, 30, "")}</g>
+    ${worker(424, 196, 1.15, "push", true, true)}
+    ${worker(160, 196, 1.1, "up", false, false)}
+    <path d="M356 196h26l-13-22z" fill="#ff8a1f" ${S}/><path d="M362 186h14" stroke="#fff" stroke-width="3"/></svg>`;
+}
+function towerSvg(n, fresh){
+  const FH = 11, W = 112, x0 = 62, gy = 238, top = gy - FH * FLOORS; let s = "";
+  for(let i = 0; i < FLOORS; i++){ const y = gy - FH * (i + 1), on = i < n, nw = on && i >= n - fresh;
+    s += `<g class="${nw ? "nw" : ""}"><rect x="${x0}" y="${y}" width="${W}" height="${FH}" fill="${on ? ["#ffe9c9", "#ffd9a8"][i % 2] : "none"}" stroke="${on ? K : "#b8c4d6"}" stroke-width="${on ? 1.8 : 1.2}" ${on ? "" : 'stroke-dasharray="4 3"'}/>
+      ${on ? [0, 1, 2, 3, 4].map(j => `<rect x="${x0 + 9 + j * 20}" y="${y + 3}" width="12" height="5.5" rx="1" fill="${(i * 3 + j * 5) % 7 < 2 ? "#ffe14d" : "#7fc4f5"}" stroke="${K}" stroke-width=".9"/>`).join("") : ""}</g>`; }
+  const hy = gy - FH * Math.min(n + 1, FLOORS) - 16;
+  return `<svg class="tower" viewBox="0 0 300 250" aria-hidden="true"><rect width="300" height="250" fill="#eaf6ff"/><path d="M0 238h300v12H0z" fill="#d9c9a3"/><path d="M0 238h300" stroke="${K}" stroke-width="2.4"/>
+    ${s}
+    ${n >= FLOORS ? `<path d="M${x0 + W / 2} ${top}v-24" stroke="${K}" stroke-width="2.4"/><path d="M${x0 + W / 2} ${top - 24}h22l-6 6 6 6h-22z" fill="#ffc61a" ${S}/>` : ""}
+    <g ${S}><path d="M222 238V14M236 238V14" fill="none"/><path d="M222 226l14-14-14-14 14-14-14-14 14-14-14-14 14-14-14-14 14-14-14-14 14-14-14-14 14-14-14-14 14-14" fill="none" stroke-width="1.2"/>
+      <path d="M96 14h160l-8 9H236M222 14l7-12 7 12" fill="#ffd21f"/><rect x="244" y="14" width="20" height="16" rx="2" fill="#8d99ae"/></g>
+    ${n < FLOORS ? `<path d="M118 23V${hy}" stroke="#7a5a2b" stroke-width="2"/><rect x="${x0 + 6}" y="${hy}" width="${W - 12}" height="9" fill="#fff3e0" stroke="#e8590c" stroke-width="1.6" stroke-dasharray="4 3"/>` : ""}
+    ${worker(30, 238, .78, n >= FLOORS ? "up" : "down", false, true)}
+    <text x="290" y="246" text-anchor="end" font-size="0"> </text></svg>`;
+}
+function renderTower(fresh){
+  const n = floorsNow(), rank = T.ranks[Math.min(T.ranks.length - 1, Math.floor(n / 3.2))];
+  $("col").innerHTML = `<h2><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="9" y="6" width="14" height="22" fill="#ffe9c9" ${S}/><path d="M12 11h3M17 11h3M12 16h3M17 16h3M12 21h3M17 21h3" stroke="${K}" stroke-width="2.2"/></svg>${T.towerH}</h2>
+    <p>${T.towerP(n, FLOORS, rank)}</p>${towerSvg(n, fresh || 0)}`;
+}
+function showMenu(fresh){
+  play.hidden = true; menu.hidden = false;
+  $("heroArt").innerHTML = heroSvg(); renderTower(fresh);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, pts = 0, dots = null, before = 0, raf = 0, bs = null;
+function start(i){
+  L = i; tasks = LV[i](); ti = 0; okN = 0; pts = 0; $("pts").textContent = 0; before = floorsNow();
+  menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+function award(n){ pts += n; const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); }
+function draw(t, st){ const sc = cur.sc; if(!sc) return; $("scn").innerHTML = DRAW[sc.kind](sc, t, st); }
+function animate(ms, fn, done){
+  cancelAnimationFrame(raf); const t0 = performance.now();
+  const step = now => { const u = Math.min(1, (now - t0) / ms); fn(u); if(u < 1) raf = requestAnimationFrame(step); else if(done) done(); };
+  raf = requestAnimationFrame(step);
+}
+const ease = u => u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+function whyBlock(ok, w, head){ return MK.why({ ok, head: head || (ok ? T.okH() : T.badH(cur.ansText)), body: w.body, more: w.more, sum: T.why, open: !ok }); }
+function addFlow(html){ const d = document.createElement("div"); d.innerHTML = html; const el = d.firstElementChild; el.classList.add("fade"); $("flow").appendChild(el); return el; }
+function nextBtn(){
+  const go = document.createElement("button"); go.type = "button"; go.className = "mk-btn go"; go.id = "next"; go.textContent = ti < tasks.length - 1 ? T.next : T.finish;
+  go.onclick = () => { MK.sfx.tap(); ti++; ti < tasks.length ? show() : finish(); };
+  $("flow").appendChild(go); setTimeout(() => go.scrollIntoView({ behavior: "smooth", block: "nearest" }), 150);
+}
+function show(){
+  cancelAnimationFrame(raf); cur = tasks[ti]; dots.cur(ti); $("flow").innerHTML = ""; window.scrollTo({ top: 0 });
+  if(cur.type === "beam") return showBeam();
+  stage.innerHTML = `<p class="txt">${cur.txt}</p>${cur.sc ? `<div class="scnw"><svg id="scn" viewBox="0 0 360 210" aria-hidden="true"></svg></div>` : ""}
+    <div class="ans${cur.two ? " two" : ""}" id="ans">${cur.opts.map((o, i) => `<button type="button" class="a" data-i="${i}">${o}</button>`).join("")}</div>`;
+  if(cur.sc){ cur.sc.done = false; draw(0, { props: cur.sc.props }); }
+  $("ans").onclick = e => { const b = e.target.closest(".a"); if(b) answer(+b.dataset.i, b); };
+}
+function answer(i, btn){
+  const ans = $("ans"); if(ans.classList.contains("done")) return;
+  ans.classList.add("done"); MK.unlock();
+  const ok = i === cur.right; btn.classList.add(ok ? "ok" : "no"); if(!ok) ans.children[cur.right].classList.add("ok");
+  dots.mark(ti, ok); if(ok){ okN++; award(10); MK.sfx.good(); } else MK.sfx.bad();
+  if(cur.sc){
+    cur.sc.done = true;
+    if(cur.tilt != null){ MK.sfx.whoosh(); const target = cur.tilt * 12; animate(1100, u => draw(0, { angle: target ? target * ease(u) : 2.5 * Math.sin(u * 9) * (1 - u), glow: !target && u === 1 })); }
+    else if(cur.anim){ MK.sfx.whoosh(); animate(1300, u => draw(ease(u))); }
+    else draw(0);
+  }
+  addFlow(whyBlock(ok, cur.why)); nextBtn();
+}
+
+/* ---------- interaktyvus svertas ---------- */
+function showBeam(){
+  bs = { sel: null, tries: 0, busy: false, done: false };
+  const wt = cur.mode === "wt";
+  stage.innerHTML = `<p class="txt">${cur.txt}</p>
+    <div class="scnw"><svg id="scn" viewBox="0 0 360 210" role="img" aria-label="${T.title}"></svg></div>
+    <p class="hint" id="hint">${wt ? T.beam.pickWt : T.beam.pickPeg}</p>
+    ${wt ? `<div class="ans two" id="wts">${cur.opts.map(F => `<button type="button" class="a" data-f="${F}">${nf(F)} N</button>`).join("")}</div>` : ""}
+    <button type="button" class="mk-btn go" id="rel" disabled>${T.beam.release}</button>`;
+  drawBeam(0);
+  $("scn").onclick = e => { const h = e.target.closest(".hit"); if(!h || bs.busy || bs.done || wt) return; MK.unlock(); MK.sfx.tap(); bs.sel = { p: +h.dataset.p, F: cur.give }; $("rel").disabled = false; $("hint").className = "hint"; $("hint").innerHTML = T.beam.give(cur.give) + " · " + nf(r4(Math.abs(bs.sel.p) * cur.u)) + " m"; drawBeam(0); };
+  if(wt) $("wts").onclick = e => { const b = e.target.closest(".a"); if(!b || bs.busy || bs.done) return; MK.unlock(); MK.sfx.tap(); [...$("wts").children].forEach(x => x.classList.toggle("sel", x === b)); bs.sel = { p: cur.ansP, F: +b.dataset.f }; $("rel").disabled = false; $("hint").className = "hint"; $("hint").innerHTML = T.beam.give(bs.sel.F); drawBeam(0); };
+  $("rel").onclick = release;
+}
+function drawBeam(angle, o){ o = o || {}; $("scn").innerHTML = beamSVG(cur.sc, { angle, props: !o.free, hit: !o.free && cur.mode !== "wt", sel: bs.sel, solid: o.free, glow: o.glow }); }
+function release(){
+  if(!bs.sel || bs.busy || bs.done) return;
+  if($("rel").dataset.retry){ delete $("rel").dataset.retry; $("rel").textContent = T.beam.release; $("rel").disabled = true; bs.sel = null; $("hint").className = "hint"; $("hint").innerHTML = cur.mode === "wt" ? T.beam.pickWt : T.beam.pickPeg; if(cur.mode === "wt") [...$("wts").children].forEach(x => x.classList.remove("sel")); drawBeam(0); MK.sfx.tap(); return; }
+  MK.unlock(); bs.busy = true; bs.tries++; $("rel").disabled = true;
+  const net = netOf(cur.sc.fixed) + bs.sel.F * bs.sel.p, ok = Math.abs(net) < 1e-9, target = ok ? 0 : Math.sign(net) * 12;
+  MK.sfx.whoosh();
+  animate(1100, u => drawBeam(ok ? 2.5 * Math.sin(u * 9) * (1 - u) : target * ease(u), { free: true, glow: ok && u === 1 }), () => {
+    bs.busy = false;
+    if(ok){
+      bs.done = true; const first = bs.tries === 1; dots.mark(ti, first); if(first) okN++; award(first ? 10 : 5); MK.sfx.good();
+      if(cur.mode === "wt") [...$("wts").children].forEach(x => { if(x.classList.contains("sel")) x.classList.add("ok"); });
+      $("rel").remove(); $("hint").remove(); if($("wts")) $("wts").classList.add("done");
+      addFlow(whyBlock(true, cur.why, first ? T.beam.ok1 : T.beam.ok2)); nextBtn();
+    } else if(bs.tries < 2){
+      MK.sfx.bad(); $("hint").className = "hint warn"; $("hint").innerHTML = net < 0 ? T.beam.tiltL : T.beam.tiltR;
+      $("rel").textContent = T.beam.retry; $("rel").dataset.retry = "1"; $("rel").disabled = false;
+    } else {
+      MK.sfx.bad(); bs.done = true; dots.mark(ti, false); $("rel").remove(); if($("wts")){ $("wts").classList.add("done"); [...$("wts").children].forEach(x => { if(x.classList.contains("sel")) x.classList.add("no"); if(+x.dataset.f === cur.give) x.classList.add("ok"); }); }
+      bs.sel = { p: cur.ansP, F: cur.give }; $("hint").remove();
+      setTimeout(() => animate(900, u => drawBeam(target * (1 - ease(u)), { free: true, glow: u === 1 })), 500);
+      addFlow(whyBlock(false, cur.why, T.beam.shown(cur.give, r4(Math.abs(cur.ansP) * cur.u)))); nextBtn();
+    }
+  });
+}
+function finish(){
+  const total = tasks.length, r = okN / total, stars = r >= .85 ? 3 : r >= .6 ? 2 : r >= .3 ? 1 : 0;
+  if(stars) MK.best(GAME, LEVELS[L].id, stars);
+  const fresh = floorsNow() - before;
+  MK.result({ stars, title: stars ? `${okN} / ${total}` : T.resTitle0, text: T.res(okN, total, pts) + (fresh > 0 ? `<br><b>${T.newFloor(fresh)}</b>` : ""),
+    next: L < LEVELS.length - 1 && stars ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(fresh) });
+}
+Object.defineProperty(window, "__cur", { get: () => cur });
+window.__MK_TEST = { LV, G, genB, genB2, genB4, netOf, concept };
+showMenu();
+})();
+</script>
+</body>
+</html>
