@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Abėcėlės biblioteka – MokomėsKartu.lt</title>
+<meta name="description" content="Lietuvių kalbos žaidimas 5 klasei: lietuvių abėcėlė, žodžių rikiavimas abėcėlės tvarka ir žodžio paieška žodyne – sustatyk bibliotekos knygas į lentynas.">
+<meta name="theme-color" content="#f6f3ea">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<style>
+/* Abėcėlės biblioteka: medinės lentynos, spalvotos knygų nugarėlės, žodyno puslapiai. */
+body{--paper:#f6f3ea;--grid:#e9e2cf;--soft:#5a5343;--kid:"Unbounded","Arial Black",system-ui,sans-serif;--ac:#1f7a5a;--ac-ink:#fff;--ac-soft:#d9f0e4;--wood:#b98250;--wood2:#8a5a30;--red:#d9442f}
+.mk-ico[data-k="music"]{display:none}
+.mk-lvl{border-radius:12px;box-shadow:inset 0 0 0 2.5px var(--ink),5px 5px 0 var(--ink);grid-template-columns:58px minmax(0,1fr) auto;gap:12px}
+.mk-lvl-art{width:58px;height:58px;border-radius:10px;background:var(--ac-soft)}
+.mk-lvl-art svg{width:50px;height:50px}
+.mk-lvl-t b{font-size:15.5px;letter-spacing:-.02em}
+.mk-lvl-t small{font-size:13px}
+.mk-hero h1{letter-spacing:-.04em;font-size:clamp(28px,7.6vw,48px)}
+.mk-hero p{max-width:44ch}
+.mk-btn{border-radius:12px;font-size:16px}
+.mk-res{border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mk-res .mk-owl{display:none}
+.mk-res h2{font-size:22px;letter-spacing:-.03em}
+.mk-sec{font-size:16px}
+.mk-hero-art{width:min(460px,100%)}
+.hero-card{background:#fff;border-radius:18px;padding:6px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.hero-card svg{display:block;width:100%;height:auto;border-radius:12px}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+.abcx{letter-spacing:.06em;font-size:17px;line-height:1.8}
+
+/* mano biblioteka */
+.lib{max-width:520px;margin:0 auto}
+.lib-case{background:#fff;border-radius:12px;padding:8px;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.lib-case svg{display:block;width:100%;height:auto}
+.stext{margin:8px 0 0;font:700 14px/1.4 var(--body);color:var(--soft)}
+
+/* žaidimas */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:10px;background:#fff;font:800 16px/1 var(--kid);box-shadow:inset 0 0 0 2.5px var(--ink),3px 3px 0 var(--ink)}
+.chip small{font:800 11px/1 var(--body);color:var(--soft);letter-spacing:.06em;text-transform:uppercase}
+.card{background:#fff;border-radius:14px;padding:14px 12px 16px;box-shadow:inset 0 0 0 3px var(--ink),6px 6px 0 var(--ink)}
+.chead small{display:block;font:800 12px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+.q{font:700 clamp(15.5px,4.3vw,17.5px)/1.45 var(--body);margin-top:6px}
+.q b{font-weight:800}
+.bigl{display:inline-grid;place-items:center;min-width:38px;height:38px;padding:0 6px;border-radius:8px;background:#ffe9a8;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 22px/1 var(--body);vertical-align:middle;text-transform:uppercase}
+/* lentyna (rikiavimas) */
+.shelfbox{margin:12px 0 0;padding:10px 10px 0;border-radius:10px;background:#f4e3c8;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.slots{display:grid;gap:6px}
+.slot{display:grid;grid-template-columns:26px minmax(0,1fr);align-items:center;gap:6px;min-height:44px}
+.slot i{font:800 13px/1 var(--body);font-style:normal;color:var(--wood2);text-align:center}
+.plank{height:12px;margin:8px -10px 0;background:var(--wood);border-top:2.5px solid var(--ink);border-radius:0 0 8px 8px;box-shadow:inset 0 -4px 0 var(--wood2)}
+.hole{min-height:44px;border-radius:8px;border:2px dashed #c4a67c;background:rgba(255,255,255,.45)}
+.book{display:flex;align-items:center;width:100%;min-height:44px;padding:0 12px 0 18px;border:0;border-radius:7px;position:relative;cursor:pointer;color:#fff;
+  font:800 clamp(16px,4.6vw,19px)/1 var(--body);letter-spacing:.02em;text-align:left;box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 var(--ink);touch-action:manipulation;background:var(--bc,#2b59d9)}
+.book::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:3px;border-radius:2px;background:rgba(255,255,255,.55)}
+.book::after{content:"";position:absolute;right:10px;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:50%;background:rgba(255,255,255,.35)}
+.book:active{transform:translateY(2px);box-shadow:inset 0 0 0 2.5px var(--ink),0 1px 0 var(--ink)}
+.book.light{color:var(--ink)}
+.book.ok{box-shadow:inset 0 0 0 3px #1f8a52,0 3px 0 #1f8a52}
+.book.bad{box-shadow:inset 0 0 0 3px var(--red),0 3px 0 var(--red)}
+.book[disabled]{cursor:default}
+.book b{font-weight:800;color:#ffe45c;text-decoration:underline;text-underline-offset:3px}
+.book.light b{color:#b3261e}
+.pool{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.pool .book.used{visibility:hidden}
+/* raidžių eilė */
+.lslots{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0;padding:10px;border-radius:10px;background:#f4e3c8;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.lhole{width:46px;height:50px;border-radius:8px;border:2px dashed #c4a67c;background:rgba(255,255,255,.45)}
+.lt{width:46px;height:50px;border:0;border-radius:8px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 var(--ink);font:800 24px/1 var(--body);text-transform:uppercase;cursor:pointer;color:var(--ink);touch-action:manipulation}
+.lt.ok{background:#dff6e8;box-shadow:inset 0 0 0 3px #1f8a52,0 3px 0 #1f8a52}
+.lt.bad{background:#ffe7e2;box-shadow:inset 0 0 0 3px var(--red),0 3px 0 var(--red)}
+.lpool{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.lpool .lt.used{visibility:hidden}
+.gapline{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.gapline span{display:grid;place-items:center;width:46px;height:50px;border-radius:8px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 24px/1 var(--body);text-transform:uppercase}
+.gapline span.g{background:#ffe9a8;border:0;box-shadow:inset 0 0 0 2.5px var(--ink)}
+/* variantai */
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.opts.w{grid-template-columns:1fr}
+.opt{min-height:52px;padding:8px 12px;border:0;border-radius:10px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 var(--ink);font:800 clamp(17px,4.8vw,20px)/1.2 var(--body);cursor:pointer;color:var(--ink);touch-action:manipulation}
+.opts:not(.w) .opt{font-size:24px;text-transform:uppercase}
+.opt.sel{background:#d9f0e4;box-shadow:inset 0 0 0 3px var(--ac),0 3px 0 var(--ac)}
+.opt.x{opacity:.4;text-decoration:line-through;pointer-events:none}
+.opt.ok{background:#dff6e8;box-shadow:inset 0 0 0 3px #1f8a52,0 3px 0 #1f8a52}
+/* įterpimas */
+.ins{margin:12px 0 0;padding:6px 10px 0;border-radius:10px;background:#f4e3c8;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.gap{display:flex;align-items:center;justify-content:center;width:100%;height:30px;margin:2px 0;border:0;border-radius:8px;background:transparent;cursor:pointer;position:relative;touch-action:manipulation}
+.gap::before{content:"";position:absolute;left:10px;right:10px;top:50%;border-top:2px dashed #b9976a}
+.gap span{position:relative;display:grid;place-items:center;width:30px;height:24px;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 2px var(--ink);font:800 15px/1 var(--body)}
+.gap.sel{height:46px}
+.gap.sel::before{display:none}
+.gap.sel span{width:100%;height:42px;border-radius:7px;background:#ffe9a8;box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 var(--ink);font-size:clamp(16px,4.6vw,19px)}
+.gap.x{opacity:.35;pointer-events:none}
+.newbook{margin-top:12px;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;font:800 12px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.newbook .book{cursor:default;background:#ffe9a8;color:var(--ink)}
+/* žodyno puslapiai */
+.pages{display:grid;gap:8px;margin-top:12px}
+.page{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;padding:8px 12px;border:0;border-radius:10px;background:#fffdf4;box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 var(--ink);cursor:pointer;text-align:left;color:var(--ink);touch-action:manipulation}
+.page svg{width:40px;height:46px;display:block}
+.page b{display:block;font:800 clamp(16px,4.6vw,19px)/1.25 var(--body)}
+.page small{display:block;font:800 11px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.page.sel{background:#d9f0e4;box-shadow:inset 0 0 0 3px var(--ac),0 3px 0 var(--ac)}
+.page.x{opacity:.4;pointer-events:none}
+.page.ok{background:#dff6e8;box-shadow:inset 0 0 0 3px #1f8a52,0 3px 0 #1f8a52}
+.acts{display:grid;grid-template-columns:auto 1fr;gap:10px;margin-top:14px}
+.acts.one{grid-template-columns:1fr}
+.hint{margin:8px 0 0;font:700 13px/1.4 var(--body);color:var(--soft)}
+.peek{margin-top:12px;font:800 13.5px/1.2 var(--body);color:var(--ac);background:none;border:0;padding:8px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.strip{display:flex;flex-wrap:wrap;gap:3px;margin:6px 0 2px}
+.strip span{display:grid;place-items:center;width:25px;height:28px;border-radius:5px;background:#fff;box-shadow:inset 0 0 0 1.5px #c9bfa3;font:800 14px/1 var(--body);text-transform:uppercase;color:#8d8570}
+.strip span.on{background:#ffe9a8;box-shadow:inset 0 0 0 2px var(--ink);color:var(--ink)}
+.wl{margin:6px 0;padding:0;list-style:none;display:grid;gap:3px}
+.wl li{font:700 16.5px/1.3 var(--body)}
+.wl b,.mk-why-m b{font-weight:800}
+.wl b.k{color:#b3261e;text-decoration:underline;text-underline-offset:3px}
+.wl li.new{background:#ffe9a8;border-radius:6px;padding:1px 6px;margin-left:-6px}
+.mk-why-m p{margin:5px 0}
+.go{width:100%;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1 id="h1"></h1>
+      <p id="heroP"></p>
+    </div>
+    <div id="levels"></div>
+    <div class="lib" id="lib"></div>
+    <div id="learn"></div>
+    <p class="note" id="note"></p>
+  </section>
+  <section id="play" hidden>
+    <div class="bar"><div id="dots"></div><span class="chip"><small id="ptsL"></small><span id="pts">0</span></span></div>
+    <div id="board"></div>
+    <div id="why"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+const GAME = "abeceles-biblioteka", GRADES = [5], INK = "#121a33", N = 8, LIBMAX = 120;
+const T = window.MK_T, SH = MK.shuffle, R = MK.rnd, pick = MK.pick;
+const $ = id => document.getElementById(id);
+
+/* =================== abėcėlė ir palyginimas =================== */
+const ABC = T.abc, IDX = {}; [...ABC].forEach((c, i) => IDX[c] = i);
+/* didžiųjų žodynų tvarka: a = ą, e = ę = ė, i = į = y, u = ų = ū */
+const GRP = { "ą": "a", "ę": "e", "ė": "e", "į": "i", "y": "i", "ų": "u", "ū": "u" };
+const cmpBy = key => (a, b) => { const n = Math.min(a.length, b.length); for(let i = 0; i < n; i++){ const d = key(a[i]) - key(b[i]); if(d) return d; } return a.length - b.length; };
+const cmpSchool = cmpBy(c => IDX[c]);
+const cmpDict = (a, b) => cmpBy(c => IDX[GRP[c] || c])(a, b) || cmpSchool(a, b);
+/* rinkinys tinka tik tada, kai abi tvarkos sutampa kiekvienai porai */
+function valid(set){ for(let i = 0; i < set.length; i++) for(let j = i + 1; j < set.length; j++){ const s = cmpSchool(set[i], set[j]), d = cmpDict(set[i], set[j]); if(!s || Math.sign(s) !== Math.sign(d)) return false; } return true; }
+const sortW = a => a.slice().sort(cmpSchool);
+const diffAt = (a, b) => { let i = 0; while(i < a.length && i < b.length && a[i] === b[i]) i++; return i; };
+const WORDS = T.words, BYL = {}; WORDS.forEach(w => (BYL[w[0]] = BYL[w[0]] || []).push(w));
+
+/* =================== užduočių generatoriai =================== */
+function tryGen(fn){ for(let i = 0; i < 400; i++){ const r = fn(); if(r) return r; } throw new Error("gen"); }
+const near = (i, k) => { const out = []; for(let d = -k; d <= k; d++) if(d && ABC[i + d]) out.push(ABC[i + d]); return out; };
+const TRICKY = "ęėįyjųūvzžčšąprdfh";
+function gAfter(before){
+  const l = Math.random() < 0.7 ? pick([...TRICKY]) : pick([...ABC]), i = IDX[l];
+  if(before ? i === 0 : i === ABC.length - 1) return gAfter(before);
+  const ans = ABC[i + (before ? -1 : 1)], wr = SH(near(i, 4).filter(c => c !== ans)).slice(0, 3), opts = SH([ans].concat(wr));
+  return { type: before ? "before" : "after", kind: "pick", q: before ? T.q.before(l) : T.q.after(l), opts, ans: opts.indexOf(ans), letters: true,
+    why: (before ? T.why.before(l.toUpperCase(), ans.toUpperCase()) : T.why.after(l.toUpperCase(), ans.toUpperCase())), tip: T.why.tricky[l] || T.why.tricky[ans] || "", hi: [l, ans] };
+}
+function gGap(){
+  const s = R(0, ABC.length - 5), seg = [...ABC.slice(s, s + 5)], g = R(1, 3), ans = seg[g];
+  const wr = SH(near(IDX[ans], 9).filter(c => !seg.includes(c))).slice(0, 3), opts = SH([ans].concat(wr));
+  return { type: "gap", kind: "pick", q: T.q.gap, line: seg.map((c, i) => i === g ? null : c), opts, ans: opts.indexOf(ans), letters: true, why: T.why.gap(ans.toUpperCase()), tip: T.why.tricky[ans] || "", hi: seg };
+}
+function gOrderL(n, dia){
+  let pool;
+  if(dia){ const cl = ["aąbcč", "deęėf", "hiįyjk", "prsšt", "tuųūvzž"], k = R(0, cl.length - 1); pool = [...new Set([...(cl[k] + (cl[k + 1] || cl[k - 1]))])]; }
+  else { const s = R(0, ABC.length - 10); pool = [...ABC.slice(s, s + 10)]; }
+  const items = SH(pool).slice(0, n);
+  return { type: dia ? "orderDia" : "orderL", kind: "order", letters: true, q: T.q.orderL, items, sorted: items.slice().sort((a, b) => IDX[a] - IDX[b]) };
+}
+function orderTask(type, set){ return { type, kind: "order", q: T.q.orderW, items: SH(set), sorted: sortW(set) }; }
+/* skirtingos pirmos raidės; pair – įtraukti porą c/č, s/š ar z/ž */
+function gFirst(n, pair){ return tryGen(() => {
+  let ls = SH(Object.keys(BYL));
+  if(pair){ const p = pick(["cč", "sš", "zž", "eė", "uū"]); ls = [p[0], p[1]].concat(ls.filter(c => !p.includes(c))); }
+  const set = ls.slice(0, n).map(l => pick(BYL[l])); return valid(set) ? orderTask(pair ? "firstPair" : "first", set) : null; }); }
+/* ta pati pirma raidė (depth = 1) arba tos pačios dvi (depth = 2) */
+function prefixPool(depth){ const m = {}; WORDS.forEach(w => (m[w.slice(0, depth)] = m[w.slice(0, depth)] || []).push(w)); return m; }
+const P1 = prefixPool(1), P2 = prefixPool(2);
+function gSame(n, depth){ return tryGen(() => {
+  const P = depth === 2 ? P2 : P1, keys = Object.keys(P).filter(k => P[k].length >= n), set = SH(P[pick(keys)]).slice(0, n);
+  return valid(set) ? orderTask(depth === 2 ? "same2" : "same1", set) : null; }); }
+function gTwoGroups(n){ return tryGen(() => {
+  const keys = Object.keys(P1).filter(k => P1[k].length >= 3), a = pick(keys), b = pick(keys); if(a === b) return null;
+  const k = Math.ceil(n / 2), set = SH(P1[a]).slice(0, k).concat(SH(P1[b]).slice(0, n - k)); return valid(set) ? orderTask("groups", set) : null; }); }
+function gInsert(same, n){ return tryGen(() => {
+  let set;
+  if(same){ const keys = Object.keys(P1).filter(k => P1[k].length >= n + 1); set = SH(P1[pick(keys)]).slice(0, n + 1); }
+  else { const s = R(0, WORDS.length - 40), reg = sortW(WORDS).slice(s, s + 40); set = SH(reg).slice(0, n + 1); }
+  if(!valid(set)) return null; const so = sortW(set), pos = R(0, n), word = so[pos], shelf = so.filter((w, i) => i !== pos);
+  return { type: same ? "insertSame" : "insert", kind: "insert", q: T.q.insert(word), shelf, word, ans: pos }; }); }
+function region(k){ return tryGen(() => { const all = sortW(WORDS), s = R(0, all.length - 30), set = SH(all.slice(s, s + 30)).slice(0, k); return valid(set) ? sortW(set) : null; }); }
+function gPage(){ const s = region(9), t = R(0, 2), word = s[t * 3 + 1];
+  return { type: "page", kind: "page", q: T.q.page(word), pages: [[s[0], s[2]], [s[3], s[5]], [s[6], s[8]]], word, ans: t }; }
+function gOnPage(not){ const s = region(7);
+  if(not){ const out = pick([0, 6]), opts = SH([s[2], s[3], s[4], s[out]]);
+    return { type: "notOnPage", kind: "pick", wide: true, q: T.q.notOnPage(s[1], s[5]), opts, ans: opts.indexOf(s[out]), why: T.why.notPage(s[out], s[1], s[5], out === 0), pg: [s[1], s[5]], word: s[out] }; }
+  const wr = SH([s[0], s[1], s[5], s[6]]).slice(0, 3), opts = SH([s[3]].concat(wr));
+  return { type: "onPage", kind: "pick", wide: true, q: T.q.onPage(s[2], s[4]), opts, ans: opts.indexOf(s[3]), why: T.why.page(s[3], s[2], s[4]), pg: [s[2], s[4]], word: s[3] }; }
+const PLAN = {
+  l1: () => [gAfter(false), gGap(), gAfter(true), gOrderL(5, false), gAfter(false), gOrderL(5, true), gGap(), gOrderL(6, true)],
+  l2: () => [gFirst(4, false), gFirst(5, false), gFirst(5, true), gFirst(5, false), gFirst(5, true), gFirst(6, false), gFirst(6, true), gFirst(6, true)],
+  l3: () => [gSame(4, 1), gSame(5, 1), gTwoGroups(5), gSame(5, 1), gSame(4, 2), gTwoGroups(6), gSame(5, 2), gSame(6, 1)],
+  l4: () => [gInsert(false, 4), gInsert(false, 5), gInsert(true, 4), gInsert(false, 5), gInsert(true, 5), gInsert(true, 5), gInsert(false, 6), gInsert(true, 6)],
+  l5: () => [gPage(), gOnPage(false), gPage(), gOnPage(true), gPage(), gOnPage(false), gOnPage(true), gPage()],
+  l6: () => SH([gOrderL(6, true), gFirst(6, true), gSame(6, 1), gSame(5, 2), gTwoGroups(6), gInsert(true, 6), gPage(), gOnPage(true)])
+};
+
+/* =================== piešiniai =================== */
+const COLS = ["#2b59d9", "#d9442f", "#1f7a5a", "#7a3fb8", "#e08a1a", "#14899e", "#c2417a", "#f2c84b", "#5b6a94", "#8a5a30"];
+const LIGHT = new Set(["#f2c84b", "#e08a1a"]);
+const colOf = w => { let h = 0; for(const c of w) h = (h * 31 + c.charCodeAt(0)) % 997; return COLS[h % COLS.length]; };
+function heroSvg(){
+  let books = ""; const rows = [[58, "AĄBCČD"], [112, "EĘĖFGH"], [166, "IĮYJKL"]];
+  rows.forEach(([y, s], r) => { [...s].forEach((ch, i) => { const x = 22 + i * 27, h = 38 - ((i * 7 + r * 5) % 9), c = COLS[(i + r * 3) % COLS.length];
+    books += `<rect x="${x}" y="${y - h}" width="23" height="${h}" rx="2.5" fill="${c}" stroke="${INK}" stroke-width="2.2"/><text x="${x + 11.5}" y="${y - h / 2 + 5}" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="13" fill="${LIGHT.has(c) ? INK : "#fff"}">${ch}</text>`; });
+    books += `<rect x="12" y="${y}" width="186" height="9" fill="#b98250" stroke="${INK}" stroke-width="2.2"/>`; });
+  return `<svg viewBox="0 0 360 214" role="img" aria-label="Bibliotekininkė prie lentynų, kuriose knygos sustatytos abėcėlės tvarka">
+  <rect width="360" height="214" fill="#efe6cf"/><rect y="184" width="360" height="30" fill="#d7c59b"/><path d="M0 184h360" stroke="${INK}" stroke-width="2.5"/>
+  <rect x="10" y="12" width="190" height="176" rx="6" fill="#f7ecd6" stroke="${INK}" stroke-width="3"/>${books}
+  <!-- kopėtėlės ir knygų krūva -->
+  <rect x="212" y="158" width="52" height="10" rx="2" fill="#d9442f" stroke="${INK}" stroke-width="2.4"/><rect x="216" y="147" width="46" height="11" rx="2" fill="#f2c84b" stroke="${INK}" stroke-width="2.4"/><rect x="210" y="168" width="58" height="12" rx="2" fill="#2b59d9" stroke="${INK}" stroke-width="2.4"/><rect x="208" y="180" width="62" height="5" fill="${INK}" opacity=".18"/>
+  <!-- bibliotekininkė -->
+  <ellipse cx="296" cy="196" rx="11" ry="4.5" fill="${INK}"/><ellipse cx="318" cy="196" rx="11" ry="4.5" fill="${INK}"/>
+  <rect x="290" y="160" width="12" height="34" rx="4" fill="#3a2f55" stroke="${INK}" stroke-width="2.5"/><rect x="312" y="160" width="12" height="34" rx="4" fill="#3a2f55" stroke="${INK}" stroke-width="2.5"/>
+  <path d="M282 122q0-14 14-14h22q14 0 14 14v36q0 8-8 8h-34q-8 0-8-8z" fill="#1f7a5a" stroke="${INK}" stroke-width="3"/>
+  <path d="M300 108l7 12 7-12" fill="#fff" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M286 120L262 128 250 108" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><path d="M286 120L262 128 250 108" fill="none" stroke="#1f7a5a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M330 122L342 144 330 156" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><path d="M330 122L342 144 330 156" fill="none" stroke="#1f7a5a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="226" y="66" width="34" height="44" rx="3" fill="#7a3fb8" stroke="${INK}" stroke-width="2.8" transform="rotate(-12 243 88)"/><text x="243" y="95" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="20" fill="#fff" transform="rotate(-12 243 88)">Ž</text>
+  <circle cx="250" cy="108" r="6.5" fill="#f5c9a0" stroke="${INK}" stroke-width="2.5"/><circle cx="329" cy="157" r="6.5" fill="#f5c9a0" stroke="${INK}" stroke-width="2.5"/>
+  <circle cx="307" cy="84" r="21" fill="#f5c9a0" stroke="${INK}" stroke-width="3"/>
+  <path d="M286 82c-2-16 8-26 21-26s24 9 21 26c-5-9-11-13-21-13s-16 4-21 13z" fill="#5a3a22" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="307" cy="54" r="9" fill="#5a3a22" stroke="${INK}" stroke-width="2.5"/>
+  <circle cx="299" cy="87" r="6.5" fill="#fff" fill-opacity=".5" stroke="${INK}" stroke-width="2"/><circle cx="315" cy="87" r="6.5" fill="#fff" fill-opacity=".5" stroke="${INK}" stroke-width="2"/><path d="M305.500 87h3" stroke="${INK}" stroke-width="2"/>
+  <circle cx="299" cy="87.500" r="2.3" fill="${INK}"/><circle cx="315" cy="87.500" r="2.3" fill="${INK}"/><path d="M301 97q6 5 12 0" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>
+</svg>`;
+}
+const BADGE = ["A Ą", "1.", "2. 3.", "↓", "a–ž", "★"];
+function lvlIcon(i){
+  return `<svg viewBox="0 0 56 56" aria-hidden="true">
+  <rect x="7" y="10" width="10" height="30" rx="2" fill="#2b59d9" stroke="${INK}" stroke-width="2.4"/><rect x="18" y="16" width="9" height="24" rx="2" fill="#d9442f" stroke="${INK}" stroke-width="2.4"/><rect x="28" y="8" width="10" height="32" rx="2" fill="#f2c84b" stroke="${INK}" stroke-width="2.4"/><rect x="39" y="14" width="9" height="26" rx="2" fill="#1f7a5a" stroke="${INK}" stroke-width="2.4"/>
+  <rect x="3" y="40" width="50" height="7" rx="2" fill="#b98250" stroke="${INK}" stroke-width="2.4"/>
+  <rect x="${BADGE[i].length > 2 ? 16 : 24}" y="28" width="${BADGE[i].length > 2 ? 37 : 29}" height="19" rx="5" fill="#fff" stroke="${INK}" stroke-width="2.4"/>
+  <text x="${BADGE[i].length > 2 ? 34.500 : 38.500}" y="42" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="12" fill="${INK}">${BADGE[i]}</text></svg>`;
+}
+const pageIco = `<svg viewBox="0 0 40 46" aria-hidden="true"><path d="M4 4h22l10 10v28H4z" fill="#fff" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/><path d="M26 4v10h10" fill="#e9e2cf" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/><path d="M10 12h10" stroke="#1f7a5a" stroke-width="3" stroke-linecap="round"/><path d="M10 22h20M10 28h20M10 34h14" stroke="#b9b29c" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+function caseSvg(n, fresh){
+  const perRow = 24, rows = 5, W = 384, rh = 46; let s = `<svg viewBox="0 0 ${W} ${rows * rh + 8}" role="img" aria-label="${T.libTitle}: ${n}"><rect width="${W}" height="${rows * rh + 8}" rx="6" fill="#f7ecd6"/>`;
+  for(let r = 0; r < rows; r++){
+    for(let i = 0; i < perRow; i++){ const k = r * perRow + i, x = 6 + i * 15.500, h = 26 + ((k * 7) % 11), y = (r + 1) * rh - 6 - h;
+      s += k < n ? `<rect x="${x}" y="${y}" width="13" height="${h}" rx="1.800" fill="${COLS[(k * 3 + r) % COLS.length]}" stroke="${INK}" stroke-width="1.600"${k >= n - fresh ? ' class="nb"' : ""}/>` : `<rect x="${x + 1}" y="${(r + 1) * rh - 34}" width="11" height="28" rx="1.800" fill="none" stroke="#d6c7a4" stroke-width="1.200" stroke-dasharray="3 3"/>`; }
+    s += `<rect x="0" y="${(r + 1) * rh - 6}" width="${W}" height="7" fill="#b98250" stroke="${INK}" stroke-width="1.800"/>`;
+  }
+  return s + `</svg>`;
+}
+
+/* =================== meniu =================== */
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: lvlIcon(i) }));
+const libN = () => Math.min(LIBMAX, +MK.get("mk-" + GAME + "-knygos", 0) || 0);
+const rankOf = n => T.rankNeed.filter(x => n >= x).length - 1;
+function drawLib(fresh){
+  const n = libN(), r = rankOf(n), nx = T.rankNeed[r + 1];
+  $("lib").innerHTML = `<h2 class="mk-sec" style="margin-left:0">${T.libTitle}</h2><div class="lib-case">${caseSvg(n, fresh || 0)}</div>
+    <p class="stext">${T.libText(n, LIBMAX, T.ranks[r], nx ? nx - n : 0, T.ranks[r + 1])}</p>`;
+}
+const app = $("app"), menu = $("menu"), play = $("play"), board = $("board"), why = $("why");
+const saved = MK.get("mokomeskartu-klase", 0);
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("h1").innerHTML = T.h1; $("heroP").textContent = T.hero; $("note").textContent = T.note; $("ptsL").textContent = T.points;
+$("heroArt").innerHTML = `<div class="hero-card">${heroSvg()}</div>`;
+
+/* =================== žaidimo eiga =================== */
+let lvl = 0, Lv = null, ti = 0, round = [], cur = null, pts = 0, okN = 0, added = 0, dots = null;
+let tries = 0, placed = [], sel = -1, dead = new Set(), locked = false, peeked = false, startLib = 0;
+function showMenu(fresh){ play.hidden = true; menu.hidden = false; MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start }); drawLib(fresh); MK.learn($("learn"), { topics: T.learn, onPlay: start }); window.scrollTo(0, 0); }
+function start(i){
+  lvl = i; Lv = LEVELS[i]; ti = 0; pts = 0; okN = 0; added = 0; $("pts").textContent = 0; why.innerHTML = ""; startLib = libN();
+  round = PLAN[Lv.id](); menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), N); next(); window.scrollTo(0, 0);
+}
+function next(){ if(ti >= N) return finish(); cur = round[ti]; tries = 0; placed = []; sel = -1; dead = new Set(); locked = false; peeked = false; why.innerHTML = ""; dots.cur(ti); draw(); }
+const up = s => MK.esc(s);
+function bookHtml(w, attrs, inner){ const c = colOf(w); return `<button type="button" class="book${LIGHT.has(c) ? " light" : ""}${attrs.cls || ""}" style="--bc:${c}" ${attrs.a || ""}>${inner || up(w)}</button>`; }
+function stripHtml(hi){ const set = new Set(hi); return `<div class="strip" aria-hidden="true">${[...ABC].map(c => `<span class="${set.has(c) ? "on" : ""}">${c}</span>`).join("")}</div>`; }
+function bodyHtml(state){
+  const c = cur;
+  if(c.kind === "order" && c.letters){
+    return `<div class="lslots">${c.items.map((_, i) => placed[i] != null ? `<button type="button" class="lt${state ? (c.items[placed[i]] === c.sorted[i] ? " ok" : " bad") : ""}" data-un="${i}" ${state ? "disabled" : ""}>${c.items[placed[i]]}</button>` : `<span class="lhole"></span>`).join("")}</div>
+      ${state ? "" : `<div class="lpool">${c.items.map((l, i) => `<button type="button" class="lt${placed.includes(i) ? " used" : ""}" data-it="${i}">${l}</button>`).join("")}</div><p class="hint">${T.slotHintL}</p>`}`;
+  }
+  if(c.kind === "order"){
+    return `<div class="shelfbox"><div class="slots">${c.items.map((_, i) => `<div class="slot"><i>${i + 1}.</i>${placed[i] != null ? bookHtml(c.items[placed[i]], { cls: state ? (c.items[placed[i]] === c.sorted[i] ? " ok" : " bad") : "", a: `data-un="${i}" ${state ? "disabled" : ""}` }) : `<span class="hole"></span>`}</div>`).join("")}</div><div class="plank"></div></div>
+      ${state ? "" : `<div class="pool">${c.items.map((w, i) => bookHtml(w, { cls: placed.includes(i) ? " used" : "", a: `data-it="${i}"` })).join("")}</div><p class="hint">${T.slotHint}</p>`}`;
+  }
+  if(c.kind === "insert"){
+    let h = `<div class="newbook"><span>→</span>${bookHtml(c.word, { a: "disabled" })}</div><div class="ins">`;
+    for(let i = 0; i <= c.shelf.length; i++){
+      const on = state ? i === c.ans : i === sel;
+      h += `<button type="button" class="gap${on ? " sel" : ""}${dead.has(i) ? " x" : ""}" data-g="${i}" ${state ? "disabled" : ""} aria-label="${T.gapLabel(i + 1)}"><span>${on ? up(c.word) : "+"}</span></button>`;
+      if(i < c.shelf.length) h += bookHtml(c.shelf[i], { a: "disabled" });
+    }
+    return h + `<div class="plank"></div></div>`;
+  }
+  if(c.kind === "page"){
+    return `<div class="pages">${c.pages.map((p, i) => `<button type="button" class="page${!state && i === sel ? " sel" : ""}${dead.has(i) ? " x" : ""}${state && i === c.ans ? " ok" : ""}" data-o="${i}" ${state ? "disabled" : ""}>${pageIco}<span><small>${T.pageLabel(i + 1)}</small><b>${up(p[0])} – ${up(p[1])}</b></span></button>`).join("")}</div>`;
+  }
+  return (c.line ? `<div class="gapline">${c.line.map(l => l ? `<span>${l}</span>` : `<span class="g">?</span>`).join("")}</div>` : "") +
+    `<div class="opts${c.wide ? " w" : ""}">${c.opts.map((o, i) => `<button type="button" class="opt${!state && i === sel ? " sel" : ""}${dead.has(i) ? " x" : ""}${state && i === c.ans ? " ok" : ""}" data-o="${i}" ${state ? "disabled" : ""}>${up(o)}</button>`).join("")}</div>`;
+}
+function draw(state){
+  const c = cur, canPeek = !state && !c.letters;
+  board.innerHTML = `<div class="card"><div class="chead"><small>${ti + 1} / ${N} · ${Lv.name}</small></div><div class="q">${c.q}</div>
+    <div id="body">${bodyHtml(state)}</div>
+    ${state ? "" : `<div class="acts${c.kind === "order" ? "" : " one"}">${c.kind === "order" ? `<button type="button" class="mk-btn alt" id="clr">${T.clear}</button>` : ""}<button type="button" class="mk-btn" id="chk">${T.check}</button></div>`}
+    ${canPeek ? (peeked ? stripHtml([]) + `<p class="hint">${T.peekNote}</p>` : `<button type="button" class="peek" id="peek">${T.peek}</button>`) : ""}</div>`;
+}
+const redraw = () => { $("body").innerHTML = bodyHtml(); };
+board.addEventListener("click", e => {
+  MK.unlock(); if(locked) return; const t = e.target, c = cur;
+  const it = t.closest("[data-it]"); if(it){ const i = +it.dataset.it; if(!placed.includes(i)){ let k = 0; while(placed[k] != null) k++; placed[k] = i; MK.sfx.tap(); redraw(); } return; }
+  const un = t.closest("[data-un]"); if(un){ placed[+un.dataset.un] = null; MK.sfx.tap(); redraw(); return; }
+  const g = t.closest("[data-g]"); if(g){ sel = +g.dataset.g; MK.sfx.tap(); redraw(); return; }
+  const o = t.closest("[data-o]"); if(o){ sel = +o.dataset.o; MK.sfx.tap(); redraw(); return; }
+  if(t.closest("#clr")){ placed = []; MK.sfx.tap(); why.innerHTML = ""; redraw(); return; }
+  if(t.closest("#peek")){ peeked = true; MK.sfx.tap(); draw(); return; }
+  if(t.closest("#chk")) check();
+});
+function shake(el){ if(!el) return; el.classList.remove("mk-shake"); void el.offsetWidth; el.classList.add("mk-shake"); }
+const mark = (w, i) => i >= w.length ? up(w) : `${up(w.slice(0, i))}<b class="k">${up(w[i])}</b>${up(w.slice(i + 1))}`;
+function pairLine(a, b){ const i = diffAt(a, b); return i >= a.length ? T.why.prefix(a, b) : T.why.pair(mark(a, i), mark(b, i), a[i].toUpperCase(), b[i].toUpperCase(), Math.min(i, 6)); }
+function explain(){
+  const c = cur;
+  if(c.kind === "order" && c.letters) return `<p>${T.why.orderL(c.sorted.join(", ").toUpperCase())}</p><p>${T.why.strip}</p>${stripHtml(c.sorted)}`;
+  if(c.kind === "order"){
+    const hi = new Set(), deep = c.sorted.some((w, i) => i && diffAt(c.sorted[i - 1], w) > 0);
+    const li = c.sorted.map((w, i) => { const d = i ? diffAt(c.sorted[i - 1], w) : 0; if(i){ if(w[d]) hi.add(w[d]); if(c.sorted[i - 1][d]) hi.add(c.sorted[i - 1][d]); } return `<li>${i + 1}. ${i ? mark(w, d) : mark(w, 0)}</li>`; }).join("");
+    const pre = c.sorted.map((w, i) => i && diffAt(c.sorted[i - 1], w) >= c.sorted[i - 1].length ? `<p>${T.why.prefix(c.sorted[i - 1], w)}</p>` : "").join("");
+    return `<p>${T.why.orderW}</p><ul class="wl">${li}</ul><p>${deep ? T.why.ruleNext : T.why.ruleFirst}</p>${pre}<p>${T.why.strip}</p>${stripHtml([...hi])}`;
+  }
+  if(c.kind === "insert"){
+    const prev = c.shelf[c.ans - 1], nx = c.shelf[c.ans], hi = new Set();
+    const lines = []; if(prev){ lines.push(pairLine(prev, c.word)); const i = diffAt(prev, c.word); [prev[i], c.word[i]].forEach(x => x && hi.add(x)); } if(nx){ lines.push(pairLine(c.word, nx)); const i = diffAt(c.word, nx); [nx[i], c.word[i]].forEach(x => x && hi.add(x)); }
+    return `<p>${T.why.insert(up(c.word))}</p><ul class="wl">${[prev, c.word, nx].filter(Boolean).map(w => `<li class="${w === c.word ? "new" : ""}">${up(w)}</li>`).join("")}</ul>${lines.map(l => `<p>${l}</p>`).join("")}<p>${T.why.strip}</p>${stripHtml([...hi])}`;
+  }
+  if(c.kind === "page"){ const p = c.pages[c.ans]; return `<p>${T.why.page(up(c.word), up(p[0]), up(p[1]))}</p><p>${pairLine(p[0], c.word)}</p><p>${pairLine(c.word, p[1])}</p>`; }
+  if(c.pg){ const a = c.pg[0], b = c.pg[1], w = c.word, out = cmpSchool(w, a) < 0 ? [w, a] : cmpSchool(w, b) > 0 ? [b, w] : null;
+    return `<p>${c.why}</p>` + (out ? `<p>${pairLine(out[0], out[1])}</p>` : `<p>${pairLine(a, w)}</p><p>${pairLine(w, b)}</p>`); }
+  return `<p>${c.why}</p>${c.tip ? `<p>${c.tip}</p>` : ""}<p>${T.why.strip}</p>${stripHtml(c.hi)}`;
+}
+function check(){
+  const c = cur; let right, ready;
+  if(c.kind === "order"){ ready = c.items.every((_, i) => placed[i] != null); right = ready && c.items.every((_, i) => c.items[placed[i]] === c.sorted[i]); }
+  else { ready = sel >= 0; right = sel === c.ans; }
+  if(!ready){ shake($("body")); return; }
+  tries++;
+  if(right){
+    locked = true; MK.sfx.good(); const first = tries === 1; dots.mark(ti, first);
+    if(first){ okN++; pts += 10; if(!peeked && libN() < LIBMAX){ MK.set("mk-" + GAME + "-knygos", libN() + 1); added++; } } else pts += 5;
+    $("pts").textContent = pts; draw("ok");
+    why.innerHTML = MK.why({ ok: true, head: T.okHead(MK.praise(), first ? 10 : 5), more: explain(), sum: T.explain, open: !first }) + `<button type="button" class="mk-btn go" id="go">${ti < N - 1 ? T.next : T.results}</button>`;
+    setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80); return;
+  }
+  MK.sfx.bad();
+  if(tries === 1){
+    let body;
+    if(c.kind === "order"){ const ok = c.items.filter((_, i) => c.items[placed[i]] === c.sorted[i]).length; body = c.letters ? T.retryOrderL(ok, c.items.length) : T.retryOrder(ok, c.items.length); }
+    else { dead.add(sel); sel = -1; redraw(); body = c.kind === "insert" ? T.retryInsert : T.retryPick; }
+    shake($("body")); why.innerHTML = MK.why({ ok: false, head: T.retryHead, body });
+    setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80); return;
+  }
+  locked = true; dots.mark(ti, false);
+  if(c.kind === "order") placed = c.sorted.map(w => c.items.indexOf(w));
+  draw("bad");
+  why.innerHTML = MK.why({ ok: false, head: T.failHead, more: explain(), sum: T.explain, open: true }) + `<button type="button" class="mk-btn go" id="go">${ti < N - 1 ? T.next : T.results}</button>`;
+  setTimeout(() => why.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+}
+why.addEventListener("click", e => { if(!e.target.closest("#go")) return; MK.sfx.tap(); ti++; next(); window.scrollTo(0, 0); });
+function finish(){
+  const stars = MK.starsFor(okN, N); MK.best(GAME, Lv.id, stars);
+  const r0 = rankOf(startLib), r1 = rankOf(libN());
+  MK.result({ stars, title: T.resTitle(okN, N), text: T.resText(pts, added, r1 > r0 ? T.ranks[r1] : ""),
+    next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: () => showMenu(added) });
+}
+window.__ab = { get cur(){ return cur; }, PLAN, cmpSchool, cmpDict, valid, WORDS, ABC };   // automatiniam testui
+showMenu();
+})();
+</script>
+</body>
+</html>
