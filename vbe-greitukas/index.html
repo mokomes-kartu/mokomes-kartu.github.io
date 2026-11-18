@@ -113,7 +113,33 @@ const TOPICS = {
         sol: `${m(`${a}<sup>${p}/${root}</sup> = (${root === 2 ? "√" : `<sup>${root}</sup>√`}${a})<sup>${p}</sup> = ${base}<sup>${p}</sup> = ${ans}`)}.` }; },
     () => { const b = P([2, 3, 5]), k = R(1, 3), ans = -k;
       return { q: `Kokiam skaičiui lygus ${m("x")}, jei ${m(`${b}<sup>x</sup>`)} = ${F(`1/${Math.pow(b, k)}`)}?`, ans,
-        sol: `${F(`1/${Math.pow(b, k)}`)} = ${m(`${b}<sup>−${k}</sup>`)}, todėl ${m(`x = −${k}`)}.` }; }
+        sol: `${F(`1/${Math.pow(b, k)}`)} = ${m(`${b}<sup>−${k}</sup>`)}, todėl ${m(`x = −${k}`)}.` }; },
+    /* --- papildyta 2026-11-18: daugiau užduočių tipų --- */
+    () => { const b = P([2, 3]), x = R(2, 4), y = R(2, 4), r = R(1, 3), z = x * y - r;
+      return { q: `Apskaičiuokite: ${m(`(${b}<sup>${x}</sup>)<sup>${y}</sup> : ${b}<sup>${z}</sup>`)}`, ans: Math.pow(b, r),
+        sol: `Keliant laipsnį laipsniu rodikliai dauginami: ${m(`${b}<sup>${x}·${y}</sup> : ${b}<sup>${z}</sup> = ${b}<sup>${x * y}−${z}</sup> = ${b}<sup>${r}</sup> = ${Math.pow(b, r)}`)}.` }; },
+    () => { const b = P([2, 3, 5]), k = R(2, 4), j = R(1, k - 1), ans = Math.pow(b, k - j);
+      return { q: `Apskaičiuokite: ${m(`(`)}${F(`1/${b}`)}${m(`)<sup>−${k}</sup> · ${b}<sup>−${j}</sup>`)}`, ans,
+        sol: `${m(`(1/${b})<sup>−${k}</sup> = ${b}<sup>${k}</sup>`)}, todėl ${m(`${b}<sup>${k}</sup> · ${b}<sup>−${j}</sup> = ${b}<sup>${k - j}</sup> = ${ans}`)}.` }; },
+    () => { const [a, b, r] = P([[2, 8, 4], [3, 12, 6], [2, 18, 6], [5, 20, 10], [3, 27, 9], [2, 32, 8], [6, 24, 12], [2, 50, 10], [3, 48, 12]]);
+      return { q: `Apskaičiuokite: ${m(`√${a} · √${b}`)}`, ans: r,
+        sol: `${m(`√${a} · √${b} = √${a * b} = ${r}`)}.` }; },
+    () => { const L = [[8, 1, 3, 2], [27, 2, 3, 9], [16, 3, 4, 8], [16, 1, 2, 4], [32, 2, 5, 4], [81, 1, 2, 9], [64, 2, 3, 16], [25, 3, 2, 125], [9, 3, 2, 27], [81, 3, 4, 27]], i = R(0, L.length - 1); let j = R(0, L.length - 1); if(j === i) j = (j + 1) % L.length;
+      const A = L[i], B = L[j], ans = A[3] - B[3];
+      return { q: `Apskaičiuokite: ${m(`${A[0]}<sup>${A[1]}/${A[2]}</sup> − ${B[0]}<sup>${B[1]}/${B[2]}</sup>`)}`, ans,
+        sol: `${m(`${A[0]}<sup>${A[1]}/${A[2]}</sup> = ${A[3]}`)}, ${m(`${B[0]}<sup>${B[1]}/${B[2]}</sup> = ${B[3]}`)}; ${m(`${A[3]} − ${B[3]} = ${num(ans)}`)}.` }; },
+    () => { const b = P([2, 3, 5]), k = R(1, 3), v = (b + 1) * Math.pow(b, k);
+      return { q: `Išspręskite lygtį: ${m(`${b}<sup>x+1</sup> + ${b}<sup>x</sup> = ${v}`)}`, ans: k,
+        sol: `Iškeliame ${m(`${b}<sup>x</sup>`)}: ${m(`${b}<sup>x</sup>(${b} + 1) = ${v}`)} ⇒ ${m(`${b}<sup>x</sup> = ${Math.pow(b, k)}`)} ⇒ ${m(`x = ${k}`)}.` }; },
+    () => { const a = P([2, 3, 4, 5, 6]), c = P([2, 3, 4, 5]), e1 = R(3, 5), e2 = -R(1, 3), ans = a * c * Math.pow(10, e1 + e2);
+      return { q: `Apskaičiuokite: ${m(`(${a} · 10<sup>${e1}</sup>) · (${c} · 10<sup>−${-e2}</sup>)`)}`, ans,
+        sol: `${m(`${a} · ${c} · 10<sup>${e1}−${-e2}</sup> = ${a * c} · 10<sup>${e1 + e2}</sup> = ${ans}`)}.` }; },
+    () => { const [a, b, r] = P([[2, 4, 2], [3, 9, 3], [4, 16, 4], [2, 32, 4], [5, 25, 5], [9, 24, 6], [4, 54, 6], [3, 72, 6]]);
+      return { q: `Apskaičiuokite: ${m(`<sup>3</sup>√${a} · <sup>3</sup>√${b}`)}`, ans: r,
+        sol: `${m(`<sup>3</sup>√${a} · <sup>3</sup>√${b} = <sup>3</sup>√${a * b} = ${r}`)}, nes ${m(`${r}<sup>3</sup> = ${a * b}`)}.` }; },
+    () => { const [a, v, x, b, pa, pv] = P([[4, 8, 1.5, 2, 2, 3], [9, 27, 1.5, 3, 2, 3], [4, 32, 2.5, 2, 2, 5], [25, 125, 1.5, 5, 2, 3], [16, 8, 0.75, 2, 4, 3], [4, 2, 0.5, 2, 2, 1], [16, 2, 0.25, 2, 4, 1], [32, 4, 0.4, 2, 5, 2], [32, 8, 0.6, 2, 5, 3], [8, 32, 5 / 3, 2, 3, 5]].filter(t => Number.isInteger(t[2] * 100)));
+      return { q: `Išspręskite lygtį: ${m(`${a}<sup>x</sup> = ${v}`)}`, ans: x,
+        sol: `Abi puses užrašome tuo pačiu pagrindu: ${m(`${b}<sup>${pa}x</sup> = ${b}<sup>${pv}</sup>`)} ⇒ ${m(`${pa}x = ${pv}`)} ⇒ ${m(`x = ${num(x)}`)}.` }; }
   ]},
   logaritmai: { name: "Logaritmai", art: "log", gens: [
     () => { const b = P([2, 3, 5, 10]), k = P([-2, -1, 2, 3, 4]), v = Math.pow(b, Math.abs(k)), arg = k < 0 ? F(`1/${v}`) : v;
@@ -126,7 +152,36 @@ const TOPICS = {
         sol: `Logaritmų suma lygi sandaugos logaritmui: ${m(`${L}(${x}·${y}) = ${L}${x * y}`)} = ${k}, nes ${m(`${b}<sup>${k}</sup> = ${x * y}`)}.` }; },
     () => { const b = P([2, 3]), k = P([2, 3, 4]), c = R(1, 9), ans = Math.pow(b, k) + c;
       return { q: `Išspręskite lygtį: ${m(`log<sub>${b}</sub>(x − ${c}) = ${k}`)}`, ans,
-        sol: `${m(`x − ${c} = ${b}<sup>${k}</sup> = ${Math.pow(b, k)}`)}, todėl ${m(`x = ${ans}`)}. Tikrinimas: ${m(`x − ${c} > 0`)} ✓.` }; }
+        sol: `${m(`x − ${c} = ${b}<sup>${k}</sup> = ${Math.pow(b, k)}`)}, todėl ${m(`x = ${ans}`)}. Tikrinimas: ${m(`x − ${c} > 0`)} ✓.` }; },
+    /* --- papildyta 2026-11-18: daugiau užduočių tipų --- */
+    () => { const [b, x, y, k] = P([[2, 48, 3, 4], [3, 54, 2, 3], [5, 50, 2, 2], [2, 24, 3, 3], [10, 500, 5, 2], [3, 18, 2, 2], [2, 80, 5, 4], [6, 72, 2, 2]]);
+      const L = b === 10 ? "lg " : `log<sub>${b}</sub> `;
+      return { q: `Apskaičiuokite: ${m(`${L}${x} − ${L}${y}`)}`, ans: k,
+        sol: `Logaritmų skirtumas lygus dalmens logaritmui: ${m(`${L}(${x} : ${y}) = ${L}${x / y}`)} = ${k}, nes ${m(`${b}<sup>${k}</sup> = ${x / y}`)}.` }; },
+    () => { const [b, x, y, k] = P([[3, 6, 4, 2], [2, 6, 9, 2], [5, 10, 4, 2], [2, 12, 9, 4], [10, 20, 4, 2], [3, 12, 16, 2], [2, 10, 25, 2], [6, 12, 4, 2]]);
+      const L = b === 10 ? "lg " : `log<sub>${b}</sub> `;
+      return { q: `Apskaičiuokite: ${m(`2${L}${x} − ${L}${y}`)}`, ans: k,
+        sol: `${m(`2${L}${x} = ${L}${x}<sup>2</sup> = ${L}${x * x}`)}; ${m(`${L}${x * x} − ${L}${y} = ${L}${x * x / y}`)} = ${k}.` }; },
+    () => { const b = P([2, 3, 5, 7]), a = P([4, 6, 8, 9, 10, 11, 12].filter(v => v !== b)), c = P([2, 3]), k = R(2, 4);
+      return { q: `Apskaičiuokite: ${m(`${b}<sup>log<sub>${b}</sub> ${a}</sup> + log<sub>${c}</sub> ${Math.pow(c, k)}`)}`, ans: a + k,
+        sol: `Pagal logaritmo apibrėžimą ${m(`${b}<sup>log<sub>${b}</sub> ${a}</sup> = ${a}`)}; ${m(`log<sub>${c}</sub> ${Math.pow(c, k)} = ${k}`)}. Suma: ${a + k}.` }; },
+    () => { const [a, v, x, b, pa, pv] = P([[4, 8, 1.5, 2, 2, 3], [9, 27, 1.5, 3, 2, 3], [4, 32, 2.5, 2, 2, 5], [25, 125, 1.5, 5, 2, 3], [16, 8, 0.75, 2, 4, 3], [4, 2, 0.5, 2, 2, 1], [9, 3, 0.5, 3, 2, 1], [16, 2, 0.25, 2, 4, 1], [32, 4, 0.4, 2, 5, 2]]);
+      return { q: `Apskaičiuokite: ${m(`log<sub>${a}</sub> ${v}`)}`, ans: x,
+        sol: `Pereiname prie pagrindo ${b}: ${m(`log<sub>${a}</sub> ${v} = log<sub>${b}</sub> ${v} : log<sub>${b}</sub> ${a} = ${pv} : ${pa} = ${num(x)}`)}.` }; },
+    () => { const [b, k, c, x0] = P([[2, 3, 2, 4], [2, 4, 6, 8], [3, 2, 8, 9], [2, 5, 4, 8], [10, 1, 3, 5], [6, 1, 1, 3], [2, 2, 3, 4], [3, 3, 6, 9]]);
+      const L = b === 10 ? "lg " : `log<sub>${b}</sub> `;
+      return { q: `Išspręskite lygtį: ${m(`${L}x + ${L}(x − ${c}) = ${k}`)}`, ans: x0,
+        sol: `${m(`${L}(x(x − ${c})) = ${k}`)} ⇒ ${m(`x² − ${c}x − ${Math.pow(b, k)} = 0`)} ⇒ ${m(`x = ${x0}`)} arba ${m(`x = −${x0 - c}`)}. Apibrėžimo sritis ${m(`x > ${c}`)}, todėl tinka tik ${m(`x = ${x0}`)}.` }; },
+    () => { const b = P([2, 3]), k = R(2, 4), a = P([2, 3, 5]), x = R(1, 6), c = Math.pow(b, k) - a * x;
+      if(c === 0) return TOPICS.logaritmai.gens[8]();
+      return { q: `Išspręskite lygtį: ${m(`log<sub>${b}</sub>(${a}x${sgn(c)}) = ${k}`)}`, ans: x,
+        sol: `${m(`${a}x${sgn(c)} = ${b}<sup>${k}</sup> = ${Math.pow(b, k)}`)} ⇒ ${m(`${a}x = ${Math.pow(b, k) - c}`)} ⇒ ${m(`x = ${x}`)}. Tikrinimas: reiškinys po logaritmo teigiamas ✓.` }; },
+    () => { const a = P([2, 3, 4, 5]), c = R(7, 40), ans = c % a === 0 ? c / a - 1 : Math.floor(c / a);
+      return { q: `Raskite didžiausią sveikąjį skaičių ${m("x")}, su kuriuo funkcija ${m(`y = lg(${c} − ${a}x)`)} yra apibrėžta.`, ans,
+        sol: `Reiškinys po logaritmo turi būti teigiamas: ${m(`${c} − ${a}x > 0`)} ⇒ ${m(`x < ${num(c / a)}`)}. Didžiausias sveikasis – ${ans}.` }; },
+    () => { const b = P([2, 3]), k = b === 2 ? R(2, 5) : R(2, 3), c = R(1, 9), ans = Math.pow(b, k) - 1;
+      return { q: `Kiek sveikųjų sprendinių turi nelygybė ${m(`log<sub>${b}</sub>(x − ${c}) < ${k}`)}?`, ans,
+        sol: `Apibrėžimo sritis ${m(`x > ${c}`)}; pagrindas didesnis už 1, todėl ${m(`x − ${c} < ${b}<sup>${k}</sup> = ${Math.pow(b, k)}`)}. Gauname ${m(`${c} < x < ${c + Math.pow(b, k)}`)} – sveikųjų sprendinių ${ans}.` }; }
   ]},
   procentai: { name: "Procentai", art: "%", gens: [
     () => { const p0 = 20 * R(2, 20), up = P([10, 20, 25, 50]), dn = P([10, 20, 25, 40]), a1 = p0 * (1 + up / 100), ans = Math.round(a1 * (1 - dn / 100) * 100) / 100;
@@ -161,7 +216,33 @@ const TOPICS = {
         sol: `Visų baigčių ${m("6 · 6 = 36")}. Sumą ${s} duoda ${k} poros. ${m("P =")} ${F(`${k}/36`)}${ans !== `${k}/36` ? " = " + F(ans) : ""}.` }; },
     () => { const n = P([3, 4]), k = R(1, n - 1), c = C(n, k), ans = fr(c, Math.pow(2, n));
       return { q: `Moneta metama ${n} kartus. Kokia tikimybė, kad herbas atsivers lygiai ${k} ${k === 1 ? "kartą" : "kartus"}?`, ans, choices: fracChoices(ans, [fr(1, 2), fr(k, n), fr(1, Math.pow(2, n)), fr(c + 1, Math.pow(2, n)), fr(k, Math.pow(2, n))]),
-        sol: `Visų baigčių ${m(`2<sup>${n}</sup> = ${Math.pow(2, n)}`)}, palankių ${m(`C<sub>${n}</sub><sup>${k}</sup> = ${c}`)}. ${m("P =")} ${F(`${c}/${Math.pow(2, n)}`)}${ans !== `${c}/${Math.pow(2, n)}` ? " = " + F(ans) : ""}.` }; }
+        sol: `Visų baigčių ${m(`2<sup>${n}</sup> = ${Math.pow(2, n)}`)}, palankių ${m(`C<sub>${n}</sub><sup>${k}</sup> = ${c}`)}. ${m("P =")} ${F(`${c}/${Math.pow(2, n)}`)}${ans !== `${c}/${Math.pow(2, n)}` ? " = " + F(ans) : ""}.` }; },
+    /* --- papildyta 2026-11-18: daugiau užduočių tipų (lygis – kaip VBE II–III dalyse) --- */
+    () => { const r = R(3, 6), b = R(2, 6), n = r + b, ans = fr(r * (r - 1), n * (n - 1));
+      return { q: `Dėžėje yra ${r} raudoni ir ${b} mėlyni rutuliai. Atsitiktinai vienas po kito ištraukiami du rutuliai (negrąžinant). Kokia tikimybė, kad abu jie raudoni?`, ans, choices: fracChoices(ans, [fr(r * r, n * n), fr(r, n), fr(r - 1, n - 1), fr(2 * r * b, n * (n - 1)), fr(b * (b - 1) || 1, n * (n - 1))]),
+        sol: `Negrąžintinis ėmimas: ${m("P =")} ${F(`${r}/${n}`)} · ${F(`${r - 1}/${n - 1}`)} = ${F(ans)}.` }; },
+    () => { const r = R(2, 6), b = R(2, 6), n = r + b, ans = fr(2 * r * b, n * (n - 1));
+      return { q: `Dėžėje yra ${r} raudoni ir ${b} mėlyni rutuliai. Atsitiktinai vienas po kito ištraukiami du rutuliai (negrąžinant). Kokia tikimybė, kad jie skirtingų spalvų?`, ans, choices: fracChoices(ans, [fr(r * b, n * (n - 1)), fr(2 * r * b, n * n), fr(r * (r - 1) + b * (b - 1), n * (n - 1)), fr(r, n), fr(b, n)]),
+        sol: `Dvi nesutaikomos baigtys – „raudonas, mėlynas“ ir „mėlynas, raudonas“: ${F(`${r}/${n}`)} · ${F(`${b}/${n - 1}`)} + ${F(`${b}/${n}`)} · ${F(`${r}/${n - 1}`)} = ${F(ans)}.` }; },
+    () => { const p1 = P([.6, .7, .8, .9]), p2 = P([.5, .6, .7, .8].filter(x => x !== p1)), ans = Math.round((p1 * (1 - p2) + (1 - p1) * p2) * 100) / 100;
+      return { q: `Du šauliai nepriklausomai vienas nuo kito šauna į taikinį po vieną kartą. Pirmasis pataiko su tikimybe ${num(p1)}, antrasis – ${num(p2)}. Kokia tikimybė, kad pataikys lygiai vienas iš jų?`, ans,
+        sol: `Pataiko tik pirmasis arba tik antrasis: ${m(`${num(p1)} · ${num(1 - p2)} + ${num(1 - p1)} · ${num(p2)} = ${num(ans)}`)}.` }; },
+    () => { const p1 = P([.6, .7, .8, .9]), p2 = P([.5, .6, .7, .8].filter(x => x !== p1)), ans = Math.round((1 - (1 - p1) * (1 - p2)) * 100) / 100;
+      return { q: `Du jutikliai veikia nepriklausomai: pirmasis gedimą aptinka su tikimybe ${num(p1)}, antrasis – ${num(p2)}. Kokia tikimybė, kad gedimą aptiks bent vienas jutiklis?`, ans,
+        sol: `Priešingas įvykis – neaptinka nė vienas: ${m(`${num(1 - p1)} · ${num(1 - p2)} = ${num((1 - p1) * (1 - p2))}`)}. ${m(`P = 1 − ${num((1 - p1) * (1 - p2))} = ${num(ans)}`)}.` }; },
+    () => { const [a, b] = P([[2, 5], [3, 5], [1, 4], [3, 4], [2, 7], [3, 8], [5, 8], [1, 3], [2, 3]]), n = b * R(3, 8), ans = n - n * a / b;
+      return { q: `Dėžėje yra raudoni ir balti rutuliai, iš viso ${n}. Tikimybė atsitiktinai ištraukti raudoną rutulį lygi ${F(`${a}/${b}`)}. Kiek dėžėje baltų rutulių?`, ans,
+        sol: `Raudonų rutulių: ${m(`${n} ·`)} ${F(`${a}/${b}`)} ${m(`= ${n * a / b}`)}. Baltų: ${m(`${n} − ${n * a / b} = ${ans}`)}.` }; },
+    () => { const xs2 = P([[0, 1, 2, 3], [1, 2, 3, 4], [0, 2, 4, 6], [0, 1, 2, 5]]); let ps; do { ps = [R(1, 5), R(1, 5), R(1, 5), R(1, 5)]; } while(ps[0] + ps[1] + ps[2] + ps[3] !== 10);
+      const hi = R(0, 3), ans = Math.round(xs2.reduce((s, x, i) => s + x * ps[i], 0)) / 10;
+      return { q: `Atsitiktinio dydžio X skirstinys: reikšmės ${xs2.join("; ")}, jų tikimybės atitinkamai ${ps.map((p, i) => i === hi ? "a" : num(p / 10)).join("; ")}. Raskite X matematinę viltį.`, ans,
+        sol: `Tikimybių suma lygi 1, todėl ${m(`a = ${num(ps[hi] / 10)}`)}. Matematinė viltis: ${m(xs2.map((x, i) => `${x} · ${num(ps[i] / 10)}`).join(" + ") + ` = ${num(ans)}`)}.` }; },
+    () => { const v = R(0, 1), ans = v ? fr(19, 27) : fr(2, 9);
+      return { q: `Lošimo kauliukas metamas tris kartus. Kokia tikimybė, kad skaičius, dalus iš 3, atsivers ${v ? "bent vieną kartą" : "lygiai du kartus"}?`, ans, choices: fracChoices(ans, v ? [fr(8, 27), fr(1, 27), fr(1, 3), fr(2, 3), fr(26, 27)] : [fr(1, 9), fr(2, 27), fr(4, 9), fr(1, 3), fr(2, 3)]),
+        sol: v ? `Vieno metimo tikimybė ${F("1/3")} (palankūs 3 ir 6). ${m("P(nė karto) =")} ${F("8/27")}, todėl ${m("P = 1 −")} ${F("8/27")} = ${F("19/27")}.` : `Vieno metimo tikimybė ${F("1/3")} (palankūs 3 ir 6). ${m("P = C<sub>3</sub><sup>2</sup> ·")} ${F("1/9")} · ${F("2/3")} = ${F("2/9")}.` }; },
+    () => { const n = R(6, 10), v = R(0, 1), k = v ? 2 : P([2, 3]), ans = v ? n * (n - 1) : C(n, k);
+      return { q: v ? `Iš ${n} mokinių reikia išrinkti klasės seniūną ir jo pavaduotoją. Keliais skirtingais būdais tai galima padaryti?` : `Iš ${n} mokinių reikia išrinkti ${k} atstovus į mokinių tarybą. Keliais skirtingais būdais tai galima padaryti?`, ans,
+        sol: v ? `Pareigos skirtingos, tvarka svarbi (gretiniai): ${m(`${n} · ${n - 1} = ${ans}`)}.` : `Tvarka nesvarbi (deriniai): ${m(`C<sub>${n}</sub><sup>${k}</sup> = ${ans}`)}.` }; }
   ]},
   progresijos: { name: "Progresijos", art: "aₙ", gens: [
     () => { const a1 = R(-10, 15), d = P([-4, -3, -2, 2, 3, 4, 5, 7]), n = R(8, 25), ans = a1 + (n - 1) * d;
