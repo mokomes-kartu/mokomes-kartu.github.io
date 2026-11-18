@@ -226,7 +226,16 @@ function showMenu(){ clearInterval(timer); play.hidden = true; menu.hidden = fal
 function start(i){
   MK.music.stop(); lvl = i; L = LEVELS[i]; ti = 0; pts = 0; okN = 0; log = [];
   const order = []; while(order.length < N) order.push(...MK.shuffle(L.topics));
-  tasks = order.slice(0, N).map(t => Object.assign({ t }, P(TOPICS[t].gens)()));
+  /* raunde nesikartoja nei užduotis, nei (kol įmanoma) tos pačios temos užduoties tipas */
+  const seenQ = new Set(), used = {};
+  tasks = order.slice(0, N).map(t => {
+    const gens = TOPICS[t].gens; let task, g;
+    for(let k = 0; k < 80; k++){
+      used[t] = used[t] || []; let pool = gens.filter(x => !used[t].includes(x)); if(!pool.length){ used[t] = []; pool = gens; }
+      g = P(pool); task = g(); if(!seenQ.has(task.q)) break;
+    }
+    used[t].push(g); seenQ.add(task.q); return Object.assign({ t }, task);
+  });
   menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
   dots = MK.dots($("dots"), N); $("pts").textContent = 0;
   t0 = Date.now(); clearInterval(timer); timer = setInterval(tick, 500); tick();
