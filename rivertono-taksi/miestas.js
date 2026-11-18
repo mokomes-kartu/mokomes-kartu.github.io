@@ -3,18 +3,19 @@
    Kiekviename kvartale 6 sklypai: 3 prie šiaurinės gatvės ir 3 prie pietinės. */
 (function(root){
 "use strict";
-const AX = [0, 220, 440, 600, 820, 1040], SY = [0, 170, 340, 510, 680], RW = 17, BC = [0, 1, 3, 4], PAV = 8;
-const LIGHTS = new Set(["1,1", "4,1", "1,3", "4,3", "0,2", "5,2", "2,4", "3,0"]);
-const SEED = 11;
+const AX = [0, 270, 540, 810, 1030, 1300, 1570, 1840], SY = [0, 210, 420, 630, 840, 1050], RW = 24, BC = [0, 1, 2, 4, 5, 6], PAV = 8;
+const NA = AX.length, NS = SY.length, RIV = 3, BRIDGES = [1, 4];
+const LIGHTS = new Set(["1,1", "5,1", "2,2", "6,2", "1,3", "5,3", "2,4", "6,4", "0,4", "7,1", "3,2", "4,3"]);
+const SEED = 19;
 function mulberry(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-const hEdge = (i, j) => i >= 0 && i < 5 && j >= 0 && j <= 4 && (i !== 2 || j === 1 || j === 3);
-const vEdge = (i, j) => i >= 0 && i <= 5 && j >= 0 && j < 4;
+const hEdge = (i, j) => i >= 0 && i < NA - 1 && j >= 0 && j < NS && (i !== RIV || BRIDGES.includes(j));
+const vEdge = (i, j) => i >= 0 && i < NA && j >= 0 && j < NS - 1;
 
 function build(T, seed){
   const rs = mulberry(seed == null ? SEED : seed);
   const sh = a => { a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(rs() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const lots = [];
-  for(const br of [0, 1, 2, 3]) for(const bc of BC) for(const row of [0, 1]) for(const k of [0, 1, 2]){
+  for(let br = 0; br < NS - 1; br++) for(const bc of BC) for(const row of [0, 1]) for(const k of [0, 1, 2]){
     const bx = AX[bc] + RW + PAV, bw = AX[bc + 1] - AX[bc] - 2 * (RW + PAV), w = bw / 3;
     const by = SY[br] + RW + PAV, bh = SY[br + 1] - SY[br] - 2 * (RW + PAV), h = (bh - 12) / 2;
     const x0 = bx + k * w, y0 = row === 0 ? by : by + bh - h;
@@ -22,7 +23,7 @@ function build(T, seed){
   }
   const order = sh(lots.map(l => l.id));
   T.places.forEach((p, n) => { const l = lots[order[n]]; l.kind = "place"; l.place = p.id; l.bld = p.bld !== false; });
-  for(let n = T.places.length; n < T.places.length + 12; n++){ const l = lots[order[n]]; l.kind = "garden"; l.bld = false; }
+  for(let n = T.places.length; n < T.places.length + 20; n++){ const l = lots[order[n]]; l.kind = "garden"; l.bld = false; }
   const cols = T.colours.map(c => c.id);
   for(const l of lots) if(l.kind === "house"){
     const nb = lots.filter(m => m.kind === "house" && m.col && ((m.bc === l.bc && m.br === l.br && m.row === l.row && Math.abs(m.k - l.k) <= 2) || (m.st === l.st && m.bc === l.bc && m.k === l.k))).map(m => m.col);
@@ -106,14 +107,14 @@ function make(T, seed){
     if(d[0] !== 0){
       let i = cur.mid ? (d[0] > 0 ? cur.bc + 1 : cur.bc) : cur.i + d[0], first = true;
       if(!cur.mid && !hEdge(Math.min(cur.i, i), cur.j)) return out;
-      while(i >= 0 && i <= 5){
+      while(i >= 0 && i < NA){
         const prev = i - d[0];
         if(!first && !hEdge(Math.min(prev, i), cur.j)) break;
-        out.push({ i, j: cur.j, b: (cur.mid && first) ? false : Math.min(prev, i) === 2 });
+        out.push({ i, j: cur.j, b: (cur.mid && first) ? false : Math.min(prev, i) === RIV });
         first = false; i += d[0];
       }
     } else {
-      for(let j = cur.j + d[1]; j >= 0 && j <= 4; j += d[1]) out.push({ i: cur.i, j, b: false });
+      for(let j = cur.j + d[1]; j >= 0 && j < NS; j += d[1]) out.push({ i: cur.i, j, b: false });
     }
     return out;
   }
@@ -147,7 +148,7 @@ function make(T, seed){
     const bc = d[0] > 0 ? cur.i : cur.i - 1; if(!BC.includes(bc) || !hEdge(bc, cur.j)) return null;
     const cands = [];
     for(const side of ["S", "N"]){
-      const br = side === "S" ? cur.j : cur.j - 1; if(br < 0 || br > 3) continue;
+      const br = side === "S" ? cur.j : cur.j - 1; if(br < 0 || br > NS - 2) continue;
       const row = lots.filter(l => l.bc === bc && l.br === br && l.side === side).sort((a, b) => (a.k - b.k) * d[0]);
       const lr = (side === "S" ? 1 : -1) === -d[0] ? "L" : "R";
       row.forEach((t, n) => {
@@ -193,7 +194,7 @@ function make(T, seed){
     rnd = rnd || Math.random;
     const pk = a => a[Math.floor(rnd() * a.length)];
     const used = new Set(), structs = new Set(), fares = [];
-    const pickup = (far) => { for(let n = 0; n < 400; n++){ const l = pk(lots); if(l.kind !== "garden" && !used.has(l.id) && (!far || dist(l, far) > 230)) return l; } return null; };
+    const pickup = (far) => { for(let n = 0; n < 400; n++){ const l = pk(lots); if(l.kind !== "garden" && !used.has(l.id) && (!far || dist(l, far) > 320)) return l; } return null; };
     function simple(kind){ /* vienos vietos aprašas: {d, lot, struct, notes} */
       for(let n = 0; n < 300; n++){
         if(kind === "PLACE"){ const p = pk(T.places), l = placeLot[p.id]; if(used.has(l.id)) continue; return { d: { t: "place", p: p.id }, lot: l, struct: "PLACE", note: "place" }; }
@@ -220,21 +221,30 @@ function make(T, seed){
         } else if(type === "R2" || type === "R4"){
           const pu = pickup(null); if(!pu) continue;
           const h = rnd() < 0.5 ? 1 : -1, r = genRoute(pu, h, type === "R2" ? 2 : 4, rnd); if(!r) continue;
-          const st = type + ":" + r.sig; if(structs.has(st) || used.has(r.target.id) || r.target.id === pu.id || dist(r.target, pu) < 120) continue;
+          const st = type + ":" + r.sig; if(structs.has(st) || used.has(r.target.id) || r.target.id === pu.id || dist(r.target, pu) < 160) continue;
           const t = routeText(r.tokens), kinds = [...new Set(r.tokens.map(k => k.t).filter(k => k !== "go"))];
           f = { type, struct: st, pickup: pu.id, heading: h, stops: [r.target.id], en: t[0], lt: t[1], tokens: r.tokens, notes: kinds.map(k => noteText(k)).concat([T.notes.lr]) };
         } else if(type === "MULTI"){
           const key = pk(Object.keys(T.multi)), st = "MULTI:" + key; if(structs.has(st)) continue;
-          const a = simple("PLACE"), b = simple(rnd() < 0.6 ? "PREP" : "PLACE"); if(!a || !b || a.lot === b.lot || dist(a.lot, b.lot) < 150) continue;
+          const a = simple("PLACE"), b = simple(rnd() < 0.6 ? "PREP" : "PLACE"); if(!a || !b || a.lot === b.lot || dist(a.lot, b.lot) < 220) continue;
           const ta = descText(a.d), tb = descText(b.d), pu = pickup(a.lot); if(!pu || pu === b.lot) continue;
           f = { type, struct: st, pickup: pu.id, stops: [a.lot.id, b.lot.id], en: T.multi[key][0].replace("{X}", ta[0]).replace("{Y}", tb[0]), lt: T.multi[key][1].replace("{X}", ta[1]).replace("{Y}", tb[1]), notes: [T.notes[key]].concat(b.note !== "place" ? [noteText(b.note, b.d)] : []), ds: [a.d, b.d] };
         }
       }
       if(!f) return null;
-      f.listen = id === "p5";
+      f.listen = id === "p5"; f.call = callText(lots[f.pickup], rnd);
       structs.add(f.struct); used.add(f.pickup); f.stops.forEach(s => used.add(s)); fares.push(f);
     }
     return fares;
+  }
+  /* dispečerės iškvietimas: kur laukia keleivis – [angliškai, lietuviškai] */
+  function callText(l, rnd){
+    rnd = rnd || Math.random; const o = [];
+    if(l.kind === "place"){ const t = descText({ t: "place", p: l.place }); o.push([T.call.at[0].replace("{D}", t[0]), T.call.at[1].replace("{D}", t[1])]); }
+    else for(const k in prep) for(const d of prep[k]) if(d.lot === l.id){ const t = descText(d); o.push([T.call.at[0].replace("{D}", t[0]), T.call.at[1].replace("{D}", t[1])]); }
+    const m = { S: T.streets[l.st], A: T.avenues[l.bc], B: T.avenues[l.bc + 1] };
+    if(!o.length || rnd() < 0.3){ if(cornerAv(l) >= 0) o.push([fill(T.call.corner[0], { S: m.S, A: T.avenues[cornerAv(l)] }), fill(T.call.corner[1], { S: m.S, A: T.avenues[cornerAv(l)] })]); else o.push([fill(T.call.stretch[0], m), fill(T.call.stretch[1], m)]); }
+    return o[Math.floor(rnd() * o.length)];
   }
   /* sklypas, prie kurio stovi automobilis (x, y) */
   function lotAt(x, y){
@@ -245,7 +255,7 @@ function make(T, seed){
     const want = y < SY[j] ? "N" : "S";
     return c.find(l => l.side === want) || c[0];
   }
-  return { AX, SY, RW, PAV, BC, LIGHTS, hEdge, vEdge, lots, placeLot, prep, match, genShift, genRoute, routeText, lotAt, descText, PLAN };
+  return { AX, SY, RW, PAV, BC, NA, NS, RIV, BRIDGES, callText, LIGHTS, hEdge, vEdge, lots, placeLot, prep, match, genShift, genRoute, routeText, lotAt, descText, PLAN };
 }
 root.MK_MIESTAS = { make };
 if(typeof module !== "undefined") module.exports = { make };

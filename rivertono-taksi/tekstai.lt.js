@@ -7,9 +7,9 @@ window.MK_T = {
   kick: "Anglų kalba · 6 klasė",
   lead: "Tu – taksi vairuotojas Anglijos miestelyje Rivertone. Keleiviai kalba tik angliškai: suprask, kur jiems reikia, ir nuvežk. Navigacijos nėra – yra tik keleivio žodžiai.",
   licence: "Vairuotojo pažymėjimas",
-  coins: n => `Uždirbta: £${n}`,
+  coins: (w, tot) => `Piniginė: £${w} · iš viso uždirbta: £${tot}`,
   guide: (a, b) => `Miesto gidas: ${a} iš ${b} vietų`,
-  ranks: [[0, "Mokinys vairuotojas"], [12, "Jaunesnysis vairuotojas"], [30, "Taksi vairuotojas"], [55, "Patyręs vairuotojas"], [85, "Rivertono žinovas"], [120, "Rivertono legenda"]],
+  ranks: [[0, "Mokinys vairuotojas"], [40, "Jaunesnysis vairuotojas"], [100, "Taksi vairuotojas"], [200, "Patyręs vairuotojas"], [350, "Rivertono žinovas"], [550, "Rivertono legenda"]],
   shiftsT: "Pamainos",
   shifts: [
     { id: "p1", name: "Rytinė pamaina", sub: "Vietos mieste: kur žmonėms reikia? (the bakery, the chemist's, the town hall…)" },
@@ -26,19 +26,36 @@ window.MK_T = {
   note: "Žaidimas nieko nesiunčia – pažanga saugoma tik šiame įrenginyje.",
   how: {
     t: "Kaip vairuoti",
-    touch: "Kairėje – vairalazdė: stumk aukštyn – važiuoji, į šonus – suki, žemyn – stabdai ir važiuoji atgal. Dešinėje – mygtukas „Čia!“: privažiuok prie pat pastato – arčiau to šaligatvio, prie kurio jis stovi (pastatas apsibrėžia geltonai) – ir paspausk.",
+    touch: "Kairė ranka – greitis: stumk svirtį aukštyn – važiuoji, žemyn – stabdai ir važiuoji atgal. Dešinė ranka – vairas: stumk į kairę arba į dešinę. Virš vairo – mygtukas „Čia!“: privažiuok prie pat pastato, arčiau jo šaligatvio (pastatas apsibrėš geltonai), ir paspausk.",
     keys: "Klaviatūra: rodyklės arba W A S D – važiuoti ir sukti, tarpas arba Enter – „Čia!“, M – žemėlapis, V – vertimas, R – grįžti į pradžią.",
-    rule: "Niekas neskubina: taksometras laiko neskaičiuoja. Atsitrenkti negalima – automobilis tiesiog sustoja prie bortelio. Rivertone, kaip ir visoje Didžiojoje Britanijoje, važiuojama kairiąja kelio puse.",
+    rule: "Dispečerė angliškai praneša, kur laukia keleivis. Jis laukia ne amžinai (juostelė viršuje) – nespėsi, mokėsi £2 ir gausi rodyklę. Už nuvežimą be klaidų – £5 ir £1 arbatpinigių. Baudos: ne ten atvežei – £2, vertimas – £1, pravažiavai raudoną šviesoforą – £2, atsitrenkei į kitą automobilį – £1. Rivertone, kaip visoje Didžiojoje Britanijoje, važiuojama kairiąja kelio puse.",
     ok: "Supratau, važiuojam"
   },
   hud: {
-    quit: "Į garažą", map: "Žemėlapis", mapClose: "Uždaryti žemėlapį", listen: "Paklausyti", tr: "Vertimas", back: "Į pradžią", here: "Čia!",
-    showText: "Rodyti tekstą", fare: (a, b) => `Keleivis ${a} iš ${b}`, err: n => `Klaidos: ${n}`,
-    joy: "Vairalazdė", mapHint: "Žemėlapį galima stumdyti pirštu. Šiaurė – viršuje."
+    quit: "Į garažą", map: "Žemėlapis", mapClose: "Uždaryti žemėlapį", listen: "Paklausyti", tr: "Vertimas (−£1)", back: "Į pradžią", here: "Čia!",
+    showText: "Rodyti tekstą (−£1)", fare: (a, b) => `${a}/${b}`, money: n => (n < 0 ? "−£" + (-n) : "£" + n),
+    thr: "Greitis", steer: "Vairas", mapHint: "Žemėlapį galima stumdyti pirštu. Šiaurė – viršuje."
+  },
+  call: {
+    at: ["Pick up a passenger outside {D}.", "Paimkite keleivį: važiuokite į {D}."],
+    corner: ["A passenger is waiting on the corner of {S} and {A}.", "Keleivis laukia „{S}“ ir „{A}“ gatvių kampe."],
+    stretch: ["A passenger is waiting in {S}, between {A} and {B}.", "Keleivis laukia „{S}“ gatvėje, tarp „{A}“ ir „{B}“ gatvių."],
+    n: k => `Call ${k}:`,
+    tip: "Keleivio iš tolo nematyti – jį pamatysi tik privažiavęs (geltonas žiedas). Sustok šalia.",
+    late: "Keleivis nesulaukė ir paskambino dar kartą. Bauda £2. Įjungiau geltoną rodyklę – paskubėk.",
+    trT: "Iškvietimo vertimas"
+  },
+  fine: {
+    red: "Red light! Raudonas šviesoforas – bauda £2.",
+    crash: "Careful! Atsitrenkei į kitą automobilį – bauda £1.",
+    lineRed: "Raudonas šviesoforas", lineCrash: "Susidūrimai", lineLate: "Keleivis nesulaukė", lineHint: "Vertimai ir užuominos", lineWrong: "Ne ten atvežta", lineTip: "Arbatpinigiai"
+  },
+  shop: {
+    t: "Garažas: taksi spalva", buy: p => `Pirkti už £${p}`, use: "Naudoti", on: "Naudojama", poor: "Dar neužtenka pinigų.",
+    cars: [["classic", "Geltonas klasikinis", 0], ["black", "Londono juodas", 30], ["red", "Raudonas", 70], ["blue", "Mėlynas", 120], ["green", "Žalias", 180], ["pink", "Rožinis", 250]]
   },
   disp: "Dispečerė",
   pass: "Keleivis",
-  free: n => n > 1 ? "Keleiviai laukia prie geltonų žymeklių. Rodyklės ekrano krašte rodo, kur jie. Privažiuok ir sustok šalia – keleivis įlips pats." : "Liko paskutinis keleivis – jis laukia prie geltono žymeklio.",
   boarding: "Keleivis lipa į automobilį…",
   listenOnly: "Radijo iškvietimas – paklausyk, ką sako keleivis.",
   noVoice: "Šis įrenginys neturi angliško balso, todėl tekstas rodomas iškart.",
@@ -60,12 +77,12 @@ window.MK_T = {
   hint: { t: "Vertimas (užuomina)", ok: "Aišku" },
   done: {
     t: ["Atvykome!", "Tiksliai čia!", "Thank you, driver!", "Here we are!", "Perfect, thank you!"],
-    said: "Keleivis sakė:", means: "Lietuviškai:", words: "Įsidėmėk:", pay: n => n ? `Uždarbis: £${n}` : "Uždarbio nėra – buvo per daug klaidų ar užuominų.",
+    said: "Keleivis sakė:", means: "Lietuviškai:", words: "Įsidėmėk:", pay: (n, tip) => n > 0 ? `Uždarbis: £${n}` + (tip ? " + £1 arbatpinigių už tvarkingą kelionę" : "") : "Uždarbio už šią kelionę nėra – klaidos ir užuominos suvalgė viską.",
     guide: w => `Į miesto gidą įrašyta: ${w}.`, next: "Važiuoti toliau"
   },
   end: {
-    t: "Pamainos kvitas", fare: "Keleivis", clean: "be klaidų", errs: n => `klaidos: ${n}`, total: n => `Iš viso uždirbta: £${n}`,
-    s3: "Puiki pamaina – keleiviai tave rekomenduos!", s2: "Gera pamaina. Dar kelios kelionės – ir miestą mokėsi atmintinai.", s1: "Pamaina baigta. Atsiversk pasikalbėjimų knygelę ir pabandyk dar kartą.",
+    t: "Pamainos kvitas", fares: "Kelionės", total: n => `Pamainos uždarbis: ${n < 0 ? "−£" + (-n) : "£" + n}`,
+    s3: "Puiki pamaina – keleiviai tave rekomenduos!", s2: "Gera pamaina. Mažiau baudų – ir uždarbis bus dar didesnis.", s1: "Pamaina baigta, bet baudos suvalgė uždarbį. Atsiversk pasikalbėjimų knygelę ir pabandyk dar kartą.",
     again: "Dar viena tokia pamaina", menu: "Į garažą"
   },
   quitQ: "Baigti pamainą? Šios pamainos uždarbis nebus įskaitytas.",
@@ -73,8 +90,8 @@ window.MK_T = {
   houseLt: c => `${c} namas`,
   gardenLt: "sodelis (ne pastatas)",
   /* ---------- miestas ---------- */
-  streets: ["Hill Road", "Market Street", "High Street", "Station Road", "Lake Lane"],
-  avenues: ["Oak Avenue", "Mill Lane", "West Bank", "East Bank", "Queen's Road", "King's Road"],
+  streets: ["Hill Road", "North Street", "High Street", "Green Road", "London Road", "Lake Lane"],
+  avenues: ["Oak Avenue", "Mill Lane", "Rose Lane", "West Bank", "East Bank", "Queen's Road", "Victoria Road", "King's Road"],
   river: "River Rill",
   colours: [
     { id: "red", en: "red", lt: "raudonas", a: "raudoną" }, { id: "blue", en: "blue", lt: "mėlynas", a: "mėlyną" },
@@ -113,6 +130,14 @@ window.MK_T = {
     { id: "hairdresser", en: "hairdresser's", n: "kirpykla", a: "kirpyklą", g: "kirpyklos", need: [["I need a haircut.", "Man reikia apsikirpti."], ["My hair is too long. I want a new style.", "Mano plaukai per ilgi. Noriu naujos šukuosenos."]] },
     { id: "carpark", en: "car park", n: "automobilių stovėjimo aikštelė", a: "automobilių stovėjimo aikštelę", g: "automobilių stovėjimo aikštelės", bld: false, need: [["I need to get back to my car. I parked it this morning.", "Man reikia grįžti prie savo automobilio. Pastačiau jį šįryt."], ["My own car is waiting for me there with all my bags.", "Ten manęs laukia mano paties automobilis su visais krepšiais."]] },
     { id: "park", en: "park", n: "parkas", a: "parką", g: "parko", bld: false, need: [["I want to walk my dog under the trees.", "Noriu pavedžioti šunį po medžiais."], ["The children want to play on the grass and feed the ducks.", "Vaikai nori pažaisti ant žolės ir palesinti antis."]] },
+    { id: "stadium", en: "stadium", n: "stadionas", a: "stadioną", g: "stadiono", need: [["I've got tickets for the football match.", "Turiu bilietus į futbolo rungtynes."], ["Our team is playing in the final today.", "Mūsų komanda šiandien žaidžia finale."]] },
+    { id: "bookshop", en: "bookshop", n: "knygynas", a: "knygyną", g: "knygyno", need: [["I want to buy a new English dictionary.", "Noriu nusipirkti naują anglų kalbos žodyną."], ["I need to buy a notebook and a novel for my holiday.", "Man reikia nusipirkti užrašų knygelę ir romaną atostogoms."]] },
+    { id: "toyshop", en: "toy shop", n: "žaislų parduotuvė", a: "žaislų parduotuvę", g: "žaislų parduotuvės", need: [["I need a teddy bear for my little sister.", "Man reikia pliušinio meškiuko mažajai sesei."], ["My son wants a new board game for his birthday.", "Mano sūnus gimtadieniui nori naujo stalo žaidimo."]] },
+    { id: "florist", en: "florist's", n: "gėlių parduotuvė", a: "gėlių parduotuvę", g: "gėlių parduotuvės", need: [["I want to buy some roses for my mum.", "Noriu nupirkti mamai rožių."], ["I need a bunch of flowers for my teacher.", "Man reikia gėlių puokštės mokytojai."]] },
+    { id: "petshop", en: "pet shop", n: "gyvūnų prekių parduotuvė", a: "gyvūnų prekių parduotuvę", g: "gyvūnų prekių parduotuvės", need: [["I need some food for my hamster.", "Man reikia maisto žiurkėnui."], ["I want to buy a bigger cage for my parrot.", "Noriu nupirkti papūgai didesnį narvą."]] },
+    { id: "gallery", en: "art gallery", n: "dailės galerija", a: "dailės galeriją", g: "dailės galerijos", need: [["I want to see the new exhibition of paintings.", "Noriu pamatyti naują paveikslų parodą."], ["I'm an artist and my pictures are on show there.", "Esu dailininkė, ten eksponuojami mano paveikslai."]] },
+    { id: "playground", en: "playground", n: "žaidimų aikštelė", a: "žaidimų aikštelę", g: "žaidimų aikštelės", bld: false, need: [["My little brother wants to go on the swings and the slide.", "Mano mažasis brolis nori pasisupti sūpynėmis ir nučiuožti nuo čiuožyklos."], ["The children want to play on the climbing frame.", "Vaikai nori pažaisti ant laipiojimo karkaso."]] },
+    { id: "clothes", en: "clothes shop", n: "drabužių parduotuvė", a: "drabužių parduotuvę", g: "drabužių parduotuvės", need: [["I need a new jacket for the winter.", "Man reikia naujos striukės žiemai."], ["I want to try on some jeans and T-shirts.", "Noriu pasimatuoti džinsų ir marškinėlių."]] },
     { id: "castle", en: "castle", n: "pilis", a: "pilį", g: "pilies", need: [["I want to see where the king and queen lived.", "Noriu pamatyti, kur gyveno karalius ir karalienė."], ["Tourists love its old stone walls and towers.", "Turistai dievina jos senas akmenines sienas ir bokštus."]] }
   ],
   /* ---------- užsakymų šablonai ---------- */
@@ -188,10 +213,10 @@ window.MK_T = {
   /* ---------- pasikalbėjimų knygelė ---------- */
   book: [
     { t: "Kaip keleivis prašo nuvežti", rows: [["Take me to the station, please.", "Prašau nuvežti mane į stotį."], ["I need to get to the bank.", "Man reikia nuvykti į banką."], ["Could you drive me to the hotel?", "Ar galėtumėte nuvežti mane į viešbutį?"], ["I'd like to go to the museum.", "Norėčiau nuvažiuoti į muziejų."], ["Stop here, please. / Here we are!", "Prašau sustoti čia. / Štai ir atvykome!"]], p: "Prieš vietos pavadinimą sakoma the: the library, the post office. Britai sako the chemist's (vaistinė), the dentist's, the hairdresser's – su 's, nes tai „vaistininko, odontologo, kirpėjo“ vieta." },
-    { t: "Kur tai yra? Vietos prielinksniai", rows: [["next to the bakery", "šalia kepyklos"], ["opposite the school", "priešais mokyklą (kitoje gatvės pusėje)"], ["between the bank and the café", "tarp banko ir kavinės"], ["behind the church", "už bažnyčios"], ["on the corner of High Street and Mill Lane", "High Street ir Mill Lane gatvių kampe"], ["in Station Road", "Station Road gatvėje"]], p: "Spalva eina prieš daiktavardį: the red house. Kad nekartotų žodžio house, anglai sako one: not the red one, the other one – ne raudoną, o kitą." },
+    { t: "Kur tai yra? Vietos prielinksniai", rows: [["next to the bakery", "šalia kepyklos"], ["opposite the school", "priešais mokyklą (kitoje gatvės pusėje)"], ["between the bank and the café", "tarp banko ir kavinės"], ["behind the church", "už bažnyčios"], ["on the corner of High Street and Mill Lane", "High Street ir Mill Lane gatvių kampe"], ["in London Road", "London Road gatvėje"]], p: "Spalva eina prieš daiktavardį: the red house. Kad nekartotų žodžio house, anglai sako one: not the red one, the other one – ne raudoną, o kitą." },
     { t: "Kelio nurodymai", rows: [["Go straight on.", "Važiuok (eik) tiesiai."], ["Turn left. / Turn right.", "Suk į kairę. / Suk į dešinę."], ["Take the second turning on the left.", "Suk į antrą posūkį kairėje."], ["Turn right at the traffic lights.", "Prie šviesoforo suk į dešinę."], ["Go to the end of the road.", "Važiuok iki kelio galo."], ["Go over the bridge.", "Pervažiuok (pereik) tiltą."], ["Go past the cinema.", "Pravažiuok (praeik) pro kino teatrą."], ["It's the third building on your right.", "Tai trečias pastatas tavo dešinėje."]], p: "Nurodymams vartojama liepiamoji nuosaka – veiksmažodis be to ir be įvardžio: Go, Turn, Take. Left ir right visada skaičiuojami vairuotojo akimis – ta kryptimi, kuria judi. Eilės skaitvardžiai: first, second, third." },
     { t: "Kas pirma, kas paskui", rows: [["First … Then …", "Pirmiausia … Tada …"], ["After that …", "Po to …"], ["… but first stop at the bank.", "… bet pirma užsukime į banką."], ["Before we go to the station, …", "Prieš važiuodami į stotį, …"], ["We'll go to the zoo after we visit the café.", "Į zoologijos sodą važiuosime po to, kai aplankysime kavinę."]], p: "Atsargiai su before, after ir but first: sakinyje pirmiau pasakyta vieta nebūtinai lankoma pirmiau." },
-    { t: "Gatvės ir miestas", rows: [["street, road, lane, avenue", "gatvė, kelias, gatvelė, alėja (visi – gatvių pavadinimuose)"], ["crossroads", "sankryža"], ["traffic lights", "šviesoforas"], ["bridge / river", "tiltas / upė"], ["turning", "posūkis (šoninė gatvė)"], ["building", "pastatas"]], p: "Didžiojoje Britanijoje važiuojama kairiąja kelio puse – todėl ir kiti Rivertono automobiliai važiuoja kairėje." }
+    { t: "Gatvės ir miestas", rows: [["street, road, lane, avenue", "gatvė, kelias, gatvelė, alėja (visi – gatvių pavadinimuose)"], ["crossroads", "sankryža"], ["traffic lights", "šviesoforas"], ["bridge / river", "tiltas / upė"], ["Pick up a passenger outside the bank.", "Paimkite keleivį prie banko."], ["red light / fine", "raudonas šviesoforo signalas / bauda"], ["turning", "posūkis (šoninė gatvė)"], ["building", "pastatas"]], p: "Didžiojoje Britanijoje važiuojama kairiąja kelio puse – todėl ir kiti Rivertono automobiliai važiuoja kairėje." }
   ],
   bookPlaces: "Vietos mieste (Places in town)"
 };
