@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Karpinių langas – MokomėsKartu.lt</title>
+<meta name="description" content="2–3 klasių matematikos žaidimas: simetrijos ašis, simetriškos figūros languotame popieriuje, lankstymas ir karpiniai.">
+<meta name="theme-color" content="#fff9e6">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@800&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="/karpiniu-langas/tekstai.lt.js"></script>
+<style>
+/* Meniu: karpytoja Ugnė prie lango, „Mano langas“ (karpinių kolekcija), „Kurk savo karpinį“, lygiai, „Noriu pasimokyti“.
+   Užduotys: Taip/Ne su lapo lankstymu, karpinio užbaigimas languotame lape, „Kas išeis išlanksčius?“, simetrijos ašių žymėjimas. */
+body{--ac:#d83a52;--ac-ink:#fff;--ac-soft:#ffe3e8}
+.mk-hero{padding-top:0}
+.mk-hero h1{margin-top:8px;font-size:clamp(34px,8.6vw,56px)}
+.mk-hero p{max-width:42ch;font-size:16.5px}
+.hero-art{width:min(100%,480px);border-radius:26px;overflow:hidden;position:relative;box-shadow:0 6px 0 rgba(18,26,51,.15)}
+.hero-art svg{display:block;width:100%;height:auto}
+.hero-art::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 3px var(--ink);pointer-events:none}
+.col{width:100%;max-width:520px;margin:0 auto 14px;padding:12px 14px 14px;border-radius:22px;background:var(--card);box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 rgba(18,26,51,.14)}
+.col h2{margin:0;font:800 18px/1.2 var(--kid);display:flex;gap:8px;align-items:center}
+.col h2 svg{width:30px;height:30px;flex:none}
+.col p{margin:4px 0 10px;color:var(--soft);font-weight:700;font-size:14.5px}
+.col h3{margin:12px 0 6px;font:800 14px/1.2 var(--body);color:var(--soft)}
+.win{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;padding:7px;border-radius:12px;background:#8a5a33;box-shadow:inset 0 0 0 2px #121a33}
+.win>div{aspect-ratio:1;border-radius:5px;background:linear-gradient(160deg,#dff3ff,#b9e0fb);display:grid;place-items:center;overflow:hidden;position:relative}
+.win>div.off{background:linear-gradient(160deg,#eef6fb,#dbe9f2)}
+.win>div.off::after{content:"?";font:800 17px/1 var(--kid);color:#9db5c6}
+.win svg{width:82%;height:82%;display:block}
+.win .new{animation:mkPop .7s cubic-bezier(.2,1.6,.4,1)}
+.freebtn{display:flex;width:100%;max-width:520px;margin:0 auto 16px}
+.hud{display:flex;align-items:center;gap:8px;margin:0 0 8px;min-height:36px}
+.hud .mk-dots{margin-right:auto;justify-content:flex-start}
+.chip{display:inline-flex;align-items:baseline;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink);font:800 17px/36px var(--kid);white-space:nowrap}
+.chip small{font:800 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.chip.pop{animation:mkPop .35s cubic-bezier(.2,1.6,.4,1)}
+#guide{max-width:600px;margin:0 auto 10px}
+#guide .mk-bubble{font-size:16.5px}
+.card{width:100%;max-width:600px;margin:0 auto 10px;padding:12px 12px 14px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.12)}
+.board{margin:0 auto;touch-action:none;user-select:none;-webkit-user-select:none}
+.board svg{display:block;width:100%;height:auto;touch-action:none;overflow:visible}
+.board.lock{pointer-events:none}
+.board.shake{animation:mkShake .45s}
+.cap{margin:0 0 6px;text-align:center;font:800 13px/1.2 var(--body);letter-spacing:.04em;text-transform:uppercase;color:var(--soft)}
+.ans{display:grid;gap:10px;margin-top:12px}
+.ans.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.a{min-height:54px;padding:8px 12px;border:0;border-radius:16px;background:#fff;cursor:pointer;text-align:center;font:800 20px/1.2 var(--kid);color:var(--ink);
+  box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 rgba(18,26,51,.16);transition:transform .1s;touch-action:manipulation}
+.a:active{transform:translateY(3px)}
+.a.ok{background:#dff7e6;box-shadow:inset 0 0 0 3.5px var(--good),0 4px 0 rgba(18,26,51,.16)}
+.a.no{background:#ffe6df;box-shadow:inset 0 0 0 3.5px var(--bad),0 4px 0 rgba(18,26,51,.16)}
+.ans.done .a{pointer-events:none}
+.ans.done .a:not(.ok):not(.no){opacity:.5}
+.opt{position:relative;padding:8px}
+.opt svg{display:block;width:100%;height:auto;border-radius:6px}
+.opt i{position:absolute;left:6px;top:6px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font:800 15px/26px var(--kid);font-style:normal}
+.tools{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0 0}
+.tools .mk-btn{min-height:48px;padding:8px 20px;font-size:18px}
+.go{display:flex;width:100%;max-width:600px;margin:4px auto 0}
+.fade{animation:mkIn .4s cubic-bezier(.2,1.2,.4,1)}
+.ax-l{cursor:pointer}
+.sw{display:flex;gap:10px;justify-content:center;margin:10px 0 0}
+.sw button{width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;box-shadow:inset 0 0 0 2.5px var(--ink);padding:0}
+.sw button.on{box-shadow:inset 0 0 0 2.5px var(--ink),0 0 0 3px #fff,0 0 0 6px var(--ink)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}
+.seg button{min-height:44px;border:0;border-radius:12px;background:#fff;cursor:pointer;font:800 15px/1.2 var(--body);box-shadow:inset 0 0 0 2.5px var(--ink)}
+.seg button.on{background:var(--ac);color:#fff}
+.note{min-height:22px;margin:8px 0 0;text-align:center;font:800 15px/1.35 var(--body);color:#1c8a52}
+.note.warn{color:#b8531a}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <section id="menu">
+    <div class="mk-hero"><div class="hero-art" id="heroArt"></div><h1 id="heroH"></h1><p id="heroP"></p></div>
+    <div class="col" id="col"></div>
+    <button type="button" class="mk-btn alt freebtn" id="freeBtn"></button>
+    <div id="levels"></div>
+    <div id="learn"></div>
+  </section>
+  <section id="play" hidden>
+    <div class="hud"><div id="dots"></div><span class="chip" id="ptsChip"><b id="pts">0</b><small id="ptsL"></small></span></div>
+    <div id="guide"></div>
+    <div id="flow"></div>
+  </section>
+  <section id="free" hidden></section>
+</div>
+<script>
+(function(){
+"use strict";
+const T = window.MK_T, GAME = "karpiniu-langas", GRADES = [2, 3];
+const $ = id => document.getElementById(id), R = MK.rnd, PK = MK.pick, SH = MK.shuffle;
+const K = "#121a33", C = 30, P = 18;
+const COLS = ["#d83a52", "#2f6fd6", "#2f9e5b", "#7a4fd0", "#e8790c"];
+
+/* ================= langelių tinklelio veiksmai ================= */
+const parse = s => s.split("/").map(r => [...r].map(c => c === "#" ? 1 : 0));
+const copy = g => g.map(r => r.slice());
+const mirX = g => g.map(r => r.slice().reverse());
+const mirY = g => g.slice().reverse().map(r => r.slice());
+const tr = g => g[0].map((_, x) => g.map(r => r[x]));
+const joinH = (a, b) => a.map((r, i) => r.concat(b[i]));
+const joinV = (a, b) => copy(a).concat(copy(b));
+const gkey = g => g.map(r => r.join("")).join("/");
+const blank = (W, H) => Array.from({ length: H }, () => Array(W).fill(0));
+const place = (g, W, H, ox, oy) => { const b = blank(W, H); g.forEach((r, y) => r.forEach((v, x) => { if(v) b[y + oy][x + ox] = 1; })); return b; };
+const count = g => g.reduce((s, r) => s + r.reduce((a, b) => a + b, 0), 0);
+const refl = (x, y, ax) => ax.d === "v" ? [2 * ax.p - 1 - x, y] : [x, 2 * ax.p - 1 - y];
+const inb = (g, x, y) => y >= 0 && y < g.length && x >= 0 && x < g[0].length;
+/* Langeliai, kuriems sulenkus per ašį nėra poros (tušti sąrašas – figūra simetriška). */
+function mism(g, ax){
+  const out = [], seen = new Set();
+  g.forEach((r, y) => r.forEach((v, x) => { if(!v) return; const [a, b] = refl(x, y, ax);
+    if(!inb(g, a, b) || !g[b][a]){ const k = inb(g, a, b) ? a + "," + b : x + "," + y; if(!seen.has(k)){ seen.add(k); out.push(k.split(",").map(Number)); } } }));
+  return out;
+}
+const isSym = (g, ax) => mism(g, ax).length === 0;
+function toggleNear(g, x0, x1, y0, y1){
+  const c = [];
+  for(let y = y0; y <= y1; y++) for(let x = x0; x <= x1; x++){
+    const nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => inb(g, x + a, y + b) && g[y + b][x + a]);
+    if(g[y][x] || nb) c.push([x, y]);
+  }
+  if(!c.length) return null; const [x, y] = PK(c), o = copy(g); o[y][x] ^= 1; return o;
+}
+
+/* ================= karpinių rinkinys: kairioji pusė, dešinysis simbolis – prie ašies ================= */
+const RAW = {
+  S: { sirdele: ".#./###/###/.##/..#/...", eglute: "..#/.##/..#/.##/###/..#", namelis: "..#/.##/###/###/##./##.", grybas: ".##/###/###/..#/..#/.##",
+    taure: "###/###/.##/..#/..#/.##", deimantas: "..#/.##/###/###/.##/..#", raketa: "..#/.##/.##/.##/###/#.#", zmogeliukas: ".##/.##/###/.##/.#./.#.",
+    medis: ".##/###/###/###/..#/..#", kate: "#../###/#.#/###/###/.##", tulpe: "#.#/###/###/.##/..#/..#", obuolys: "..#/##./###/###/###/.##",
+    karuna: ".../#.#/#.#/###/###/###", asotis: ".##/..#/.##/###/###/.##", varpelis: "..#/.##/.##/###/###/..#", inkaras: "..#/.##/..#/#.#/###/.##",
+    snaige: "..#/#.#/.##/.##/#.#/..#" },
+  M: { egle: "...#/..##/.###/..##/.###/####/...#/...#", drugelis: "#..#/##.#/####/####/.###/####/###./##..", pilis: "#.#./#.#./####/####/####/###./###./###.",
+    zvaigzde: "...#/...#/####/.###/..##/.###/###./#...", robotas: "...#/.###/.#.#/.###/####/#.##/..##/.##.", peleda: "#.../####/#..#/####/####/.###/..##/..#.",
+    boruze: "..#./..##/.###/####/####/####/.###/..##", vaza: ".###/..##/..##/.###/####/####/####/.###", taure2: "####/####/.###/..##/...#/...#/..##/.###",
+    sketis: "..##/.###/####/####/...#/...#/...#/...#", balionas: ".###/####/####/####/.###/..##/...#/..##", tulpe2: "#..#/##.#/####/.###/...#/.#.#/..##/...#",
+    raketa2: "...#/..##/..##/..##/.###/.###/####/#..#", namas: "...#/..##/.###/####/.###/.#.#/.###/.##.", snaige2: "...#/.#.#/..##/####/####/..##/.#.#/...#",
+    saule: "#..#/.###/.###/####/####/.###/.###/#..#", remelis: "####/#.../#.##/#.##/#.##/#.##/#.../####", zmogus: "..##/..##/...#/####/..##/..##/..#./.##." },
+  L: { egle3: "....#/...##/..###/...##/..###/.####/..###/.####/#####/....#", sirdis: ".##../####./#####/#####/#####/.####/..###/...##/....#/.....",
+    drugelis2: "##.../###.#/#####/#####/.####/..###/.####/#####/###.#/##...", pilis2: "#.#.#/#.#.#/#####/#####/##.##/#####/#####/####./####./####.",
+    kate2: "#..../##.../#####/##.##/#####/####./#####/.####/..###/.....", zvaigzde2: "....#/....#/...##/#####/.####/..###/..###/.####/###../#....",
+    snaige3: "....#/.#..#/..#.#/...##/#####/#####/...##/..#.#/.#..#/....#", saule2: "#...#/.#..#/..###/..###/#####/#####/..###/..###/.#..#/#...#",
+    gele: "..##./.####/.####/..###/....#/#...#/.##.#/..###/....#/....#", robotas2: "....#/.####/.#.##/.####/...##/#####/#.###/#.###/..##./.###.",
+    raketa3: "....#/...##/..###/..##./..###/..###/.####/#####/#.###/#..#.", vaza2: ".####/..###/...##/..###/.####/#####/#####/#####/.####/..###",
+    inkaras2: "...##/...##/....#/..###/....#/....#/#...#/##..#/.####/..###", grybas2: "..###/.####/#####/#####/#####/...##/...##/...##/...##/..###",
+    ledai: "..###/.####/.####/#####/.####/..###/..###/...##/...##/....#", karuna2: "...../...../#...#/#.#.#/#####/#####/##.##/#####/...../.....",
+    obuolys2: "....#/...#./.##../####./#####/#####/#####/#####/.####/..##.", varpas: "....#/...##/..###/..###/..###/.####/.####/#####/#####/....#" }
+};
+const DES = [];
+Object.keys(RAW).forEach(sz => Object.keys(RAW[sz]).forEach(id => {
+  const half = parse(RAW[sz][id]), g = joinH(half, mirX(half));
+  DES.push({ id, sz, half, g, four: gkey(mirY(g)) === gkey(g), col: COLS[DES.length % COLS.length] });
+}));
+const DBY = {}; DES.forEach(d => DBY[d.id] = d);
+/* Nesimetriškos mažos figūros „Karpinių dvynėms“ */
+const MOT = ["#./#./##", "##/#./#.", "###/#../#..", "#../###", ".#/##/#.", "#./##/.#", "#../##./###", "##./.##/..#", "#.#/###/#..", ".#./###/#..", "##/##/#.",
+  "..#/###/#.#", "###/##./#..", "#../#../###/#.#", "##./##./#../##.", ".##/###/##.", "##/##/#./#.", "###/#../##./#..", ".#/.#/##", "#.#/###/..#",
+  "##./.#./.##", "..#/.##/###/#.#", "###/..#/.##", "#../###/.#.", ".##/.#./##./#..", "#.#/##./#.."].map(parse);
+
+/* Atsitiktinis ornamentas: pusė (arba ketvirtis), prigludusi prie ašies. */
+function rndBlob(w, h, n, both){
+  const g = blank(w, h), cells = []; let y = R(0, h - 1), x = w - 1; if(both){ y = h - 1; }
+  g[y][x] = 1; cells.push([x, y]);
+  for(let i = 0; i < 200 && cells.length < n; i++){
+    const [cx, cy] = PK(cells), [dx, dy] = PK([[1, 0], [-1, 0], [0, 1], [0, -1]]), a = cx + dx, b = cy + dy;
+    if(inb(g, a, b) && !g[b][a]){ g[b][a] = 1; cells.push([a, b]); }
+  }
+  return g;
+}
+
+/* ================= piešiniai ================= */
+function thumb(g, col, bg){
+  const W = g[0].length, H = g.length; let s = "";
+  g.forEach((r, y) => r.forEach((v, x) => { if(v) s += `<rect x="${x}" y="${y}" width="1.04" height="1.04"/>`; }));
+  return `<svg viewBox="-0.5 -0.5 ${W + 1} ${H + 1}" aria-hidden="true">${bg ? `<rect x="-0.5" y="-0.5" width="${W + 1}" height="${H + 1}" fill="${bg}"/>` : ""}<g fill="${col}">${s}</g></svg>`;
+}
+/* B: { W, H, g, col, axes, edit(x,y), given(x,y), folds:[{d,p}], rows, cols } */
+function boardSvg(B){
+  const W = B.W, H = B.H, w = W * C, h = H * C; let s = `<svg viewBox="${-P} ${-P} ${w + 2 * P} ${h + 2 * P}" role="img">`;
+  s += `<rect x="-3" y="1" width="${w + 6}" height="${h + 5}" rx="4" fill="rgba(18,26,51,.16)"/><rect x="0" y="0" width="${w}" height="${h}" fill="#fffdf6"/>`;
+  if(B.edit){ let e = ""; for(let y = 0; y < H; y++) for(let x = 0; x < W; x++) if(B.edit(x, y)) e += `M${x * C} ${y * C}h${C}v${C}h${-C}z`; s += `<path d="${e}" fill="#fff1b0"/>`; }
+  let f = "", u = "";
+  for(let y = 0; y < H; y++) for(let x = 0; x < W; x++) if(B.g[y][x]){ const d = `M${x * C} ${y * C}h${C}v${C}h${-C}z`; if(B.edit && B.edit(x, y)) u += d; else f += d; }
+  s += `<path d="${f}" fill="${B.col}" stroke="${B.col}" stroke-width="1"/><path class="u" d="${u}" fill="${B.col}" stroke="${B.col}" stroke-width="1" opacity="${B.solid ? 1 : .82}"/>`;
+  let gl = ""; for(let x = 1; x < W; x++) gl += `M${x * C} 0V${h}`; for(let y = 1; y < H; y++) gl += `M0 ${y * C}H${w}`;
+  s += `<path d="${gl}" stroke="#b9ad8a" stroke-width="1" opacity=".55" fill="none"/><rect x="0" y="0" width="${w}" height="${h}" fill="none" stroke="${K}" stroke-width="2.5"/>`;
+  (B.folds || []).forEach(a => { s += a.d === "v" ? `<path d="M${a.p * C} ${-P + 3}V${h + P - 3}" stroke="#e8790c" stroke-width="5" stroke-dasharray="3 7" stroke-linecap="round"/>` : `<path d="M${-P + 3} ${a.p * C}H${w + P - 3}" stroke="#e8790c" stroke-width="5" stroke-dasharray="3 7" stroke-linecap="round"/>`; });
+  (B.axes || []).forEach(a => { s += a.d === "v" ? `<path d="M${a.p * C} ${-P + 2}V${h + P - 2}" stroke="#1b3a8a" stroke-width="3.5" stroke-dasharray="9 6" stroke-linecap="round"/>` : `<path d="M${-P + 2} ${a.p * C}H${w + P - 2}" stroke="#1b3a8a" stroke-width="3.5" stroke-dasharray="9 6" stroke-linecap="round"/>`; });
+  (B.rows || []).forEach(y => { s += `<path d="M${-P + 2} ${y * C + 6}l11 ${C / 2 - 6}l-11 ${C / 2 - 6}z" fill="#ff7a1a" stroke="${K}" stroke-width="1.5" stroke-linejoin="round"/>`; });
+  (B.cols || []).forEach(x => { s += `<path d="M${x * C + 6} ${-P + 2}l${C / 2 - 6} 11l${C / 2 - 6} -11z" fill="#ff7a1a" stroke="${K}" stroke-width="1.5" stroke-linejoin="round"/>`; });
+  return s + `<g id="fx"></g></svg>`;
+}
+function draw(B){ B.el.innerHTML = boardSvg(B); B.el.style.maxWidth = Math.round((B.W * C + 2 * P) * (B.k || 1.2)) + "px"; }
+function markCells(B, cells){
+  B.el.querySelector("#fx").insertAdjacentHTML("beforeend", cells.map(([x, y]) => `<g><rect x="${x * C + 3}" y="${y * C + 3}" width="${C - 6}" height="${C - 6}" rx="4" fill="rgba(255,255,255,.75)" stroke="#e5243b" stroke-width="3"/><path d="M${x * C + 10} ${y * C + 10}l${C - 20} ${C - 20}m0 ${20 - C}l${20 - C} ${C - 20}" stroke="#e5243b" stroke-width="3" stroke-linecap="round"/></g>`).join(""));
+}
+const quick = () => window.__mkFast || (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches);
+/* Lapo lankstymas: side „a“ – kairė / viršus persilenkia į kitą pusę, „b“ – atvirkščiai. */
+function fold(B, ax, side){
+  const fx = B.el.querySelector("#fx"); let s = "";
+  B.g.forEach((r, y) => r.forEach((v, x) => { const q = ax.d === "v" ? x : y; if(v && (side === "a" ? q < ax.p : q >= ax.p)) s += `M${x * C} ${y * C}h${C}v${C}h${-C}z`; }));
+  fx.insertAdjacentHTML("beforeend", `<g><path d="${s}" fill="rgba(47,107,255,.5)" stroke="#2f6bff" stroke-width="2" stroke-linejoin="round"/></g>`);
+  const gh = fx.lastElementChild, o = ax.p * C, D = quick() ? 1 : 950;
+  MK.sfx.whoosh();
+  return new Promise(res => { const t0 = performance.now(); (function step(){
+    const k = Math.min(1, (performance.now() - t0) / D), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2, sc = 1 - 2 * e;
+    gh.setAttribute("transform", ax.d === "v" ? `translate(${o} 0) scale(${sc} 1) translate(${-o} 0)` : `translate(0 ${o}) scale(1 ${sc}) translate(0 ${-o})`);
+    if(k < 1) requestAnimationFrame(step); else res();
+  })(); });
+}
+function paintable(B, onChange){
+  let mode = null;
+  const cell = e => { const sv = B.el.querySelector("svg"), r = sv.getBoundingClientRect(), vw = B.W * C + 2 * P, vh = B.H * C + 2 * P;
+    return [Math.floor((-P + (e.clientX - r.left) / r.width * vw) / C), Math.floor((-P + (e.clientY - r.top) / r.height * vh) / C)]; };
+  const put = e => { const [x, y] = cell(e); if(!inb(B.g, x, y) || !B.edit(x, y) || B.g[y][x] === mode) return; onChange(x, y, mode); };
+  B.el.onpointerdown = e => { if(B.lock) return; const [x, y] = cell(e); if(!inb(B.g, x, y) || !B.edit(x, y)) return; e.preventDefault(); mode = B.g[y][x] ? 0 : 1; try{ B.el.setPointerCapture(e.pointerId); }catch(_){} put(e); };
+  B.el.onpointermove = e => { if(mode != null && !B.lock) put(e); };
+  B.el.onpointerup = B.el.onpointercancel = () => { mode = null; };
+}
+
+/* ================= figūros „Kiek simetrijos ašių?“ (taškai matematinėje sistemoje, y – aukštyn) ================= */
+const rad = a => a * Math.PI / 180;
+const reg = (n, r, rot) => Array.from({ length: n }, (_, i) => [r * Math.cos(rad((rot == null ? 90 : rot) + 360 * i / n)), r * Math.sin(rad((rot == null ? 90 : rot) + 360 * i / n))]);
+const star = (n, r1, r2) => Array.from({ length: 2 * n }, (_, i) => { const r = i % 2 ? r2 : r1, a = rad(90 + 180 * i / n); return [r * Math.cos(a), r * Math.sin(a)]; });
+const rot = (p, a) => p.map(([x, y]) => [x * Math.cos(rad(a)) - y * Math.sin(rad(a)), x * Math.sin(rad(a)) + y * Math.cos(rad(a))]);
+const bar = (l, w, a) => rot([[-l, -w], [l, -w], [l, w], [-l, w]], a);
+const heart = Array.from({ length: 40 }, (_, i) => { const t = rad(i * 9); return [5.4 * 16 * Math.pow(Math.sin(t), 3), 5.4 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) + 14]; });
+const moon = (() => { const p = []; for(let a = 50; a <= 310; a += 10) p.push([10 + 85 * Math.cos(rad(a)) - 12, 85 * Math.sin(rad(a))]); for(let a = 266; a >= 94; a -= 8.6) p.push([60 + 65.3 * Math.cos(rad(a)) - 12, 65.3 * Math.sin(rad(a))]); return p; })();
+const ell = Array.from({ length: 40 }, (_, i) => [100 * Math.cos(rad(i * 9)), 62 * Math.sin(rad(i * 9))]);
+const F4 = [0, 45, 90, 135], F6 = [0, 30, 60, 90, 120, 150], F5 = [0, 18, 54, 90, 126, 162];
+const blade = [[0, 0], [90, 0], [90, 50]], petal = [[0, 6], [26, 55], [0, 100], [-26, 55]], prop = [[0, 0], [30, 30], [22, 95], [-8, 60]];
+const SHAPES = [
+  { id: "kvadratas", f: F4, p: [[[-80, -80], [80, -80], [80, 80], [-80, 80]]] },
+  { id: "staciakampis", f: F4, p: [[[-100, -60], [100, -60], [100, 60], [-100, 60]]] },
+  { id: "rombas", f: F4, p: [[[-100, 0], [0, -60], [100, 0], [0, 60]]] },
+  { id: "lygiagretainis", f: F4, p: [[[-100, -55], [50, -55], [100, 55], [-50, 55]]] },
+  { id: "trapecija", f: F4, p: [[[-100, -55], [100, -55], [55, 55], [-55, 55]]] },
+  { id: "trapecija2", f: F4, p: [[[-90, -55], [90, -55], [40, 55], [-90, 55]]] },
+  { id: "aitvaras", f: F4, p: [[[0, 100], [60, 30], [0, -100], [-60, 30]]] },
+  { id: "trikampis2", f: F4, p: [[[0, 95], [70, -75], [-70, -75]]] },
+  { id: "trikampis0", f: F4, p: [[[-95, -60], [95, -60], [40, 70]]] },
+  { id: "trikampis45", f: F4, p: [[[-80, -80], [80, -80], [-80, 80]]] },
+  { id: "kampas", f: F4, p: [[[-80, -80], [80, -80], [80, -20], [-20, -20], [-20, 80], [-80, 80]]] },
+  { id: "pliusas", f: F4, p: [[[-28, 90], [28, 90], [28, 28], [90, 28], [90, -28], [28, -28], [28, -90], [-28, -90], [-28, -28], [-90, -28], [-90, 28], [-28, 28]]] },
+  { id: "t", f: F4, p: [[[-80, 80], [80, 80], [80, 30], [25, 30], [25, -80], [-25, -80], [-25, 30], [-80, 30]]] },
+  { id: "h", f: F4, p: [[[-80, 80], [-30, 80], [-30, 25], [30, 25], [30, 80], [80, 80], [80, -80], [30, -80], [30, -25], [-30, -25], [-30, -80], [-80, -80]]] },
+  { id: "e", f: F4, p: [[[-70, 80], [70, 80], [70, 45], [-25, 45], [-25, 17], [50, 17], [50, -17], [-25, -17], [-25, -45], [70, -45], [70, -80], [-70, -80]]] },
+  { id: "n", f: F4, p: [[[-70, -80], [-70, 80], [-30, 80], [35, -10], [35, 80], [70, 80], [70, -80], [30, -80], [-35, 10], [-35, -80]]] },
+  { id: "z", f: F4, p: [[[-70, 80], [70, 80], [70, 45], [-15, -45], [70, -45], [70, -80], [-70, -80], [-70, -45], [15, 45], [-70, 45]]] },
+  { id: "rodykle", f: F4, p: [[[-90, 25], [10, 25], [10, 65], [90, 0], [10, -65], [10, -25], [-90, -25]]] },
+  { id: "malunelis", f: F4, p: [blade, rot(blade, 90), rot(blade, 180), rot(blade, 270)] },
+  { id: "eglute", f: F4, p: [[[0, 95], [45, 40], [20, 40], [60, -10], [30, -10], [75, -60], [15, -60], [15, -90], [-15, -90], [-15, -60], [-75, -60], [-30, -10], [-60, -10], [-20, 40], [-45, 40]]] },
+  { id: "namelis", f: F4, p: [[[0, 90], [80, 20], [80, -80], [-80, -80], [-80, 20]]] },
+  { id: "zaibas", f: F4, p: [[[10, 95], [-55, 0], [-10, 0], [-30, -95], [55, 15], [10, 15], [45, 95]]] },
+  { id: "drugelis", f: F4, p: [[[0, 30], [40, 85], [90, 70], [80, 10], [55, -5], [75, -45], [45, -80], [0, -30], [-45, -80], [-75, -45], [-55, -5], [-80, 10], [-90, 70], [-40, 85]]] },
+  { id: "zuvis", f: F4, p: [[[90, 0], [30, 45], [-40, 15], [-90, 50], [-90, -50], [-40, -15], [30, -45]]] },
+  { id: "sirdis", f: F4, p: [heart] },
+  { id: "menulis", f: F4, p: [moon] },
+  { id: "ovalas", f: F4, p: [ell] },
+  { id: "apskritimas", f: F4, circle: 88 },
+  { id: "pasuktas", f: F4, p: [bar(95, 42, 45)] },
+  { id: "nukirstas", f: F4, p: [[[-80, -80], [80, -80], [80, 30], [30, 80], [-80, 80]]] },
+  { id: "iksas", f: F4, p: [bar(100, 20, 45), bar(100, 20, 135)] },
+  { id: "trikampis3", f: F6, p: [reg(3, 100)] },
+  { id: "sesiakampis", f: F6, p: [reg(6, 92)] },
+  { id: "zvaigzde6", f: F6, p: [star(6, 98, 55)] },
+  { id: "snaige6", f: F6, p: [bar(98, 13, 30), bar(98, 13, 90), bar(98, 13, 150)] },
+  { id: "trilapis", f: F6, p: [petal, rot(petal, 120), rot(petal, 240)] },
+  { id: "propeleris", f: F6, p: [prop, rot(prop, 120), rot(prop, 240)] },
+  { id: "trikampis2b", f: F6, p: [[[0, 100], [55, -80], [-55, -80]]] },
+  { id: "staciakampis6", f: F6, p: [[[-60, -95], [60, -95], [60, 95], [-60, 95]]] },
+  { id: "penkiakampis", f: F5, p: [reg(5, 95)] },
+  { id: "zvaigzde5", f: F5, p: [star(5, 100, 42)] },
+  { id: "namelis5", f: F5, p: [[[0, 95], [70, 25], [70, -80], [-70, -80], [-70, 25]]] },
+  { id: "trapecija5", f: F5, p: [[[-95, -55], [95, -55], [50, 55], [-50, 55]]] }
+];
+function symAt(sh, a){
+  if(sh.circle) return true;
+  const c = Math.cos(rad(2 * a)), s = Math.sin(rad(2 * a)), pts = [].concat(...sh.p);
+  return pts.every(([x, y]) => { const u = x * c + y * s, v = x * s - y * c; return pts.some(([p, q]) => Math.abs(p - u) < 1.2 && Math.abs(q - v) < 1.2); });
+}
+SHAPES.forEach(s => { s.ax = s.f.map(a => symAt(s, a)); });
+
+/* ================= herojės ir lygių piešiniai ================= */
+const S = `stroke="${K}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
+function pane(id, x, y, w){ const d = DBY[id], n = d.g.length, c = w / n; let s = ""; d.g.forEach((r, j) => r.forEach((v, i) => { if(v) s += `<rect x="${(x + i * c).toFixed(1)}" y="${(y + j * c).toFixed(1)}" width="${(c + .4).toFixed(1)}" height="${(c + .4).toFixed(1)}"/>`; })); return `<g fill="${d.colH || "#fff"}">${s}</g>`; }
+function heroSvg(){
+  return `<svg viewBox="0 0 480 250" role="img" aria-label="Karpytoja Ugnė prie lango su karpiniais">
+  <rect width="480" height="250" fill="#ffe9c7"/><path d="M0 0h480v40H0z" fill="#ffdfae"/><rect y="212" width="480" height="38" fill="#c98f5a"/><path d="M0 212h480" stroke="${K}" stroke-width="3"/>
+  <rect x="26" y="22" width="258" height="172" rx="8" fill="#8a5a33" ${S}/><rect x="38" y="34" width="234" height="148" fill="#bfe6ff" stroke="${K}" stroke-width="2.5"/>
+  <path d="M38 150q40-26 80-8t70-10 84 6v44H38z" fill="#fff" opacity=".9"/><circle cx="238" cy="62" r="13" fill="#fff6c9"/>
+  <g fill="#fff"><circle cx="64" cy="60" r="2.5"/><circle cx="110" cy="46" r="2"/><circle cx="182" cy="52" r="2.5"/><circle cx="150" cy="120" r="2"/><circle cx="252" cy="110" r="2.5"/><circle cx="56" cy="116" r="2"/></g>
+  <path d="M155 34v148M38 108h234" stroke="#8a5a33" stroke-width="9"/><path d="M155 34v148M38 108h234" stroke="${K}" stroke-width="1.5" opacity=".35"/>
+  <g>${[["snaige3", 62, 40, 62, "#fff"], ["sirdis", 184, 42, 58, "#ff6b81"], ["egle3", 66, 114, 60, "#3aa655"], ["zvaigzde2", 184, 116, 58, "#ffd43b"]].map(([id, x, y, w, c]) => { DBY[id].colH = c; return pane(id, x, y, w); }).join("")}</g>
+  <rect x="18" y="190" width="274" height="14" rx="5" fill="#a8693a" ${S}/>
+  <g transform="translate(372 0)">
+    <ellipse cx="0" cy="238" rx="50" ry="7" fill="rgba(18,26,51,.18)"/>
+    <path d="M-16 196v30M16 196v30" stroke="#ffd0a8" stroke-width="13" stroke-linecap="round"/><path d="M-16 196v30M16 196v30" stroke="${K}" stroke-width="16" stroke-linecap="round" opacity="0"/>
+    <path d="M-30 232q0-10 14-10t12 10zM4 232q0-10 12-10t14 10z" fill="#5b3b8c" ${S}/>
+    <path d="M-26 112q26-12 52 0l16 90q-42 12-84 0z" fill="#d83a52" ${S}/><path d="M-37 186q37 10 74 0" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="2 8" stroke-linecap="round"/>
+    <path d="M-12 108h24v12q-12 8-24 0z" fill="#fff" ${S}/>
+    <path d="M-24 118q-30 14-44 44" fill="none" stroke="${K}" stroke-width="17" stroke-linecap="round"/><path d="M-24 118q-30 14-44 44" fill="none" stroke="#d83a52" stroke-width="11" stroke-linecap="round"/>
+    <path d="M24 118q26 12 40 34" fill="none" stroke="${K}" stroke-width="17" stroke-linecap="round"/><path d="M24 118q26 12 40 34" fill="none" stroke="#d83a52" stroke-width="11" stroke-linecap="round"/>
+    <circle cx="-69" cy="164" r="8" fill="#ffd0a8" ${S}/><circle cx="65" cy="154" r="8" fill="#ffd0a8" ${S}/>
+    <g transform="translate(-104 132) rotate(-8)">${pane("snaige2", 0, 0, 44)}<g fill="none" stroke="${K}" stroke-width="2"><rect x="-3" y="-3" width="50" height="50" rx="3" fill="#fff"/></g><g fill="#d83a52">${pane("snaige2", 0, 0, 44).replace(/fill="[^"]*"/, "")}</g></g>
+    <g transform="translate(70 150) rotate(-38)"><path d="M0 0L44 -9M0 0L44 9" stroke="#9aa7b8" stroke-width="5" stroke-linecap="round"/><path d="M0 0L44 -9M0 0L44 9" stroke="${K}" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="-9" cy="-8" r="8" fill="none" stroke="#2f6fd6" stroke-width="5"/><circle cx="-9" cy="8" r="8" fill="none" stroke="#2f6fd6" stroke-width="5"/><circle cx="2" cy="0" r="2.5" fill="${K}"/></g>
+    <path d="M-40 70q-10 34 0 52q-14-2-18-14q-6-34 18-38zM40 70q10 34 0 52q14-2 18-14q6-34-18-38z" fill="#7a4b2a" ${S}/>
+    <circle cx="0" cy="72" r="38" fill="#ffd9b8" ${S}/>
+    <path d="M-39 70q-2-44 39-44t39 44q-14-22-39-22t-39 22z" fill="#7a4b2a" ${S}/>
+    <circle cx="-46" cy="118" r="6" fill="#ffc61a" ${S}/><circle cx="46" cy="118" r="6" fill="#ffc61a" ${S}/>
+    <circle cx="-14" cy="76" r="5" fill="${K}"/><circle cx="14" cy="76" r="5" fill="${K}"/><circle cx="-12.5" cy="74.5" r="1.7" fill="#fff"/><circle cx="15.5" cy="74.5" r="1.7" fill="#fff"/>
+    <path d="M-10 90q10 9 20 0" fill="none" stroke="${K}" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="-25" cy="88" r="6" fill="#ff8aa0" opacity=".6"/><circle cx="25" cy="88" r="6" fill="#ff8aa0" opacity=".6"/>
+  </g></svg>`;
+}
+const mini = (id, col) => thumb(DBY[id].g, col);
+const LA = (inner) => `<svg viewBox="0 0 56 56">${inner}</svg>`;
+const sheet = `<rect x="7" y="7" width="42" height="42" rx="4" fill="#fffdf6" stroke="${K}" stroke-width="2.5"/>`;
+const AXV = `<path d="M28 3v50" stroke="#1b3a8a" stroke-width="3" stroke-dasharray="5 4" stroke-linecap="round"/>`, AXH = `<path d="M3 28h50" stroke="#1b3a8a" stroke-width="3" stroke-dasharray="5 4" stroke-linecap="round"/>`;
+const LEVELART = [
+  LA(`${sheet}<path d="M28 18q-8-9-14 0t14 20q20-11 14-20t-14 0z" fill="#d83a52"/>${AXV}<text x="44" y="50" font-family="Grandstander,sans-serif" font-weight="800" font-size="15" fill="${K}">?</text>`),
+  LA(`${sheet}<path d="M28 12L14 30h8l-9 12h15z" fill="#2f9e5b"/><path d="M28 12l14 18h-8l9 12H28z" fill="#fff1b0" stroke="#c9b458" stroke-width="1.5" stroke-dasharray="3 3"/>${AXV}`),
+  LA(`${sheet}<path d="M14 28q14-22 28 0z" fill="#2f6fd6"/><path d="M14 28q14 22 28 0z" fill="#fff1b0" stroke="#c9b458" stroke-width="1.5" stroke-dasharray="3 3"/>${AXH}`),
+  LA(`<rect x="6" y="10" width="20" height="36" rx="3" fill="#fffdf6" stroke="${K}" stroke-width="2.5"/><path d="M26 18l-10 10 10 10z" fill="#7a4fd0"/><path d="M26 8v40" stroke="#e8790c" stroke-width="4" stroke-dasharray="2 5" stroke-linecap="round"/><path d="M32 28h9m-4-4l4 4-4 4" fill="none" stroke="${K}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><text x="48" y="34" text-anchor="middle" font-family="Grandstander,sans-serif" font-weight="800" font-size="17" fill="${K}">?</text>`),
+  LA(`<rect x="12" y="12" width="32" height="32" fill="#e8790c" stroke="${K}" stroke-width="2.5"/><path d="M28 4v48M4 28h48M7 7l42 42M49 7L7 49" stroke="#1b3a8a" stroke-width="2.2" stroke-dasharray="4 3" stroke-linecap="round"/>`),
+  LA(`${sheet}<path d="M12 18h9v9h-5v9h-4z" fill="#d83a52"/><path d="M44 18h-9v9h5v9h4z" fill="#d83a52" opacity=".45"/>${AXV}`),
+  LA(`<path d="M10 20l8 12 10-16 10 16 8-12-4 26H14z" fill="#ffc61a" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/><circle cx="10" cy="20" r="3" fill="#d83a52"/><circle cx="28" cy="16" r="3" fill="#d83a52"/><circle cx="46" cy="20" r="3" fill="#d83a52"/>`)
+];
+const LEVELS = T.levels.map((l, i) => ({ id: "l" + (i + 1), name: l[0], sub: l[1], art: LEVELART[i] }));
+
+/* ================= meniu ir kolekcija ================= */
+const menu = $("menu"), play = $("play"), free = $("free"), app = $("app");
+const saved = MK.get("mokomeskartu-klase", 0), KEY = "mk-" + GAME + "-albumas", KEYM = "mk-" + GAME + "-mano";
+app.prepend(MK.top({ title: T.title, grade: GRADES.includes(saved) ? saved : GRADES[0] }));
+$("heroH").innerHTML = `${T.heroA} <em>${T.heroB}</em>`; $("heroP").textContent = T.hero; $("ptsL").textContent = T.pts; $("freeBtn").textContent = "✂ " + T.free.btn;
+const album = () => MK.get(KEY, []).filter(id => DBY[id]);
+function renderAlbum(fresh){
+  const got = album(), n = got.length, rank = T.ranks[n >= DES.length ? 4 : n >= 36 ? 3 : n >= 18 ? 2 : n >= 6 ? 1 : 0], mine = MK.get(KEYM, []);
+  let h = `<h2><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="4" width="32" height="32" rx="4" fill="#bfe6ff" stroke="${K}" stroke-width="2.5"/><path d="M20 4v32M4 20h32" stroke="${K}" stroke-width="2.5"/></svg>${T.colH}</h2><p>${T.colP(n, DES.length, rank)}</p><div class="win">`;
+  DES.forEach(d => { const on = got.includes(d.id); h += `<div class="${on ? (fresh && fresh.includes(d.id) ? "new" : "") : "off"}" title="${on ? MK.esc(T.names[d.id]) : ""}">${on ? thumb(d.g, d.col) : ""}</div>`; });
+  h += `</div>`;
+  if(mine.length) h += `<h3>${T.mine}</h3><div class="win">${mine.map(m => `<div>${thumb(parse(m.g), COLS[m.c] || COLS[0])}</div>`).join("")}</div>`;
+  $("col").innerHTML = h;
+}
+function showMenu(fresh){
+  play.hidden = true; free.hidden = true; menu.hidden = false; $("heroArt").innerHTML = heroSvg(); renderAlbum(fresh);
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+
+/* ================= užduočių kūrimas ================= */
+let used = new Set();
+function pickDes(sz, pred){
+  let pool = DES.filter(d => d.sz === sz && !used.has(d.id) && (!pred || pred(d)));
+  if(!pool.length) pool = DES.filter(d => d.sz === sz && (!pred || pred(d)));
+  if(!pool.length) return null;
+  const got = album(), fresh = pool.filter(d => !got.includes(d.id)), d = PK(fresh.length && Math.random() < .75 ? fresh : pool);
+  used.add(d.id); return d;
+}
+function genJudge(kind, sz){
+  for(let n = 0; n < 80; n++){
+    const d = pickDes(sz, kind === "yes2" ? x => x.four : null); if(!d) return genJudge("yes", sz);
+    const half = d.half, hw = half[0].length, h = half.length; let g = d.g, why = null;
+    if(kind === "trans"){ g = joinH(half, half); why = "trans"; }
+    if(kind === "cell"){ g = toggleNear(g, hw, 2 * hw - 1, 0, h - 1); why = "cell"; if(!g) continue; }
+    let W = 2 * hw + 2, H = h + 2, big = place(g, W, H, 1, 1), ax = { d: "v", p: hw + 1 };
+    if(kind === "off"){ ax = { d: "v", p: hw + 1 + PK([1, -1]) }; why = "off"; }
+    if(kind === "dir"){ ax = { d: "h", p: H / 2 }; why = "dir"; }
+    if(kind === "yes2") ax = { d: "h", p: H / 2 };
+    if(Math.random() < .4){ big = tr(big); ax = { d: ax.d === "v" ? "h" : "v", p: ax.p }; [W, H] = [H, W]; }
+    const ans = isSym(big, ax); if(ans !== (kind === "yes" || kind === "yes2")){ used.delete(d.id); continue; }
+    return { type: "judge", kind, W, H, g: big, ax, ans, why, des: ans ? d : null, col: d.col, q: T.q.judge, tx: T.judge };
+  }
+  return null;
+}
+function genComp(mode, sz){
+  if(mode === "d"){
+    const qn = { S: 3, M: 4, L: 5 }[sz]; let d = Math.random() < .6 ? pickDes(sz, x => x.four) : null, q;
+    if(d) q = d.g.slice(0, qn).map(r => r.slice(0, qn)); else q = rndBlob(qn, qn, R(qn + 1, qn * 2 + 1), true);
+    const top = joinH(q, mirX(q)), target = joinV(top, mirY(top)), W = 2 * qn, qd = [PK([0, 1]), PK([0, 1])];
+    const giv = (x, y) => (x >= qn ? 1 : 0) === qd[0] && (y >= qn ? 1 : 0) === qd[1];
+    return { type: "comp", mode, W, H: W, g0: target.map((r, y) => r.map((v, x) => giv(x, y) ? v : 0)), target, axes: [{ d: "v", p: qn }, { d: "h", p: qn }], giv, des: d, col: d ? d.col : PK(COLS), q: T.q.completeD, okT: T.comp.okD, mark: "rows" };
+  }
+  const d = pickDes(sz), hw = d.half[0].length, sideB = Math.random() < .5; let target = d.g, ax = { d: "v", p: hw }, giv = (x, y) => sideB ? x >= hw : x < hw;
+  if(mode === "h"){ target = tr(target); ax = { d: "h", p: hw }; giv = (x, y) => sideB ? y >= hw : y < hw; }
+  return { type: "comp", mode, W: target[0].length, H: target.length, g0: target.map((r, y) => r.map((v, x) => giv(x, y) ? v : 0)), target, axes: [ax], giv, des: d, col: d.col,
+    q: mode === "h" ? T.q.completeH : T.q.completeV, okT: T.comp.ok, mark: mode === "h" ? "cols" : "rows" };
+}
+function genFold(folds, sz){
+  for(let n = 0; n < 80; n++){
+    if(folds === 2){
+      const qn = { S: 3, M: 4, L: 5 }[sz]; let d = Math.random() < .5 ? pickDes(sz, x => x.four) : null;
+      const q = d ? d.g.slice(0, qn).map(r => r.slice(0, qn)) : rndBlob(qn, qn, R(qn + 1, qn * 2), true);
+      const top = joinH(q, mirX(q)), ok = joinV(top, mirY(top)), t2 = joinH(q, q);
+      const cand = [joinV(t2, t2), joinV(top, top), joinV(t2, mirY(t2)), joinV(top, toggleNear(mirY(top), 0, 2 * qn - 1, 0, qn - 1) || top), joinV(joinH(q, mirY(q)), joinH(mirY(q), q))];
+      const seen = new Set([gkey(ok)]), wrong = []; SH(cand).forEach(c => { const k = gkey(c); if(!seen.has(k) && wrong.length < 3){ seen.add(k); wrong.push(c); } });
+      if(wrong.length < 3){ if(d) used.delete(d.id); continue; }
+      const opts = SH([ok].concat(wrong));
+      return { type: "fold", folds, src: q, sx: 0, sy: 0, W: 2 * qn, H: 2 * qn, seq: [[{ d: "v", p: qn }, "a"], [{ d: "h", p: qn }, "a"]], edges: [{ d: "v", p: qn }, { d: "h", p: qn }], opts, ans: opts.indexOf(ok), des: d, col: d ? d.col : PK(COLS), q: T.q.fold2 };
+    }
+    const d = Math.random() < .75 ? pickDes(sz) : null, dims = { S: [3, 6], M: [4, 8], L: [5, 10] }[sz];
+    const A = d ? d.half : rndBlob(dims[0], dims[1], R(dims[0] * 2, dims[0] * 3 + 2)), hw = A[0].length, mA = mirX(A);
+    const ok = joinH(A, mA), cand = [joinH(A, A), joinH(A, mirY(mA)), joinH(A, mirY(A)), joinH(A, toggleNear(mA, 0, hw - 1, 0, A.length - 1) || mA)];
+    const seen = new Set([gkey(ok)]), wrong = []; SH(cand).forEach(c => { const k = gkey(c); if(!seen.has(k) && wrong.length < 3){ seen.add(k); wrong.push(c); } });
+    if(wrong.length < 3){ if(d) used.delete(d.id); continue; }
+    const mir = Math.random() < .5, tp = Math.random() < .4, f = g => { let o = mir ? mirX(g) : g; return tp ? tr(o) : o; };
+    const all = [ok].concat(wrong).map(f), opts = SH(all), src = f(A), W = tp ? A.length : 2 * hw, H = tp ? 2 * hw : A.length;
+    return { type: "fold", folds, src, sx: !tp && mir ? hw : 0, sy: tp && mir ? hw : 0, W, H, seq: [[{ d: tp ? "h" : "v", p: hw }, mir ? "b" : "a"]],
+      edges: [{ d: tp ? "h" : "v", p: mir ? 0 : hw }], opts, ans: opts.indexOf(all[0]), des: d, col: d ? d.col : PK(COLS), q: T.q.fold1 };
+  }
+  return null;
+}
+let recentSh = [];
+function genAxes(n){
+  let pool = SHAPES.filter(s => !recentSh.includes(s.id)); if(pool.length < n){ recentSh = []; pool = SHAPES.slice(); }
+  const pickN = SH(pool).slice(0, n); pickN.forEach(s => recentSh.push(s.id)); if(recentSh.length > 28) recentSh = recentSh.slice(-28);
+  return pickN.map(s => ({ type: "axes", sh: s, col: PK(COLS), q: T.q.axes }));
+}
+function genPair(kind, dir, dist){
+  for(let n = 0; n < 200; n++){
+    let m = PK(MOT); if(m[0].length > 3) m = tr(m); if(m[0].length > 3 || m.length > 5) continue;
+    const w = m[0].length, mh = m.length, W = 10, H = 7, mm = mirX(m); if(gkey(mm) === gkey(m)) continue;
+    const dMax = Math.min(2, 5 - w), d = dist != null ? Math.min(dist, dMax) : R(0, dMax), y0 = R(0, H - mh);
+    const left = place(m, W, H, 5 - d - w, y0); let right, why = null;
+    if(kind === "yes" || kind === "draw") right = place(mm, W, H, 5 + d, y0);
+    else if(kind === "trans"){ right = place(m, W, H, 5 + d, y0); why = "trans"; }
+    else if(kind === "shift"){ const y1 = y0 + PK([1, -1]); if(y1 < 0 || y1 + mh > H) continue; right = place(mm, W, H, 5 + d, y1); why = "shift"; }
+    else if(kind === "dist"){ const d1 = d + PK([1, -1]); if(d1 < 0 || 5 + d1 + w > W) continue; right = place(mm, W, H, 5 + d1, y0); why = "dist"; }
+    else { right = toggleNear(place(mm, W, H, 5 + d, y0), 5, 9, 0, H - 1); why = "cell"; if(!right) continue; }
+    let L = left, Rt = right, ax = { d: "v", p: 5 }, sideB = Math.random() < .5;
+    if(sideB){ L = mirX(left); Rt = mirX(right); }
+    let g = L.map((r, y) => r.map((v, x) => v | Rt[y][x])), g0 = L, bw = W, bh = H, giv = (x, y) => sideB ? x >= 5 : x < 5;
+    if(dir === "h"){ g = tr(g); g0 = tr(g0); ax = { d: "h", p: 5 }; bw = H; bh = W; giv = (x, y) => sideB ? y >= 5 : y < 5; }
+    const col = PK(COLS);
+    if(kind === "draw") return { type: "comp", mode: "p", W: bw, H: bh, g0, target: g, axes: [ax], giv, des: null, col, q: T.q.pairDraw, okT: T.comp.okP, mark: dir === "h" ? "cols" : "rows" };
+    const ans = isSym(g, ax); if(ans !== (kind === "yes")) continue;
+    return { type: "judge", kind, W: bw, H: bh, g, ax, ans, why, des: null, col, q: T.q.pairJudge, tx: T.pair };
+  }
+  return null;
+}
+const LV = [
+  () => { const k = SH(["yes", "yes", "yes", "yes2", "cell", "trans", "off", "dir"]); k[R(0, 7)] = PK(["yes", "cell", "trans", "off"]); return k.map((x, i) => genJudge(x, i < 3 ? "S" : i < 6 ? "M" : "L")); },
+  () => ["S", "S", "M", "M", "M", "L"].map(s => genComp("v", s)),
+  () => [genComp("h", "S"), genComp("h", "M"), genComp("h", "M"), genComp("d", "S"), genComp("d", "M"), genComp("d", "L")],
+  () => [genFold(1, "S"), genFold(1, "S"), genFold(1, "M"), genFold(2, "S"), genFold(1, "M"), genFold(2, "M"), genFold(1, "L"), genFold(2, "L")],
+  () => genAxes(8),
+  () => { const no = SH(["trans", "shift", "dist", "cell"]); return SH([genPair("yes", PK(["v", "h"])), genPair(no[0], "v"), genPair(no[1], "h"), genPair(Math.random() < .5 ? "yes" : no[2], "v")])
+      .concat([genPair("draw", "v", 0), genPair("draw", "v", 1), genPair("draw", "h", 1), genPair("draw", PK(["v", "h"]), 2)]); },
+  () => SH([genJudge(PK(["yes", "off", "trans"]), "M"), genJudge(PK(["yes", "cell", "dir"]), "L"), genComp("v", "L"), genComp("h", "M"), genComp("d", "M"), genFold(1, "M"), genFold(2, "M")]
+      .concat(genAxes(2)).concat([genPair("draw", PK(["v", "h"]))]))
+];
+
+/* ================= žaidimas ================= */
+let L = 0, tasks = [], ti = 0, cur = null, okN = 0, pts = 0, dots = null, fresh = [];
+function start(i){
+  L = i; used = new Set(); tasks = LV[i]().filter(Boolean); ti = 0; okN = 0; pts = 0; fresh = []; $("pts").textContent = 0;
+  menu.hidden = true; free.hidden = true; play.hidden = false; dots = MK.dots($("dots"), tasks.length); show();
+}
+const say = (h, mood) => MK.say($("guide"), h, mood);
+function done(okFirst, p, msg){
+  dots.mark(ti, okFirst);
+  if(okFirst){ okN++; if(cur.des){ const a = album(); if(!a.includes(cur.des.id)){ a.push(cur.des.id); MK.set(KEY, a); fresh.push(cur.des.id); } } }
+  if(p){ pts += p; const c = $("ptsChip"); $("pts").textContent = pts; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); }
+  if(p) MK.sfx.good(); else MK.sfx.bad();
+  say(msg, p ? "good" : "bad");
+  const go = document.createElement("button"); go.type = "button"; go.className = "mk-btn go fade"; go.id = "next"; go.textContent = ti < tasks.length - 1 ? T.next : T.finish;
+  go.onclick = () => { MK.sfx.tap(); ti++; ti < tasks.length ? show() : finish(); };
+  $("flow").appendChild(go); setTimeout(() => { try{ go.scrollIntoView({ block: "nearest", behavior: "smooth" }); }catch(e){} }, 60);
+}
+function show(){
+  cur = tasks[ti]; dots.cur(ti); $("guide").innerHTML = MK.guide(cur.q); $("flow").innerHTML = "";
+  ({ judge: runJudge, comp: runComp, fold: runFold, axes: runAxes })[cur.type](cur); window.scrollTo(0, 0);
+}
+function finish(){
+  const total = tasks.length, stars = MK.starsFor(okN, total); MK.best(GAME, LEVELS[L].id, stars);
+  MK.result({ stars, title: `${okN} / ${total}`, text: T.res(okN, total, pts, fresh.length),
+    next: L < LEVELS.length - 1 ? () => start(L + 1) : null, again: () => start(L), menu: () => showMenu(fresh) });
+}
+
+/* ---- Taip / Ne su lankstymu ---- */
+function runJudge(t){
+  $("flow").innerHTML = `<div class="card fade"><div class="board lock" id="bd"></div><div class="ans two" id="ans"><button type="button" class="a" data-v="1">${T.yes}</button><button type="button" class="a" data-v="0">${T.no}</button></div></div>`;
+  const B = { W: t.W, H: t.H, g: t.g, col: t.col, axes: [t.ax], el: $("bd"), k: t.W > 10 ? 1.05 : 1.2 }; draw(B);
+  $("ans").onclick = async e => {
+    const b = e.target.closest(".a"); if(!b || $("ans").classList.contains("done")) return; MK.sfx.tap();
+    const pick = b.dataset.v === "1", ok = pick === t.ans; $("ans").classList.add("done");
+    b.classList.add(ok ? "ok" : "no"); if(!ok) $("ans").querySelector(`[data-v="${t.ans ? 1 : 0}"]`).classList.add("ok");
+    await fold(B, t.ax, "a"); if(!t.ans) markCells(B, mism(t.g, t.ax));
+    done(ok, ok ? 10 : 0, (ok ? MK.praise() : T.wrongLead) + " " + (t.ans ? t.tx.yes : t.tx.no + " " + t.tx[t.why]));
+  };
+  window.__t = { t, B };
+}
+/* ---- karpinio užbaigimas ---- */
+function runComp(t){
+  $("flow").innerHTML = `<div class="card fade"><div class="board" id="bd"></div><div class="tools"><button type="button" class="mk-btn alt" id="clr">${T.clear}</button><button type="button" class="mk-btn" id="chk">${T.check}</button></div></div>`;
+  const B = { W: t.W, H: t.H, g: copy(t.g0), col: t.col, axes: t.axes, edit: (x, y) => !t.giv(x, y), el: $("bd"), k: t.W > 10 ? 1.05 : 1.2 }; let tries = 0;
+  draw(B); paintable(B, (x, y, v) => { B.g[y][x] = v; B.rows = B.cols = null; MK.sfx.tap(); draw(B); });
+  $("clr").onclick = () => { if(B.lock) return; MK.sfx.tap(); B.g = copy(t.g0); B.rows = B.cols = null; draw(B); };
+  $("chk").onclick = async () => {
+    if(B.lock) return; const errs = [];
+    for(let y = 0; y < t.H; y++) for(let x = 0; x < t.W; x++) if(B.g[y][x] !== t.target[y][x]) errs.push([x, y]);
+    if(count(B.g) === count(t.g0)){ MK.sfx.tap(); say(T.comp.empty, "bad"); return; }
+    const end = () => { B.lock = true; B.el.classList.add("lock"); $("clr").disabled = $("chk").disabled = true; };
+    if(!errs.length){ end(); B.solid = true; B.edit = null; draw(B); done(tries === 0, tries === 0 ? 10 : 5, MK.praise() + " " + t.okT); return; }
+    tries++;
+    if(tries === 1){
+      MK.sfx.bad(); B.rows = t.mark === "rows" ? [...new Set(errs.map(e => e[1]))] : null; B.cols = t.mark === "cols" ? [...new Set(errs.map(e => e[0]))] : null; draw(B);
+      B.el.classList.remove("shake"); void B.el.offsetWidth; B.el.classList.add("shake"); say(T.comp[t.mark], "bad"); return;
+    }
+    end(); B.g = copy(t.g0); B.edit = null; B.solid = true; B.rows = B.cols = null; draw(B);
+    for(const ax of t.axes){ await fold(B, ax, B.g.some((r, y) => r.some((v, x) => v && (ax.d === "v" ? x < ax.p : y < ax.p))) ? "a" : "b"); B.g = B.g.map((r, y) => r.map((v, x) => { const [a, b] = refl(x, y, ax); return v | B.g[b][a]; })); draw(B); }
+    done(false, 0, T.comp.fail);
+  };
+  window.__t = { t, B };
+}
+/* ---- Kas išeis išlanksčius? ---- */
+function runFold(t){
+  const sw = t.src[0].length, sh = t.src.length;
+  $("flow").innerHTML = `<div class="card fade"><p class="cap">${T.folded} · <span style="color:#c75e00">┅ ${T.foldLine}</span></p><div class="board lock" id="bd"></div>
+    <div class="ans two" id="ans">${t.opts.map((o, i) => `<button type="button" class="a opt" data-i="${i}"><i>${"ABCD"[i]}</i>${thumb(o, t.col, "#fffdf6")}</button>`).join("")}</div></div>`;
+  const B = { W: sw, H: sh, g: t.src, col: t.col, folds: t.edges, el: $("bd"), k: sh >= 10 ? .62 : sh >= 8 ? .75 : .95 }; draw(B);
+  $("ans").onclick = async e => {
+    const b = e.target.closest(".a"); if(!b || $("ans").classList.contains("done")) return; MK.sfx.tap();
+    const ok = +b.dataset.i === t.ans; $("ans").classList.add("done"); b.classList.add(ok ? "ok" : "no"); if(!ok) $("ans").children[t.ans].classList.add("ok");
+    const F = { W: t.W, H: t.H, g: place(t.src, t.W, t.H, t.sx, t.sy), col: t.col, el: $("bd"), k: t.H >= 10 ? .62 : t.H >= 8 ? .75 : .95, solid: true };
+    for(const [ax, side] of t.seq){ F.axes = (F.axes || []).concat([ax]); draw(F); await fold(F, ax, side); F.g = F.g.map((r, y) => r.map((v, x) => { const [a, c] = refl(x, y, ax); return v | (inb(F.g, a, c) ? F.g[c][a] : 0); })); draw(F); }
+    done(ok, ok ? 10 : 0, ok ? MK.praise() + " " + (t.folds === 2 ? T.fold.ok2 : T.fold.ok) : T.fold.bad);
+    window.__t.F = F;
+  };
+  window.__t = { t, B };
+}
+/* ---- Kiek simetrijos ašių? ---- */
+function runAxes(t){
+  const sh = t.sh, sel = sh.f.map(() => false); let tries = 0, lock = false, reveal = false;
+  $("flow").innerHTML = `<div class="card fade"><div class="board" id="bd" style="max-width:340px;touch-action:manipulation"></div><div class="tools"><button type="button" class="mk-btn" id="chk">${T.check}</button></div></div>`;
+  const paint = () => {
+    let s = `<svg viewBox="-150 -150 300 300" role="img" style="touch-action:manipulation">`;
+    s += sh.circle ? `<circle r="${sh.circle}" fill="${t.col}" stroke="${K}" stroke-width="3"/>` : sh.p.map(p => `<path d="M${p.map(([x, y]) => x.toFixed(1) + " " + (-y).toFixed(1)).join("L")}z" fill="${t.col}" stroke="${K}" stroke-width="3" stroke-linejoin="round"/>`).join("");
+    sh.f.forEach((a, i) => {
+      const x = 132 * Math.cos(rad(a)), y = -132 * Math.sin(rad(a)), on = sel[i], good = reveal && sh.ax[i], badS = reveal && on && !sh.ax[i];
+      const c = good ? "#1c9a55" : badS ? "#e5243b" : on ? "#1b3a8a" : "#7d8699";
+      s += `<g class="ax-l" data-i="${i}"><path d="M${-x} ${-y}L${x} ${y}" stroke="transparent" stroke-width="24"/><path d="M${-x} ${-y}L${x} ${y}" stroke="${c}" stroke-width="${on || good ? 5 : 2.5}" stroke-dasharray="${on || good ? "none" : "7 6"}" stroke-linecap="round" opacity="${reveal && !good && !badS ? .35 : 1}"/>
+        ${[[x, y], [-x, -y]].map(([u, v]) => `<circle cx="${u}" cy="${v}" r="15" fill="${on || good ? c : "#fff"}" stroke="${on || good || badS ? c : K}" stroke-width="2.5"/>${good ? `<path d="M${u - 6} ${v}l4 5 8-9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>` : badS ? `<path d="M${u - 5} ${v - 5}l10 10m0-10l-10 10" stroke="#fff" stroke-width="3" stroke-linecap="round"/>` : on ? `<path d="M${u - 6} ${v}l4 5 8-9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>` : ""}`).join("")}</g>`;
+    });
+    $("bd").innerHTML = s + `</svg>`;
+  };
+  paint();
+  $("bd").onclick = e => { const g = e.target.closest(".ax-l"); if(!g || lock) return; MK.sfx.tap(); sel[+g.dataset.i] = !sel[+g.dataset.i]; paint(); };
+  $("chk").onclick = () => {
+    if(lock) return; const miss = sh.ax.some((v, i) => v && !sel[i]), extra = sh.ax.some((v, i) => !v && sel[i]), n = sh.ax.filter(Boolean).length;
+    const sum = (sh.circle ? T.axes.inf : T.axes.n(n)) + (T.axes.notes[sh.id] ? " " + T.axes.notes[sh.id] : "");
+    const end = () => { lock = true; reveal = true; paint(); $("chk").disabled = true; };
+    if(!miss && !extra){ end(); done(tries === 0, tries === 0 ? 10 : 5, MK.praise() + " " + sum); return; }
+    tries++;
+    if(tries === 1){ MK.sfx.bad(); $("bd").classList.remove("shake"); void $("bd").offsetWidth; $("bd").classList.add("shake"); say(miss && extra ? T.axes.mix : miss ? T.axes.more : T.axes.less, "bad"); return; }
+    end(); done(false, 0, sum + " " + T.axes.show);
+  };
+  window.__t = { t, sel, paint };
+}
+
+/* ================= „Kurk savo karpinį“ ================= */
+function showFree(){
+  menu.hidden = true; play.hidden = true; free.hidden = false; MK.unlock();
+  const F = T.free; let two = true, ci = 0;
+  free.innerHTML = `<div class="card fade" style="margin-top:6px"><h2 style="margin:0 0 4px;font:800 24px/1.1 var(--kid)">${F.h}</h2><p style="margin:0 0 10px;font:700 15px/1.4 var(--body);color:var(--soft)">${F.p}</p>
+    <div class="seg"><button type="button" data-n="1">${F.one}</button><button type="button" data-n="2" class="on">${F.two}</button></div>
+    <div class="board" id="fb"></div><div class="sw" role="group" aria-label="${F.color}">${COLS.map((c, i) => `<button type="button" data-c="${i}" class="${i ? "" : "on"}" style="background:${c}" aria-label="${F.color} ${i + 1}"></button>`).join("")}</div>
+    <p class="note" id="fnote"></p><div class="tools"><button type="button" class="mk-btn alt" id="fclr">${T.clear}</button><button type="button" class="mk-btn" id="fsave">${F.save}</button></div></div>
+    <button type="button" class="mk-btn ghost go" id="fback">${F.back}</button>`;
+  const B = { W: 10, H: 10, g: blank(10, 10), col: COLS[0], axes: [{ d: "v", p: 5 }, { d: "h", p: 5 }], edit: () => true, solid: true, el: $("fb") };
+  const sym = (x, y, v) => { B.g[y][x] = v; B.g[y][9 - x] = v; if(two){ B.g[9 - y][x] = v; B.g[9 - y][9 - x] = v; } };
+  draw(B); paintable(B, (x, y, v) => { sym(x, y, v); $("fnote").textContent = ""; MK.sfx.tap(); draw(B); });
+  free.querySelector(".seg").onclick = e => { const b = e.target.closest("button"); if(!b) return; MK.sfx.tap(); two = b.dataset.n === "2"; free.querySelectorAll(".seg button").forEach(x => x.classList.toggle("on", x === b));
+    B.axes = two ? [{ d: "v", p: 5 }, { d: "h", p: 5 }] : [{ d: "v", p: 5 }]; if(two) B.g.forEach((r, y) => r.forEach((v, x) => { if(v) sym(x, y, 1); })); draw(B); };
+  free.querySelector(".sw").onclick = e => { const b = e.target.closest("button"); if(!b) return; MK.sfx.tap(); ci = +b.dataset.c; B.col = COLS[ci]; free.querySelectorAll(".sw button").forEach(x => x.classList.toggle("on", x === b)); draw(B); };
+  $("fclr").onclick = () => { MK.sfx.tap(); B.g = blank(10, 10); $("fnote").textContent = ""; draw(B); };
+  $("fsave").onclick = () => {
+    const nt = $("fnote"); if(count(B.g) < 4){ nt.className = "note warn"; nt.textContent = F.empty; MK.sfx.bad(); return; }
+    const m = MK.get(KEYM, []); m.push({ g: B.g.map(r => r.map(v => v ? "#" : ".").join("")).join("/"), c: ci }); MK.set(KEYM, m.slice(-12));
+    nt.className = "note"; nt.textContent = F.saved; MK.sfx.good(); MK.confetti(24);
+  };
+  $("fback").onclick = () => { MK.sfx.tap(); showMenu(); };
+  window.scrollTo(0, 0); window.__f = { B };
+}
+$("freeBtn").onclick = () => { MK.sfx.tap(); showFree(); };
+
+Object.defineProperty(window, "__cur", { get: () => cur });
+window.__MK_TEST = { LV, DES, MOT, SHAPES, T, genJudge, genComp, genFold, genAxes, genPair, isSym, mism, gkey, parse, mirX, mirY, tr, joinH, joinV, refl, symAt, start, thumb };
+showMenu();
+})();
+</script>
+</body>
+</html>
