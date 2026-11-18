@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tikimybių medis – MokomėsKartu.lt</title>
+<meta name="description" content="Matematikos žaidimas 12 klasei (VBE): tikimybių medžiai, grąžintinis ir negrąžintinis ėmimas, įvykiai „A ir B“, „A arba B“, Bernulio bandymai ir atsitiktinis dydis.">
+<meta name="theme-color" content="#f5f7ec">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<style>
+/* Tikimybių medis: sodo spalvos – lapų žalia, obuolių raudona, šakų ruda. */
+body{--paper:#f5f7ec;--grid:#e6ebd6;--soft:#51604f;--kid:"Fraunces",Georgia,serif;--ac:#2c8a4b;--ac-ink:#fff;--ac-soft:#dcf0d6;--amber:#f2a50c;--bark:#8a6238;--apple:#d9412f}
+.mk-ico[data-k="music"]{display:none}
+.mk-title{font-weight:900}
+.mk-lvl{border-radius:16px;box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 var(--ink)}
+.mk-lvl-art{border-radius:12px}
+.mk-lvl-t b{font-size:17.5px;font-weight:900}
+.mk-lvl-t small{font-size:13.5px}
+.mk-lvl .adv{display:inline-block;margin-top:4px;font:800 11px/1 var(--body);letter-spacing:.04em;text-transform:uppercase;background:var(--amber);color:#121a33;border-radius:6px;padding:3px 6px}
+.mk-hero h1{font-weight:900;font-size:clamp(34px,9vw,54px)}
+.mk-hero p{max-width:46ch}
+.mk-hero-art{width:min(400px,100%)}
+.mk-hero-art svg{display:block;width:100%;height:auto}
+.mk-btn{border-radius:14px;font-size:18px;font-weight:900}
+.mk-res{border-radius:20px}
+.mk-res h2{font-weight:900}
+.mk-sec{font-weight:900}
+.mk-fr{font-family:var(--body);font-weight:800;font-size:.84em}
+.note{max-width:520px;margin:14px auto 0;color:var(--soft);font-size:13px;text-align:center}
+.garden{max-width:520px;margin:0 auto 14px;background:#fff;border-radius:16px;padding:12px 14px 10px;box-shadow:inset 0 0 0 2.5px var(--ink),0 5px 0 var(--ink)}
+.garden h2{margin:0 0 2px;font:900 17px/1.2 var(--kid)}
+.garden p{margin:0 0 6px;font:700 13.5px/1.4 var(--body);color:var(--soft)}
+.garden p b{color:var(--ink)}
+.garden svg{display:block;width:100%;height:auto}
+
+.bar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;margin:0 0 8px}
+.x{width:40px;height:40px;border-radius:10px;border:2.5px solid var(--ink);background:#fff;font:800 16px/1 var(--body);cursor:pointer;padding:0}
+.chip{font:800 13px/1 var(--body);background:#fff;border:2.5px solid var(--ink);border-radius:10px;padding:9px 10px;white-space:nowrap}
+.qcard{background:#fff;border-radius:14px;padding:12px 14px;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 var(--ink);font:700 15.5px/1.5 var(--body)}
+.qcard .q{margin:8px 0 0;padding-top:8px;border-top:2px dashed #d5dcc3;font-size:16.5px}
+.qcard .q b{color:#1c6b37}
+.qcard .tag{display:inline-block;font:800 11px/1 var(--body);letter-spacing:.04em;text-transform:uppercase;background:var(--amber);border-radius:6px;padding:4px 7px;margin-bottom:6px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:10px 2px 0;font:700 13px/1.2 var(--body);color:var(--soft)}
+.legend i{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;color:#fff;font:800 12px/1 var(--body);font-style:normal;margin-right:5px;box-shadow:0 0 0 2px var(--ink)}
+.legend span{display:inline-flex;align-items:center}
+.treebox{background:#fff;border-radius:14px;margin:10px 0 0;padding:6px 4px;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.tree{display:block;width:100%;max-width:440px;height:auto;margin:0 auto;-webkit-user-select:none;user-select:none}
+.tree text{font-family:Manrope,system-ui,sans-serif;font-weight:800}
+.ed{stroke:var(--bark);stroke-width:3;stroke-linecap:round}
+.ed.cur{stroke:var(--amber);stroke-width:5}
+.el rect{fill:#fff;stroke:#c9b79c;stroke-width:1.5}
+.el text{font-size:12.5px;fill:#121a33}
+.el.hid rect{fill:#eef1e6;stroke:#aab39b;stroke-dasharray:3 3}
+.el.hid text{fill:#7a846e}
+.el.cur rect{fill:var(--amber);stroke:#121a33;stroke-width:2}
+.el.cur{animation:pls 1s infinite;transform-box:fill-box;transform-origin:center}
+.el.done rect{fill:#dcf0d6;stroke:#2c8a4b;stroke-width:2}
+.nd{stroke:#121a33;stroke-width:2}
+.ndt{font-size:12px;fill:#fff}
+.pill rect{fill:#f3f5ea;stroke:#121a33;stroke-width:2}
+.pill text{font-size:13.5px;fill:#121a33;letter-spacing:.06em}
+.pill.tap{cursor:pointer}
+.pill.on rect{fill:#ffe08a}
+.pill.fav rect{stroke:#1f9d4d;stroke-width:4}
+.pill.miss rect{fill:#ffd2c9}
+.pill.dim{opacity:.45}
+@keyframes pls{50%{transform:scale(1.18)}}
+.panel{margin:12px 0 0}
+.panel h3{margin:0 0 4px;font:900 15px/1.2 var(--kid);color:#1c6b37}
+.panel p{margin:0 0 10px;font:700 15.5px/1.45 var(--body)}
+.panel p .sm{display:block;font-size:14px;color:var(--soft);margin-top:2px}
+.panel p.hint{font-size:13.5px;color:var(--soft);margin-top:-4px}
+.msg{font:800 14.5px/1.4 var(--body);padding:8px 12px;border-radius:10px;margin:0 0 10px}
+.msg.ok{background:#e3f7e8;color:#14602d}
+.msg.bad{background:#ffe9e4;color:#9c2a14}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{min-height:60px;border:0;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 2.5px var(--ink),0 4px 0 var(--ink);font:800 19px/1.1 var(--body);cursor:pointer;padding:8px;display:grid;place-items:center}
+.opt:active{transform:translateY(3px);box-shadow:inset 0 0 0 2.5px var(--ink),0 1px 0 var(--ink)}
+.opt.ok{background:#c9f0d3}
+.opt.bad{background:#ffd2c9;animation:mkShake .4s}
+.opt[disabled]{pointer-events:none}
+.opt.off{opacity:.4}
+.wide{width:100%}
+.sim{background:#fff;border-radius:12px;padding:10px 12px;margin:0 0 12px;box-shadow:inset 0 0 0 2px #c9d3b4;font:700 14px/1.45 var(--body)}
+.sim b.t{display:block;font:900 14.5px/1.2 var(--kid);margin-bottom:6px}
+.simbar{position:relative;height:16px;border-radius:8px;background:#e9eddc;overflow:hidden;margin:0 0 6px}
+.simbar i{position:absolute;left:0;top:0;bottom:0;background:var(--ac);border-radius:8px;width:0;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.simbar u{position:absolute;top:-2px;bottom:-2px;width:3px;background:#121a33}
+.dt{border-collapse:collapse;margin:10px auto 2px;font:800 15.5px/1.2 var(--body)}
+.dt th,.dt td{border:2px solid var(--ink);padding:7px 10px;text-align:center;min-width:42px}
+.dt th{background:var(--ac-soft)}
+.dt td.q{background:var(--amber)}
+.dt td.h{color:#9aa58a}
+.trials{display:flex;justify-content:center;gap:8px;margin:10px 0 2px}
+.trials i{width:30px;height:30px;border-radius:50%;background:#f3f5ea;box-shadow:inset 0 0 0 2.5px var(--ink);display:grid;place-items:center;font:800 13px/1 var(--body);font-style:normal;color:#7a846e}
+.balls{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin:10px 0 2px}
+.balls i{width:20px;height:20px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--ink)}
+sup,sub{font-size:.72em;line-height:0}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <main id="menu">
+    <section class="mk-hero">
+      <div class="mk-hero-art" id="heroArt"></div>
+      <h1 id="h1"></h1>
+      <p id="heroP"></p>
+    </section>
+    <section class="garden" id="garden"></section>
+    <div id="levels"></div>
+    <div id="learn"></div>
+    <p class="note" id="note"></p>
+  </main>
+  <main id="game" hidden>
+    <div class="bar"><button type="button" class="x" id="quit" aria-label="Baigti">✕</button><div id="dots"></div><div class="chip" id="chip"></div></div>
+    <div class="qcard" id="q"></div>
+    <div id="stage"></div>
+    <div class="panel" id="panel"></div>
+    <div id="fb"></div>
+  </main>
+</div>
+<script>
+"use strict";
+const T = window.MK_T, GAME = "tikimybiu-medis", $ = id => document.getElementById(id);
+
+/* ---------- racionalieji skaičiai ---------- */
+const gcd = (a, b) => b ? gcd(b, a % b) : Math.abs(a);
+const R = (n, d) => { const g = gcd(n, d) || 1; return { n: n / g, d: d / g }; };
+const mul = (a, b) => R(a.n * b.n, a.d * b.d), add = (a, b) => R(a.n * b.d + b.n * a.d, a.d * b.d), comp = a => R(a.d - a.n, a.d);
+const key = a => { const r = R(a.n, a.d); return r.n + "/" + r.d; }, val = a => a.n / a.d;
+const dec = a => String(Math.round(a.n / a.d * 1e6) / 1e6).replace(".", ",");
+const fH = (a, dm) => dm ? dec(a) : a.d === 1 ? String(a.n) : MK.frac(a.n, a.d);   /* HTML */
+const fS = (a, dm) => dm ? dec(a) : a.d === 1 ? String(a.n) : a.n + "/" + a.d;       /* SVG / tekstas */
+const C = (n, k) => { let r = 1; for(let i = 1; i <= k; i++) r = r * (n - k + i) / i; return Math.round(r); };
+const pw = (a, k) => Math.pow(a, k);
+
+/* ---------- bandymo modeliai ---------- */
+function urnModel(outs, counts, n, repl){
+  return { dm: false, n, outs, counts, repl, stageName: i => T.stage(i + 1),
+    br(seq){ const c = counts.slice(); if(!repl) seq.forEach(o => c[o]--); const t = c.reduce((a, b) => a + b, 0); return c.map(x => ({ n: x, d: t })); } };
+}
+function indModel(c, ps, n){
+  return { dm: !!c.dec, n, outs: [c.S, c.F], ps, stageName: i => c.stages ? c.stages[i] : T.stage(i + 1),
+    br(seq){ const p = ps[seq.length]; return [{ n: p[0], d: p[1] }, { n: p[1] - p[0], d: p[1] }]; } };
+}
+function leavesOf(m){
+  const out = [];
+  (function go(seq, pr, edges){
+    if(seq.length === m.n){ out.push({ seq, pr, edges }); return; }
+    m.br(seq).forEach((e, o) => go(seq.concat(o), mul(pr, R(e.n, e.d)), edges.concat([e])));
+  })([], R(1, 1), []);
+  return out;
+}
+const c0 = s => s.filter(x => x === 0).length;
+const TEST = {
+  AA: s => c0(s) === s.length, AAA: s => c0(s) === s.length, all2: s => c0(s) === s.length, all3: s => c0(s) === s.length,
+  none: s => c0(s) === 0, AB: s => s[0] === 0 && s[1] === 1, SF: s => s[0] === 0 && s[1] === 1,
+  same: s => s.every(x => x === s[0]), samec: s => s.every(x => x === s[0]),
+  diff: s => s.includes(0) && s.includes(1), diffc: s => s[0] !== s[1],
+  least: s => c0(s) >= 1, secondA: s => s[1] === 0, exact1: s => c0(s) === 1, exact2: s => c0(s) === 2, most2: s => c0(s) >= 2
+};
+const probOf = (L, test) => L.filter(l => test(l.seq)).reduce((a, l) => add(a, l.pr), R(0, 1));
+
+/* ---------- medžio užduoties generatorius ---------- */
+let usedCtx = new Set();
+function pickCtx(list, ok){
+  const a = list.filter(ok), fresh = a.filter(c => !usedCtx.has(c.id));
+  const c = MK.pick(fresh.length ? fresh : a); usedCtx.add(c.id); return c;
+}
+function genTree(kind, ev, nHide){
+  let m, intro, evText, alt = null;
+  if(kind.startsWith("ind")){
+    const n = +kind[3], c = pickCtx(T.ind, c => c.n.includes(n) && c.ev[ev]);
+    let ps;
+    if(c.differ) ps = MK.shuffle(c.ps).slice(0, n); else { const p = MK.pick(c.ps); ps = Array(n).fill(p); }
+    m = indModel(c, ps, n);
+    intro = c.intro(ps.map(p => fH({ n: p[0], d: p[1] }, c.dec)), n); evText = c.ev[ev];
+  } else if(kind.startsWith("urn")){
+    const repl = kind[3] === "R", n = +kind[4], c = pickCtx(T.urn, c => c.repl.includes(repl));
+    let a, b;
+    do { a = MK.rnd(n, 6); b = MK.rnd(n, 6); } while(a + b > 10 || a + b < 5 || (a === b && Math.random() < .7));
+    m = urnModel([c.A, c.B], [a, b], n, repl); alt = urnModel([c.A, c.B], [a, b], n, !repl);
+    intro = `${c.intro(a, b)} ${c.take[n]} ${repl ? c.rY : c.rN}`;
+    evText = T.ev[ev](c, T.G[c.g], c.A, c.B);
+  } else {                                   /* c3R / c3N – trys spalvos, du etapai */
+    const repl = kind[2] === "R", c = pickCtx(T.urn3, c => c.repl.includes(repl));
+    let cs;
+    do { cs = [MK.rnd(2, 4), MK.rnd(2, 4), MK.rnd(2, 4)]; } while(cs[0] + cs[1] + cs[2] > 10 || (cs[0] === cs[1] && cs[1] === cs[2]));
+    m = urnModel(c.outs, cs, 2, repl); alt = urnModel(c.outs, cs, 2, !repl);
+    intro = `${c.intro(cs)} ${c.take} ${repl ? c.rY : c.rN}`;
+    evText = T.ev[ev](c, T.G[c.g], c.outs[0], c.outs[1]);
+  }
+  const L = leavesOf(m), test = TEST[ev], P = probOf(L, test);
+  const t = { kind, ev, m, L, test, P, intro, evText, phase: "edges", cur: 0, marked: new Set(), reveal: false, edgeErr: 0 };
+  t.fav = L.map((l, i) => test(l.seq) ? i : -1).filter(i => i >= 0);
+  t.hidden = pickHidden(m, nHide).map(seq => ({ seq, id: seq.join(""), done: false }));
+  /* galutinio atsakymo variantai */
+  const cands = [comp(P)];
+  if(alt) cands.push(probOf(leavesOf(alt), test));
+  const lp = MK.shuffle(L.map(l => l.pr)); lp.forEach(p => cands.push(p));
+  for(let i = 0; i < lp.length; i++) for(let j = i + 1; j < lp.length; j++) cands.push(add(lp[i], lp[j]));
+  t.opts = ratOpts(P, cands, m.dm);
+  return t;
+}
+function pickHidden(m, nHide){
+  const res = [], k = m.outs.length;
+  if(m.n === 2){
+    if(k === 2){ const ps = MK.shuffle([0, 1]); res.push([MK.rnd(0, 1)], [ps[0], MK.rnd(0, 1)]); if(nHide > 2) res.push([ps[1], MK.rnd(0, 1)]); }
+    else MK.shuffle([0, 1, 2]).forEach(p => res.push([p, MK.rnd(0, 2)]));
+  } else {
+    const p1 = [MK.rnd(0, 1), MK.rnd(0, 1)]; let p2;
+    do { p2 = [MK.rnd(0, 1), MK.rnd(0, 1)]; } while(p2[0] === p1[0] && p2[1] === p1[1]);
+    res.push([MK.rnd(0, 1), MK.rnd(0, 1)], p1.concat(MK.rnd(0, 1)), p2.concat(MK.rnd(0, 1)));
+  }
+  return res.sort((a, b) => a.length - b.length);
+}
+/* Variantai: teisingas + 3 skirtingos reikšmės iš kandidatų (pirmieji – tipinės klaidos). */
+function ratOpts(correct, cands, dm, any){
+  const seen = new Set([key(correct)]), out = [];
+  const okv = c => c.n > 0 && c.d > 0 && (any || c.n < c.d);
+  for(const c of cands){ if(out.length >= 3) break; if(c && okv(c) && !seen.has(key(c))){ seen.add(key(c)); out.push(R(c.n, c.d)); } }
+  const base = dm ? R(Math.round(val(correct) * 1000), 1000) : correct;
+  const D = dm ? [10, 100, 1000].find(d => Number.isInteger(+(val(correct) * d).toFixed(6))) || 1000 : base.d;
+  const N0 = Math.round(val(correct) * D);
+  let step = 1;
+  while(out.length < 3 && step < 60){
+    for(const s of [step, -step]){ const c = R(N0 + s, D); if(out.length < 3 && okv({ n: N0 + s, d: D }) && !seen.has(key(c))){ seen.add(key(c)); out.push(c); } }
+    step++;
+  }
+  for(const f of [[1, 3], [2, 3], [1, 8], [3, 8], [5, 8], [1, 6], [5, 6], [1, 5], [2, 5]]){ const c = R(f[0], f[1]); if(out.length < 3 && !seen.has(key(c))){ seen.add(key(c)); out.push(c); } }
+  const all = MK.shuffle([correct].concat(out));
+  return { list: all, ci: all.findIndex(x => key(x) === key(correct)) };
+}
+function edgeOpts(t, h){
+  const m = t.m, prefix = h.seq.slice(0, -1), o = h.seq[h.seq.length - 1], br = m.br(prefix), e = br[o], seen = new Set([key(e)]), out = [];
+  const cands = br.filter((_, i) => i !== o);
+  cands.push(m.br([])[o]);
+  t.L.forEach(l => { const p = l.seq.slice(0, prefix.length); cands.push(m.br(p)[o]); });
+  cands.push({ n: e.n, d: e.d + 1 }, { n: e.n + 1, d: e.d }, { n: e.n - 1, d: e.d }, { n: e.n, d: e.d - 1 }, { n: e.n + 1, d: e.d + 1 });
+  if(m.dm) [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(x => cands.push({ n: x, d: 10 }));
+  else [[1, 4], [1, 3], [2, 3], [3, 4], [1, 6], [5, 6], [1, 2]].forEach(x => cands.push({ n: x[0], d: x[1] }));
+  for(const c of cands){ if(out.length >= 3) break; if(c.n > 0 && c.n < c.d && !seen.has(key(c))){ seen.add(key(c)); out.push(c); } }
+  const all = MK.shuffle([e].concat(out));
+  return { list: all, ci: all.indexOf(e) };
+}
+
+/* ---------- išplėstinio kurso užduotys ---------- */
+function numOpts(correct, cands){
+  const seen = new Set([correct]), out = [];
+  for(const c of cands){ if(out.length >= 3) break; if(Number.isInteger(c) && c > 0 && !seen.has(c)){ seen.add(c); out.push(c); } }
+  let s = 1; while(out.length < 3){ for(const c of [correct + s, correct - s]) if(out.length < 3 && c > 0 && !seen.has(c)){ seen.add(c); out.push(c); } s++; }
+  const all = MK.shuffle([correct].concat(out));
+  return { list: all.map(String), ci: all.indexOf(correct) };
+}
+const oH = (o, dm, any) => ({ list: o.list.map(x => fH(x, dm)), ci: o.ci });
+function genAdv(type){
+  if(type === "bern" || type === "bernLeast"){
+    const c = pickCtx(T.bern, () => true), p = MK.pick(c.p), n = MK.pick(c.n), dm = !!c.dec, a = p[0], b = p[1], q = b - a;
+    const pS = fH(R(a, b), dm), qS = fH(R(q, b), dm), intro = c.intro(n, pS);
+    const trials = `<div class="trials">${Array.from({ length: n }, (_, i) => `<i>${i + 1}</i>`).join("")}</div>`;
+    if(type === "bernLeast"){
+      const P = R(pw(b, n) - pw(q, n), pw(b, n)), qn = R(pw(q, n), pw(b, n));
+      const o = ratOpts(P, [qn, R(n * a, b), R(pw(a, n), pw(b, n)), R(pw(b, n) - pw(a, n), pw(b, n)), R(a, b)], dm);
+      return { adv: true, intro, q: T.qProb(c.least), visual: trials, steps: [{ q: T.askAnswer(c.least), o: oH(o, dm), ex: T.bernLeastEx(n, qS, fH(qn, dm), fH(P, dm)) }] };
+    }
+    const k = MK.rnd(1, n - 1), Cn = C(n, k), P = R(Cn * pw(a, k) * pw(q, n - k), pw(b, n));
+    const o1 = numOpts(Cn, [n * k, n, pw(2, n), Cn * 2, n * (n - 1)]);
+    const o2 = ratOpts(P, [R(pw(a, k) * pw(q, n - k), pw(b, n)), R(Cn * pw(a, k), pw(b, k)), R(k, n), R(Cn, pw(2, n)), comp(P)], dm);
+    return { adv: true, intro, q: T.qProb(c.exact(k)), visual: trials, steps: [
+      { q: T.bernQ1(n, k), o: o1, ex: T.combC(n, k, Cn) },
+      { q: T.askAnswer(c.exact(k)), o: oH(o2, dm), ex: T.bernEx(n, k, Cn, pS, qS, fH(P, dm)) }] };
+  }
+  if(type === "comb"){
+    const c = pickCtx(T.comb, () => true), a = MK.pick(c.a), b = MK.pick(c.b), N = a + b, m = MK.pick([2, 3, 3]), k = MK.rnd(1, m);
+    const tot = C(N, m), fav = C(a, k) * C(b, m - k), P = R(fav, tot);
+    let perm = 1; for(let i = 0; i < m; i++) perm *= N - i;
+    const o1 = numOpts(tot, [perm, N * m, C(N, m - 1), pw(N, m), tot * 2]);
+    const o2 = ratOpts(P, [R(C(a, k), tot), R(fav, perm), R(k, m), R(pw(a, k) * pw(b, m - k), pw(N, m)), comp(P), R(a, N)], false);
+    const balls = `<div class="balls">${Array.from({ length: N }, (_, i) => `<i style="background:${i < a ? "#d9412f" : "#2f7fd6"}"></i>`).join("")}</div>`;
+    return { adv: true, intro: c.intro(a, b, m), q: T.qProb(c.ev(k, m)), visual: balls, steps: [
+      { q: T.combQ1(N, m), o: o1, ex: T.combC(N, m, tot) },
+      { q: T.askAnswer(c.ev(k, m)), o: oH(o2, false), ex: T.combEx(N, m, tot, a, k, b, fav, fH(P, false), c.A, c.B) }] };
+  }
+  if(type === "dist"){
+    const c = pickCtx(T.dist, () => true), xs = MK.pick(c.x), Ln = xs.length, D = Ln > 4 ? 20 : 10;
+    let ps; do { ps = xs.map(() => MK.rnd(1, D === 10 ? 5 : 8)); } while(ps.reduce((s, v) => s + v, 0) !== D);
+    if(c.desc) ps.sort((x, y) => y - x);
+    const mi = MK.rnd(0, Ln - 1), known = D - ps[mi], E = R(xs.reduce((s, x, i) => s + x * ps[i], 0), D);
+    const tbl = show => `<table class="dt"><tr><th>${T.xRow}</th>${xs.map(x => `<td>${x}</td>`).join("")}</tr><tr><th>${T.pRow}</th>${ps.map((p, i) => i === mi && !show ? `<td class="q">?</td>` : `<td>${dec(R(p, D))}</td>`).join("")}</tr></table>`;
+    const o1 = ratOpts(R(ps[mi], D), [R(known, D), R(D - known + ps[(mi + 1) % Ln], D), R(1, Ln), R(ps[(mi + 1) % Ln], D)], true);
+    const mean = R(xs.reduce((s, x) => s + x, 0), Ln), mode = R(xs[ps.indexOf(Math.max(...ps))], 1);
+    const o2 = ratOpts(E, [mean, mode, R(xs.reduce((s, x, i) => s + (i === mi ? 0 : x * ps[i]), 0), D), R(E.n + E.d, E.d * 1), R(E.n * 2, E.d)].filter(x => x.n > 0), true, true);
+    const terms = xs.map((x, i) => `${x} · ${dec(R(ps[i], D))}`).join(" + ");
+    return { adv: true, intro: c.intro, q: "", visual: tbl(false), visual2: tbl(true), steps: [
+      { q: T.distQ1, o: oH(o1, true), ex: T.distEx1(dec(R(known, D)), dec(R(ps[mi], D))) },
+      { q: T.distQ2, o: oH(o2, true), ex: T.distEx2(terms, dec(E)) }] };
+  }
+  /* rv: atsitiktinis dydis iš ėmimo bandymo */
+  const c = pickCtx(T.urn, () => true), repl = MK.pick(c.repl);
+  let a, b; do { a = MK.rnd(2, 5); b = MK.rnd(2, 5); } while(a === b && Math.random() < .6);
+  const m = urnModel([c.A, c.B], [a, b], 2, repl), L = leavesOf(m);
+  const PX = [0, 1, 2].map(k => probOf(L, s => c0(s) === k)), k = MK.pick([1, 1, 0, 2]);
+  const E = add(PX[1], mul(R(2, 1), PX[2]));
+  const tbl = st => `<table class="dt"><tr><th>${T.xRow}</th><td>0</td><td>1</td><td>2</td></tr><tr><th>${T.pRow}</th>${PX.map((p, i) => st ? `<td>${fH(p)}</td>` : i === k ? `<td class="q">?</td>` : `<td class="h">…</td>`).join("")}</tr></table>`;
+  const parts = L.filter(l => c0(l.seq) === k).map(l => l.edges.map(e => fH(e)).join(" · ")).join(" + ");
+  const half = L.find(l => c0(l.seq) === 1).pr;
+  const o1 = ratOpts(PX[k], [PX[(k + 1) % 3], PX[(k + 2) % 3], half, R(a, a + b), comp(PX[k])], false);
+  const o2 = ratOpts(E, [R(1, 1), add(PX[1], PX[2]), R(a, a + b), R(2 * b, a + b), PX[1]], false, true);
+  return { adv: true, intro: T.rv.intro(c, a, b, repl), q: "", visual: tbl(false), visual2: tbl(true), steps: [
+    { q: T.rv.q1(k), o: oH(o1, false), ex: T.rv.ex1(k, parts, fH(PX[k])) },
+    { q: T.distQ2, o: oH(o2, false), ex: T.distEx2(`0 · ${fH(PX[0])} + 1 · ${fH(PX[1])} + 2 · ${fH(PX[2])}`, fH(E)) }] };
+}
+
+/* ---------- lygių planai: kiekvienai užduočiai – galimi „rūšis:įvykis“ ---------- */
+const PLAN = [
+  [["ind2:all2"], ["urnR2:AA"], ["ind2:SF", "urnR2:AB"], ["ind2:none", "urnR2:none"], ["urnR2:AB", "ind2:SF"], ["urnR2:same", "ind2:exact1"]],
+  [["urnN2:AA"], ["urnN2:AB"], ["urnN2:none"], ["urnN2:secondA"], ["urnN2:diff"], ["urnN2:same"]],
+  [["ind2:least", "urnR2:least"], ["urnN2:diff", "ind2:exact1"], ["urnN2:least"], ["c3N:samec", "c3R:samec"], ["c3N:diffc", "c3N:diff"], ["c3N:least", "c3R:none", "urnN2:secondA"]],
+  [["ind3:all3", "urnR3:AAA"], ["urnN3:AAA", "ind3:none"], ["ind3:least", "urnN3:least"], ["ind3:exact2", "urnR3:exact2"], ["urnN3:exact1", "ind3:exact1"], ["urnN3:most2", "ind3:most2", "urnN3:exact2"]],
+  [["adv:bern"], ["adv:bernLeast"], ["adv:comb"], ["adv:dist"], ["adv:rv"], ["adv:bern"], ["adv:comb"], ["adv:dist"]],
+  [["urnN2:diff", "urnN2:same", "urnN2:secondA"], ["ind2:least", "ind2:exact1"], ["c3N:samec", "c3N:diffc", "c3N:least"], ["ind3:exact2", "ind3:most2", "ind3:least"], ["urnN3:exact2", "urnN3:least", "urnN3:exact1"], ["adv:bern", "adv:bernLeast"], ["adv:comb"], ["adv:dist", "adv:rv"]]
+];
+function makeTask(spec, li){
+  const [kind, ev] = MK.pick(spec).split(":");
+  return kind === "adv" ? genAdv(ev) : genTree(kind, ev, li === 0 ? 2 : 3);
+}
+
+/* ---------- piešiniai ---------- */
+const HERO = `<svg viewBox="0 0 400 230" role="img" aria-label="Sodininkė prie tikimybių medžio">
+  <ellipse cx="200" cy="214" rx="190" ry="14" fill="#cfe3b5"/>
+  <path d="M0 212q100-14 200-6t200-2v26H0z" fill="#b9d59a"/>
+  <g stroke="#8a6238" stroke-linecap="round" fill="none">
+    <path d="M236 212V150" stroke-width="13"/>
+    <path d="M236 152Q226 118 186 104M236 152Q250 116 292 104" stroke-width="8"/>
+    <path d="M186 104Q170 82 150 62M186 104Q196 80 212 60M292 104Q280 80 268 60M292 104Q308 82 330 62" stroke-width="5"/>
+  </g>
+  <g stroke="#121a33" stroke-width="2.5">
+    <ellipse cx="150" cy="50" rx="30" ry="24" fill="#58b368"/><ellipse cx="212" cy="46" rx="30" ry="24" fill="#3f9d57"/>
+    <ellipse cx="268" cy="46" rx="30" ry="24" fill="#58b368"/><ellipse cx="332" cy="50" rx="30" ry="24" fill="#3f9d57"/>
+    <circle cx="186" cy="104" r="12" fill="#d9412f"/><circle cx="292" cy="104" r="12" fill="#2f7fd6"/>
+    <circle cx="144" cy="54" r="10" fill="#d9412f"/><circle cx="216" cy="50" r="10" fill="#2f7fd6"/><circle cx="264" cy="50" r="10" fill="#d9412f"/><circle cx="336" cy="54" r="10" fill="#2f7fd6"/>
+  </g>
+  <g font-family="Manrope,system-ui,sans-serif" font-weight="800" font-size="12" text-anchor="middle">
+    <g fill="#fff"><text x="186" y="108">R</text><text x="292" y="108">M</text><text x="144" y="58">R</text><text x="216" y="54">M</text><text x="264" y="54">R</text><text x="336" y="58">M</text></g>
+    <g fill="#121a33"><rect x="186" y="118" width="30" height="18" rx="6" fill="#fff" stroke="#c9b79c"/><text x="201" y="131">3/5</text>
+    <rect x="262" y="118" width="30" height="18" rx="6" fill="#fff" stroke="#c9b79c"/><text x="277" y="131">2/5</text>
+    <rect x="148" y="74" width="30" height="18" rx="6" fill="#ffd166" stroke="#121a33" stroke-width="1.5"/><text x="163" y="87">?</text></g>
+  </g>
+  <!-- sodininkė -->
+  <g stroke="#121a33" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M64 206l2-44M88 206l-2-44" stroke-width="10" stroke="#3b5ba9"/>
+    <path d="M56 208h16M82 208h16" stroke-width="9" stroke="#5a3d22"/>
+    <path d="M54 120q22-12 44 0l4 46H50z" fill="#f2a50c"/>
+    <path d="M62 132h28v34H62z" fill="#3b5ba9"/><path d="M66 132v-12M86 132v-12" stroke="#3b5ba9" stroke-width="5"/>
+    <path d="M56 126q-16 16-12 36" fill="none" stroke="#f2a50c" stroke-width="9"/>
+    <path d="M96 126q18 4 30 16" fill="none" stroke="#f2a50c" stroke-width="9"/>
+    <circle cx="44" cy="164" r="5.5" fill="#f3c9a5"/><circle cx="128" cy="143" r="5.5" fill="#f3c9a5"/>
+    <circle cx="76" cy="96" r="19" fill="#f3c9a5"/>
+    <path d="M58 92q2-22 20-22t18 20q-10 2-18-8-6 8-20 10z" fill="#7a3f1e"/>
+    <path d="M50 84q26-16 52 0" fill="none" stroke="#e9d9a8" stroke-width="7"/><path d="M60 80q4-18 16-18t16 18z" fill="#e9d9a8"/>
+    <path d="M124 136l22-6 8 22-22 8z" fill="#9fc6e8"/><path d="M152 134l16-10" fill="none"/><path d="M130 136q8-12 18-8" fill="none"/>
+  </g>
+  <circle cx="70" cy="97" r="2.2" fill="#121a33"/><circle cx="83" cy="97" r="2.2" fill="#121a33"/>
+  <path d="M71 105q6 5 12 0" fill="none" stroke="#121a33" stroke-width="2" stroke-linecap="round"/>
+  <g fill="#6db3e8"><circle cx="172" cy="128" r="2.4"/><circle cx="178" cy="138" r="2.4"/><circle cx="170" cy="144" r="2.4"/></g>
+</svg>`;
+function lvlArt(i){
+  const fork = (d) => {
+    let s = `<path d="M10 28h8" stroke="#8a6238" stroke-width="3" stroke-linecap="round"/>`;
+    const ys = d === 2 ? [[16, 40], [[9, 22], [34, 47]]] : [[16, 40], [[10, 22], [34, 46]]];
+    s += `<path d="M18 28L30 ${ys[0][0]}M18 28L30 ${ys[0][1]}" stroke="#8a6238" stroke-width="3" stroke-linecap="round"/>`;
+    ys[1].forEach((p, j) => { s += `<path d="M30 ${ys[0][j]}L43 ${p[0]}M30 ${ys[0][j]}L43 ${p[1]}" stroke="#8a6238" stroke-width="2.5" stroke-linecap="round"/>`; });
+    return s;
+  };
+  const dots = (cols) => [9, 22, 34, 47].map((y, j) => `<circle cx="46" cy="${y}" r="5" fill="${cols[j]}" stroke="#121a33" stroke-width="1.6"/>`).join("");
+  const R_ = "#d9412f", B_ = "#2f7fd6", Gr = "#9aa58a";
+  const arts = [
+    fork(2) + dots([R_, B_, R_, B_]),
+    fork(2) + dots([R_, B_, Gr, Gr]) + `<path d="M4 46l10-10M14 46L4 36" stroke="#d9412f" stroke-width="2.5" stroke-linecap="round"/>`,
+    fork(2) + dots([R_, R_, R_, Gr]),
+    `<path d="M6 28h6M12 28l9-12M12 28l9 12M21 16l9-7M21 16l9 6M21 40l9-6M21 40l9 7M30 9h7M30 22h7M30 34h7M30 47h7M37 9l8-4M37 9l8 4M37 22l8-4M37 22l8 4M37 34l8-4M37 34l8 4M37 47l8-4M37 47l8 4" stroke="#8a6238" stroke-width="2.2" stroke-linecap="round" fill="none"/>` + [5, 13, 18, 26, 30, 38, 43, 51].map((y, j) => `<circle cx="48" cy="${y}" r="3" fill="${j % 3 ? B_ : R_}"/>`).join(""),
+    `<text x="28" y="36" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-weight="900" font-size="26" fill="#121a33">C</text><text x="42" y="24" font-family="Manrope,sans-serif" font-weight="800" font-size="12" fill="#d9412f">k</text><text x="42" y="42" font-family="Manrope,sans-serif" font-weight="800" font-size="12" fill="#2f7fd6">n</text>`,
+    `<rect x="6" y="14" width="44" height="28" rx="7" fill="#fff" stroke="#121a33" stroke-width="2.5"/><text x="28" y="34" text-anchor="middle" font-family="Manrope,sans-serif" font-weight="800" font-size="15" fill="#121a33">VBE</text>`
+  ];
+  return `<svg viewBox="0 0 56 56" aria-hidden="true">${arts[i]}</svg>`;
+}
+function gardenSvg(n){
+  let s = `<svg viewBox="0 0 360 92" role="img" aria-label="Sodas: ${n} iš 18 medžių"><rect x="0" y="40" width="360" height="52" rx="10" fill="#e3efcf"/>`;
+  for(let i = 0; i < 18; i++){
+    const x = 22 + (i % 9) * 39.5, y = i < 9 ? 44 : 86, on = i < n;
+    s += on ? `<path d="M${x} ${y}v-14" stroke="#8a6238" stroke-width="4" stroke-linecap="round"/><circle cx="${x}" cy="${y - 24}" r="13" fill="${i % 2 ? "#3f9d57" : "#58b368"}" stroke="#121a33" stroke-width="2"/><circle cx="${x - 5}" cy="${y - 26}" r="2.6" fill="#d9412f"/><circle cx="${x + 5}" cy="${y - 21}" r="2.6" fill="#d9412f"/><circle cx="${x + 2}" cy="${y - 31}" r="2.6" fill="#d9412f"/>`
+      : `<path d="M${x} ${y}v-9" stroke="#b9c2a4" stroke-width="3" stroke-linecap="round"/><circle cx="${x}" cy="${y - 20}" r="11" fill="none" stroke="#b9c2a4" stroke-width="2" stroke-dasharray="3 4"/>`;
+  }
+  return s + "</svg>";
+}
+function treeSvg(t){
+  const m = t.m, L = t.L, n = m.n, W = 340, rowH = Math.max(34, Math.min(54, Math.round(330 / L.length))), pad = 6, H = L.length * rowH + pad * 2;
+  const xs = n === 2 ? [14, 112, 212] : [10, 84, 160, 236], pillX = xs[n] + 18, pillW = W - pillX - 3;
+  const yOf = seq => { const idx = []; L.forEach((l, i) => { if(seq.every((o, j) => l.seq[j] === o)) idx.push(i); }); return pad + rowH * ((idx[0] + idx[idx.length - 1]) / 2 + .5); };
+  let edges = "", nodes = "", labels = "", pills = "";
+  (function go(seq){
+    if(seq.length === n) return;
+    const x0 = xs[seq.length], y0 = yOf(seq), tt = seq.length === 0 ? .5 : .62;
+    m.br(seq).forEach((e, o) => {
+      const s2 = seq.concat(o), x1 = xs[s2.length], y1 = yOf(s2), id = s2.join("");
+      const h = t.hidden.find(h => h.id === id), cur = h && !h.done && t.phase === "edges" && t.hidden[t.cur] === h;
+      edges += `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" class="ed${cur ? " cur" : ""}"/>`;
+      const tx = x0 + (x1 - x0) * tt, ty = y0 + (y1 - y0) * tt, txt = h && !h.done ? "?" : fS(e, m.dm), w = Math.max(22, txt.length * 7.4 + 9);
+      labels += `<g class="el${h ? (h.done ? " done" : cur ? " cur" : " hid") : ""}"><rect x="${tx - w / 2}" y="${ty - 10}" width="${w}" height="20" rx="7"/><text x="${tx}" y="${ty + 4.5}" text-anchor="middle">${txt}</text></g>`;
+      nodes += `<circle class="nd" cx="${x1}" cy="${y1}" r="11.5" fill="${m.outs[o].col}"/><text class="ndt" x="${x1}" y="${y1 + 4.2}" text-anchor="middle">${m.outs[o].k}</text>`;
+      go(s2);
+    });
+  })([]);
+  const tap = t.phase === "leaves";
+  L.forEach((l, i) => {
+    const y = pad + rowH * (i + .5), fav = t.fav.includes(i), on = t.marked.has(i);
+    const cls = ["pill", tap ? "tap" : "", on ? "on" : "", t.reveal && fav ? "fav" : "", t.reveal && on && !fav ? "miss" : "", t.reveal && !fav && !on ? "dim" : ""].join(" ");
+    const ph = Math.min(rowH - 6, 40);
+    pills += `<g class="${cls}" data-i="${i}"${tap ? ` role="button" tabindex="0" aria-pressed="${on}"` : ""}><rect x="${pillX}" y="${y - ph / 2}" width="${pillW}" height="${ph}" rx="9"/><text x="${pillX + pillW / 2}" y="${y + 5}" text-anchor="middle">${l.seq.map(o => m.outs[o].k).join(" ")}</text></g>`;
+  });
+  return `<svg class="tree" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tikimybių medis">${edges}<circle cx="${xs[0]}" cy="${yOf([])}" r="5" fill="#8a6238"/>${labels}${nodes}${pills}</svg>`;
+}
+
+/* ---------- žaidimo eiga ---------- */
+const app = $("app");
+app.prepend(MK.top({ title: T.title, grade: 12 }));
+$("h1").innerHTML = T.h1; $("heroP").textContent = T.hero; $("heroArt").innerHTML = HERO; $("note").textContent = T.note;
+const LEVELS = T.levels.map((l, i) => ({ id: l.id, name: l.name, sub: l.sub + (i === 4 ? `<br><span class="adv">${T.adv}</span>` : ""), art: lvlArt(i) }));
+let lvl = 0, ti = 0, pts = 0, maxPts = 0, task = null, dots = null;
+const treesN = () => Object.values(MK.best(GAME)).reduce((a, b) => a + (+b || 0), 0);
+function showMenu(){
+  $("game").hidden = true; $("menu").hidden = false;
+  const n = treesN(), rank = T.ranks[n >= 18 ? 4 : n >= 12 ? 3 : n >= 7 ? 2 : n >= 3 ? 1 : 0];
+  $("garden").innerHTML = `<h2>${T.gardenT}</h2><p>${T.gardenP(n, rank)}</p>${gardenSvg(n)}`;
+  MK.levels($("levels"), { game: GAME, levels: LEVELS, onPick: start });
+  MK.learn($("learn"), { topics: T.learn, onPlay: start });
+  window.scrollTo(0, 0);
+}
+function start(i){
+  lvl = i; ti = 0; pts = 0; maxPts = PLAN[i].length * 10; usedCtx = new Set();
+  $("menu").hidden = true; $("game").hidden = false;
+  dots = MK.dots($("dots"), PLAN[i].length);
+  nextTask();
+}
+function chip(){ $("chip").textContent = `${T.points}: ${pts}`; }
+function nextTask(){
+  task = makeTask(PLAN[lvl][ti], lvl); task.got = 0;
+  dots.cur(ti); chip(); $("fb").innerHTML = "";
+  if(task.adv) renderAdv(); else renderTree();
+  window.scrollTo(0, 0);
+}
+function qCard(t){
+  $("q").innerHTML = (t.adv ? `<span class="tag">${T.adv}</span><br>` : "") + t.intro + (t.adv ? (t.q ? `<div class="q">${t.q}</div>` : "") : `<div class="q">${T.qProb(t.evText)}</div>`);
+}
+function optsHtml(o){ return `<div class="opts">${o.list.map((x, i) => `<button type="button" class="opt" data-o="${i}">${x}</button>`).join("")}</div>`; }
+
+/* --- medžio užduotis --- */
+function renderTree(msg){
+  const t = task, m = t.m;
+  qCard(t);
+  $("stage").innerHTML = `<div class="legend"><span>${T.legend}</span>${m.outs.map(o => `<span><i style="background:${o.col}">${o.k}</i>${o.sg}</span>`).join("")}</div><div class="treebox">${treeSvg(t)}</div>`;
+  const p = $("panel"), mh = msg ? `<div class="msg ${msg.ok ? "ok" : "bad"}">${msg.t}</div>` : "";
+  if(t.phase === "edges"){
+    const h = t.hidden[t.cur], o = h.opts || (h.opts = edgeOpts(t, h));
+    const prev = h.seq.slice(0, -1).map(x => m.outs[x].sg);
+    p.innerHTML = `<h3>${T.step1} (${t.cur + 1}/${t.hidden.length})</h3>${mh}<p>${T.askEdge(m.stageName(h.seq.length - 1), m.outs[h.seq[h.seq.length - 1]].sg, prev)}</p>` +
+      `<div class="opts">${o.list.map((x, i) => `<button type="button" class="opt${h.off && h.off.has(i) ? " off" : ""}" data-e="${i}"${h.off && h.off.has(i) ? " disabled" : ""}>${m.dm ? dec(x) : MK.frac(x.n, x.d)}</button>`).join("")}</div>`;
+  } else if(t.phase === "leaves"){
+    p.innerHTML = `<h3>${T.step2}</h3>${mh}<p>${T.askLeaves(t.evText)}</p><button type="button" class="mk-btn wide" id="chk"${t.marked.size ? "" : " disabled"}>${T.check}</button>`;
+  } else if(t.phase === "answer"){
+    p.innerHTML = `<h3>${T.step3}</h3>${mh}<p>${T.askAnswer(t.evText)}</p><p class="hint">${T.ansHint}</p>${optsHtml({ list: t.opts.list.map(x => fH(x, m.dm)) })}`;
+  } else p.innerHTML = "";
+}
+$("stage").addEventListener("click", e => {
+  const g = e.target.closest(".pill.tap"); if(!g || !task || task.phase !== "leaves") return;
+  const i = +g.dataset.i; if(task.marked.has(i)) task.marked.delete(i); else task.marked.add(i);
+  MK.sfx.tap(); renderTree();
+});
+$("stage").addEventListener("keydown", e => { if((e.key === "Enter" || e.key === " ") && e.target.closest(".pill.tap")){ e.preventDefault(); e.target.closest(".pill.tap").dispatchEvent(new MouseEvent("click", { bubbles: true })); } });
+$("panel").addEventListener("click", e => {
+  const t = task; if(!t) return;
+  const be = e.target.closest("[data-e]"), bo = e.target.closest("[data-o]");
+  if(be && t.phase === "edges"){
+    const h = t.hidden[t.cur], i = +be.dataset.e;
+    if(i === h.opts.ci){
+      MK.sfx.good(); h.done = true; t.cur++;
+      if(t.cur >= t.hidden.length){ t.phase = "leaves"; t.got += Math.max(0, 3 - t.edgeErr); pts += Math.max(0, 3 - t.edgeErr); chip(); }
+      renderTree();
+    } else { MK.sfx.bad(); t.edgeErr++; (h.off || (h.off = new Set())).add(i); renderTree({ ok: false, t: t.m.repl === undefined ? T.edgeNoInd : T.edgeNo }); }
+    return;
+  }
+  if(e.target.closest("#chk") && t.phase === "leaves"){
+    const ok = t.marked.size === t.fav.length && t.fav.every(i => t.marked.has(i));
+    t.reveal = true; t.phase = "answer";
+    if(ok){ MK.sfx.good(); t.got += 3; pts += 3; chip(); } else MK.sfx.bad();
+    renderTree({ ok, t: ok ? T.leavesOk : T.leavesBad });
+    return;
+  }
+  if(bo && t.phase === "answer" && !t.adv){
+    const i = +bo.dataset.o, ok = i === t.opts.ci;
+    if(ok){ t.got += 4; pts += 4; chip(); MK.sfx.good(); } else MK.sfx.bad();
+    t.phase = "done"; t.marked = new Set(t.fav);
+    const btns = $("panel").querySelectorAll(".opt"); btns.forEach((b, j) => { b.disabled = true; if(j === t.opts.ci) b.classList.add("ok"); else if(j === i) b.classList.add("bad"); else b.classList.add("off"); });
+    $("stage").querySelector(".treebox").innerHTML = treeSvg(t);
+    finishTask(ok, explainTree(t), simHtml(t));
+    return;
+  }
+  if(bo && t.adv) advPick(+bo.dataset.o);
+});
+function explainTree(t){
+  const m = t.m, favL = t.fav.map(i => t.L[i]), lab = l => l.seq.map(o => m.outs[o].k).join(" ");
+  const raw = l => ({ n: l.edges.reduce((a, e) => a * e.n, 1), d: l.edges.reduce((a, e) => a * e.d, 1) });
+  let h = `${T.exPaths}<br>` + favL.map(l => `<b>${lab(l)}</b>: ${l.edges.map(e => fH(e, m.dm)).join(" · ")} = ${fH(raw(l), m.dm)}`).join("<br>");
+  if(favL.length > 1){
+    const rs = favL.map(raw), same = rs.every(r => r.d === rs[0].d), tot = same ? { n: rs.reduce((a, r) => a + r.n, 0), d: rs[0].d } : null;
+    h += `<br>${T.exSum}<br>${rs.map(r => fH(r, m.dm)).join(" + ")}` + (tot && !m.dm && key(tot) !== tot.n + "/" + tot.d ? ` = ${fH(tot)}` : "") + ` = <b>${fH(t.P, m.dm)}</b>`;
+  } else { const r = raw(favL[0]); h += (!m.dm && key(r) !== r.n + "/" + r.d ? ` = <b>${fH(t.P)}</b>` : "") + `<br>${T.exOne}`; }
+  const un = t.L.filter((l, i) => !t.fav.includes(i));
+  if(un.length === 1 && favL.length >= 3) h += `<br>${T.exCompl(lab(un[0]), fH(un[0].pr, m.dm))}`;
+  return h;
+}
+function simHtml(t){
+  const m = t.m; let k = 0;
+  for(let i = 0; i < 1000; i++){
+    const seq = [];
+    while(seq.length < m.n){ const br = m.br(seq); let r = Math.random(), o = 0; while(o < br.length - 1 && r >= br[o].n / br[o].d){ r -= br[o].n / br[o].d; o++; } seq.push(o); }
+    if(t.test(seq)) k++;
+  }
+  const th = (val(t.P) * 100).toFixed(1).replace(".", ",");
+  return `<div class="sim"><b class="t">${T.simT}</b><div class="simbar"><i data-w="${k / 10}"></i><u style="left:calc(${val(t.P) * 100}% - 1.5px)"></u></div>${T.sim(k, String(k / 10).replace(".", ","), th)}</div>`;
+}
+
+/* --- išplėstinio kurso užduotis --- */
+function renderAdv(){
+  const t = task; t.si = t.si || 0; t.exs = t.exs || []; t.okAll = t.okAll !== false;
+  qCard(t);
+  $("stage").innerHTML = (t.si > 0 && t.visual2) ? t.visual2 : (t.visual || "");
+  const s = t.steps[t.si];
+  $("panel").innerHTML = (t.steps.length > 1 ? `<h3>${t.si + 1} / ${t.steps.length}</h3>` : "") + (t.msg ? `<div class="msg ${t.msg.ok ? "ok" : "bad"}">${t.msg.t}</div>` : "") + `<p>${s.q}</p>` + optsHtml(s.o);
+}
+function advPick(i){
+  const t = task, s = t.steps[t.si]; if(t.lock) return;
+  const ok = i === s.o.ci, w = t.steps.length === 1 ? 10 : t.si === 0 ? 4 : 6;
+  if(ok){ t.got += w; pts += w; chip(); MK.sfx.good(); } else { MK.sfx.bad(); t.okAll = false; }
+  const btns = $("panel").querySelectorAll(".opt"); btns.forEach((b, j) => { b.disabled = true; if(j === s.o.ci) b.classList.add("ok"); else if(j === i) b.classList.add("bad"); else b.classList.add("off"); });
+  t.exs.push(s.ex);
+  if(t.si < t.steps.length - 1){
+    t.lock = true;
+    setTimeout(() => { t.lock = false; t.msg = { ok, t: ok ? T.ok() : `${T.bad} ${T.right(s.o.list[s.o.ci])}` }; t.si++; renderAdv(); }, ok ? 650 : 1100);
+  } else {
+    if(t.visual2) $("stage").innerHTML = t.visual2;
+    finishTask(ok && t.okAll, t.exs.join("<br><br>"), "", ok);
+  }
+}
+function finishTask(ok, more, extra, lastOk){
+  const t = task, full = t.got === 10;
+  dots.mark(ti, full);
+  const good = lastOk === undefined ? ok : lastOk;
+  $("fb").innerHTML = MK.why({ ok: good, head: good ? T.ok() : T.bad, body: good ? "" : T.right(t.adv ? t.steps[t.steps.length - 1].o.list[t.steps[t.steps.length - 1].o.ci] : fH(t.P, t.m.dm)), more, sum: T.how, open: !full }) + (extra || "") +
+    `<button type="button" class="mk-btn wide" id="next">${T.next}</button>`;
+  const bar = $("fb").querySelector(".simbar i"); if(bar) requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = bar.dataset.w + "%"; }));
+  $("next").onclick = () => { MK.sfx.tap(); ti++; if(ti >= PLAN[lvl].length) finish(); else nextTask(); };
+  setTimeout(() => $("fb").scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+}
+function finish(){
+  const pct = Math.round(pts / maxPts * 100), stars = pct >= 85 ? 3 : pct >= 60 ? 2 : pct >= 30 ? 1 : 0;
+  MK.best(GAME, T.levels[lvl].id, stars);
+  MK.result({ stars, title: T.resTitle(pct), text: T.resText(pts, maxPts, treesN()), next: lvl < PLAN.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
+}
+$("quit").onclick = () => { MK.sfx.tap(); showMenu(); };
+/* testams */
+window.__tm = { genTree, genAdv, PLAN, makeTask, leavesOf, probOf, TEST, key, val, urnModel, indModel, R, C, get task(){ return task; } };
+showMenu();
+</script>
+</body>
+</html>
