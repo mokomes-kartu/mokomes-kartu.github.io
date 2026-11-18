@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Okeano kapitonas – MokomėsKartu.lt</title>
+<meta name="description" content="Geografijos žaidimas 9–10 klasei: vairuok krovininį laivą per Pasaulinį vandenyną – uostai, sąsiauriai, kanalai, srovės, koordinatės ir pasaulio prekybos keliai.">
+<meta name="theme-color" content="#e6eef2">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,600;0,700;1,500&family=Manrope:wght@600;700;800&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="zemelapis.js"></script>
+<script src="tekstai.lt.js"></script>
+<style>
+/* Okeano kapitonas: jūrlapio stilius – blyški jūra, smėlio spalvos sausuma, atlaso šriftas. */
+body{--paper:#e6eef2;--ink:#14283a;--soft:#4d6272;--kid:"Spectral",Georgia,serif;--body:"Manrope",system-ui,sans-serif;--ac:#0e6b8c;--ac-ink:#fff;--ac-soft:#d5e9f1;--sand:#f1e7cd;--line:#a9bcc8;background:#e6eef2;background-image:none}
+.mk-app{max-width:620px;padding-block:6px 16px}
+.mk-top{padding-bottom:8px}
+.mk-back,.mk-ico{border-radius:8px;border-width:1.5px;box-shadow:none;height:40px}.mk-ico{width:40px}
+.mk-ico[data-k="music"]{display:none}
+.mk-title{font:700 19px/1.1 var(--kid)}
+.kick{font:800 11.5px/1.3 var(--body);letter-spacing:.09em;text-transform:uppercase;color:var(--soft)}
+h1{margin:4px 0 6px;font:700 clamp(32px,8.5vw,44px)/1.02 var(--kid);letter-spacing:-.01em}
+.lead{margin:0 0 14px;font:600 15.5px/1.5 var(--body);color:#28404f}
+#hero{display:block;width:100%;aspect-ratio:2.4;border:1.5px solid var(--ink);border-radius:10px;margin-bottom:12px;background:#bfdcea}
+.card{background:#fff;border:1.5px solid var(--ink);border-radius:10px;padding:12px 14px;margin:0 0 12px;font:600 14.5px/1.45 var(--body)}
+.card h2{margin:0 0 4px;font:800 11.5px/1.2 var(--body);letter-spacing:.09em;text-transform:uppercase;color:var(--soft)}
+.card p{margin:0}.rank{font:700 21px/1.2 var(--kid)}
+.voy{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;width:100%;text-align:left;background:#fff;border:1.5px solid var(--ink);border-radius:10px;padding:11px 14px;margin:0 0 8px;cursor:pointer;font:inherit;color:inherit}
+.voy:hover{background:#f3f9fb}.voy:active{transform:translateY(1px)}
+.voy b{font:700 18px/1.2 var(--kid)}.voy span{grid-column:1;font:600 13.5px/1.35 var(--body);color:#28404f}
+.voy .st{grid-row:1/span 2;grid-column:2;font-size:16px;letter-spacing:2px;color:#bccbd5}.voy .st u{text-decoration:none;color:#d98a00}
+details.man{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:0 14px;margin:0 0 6px;font:600 14.5px/1.5 var(--body)}
+details.man summary{cursor:pointer;font:700 16.5px/1.3 var(--kid);padding:12px 0;list-style:none}
+details.man summary::-webkit-details-marker{display:none}
+details.man p{margin:0 0 10px}
+.ex{background:var(--ac-soft);border-left:3px solid var(--ac);padding:8px 10px;border-radius:0 6px 6px 0}
+.note{color:var(--soft);font:600 12.5px/1.45 var(--body);margin:12px 0 0}
+#game{position:relative}
+.hud{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:start;margin-bottom:6px}
+.q{width:38px;height:38px;border:1.5px solid var(--ink);border-radius:8px;background:#fff;font:800 15px/1 var(--body);cursor:pointer;padding:0}
+.obj{background:#fff;border:1.5px solid var(--ink);border-radius:8px;padding:7px 10px;font:700 14.5px/1.35 var(--body)}
+.obj small{display:block;font:800 10.5px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--ac);margin-bottom:2px}
+#sea{display:block;width:100%;border:1.5px solid var(--ink);border-radius:10px;touch-action:none;background:#bfdcea;cursor:crosshair}
+.inst{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:stretch;margin-top:6px;font:700 12.5px/1.25 var(--body)}
+.inst>div{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:6px 9px}
+.inst small{display:block;font:800 10px/1.2 var(--body);letter-spacing:.07em;text-transform:uppercase;color:var(--soft)}
+.fb{height:7px;border-radius:4px;background:#dfe7ec;overflow:hidden;margin-top:4px}.fb i{display:block;height:100%;background:#2f9e58;width:100%}
+.fb i.lo{background:#d9480f}
+.b{min-height:44px;border:1.5px solid var(--ink);border-radius:8px;background:#fff;font:800 13.5px/1.1 var(--body);cursor:pointer;padding:4px 12px;color:var(--ink)}
+.b.pri{background:var(--ac);color:#fff}.b[hidden]{display:none}
+.dockbar{position:absolute;left:50%;transform:translateX(-50%);bottom:74px;z-index:5}
+.dockbar .b{min-height:50px;font-size:16px;padding:6px 26px;box-shadow:0 4px 0 rgba(20,40,58,.35)}
+.toast{position:absolute;left:10px;right:10px;top:64px;z-index:6;background:#14283a;color:#fff;border-radius:8px;padding:9px 12px;font:700 13.5px/1.4 var(--body);pointer-events:none;opacity:0;transition:opacity .25s}
+.toast.on{opacity:.96}.toast.w{background:#8a2c0b}
+.sheet{position:fixed;inset:0;z-index:40;background:rgba(20,40,58,.45);display:grid;align-items:end;justify-items:center}
+.sheet .in{width:min(620px,100%);max-height:100dvh;overflow:auto;background:#fffdf6;border-top:3px solid var(--ink);border-radius:14px 14px 0 0;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));font:600 15px/1.5 var(--body)}
+.sheet h3{margin:0 0 4px;font:800 11.5px/1.2 var(--body);letter-spacing:.09em;text-transform:uppercase;color:var(--soft)}
+.sheet .big{font:700 22px/1.2 var(--kid);margin:0 0 6px}
+.sheet p{margin:0 0 10px}
+.sheet .fact{font:italic 500 17px/1.45 var(--kid);border-left:3px solid var(--ac);padding-left:10px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row .b,.full{width:100%}
+.stars{font-size:28px;letter-spacing:6px;color:#bccbd5;margin:2px 0 6px}.stars u{text-decoration:none;color:#d98a00}
+#wmap{display:block;width:100%;border:1.5px solid var(--ink);border-radius:8px;background:#bfdcea;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <main id="menu">
+    <canvas id="hero" aria-hidden="true"></canvas>
+    <div class="kick" id="kick"></div><h1 id="h1"></h1><p class="lead" id="lead"></p>
+    <section class="card" id="rank"></section>
+    <div class="kick" id="voyT" style="margin:14px 0 8px"></div><div id="voys"></div>
+    <div class="kick" id="manT" style="margin:16px 0 8px"></div><div id="manual"></div>
+    <p class="note" id="note"></p>
+  </main>
+  <main id="game" hidden>
+    <div class="hud"><button type="button" class="q" id="quit" aria-label="Į reisų knygą">✕</button><div class="obj" id="obj"></div></div>
+    <canvas id="sea" aria-label="Jūrlapis: paliesk ir laikyk vietą, į kurią laivas turi plaukti"></canvas>
+    <div class="dockbar"><button type="button" class="b pri" id="dock" hidden></button></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="inst"><div><small id="posL"></small><span id="pos"></span></div><div><small id="fuelL"></small><div class="fb"><i id="fuel"></i></div></div>
+      <button type="button" class="b" id="bHint"></button><button type="button" class="b" id="bWorld"></button></div>
+  </main>
+</div>
+<div id="ov"></div>
+<script>
+"use strict";
+const T = window.MK_T, MAP = window.MK_ZEMELAPIS, GAME = "okeano-kapitonas", PKEY = "mk-okeano-kapitonas-uostai", $ = id => document.getElementById(id);
+/* ---------- projekcija (Merkatoriaus, 1000 vnt. pločio) ---------- */
+const X = lon => (lon + 180) / 360 * 1000, Y = lat => 500 - 1000 / (2 * Math.PI) * Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360));
+const LON = x => (((x % 1000) + 1000) % 1000) / 1000 * 360 - 180, LAT = y => (2 * Math.atan(Math.exp((500 - y) * 2 * Math.PI / 1000)) - Math.PI / 2) * 180 / Math.PI;
+const YMIN = Y(78), YMAX = Y(-66);
+/* ---------- sausumos kontūrai ir vandens kaukė ---------- */
+const LAND = [];
+for(const k in MAP.p){
+  const tk = MAP.p[k].match(/[Mmlz]|-?\d+(?:\.\d+)?/g); let i = 0, x = 0, y = 0, cmd = "M", cur = null;
+  while(i < tk.length){
+    if(/[Mmlz]/.test(tk[i])){ cmd = tk[i++]; if(cmd === "z"){ cur = null; } continue; }
+    const a = +tk[i++], b = +tk[i++];
+    if(cmd === "M"){ x = a; y = b; cur = { pts: [x, y], x0: x, x1: x, y0: y, y1: y }; LAND.push(cur); cmd = "l"; }
+    else if(cmd === "m"){ x += a; y += b; cur = { pts: [x, y], x0: x, x1: x, y0: y, y1: y }; LAND.push(cur); cmd = "l"; }
+    else { x += a; y += b; if(!cur){ cur = { pts: [x, y], x0: x, x1: x, y0: y, y1: y }; LAND.push(cur); } cur.pts.push(x, y); cur.x0 = Math.min(cur.x0, x); cur.x1 = Math.max(cur.x1, x); cur.y0 = Math.min(cur.y0, y); cur.y1 = Math.max(cur.y1, y); }
+  }
+}
+const MS = 2, MW = 1000 * MS, MH = 760 * MS;
+/* Siauri sąsiauriai ir kanalai, kurių 1:110 mln. kontūruose nėra – „prakasami“ vandens kaukėje ir jūrlapyje. */
+const CUT = [[[-6.6, 35.9], [-4.6, 36.05]], [[25.6, 39.8], [26.9, 40.4], [28.4, 40.8], [29.05, 41.05], [29.3, 41.6]], [[10.8, 57.6], [11.2, 56.3], [12.4, 56.0], [12.75, 55.4], [12.6, 54.7]], [[32.3, 31.7], [32.45, 30.6], [32.6, 29.9], [33.2, 28.6], [33.9, 27.5], [34.6, 26.6]], [[-79.95, 9.6], [-79.6, 9.0], [-79.45, 8.6]], [[43.1, 13.0], [43.6, 12.2]], [[56.2, 26.8], [56.8, 26.0]], [[103.2, 1.6], [104.4, 1.15]], [[99.5, 4.5], [101.5, 2.5], [103.0, 1.6]]];
+const mask = (() => {
+  const c = document.createElement("canvas"); c.width = MW; c.height = MH; const g = c.getContext("2d", { willReadFrequently: true });
+  g.fillStyle = "#000"; g.fillRect(0, 0, MW, MH); g.fillStyle = "#fff"; g.strokeStyle = "#fff"; g.lineWidth = 1.2;
+  for(const L of LAND){ g.beginPath(); for(let i = 0; i < L.pts.length; i += 2) g.lineTo(L.pts[i] * MS, L.pts[i + 1] * MS); g.closePath(); g.fill(); g.stroke(); }
+  g.strokeStyle = "#000"; g.lineWidth = 6; g.lineCap = g.lineJoin = "round";
+  for(const s of CUT){ g.beginPath(); s.forEach(p => g.lineTo(X(p[0]) * MS, Y(p[1]) * MS)); g.stroke(); }
+  const d = g.getImageData(0, 0, MW, MH).data, m = new Uint8Array(MW * MH);
+  for(let i = 0; i < m.length; i++) m[i] = d[i * 4] > 100 ? 1 : 0;
+  return m;
+})();
+const isLand = (x, y) => { if(y < YMIN || y > YMAX) return true; const mx = Math.floor((((x % 1000) + 1000) % 1000) * MS), my = Math.floor(y * MS); return mask[my * MW + mx] === 1; };
+/* ---------- duomenys ---------- */
+function snap(x, y){ if(!isLand(x, y)) return [x, y]; for(let r = .5; r < 9; r += .5) for(let a = 0; a < 24; a++){ const nx = x + Math.cos(a * Math.PI / 12) * r, ny = y + Math.sin(a * Math.PI / 12) * r; if(!isLand(nx, ny) && !isLand(nx + .5, ny) && !isLand(nx - .5, ny)) return [nx, ny]; } return [x, y]; }
+const PORTS = T.ports.map(p => { const [x, y] = snap(X(p[3]), Y(p[4])); return { id: p[0], name: p[1], country: p[2], lon: p[3], lat: p[4], fact: p[5], x, y }; });
+const ZONES = T.zones.map(z => ({ id: z[0], name: z[1], x: X(z[2]), y: Y(z[3]), r: z[4], fact: z[5] }));
+const CURS = T.currents.map(c => { const pts = c[3].map(p => [X(p[0]), Y(p[1])]); return { id: c[0], name: c[1], warm: !!c[2], pts, w: 6.5, fact: c[4] }; });
+const byId = (a, id) => a.find(x => x.id === id);
+const wrapDx = dx => ((dx % 1000) + 1500) % 1000 - 500;
+function curAt(x, y){
+  for(const c of CURS) for(const off of [0, -1000, 1000]) for(let i = 0; i < c.pts.length - 1; i++){
+    const ax = c.pts[i][0] + off, ay = c.pts[i][1], bx = c.pts[i + 1][0] + off, by = c.pts[i + 1][1], dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy;
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / L2)), px = ax + dx * t - x, py = ay + dy * t - y;
+    if(px * px + py * py < c.w * c.w){ const L = Math.sqrt(L2); return { c, ux: dx / L, uy: dy / L }; }
+  }
+  return null;
+}
+/* ---------- piešimas ---------- */
+function drawWorld(g, cx0, cy0, s, w, h, t, o){
+  const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, "#c6e0ec"); gr.addColorStop(1, "#a9cfe2"); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  const vx0 = cx0 - w / 2 / s, vx1 = cx0 + w / 2 / s, vy0 = cy0 - h / 2 / s, vy1 = cy0 + h / 2 / s, sx = x => (x - cx0) * s + w / 2, sy = y => (y - cy0) * s + h / 2;
+  /* bangelės */
+  if(o.waves){ g.strokeStyle = "rgba(255,255,255,.5)"; g.lineWidth = 1.2; const st = 9; for(let gx = Math.floor(vx0 / st) * st; gx < vx1; gx += st) for(let gy = Math.floor(vy0 / st) * st; gy < vy1; gy += st){ const hsh = Math.sin(gx * 12.9898 + gy * 78.233) * 43758.5453, r = hsh - Math.floor(hsh), ph = (t * .5 + r * 6) % 3; if(ph > 1.6) continue; const x = sx(gx + r * st), y = sy(gy + ((r * 7) % 1) * st), l = 5 + 5 * Math.sin(ph / 1.6 * Math.PI); g.globalAlpha = Math.sin(ph / 1.6 * Math.PI) * .7; g.beginPath(); g.moveTo(x - l, y); g.quadraticCurveTo(x, y - 2.5, x + l, y); g.stroke(); } g.globalAlpha = 1; }
+  /* laipsnių tinklas */
+  g.strokeStyle = "rgba(20,40,58,.13)"; g.lineWidth = 1; g.fillStyle = "rgba(20,40,58,.5)"; g.font = "600 9.5px Manrope,sans-serif";
+  const stp = o.grid || 10;
+  for(let lo = Math.ceil(LON0(vx0) / stp) * stp; lo <= LON0(vx1); lo += stp){ const x = sx(lo / 360 * 1000 + 500); g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); if(o.labels){ const l = ((lo + 540) % 360) - 180; g.fillText(Math.abs(l) + "°" + (l === 0 || Math.abs(l) === 180 ? "" : l > 0 ? " r." : " v."), x + 2, 10); } }
+  for(let la = -60; la <= 75; la += stp){ const y = sy(Y(la)); if(y < 0 || y > h) continue; g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); if(o.labels) g.fillText(Math.abs(la) + "°" + (la === 0 ? "" : la > 0 ? " š." : " p."), 2, y - 2); }
+  /* srovės */
+  g.lineCap = "round"; g.lineJoin = "round";
+  for(const c of CURS) for(const off of [0, -1000, 1000]){
+    const xs = c.pts.map(p => p[0] + off); if(Math.max(...xs) < vx0 - 12 || Math.min(...xs) > vx1 + 12) continue;
+    const path = () => { g.beginPath(); c.pts.forEach(p => g.lineTo(sx(p[0] + off), sy(p[1]))); };
+    g.strokeStyle = c.warm ? "rgba(232,89,12,.16)" : "rgba(28,100,214,.16)"; g.lineWidth = c.w * 2 * s; path(); g.stroke();
+    g.strokeStyle = c.warm ? "rgba(214,72,0,.75)" : "rgba(20,92,200,.75)"; g.lineWidth = Math.max(1.4, .5 * s);
+    for(const k of [-.5, 0, .5]){ g.save(); g.setLineDash([2.2 * s, 3.2 * s]); g.lineDashOffset = -(t * 5 * s + k * 40); g.beginPath(); c.pts.forEach((p, i) => { const q = c.pts[Math.min(i + 1, c.pts.length - 1)], r = c.pts[Math.max(i - 1, 0)], nx = -(q[1] - r[1]), ny = q[0] - r[0], nl = Math.hypot(nx, ny) || 1; g.lineTo(sx(p[0] + off + nx / nl * k * c.w * 1.1), sy(p[1] + ny / nl * k * c.w * 1.1)); }); g.stroke(); g.restore(); }
+  }
+  /* sausuma */
+  g.fillStyle = "#f1e7cd"; g.strokeStyle = "#9c8b62"; g.lineWidth = 1.1;
+  for(const off of [0, -1000, 1000]) for(const L of LAND){
+    if(L.x1 + off < vx0 || L.x0 + off > vx1 || L.y1 < vy0 || L.y0 > vy1) continue;
+    g.beginPath(); for(let i = 0; i < L.pts.length; i += 2) g.lineTo(sx(L.pts[i] + off), sy(L.pts[i + 1])); g.closePath(); g.fill(); g.stroke();
+  }
+  g.strokeStyle = "#bcdcea"; g.lineWidth = Math.max(1.5, 2.8 * s);
+  for(const off of [0, -1000, 1000]) for(const c of CUT){ const x = X(c[0][0]) + off; if(x < vx0 - 20 || x > vx1 + 20) continue; g.beginPath(); c.forEach(p => g.lineTo(sx(X(p[0]) + off), sy(Y(p[1])))); g.stroke(); }
+  /* vandenynų ir jūrų pavadinimai */
+  if(o.names){ g.textAlign = "center"; g.fillStyle = "rgba(14,74,110,.55)";
+    g.font = `italic 500 ${Math.max(13, 4.2 * s)}px Spectral,Georgia,serif`; for(const n of T.oceans) for(const off of [0, -1000, 1000]){ const x = X(n[1]) + off; if(x > vx0 - 40 && x < vx1 + 40) g.fillText(n[0], sx(x), sy(Y(n[2]))); }
+    if(s > 2.4){ g.font = `italic 500 ${Math.max(11, 2.6 * s)}px Spectral,Georgia,serif`; for(const n of T.seas) for(const off of [0, -1000, 1000]){ const x = X(n[1]) + off; if(x > vx0 - 20 && x < vx1 + 20) g.fillText(n[0], sx(x), sy(Y(n[2]))); } }
+    g.textAlign = "left"; }
+  return { sx, sy, vx0, vx1 };
+}
+const LON0 = x => (x - 500) / 1000 * 360;
+function drawShip(g, x, y, hdg, k){
+  g.save(); g.translate(x, y); g.rotate(hdg); g.scale(k, k);
+  g.fillStyle = "#14283a"; g.beginPath(); g.moveTo(15, 0); g.lineTo(8, -5.5); g.lineTo(-13, -5.5); g.lineTo(-15, -3); g.lineTo(-15, 3); g.lineTo(-13, 5.5); g.lineTo(8, 5.5); g.closePath(); g.fill();
+  g.fillStyle = "#c0392b"; g.fillRect(-4, -4, 5, 8); g.fillStyle = "#2f7fd6"; g.fillRect(1.6, -4, 5, 8); g.fillStyle = "#e0a100"; g.fillRect(-9.6, -4, 5, 3.8); g.fillStyle = "#2f9e58"; g.fillRect(-9.6, .2, 5, 3.8);
+  g.fillStyle = "#fff"; g.fillRect(-14, -3, 3.4, 6); g.restore();
+}
+/* ---------- žaidimo būsena ---------- */
+const cv = $("sea"), cx = cv.getContext("2d");
+let G = null, W = 0, H = 0, held = null, keys = {}, lastTs = 0, toastT = 0;
+const known = () => new Set(MK.get(PKEY, []));
+function fit(){ const w = cv.clientWidth; if(!w) return; const dpr = Math.min(2, window.devicePixelRatio || 1); W = w; H = Math.round(Math.min(w * 1.12, window.innerHeight * .6)); cv.style.height = H + "px"; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+function toast(m, w, ms){ const e = $("toast"); e.textContent = m; e.className = "toast on" + (w ? " w" : ""); clearTimeout(toastT); toastT = setTimeout(() => e.className = "toast", ms || 3600); }
+function mkTasks(v){
+  if(v.tasks) return v.tasks.map(t => Object.assign({}, t));
+  const kn = [...known()], pool = MK.shuffle(PORTS.filter(p => p.id !== v.start)).slice(0, 5);
+  return pool.map(p => ({ p: p.id, say: T.freeSay.name(p.name), hint: T.freeSay.hint(p.country, T.lat(Math.round(p.lat)), T.lon(Math.round(p.lon))) }));
+}
+function start(vi){
+  const v = vi < 0 ? { id: "laisvas", name: T.free.name, start: MK.pick(PORTS).id } : T.voyages[vi], sp = byId(PORTS, v.start);
+  G = { vi, v, tasks: null, ti: 0, x: sp.x, y: sp.y, hdg: -Math.PI / 2, spd: 0, errs: 0, fuel: 1, wake: [], paused: false, curDist: 0, near: null, t: 0, hinted: false, over: false };
+  G.tasks = mkTasks(v);
+  /* degalų atsarga: 4 kartai tiesaus kelio per užduočių taškus */
+  let d = 0, px = sp.x, py = sp.y; for(const t of G.tasks){ const q = tgt(t); d += Math.hypot(wrapDx(q.x - px), q.y - py); px = q.x; py = q.y; } G.range = Math.max(400, d * 4); G.used = 0;
+  $("menu").hidden = true; $("game").hidden = false; MK.unlock(); fit(); discover(sp); showObj(); toast(T.startAt(sp.name)); window.scrollTo(0, 0);
+}
+function tgt(t){ if(t.p) return byId(PORTS, t.p); if(t.z) return byId(ZONES, t.z); if(t.c){ const c = byId(CURS, t.c), m = c.pts[Math.floor(c.pts.length / 2)]; return { x: m[0], y: m[1] }; } return { x: X(t.g[0]), y: Y(t.g[1]) }; }
+function showObj(){ const t = G.tasks[G.ti]; $("obj").innerHTML = `<small>${T.task(G.ti + 1, G.tasks.length)}</small>${t.say}`; G.hinted = false; G.curDist = 0; }
+function discover(p){ const k = known(); if(!k.has(p.id)){ k.add(p.id); MK.set(PKEY, [...k]); } }
+function complete(title, fact){
+  G.paused = true; held = null; MK.sfx.good(); const last = G.ti >= G.tasks.length - 1;
+  $("ov").innerHTML = `<div class="sheet"><div class="in"><h3>${T.log}</h3><p class="big">${title}</p><p class="fact">${fact}</p><button type="button" class="b pri full" id="go">${last ? T.doneT : T.cont}</button></div></div>`;
+  $("go").onclick = () => { $("ov").innerHTML = ""; MK.sfx.tap(); if(last) return finish(); G.ti++; G.paused = false; showObj(); };
+}
+function finish(){
+  G.over = true; const stars = G.errs === 0 ? 3 : G.errs <= 2 ? 2 : 1; MK.best(GAME, G.v.id, stars); if(stars >= 2) MK.sfx.win();
+  const nx = G.vi >= 0 && G.vi < T.voyages.length - 1;
+  $("ov").innerHTML = `<div class="sheet"><div class="in"><h3>${T.doneT}</h3><p class="big">${G.v.name}</p><div class="stars">${[0, 1, 2].map(i => i < stars ? "<u>★</u>" : "★").join("")}</div><p>${T.done(G.errs)}</p>
+    <div class="row">${nx ? `<button type="button" class="b pri" data-a="next">${T.nextV}</button>` : ""}<button type="button" class="b" data-a="again">${T.again}</button></div><button type="button" class="b full" data-a="menu" style="margin-top:8px">${T.toBook}</button></div></div>`;
+}
+function tryDock(){
+  if(!G || G.paused || !G.near) return; const p = G.near, t = G.tasks[G.ti]; discover(p);
+  if(t.p === p.id) complete(T.okPort(p.name), p.fact);
+  else { G.errs++; MK.sfx.bad(); toast(T.wrongPort(p.name, p.country), 1, 5200); }
+}
+function step(dt){
+  G.t += dt;
+  let want = null, thr = 0;
+  if(held){ const s = W / view(), wx = G.x + (held.x - W / 2) / s, wy = G.y + (held.y - H / 2) / s; if(Math.hypot(wx - G.x, wy - G.y) > 1.2){ want = Math.atan2(wy - G.y, wx - G.x); thr = 1; } }
+  if(keys.ArrowLeft) G.hdg -= 2.2 * dt; if(keys.ArrowRight) G.hdg += 2.2 * dt; if(keys.ArrowUp) thr = 1;
+  if(want != null){ let d = want - G.hdg; d = Math.atan2(Math.sin(d), Math.cos(d)); const m = 2.6 * dt; G.hdg += Math.max(-m, Math.min(m, d)); }
+  G.spd += ((thr ? 11 : 0) - G.spd) * Math.min(1, dt * (thr ? 1.6 : 2.4));
+  let vx = Math.cos(G.hdg) * G.spd, vy = Math.sin(G.hdg) * G.spd;
+  const cu = curAt(G.x, G.y); G.cur = cu;
+  if(cu && G.spd > 1){ vx += cu.ux * 3.2; vy += cu.uy * 3.2; }   /* stovintis laivas (pvz., prie uosto) nenešamas */
+  const nx = G.x + vx * dt, ny = G.y + vy * dt;
+  if(!isLand(nx, ny)){ G.x = nx; G.y = ny; }
+  else { /* krantas: laivas slysta palei jį, o ne įstringa */
+    const v = Math.max(G.spd, 2), a0 = G.hdg; let moved = false;
+    for(const da of [0, .4, -.4, .8, -.8, 1.2, -1.2, 1.6, -1.6, 2.1, -2.1, 2.7, -2.7]){ const ax = G.x + Math.cos(a0 + da) * v * dt * .8, ay = G.y + Math.sin(a0 + da) * v * dt * .8; if(!isLand(ax, ay)){ G.x = ax; G.y = ay; moved = true; break; } }
+    G.spd *= moved ? .97 : .4;
+  }
+  G.x = ((G.x % 1000) + 1000) % 1000;
+  if(thr){ G.used += 11 * dt; if(G.used >= G.range){ G.used = 0; G.errs++; MK.sfx.bad(); toast(T.noFuel, 1, 5200); } }
+  if(G.spd > 2 && Math.random() < dt * 22) G.wake.push({ x: G.x - Math.cos(G.hdg) * 2.2, y: G.y - Math.sin(G.hdg) * 2.2, a: 1, r: .5 + Math.random() * .5 });
+  G.wake.forEach(p => { p.a -= dt * .55; p.r += dt * .8; }); G.wake = G.wake.filter(p => p.a > 0);
+  /* užduoties tikrinimas */
+  G.near = null; let nd = 4.6; for(const p of PORTS){ const d = Math.hypot(wrapDx(p.x - G.x), p.y - G.y); if(d < 7) discover(p); if(d < nd){ nd = d; G.near = p; } }
+  const t = G.tasks[G.ti];
+  if(t.z){ const z = byId(ZONES, t.z); if(Math.hypot(wrapDx(z.x - G.x), z.y - G.y) < z.r) complete(T.okZone(z.name), z.fact); }
+  else if(t.c){ if(cu && cu.c.id === t.c && vx * cu.ux + vy * cu.uy > 5){ G.curDist += Math.hypot(vx, vy) * dt; if(G.curDist > 30) complete(T.okCur(cu.c.name), cu.c.fact); } }
+  else if(t.g){ if(Math.hypot(wrapDx(X(t.g[0]) - G.x), Y(t.g[1]) - G.y) < 3.2) complete(T.okCoord, `${T.lat(t.g[1])}, ${T.lon(t.g[0])}`); }
+}
+const view = () => W < 480 ? 62 : 92;
+function render(ts){
+  const s = W / view(), cyy = Math.max(YMIN + H / 2 / s, Math.min(YMAX - H / 2 / s, G.y)), o = drawWorld(cx, G.x, cyy, s, W, H, ts / 1000, { waves: 1, labels: 1, names: 1 }), kn = known();
+  const sxw = x => W / 2 + wrapDx(x - G.x) * s, sy = o.sy;
+  /* kilvateris */
+  for(const p of G.wake){ cx.fillStyle = `rgba(255,255,255,${p.a * .7})`; cx.beginPath(); cx.arc(sxw(p.x), sy(p.y), p.r * s, 0, 7); cx.fill(); }
+  /* sąsiauriai ir kanalai – pavadinimas tik priartėjus */
+  cx.textAlign = "center";
+  for(const z of ZONES){ const d = Math.hypot(wrapDx(z.x - G.x), z.y - G.y); if(d > 13) continue; cx.font = "italic 600 13.5px Spectral,Georgia,serif"; cx.fillStyle = "#7a2e0b"; cx.fillText(z.name, sxw(z.x), sy(z.y) - 9); }
+  /* uostai */
+  const pulse = 1 + .25 * Math.sin(ts / 300);
+  for(const p of PORTS){ const x = sxw(p.x), y = sy(p.y); if(x < -40 || x > W + 40 || y < -20 || y > H + 20) continue;
+    cx.strokeStyle = "rgba(20,40,58,.35)"; cx.lineWidth = 1.2; cx.beginPath(); cx.arc(x, y, 6.5 * pulse, 0, 7); cx.stroke();
+    cx.fillStyle = kn.has(p.id) ? "#d98a00" : "#fff"; cx.strokeStyle = "#14283a"; cx.lineWidth = 1.6; cx.beginPath(); cx.arc(x, y, 4, 0, 7); cx.fill(); cx.stroke();
+    if(kn.has(p.id)){ cx.font = "800 11.5px Manrope,sans-serif"; cx.lineWidth = 3; cx.strokeStyle = "rgba(255,253,246,.9)"; cx.strokeText(p.name, x, y - 9); cx.fillStyle = "#14283a"; cx.fillText(p.name, x, y - 9); } }
+  const t = G.tasks[G.ti];
+  if(t.g){ const d = Math.hypot(wrapDx(X(t.g[0]) - G.x), Y(t.g[1]) - G.y); if(d < 14){ const x = sxw(X(t.g[0])), y = sy(Y(t.g[1])); cx.fillStyle = "#e03131"; cx.strokeStyle = "#14283a"; cx.lineWidth = 1.5; cx.beginPath(); cx.moveTo(x, y - 9); cx.lineTo(x + 6, y + 5); cx.lineTo(x - 6, y + 5); cx.closePath(); cx.fill(); cx.stroke(); } }
+  cx.textAlign = "left";
+  if(held){ cx.strokeStyle = "rgba(20,40,58,.45)"; cx.setLineDash([4, 4]); cx.lineWidth = 1.5; cx.beginPath(); cx.moveTo(W / 2, sy(G.y)); cx.lineTo(held.x, held.y); cx.stroke(); cx.setLineDash([]); cx.beginPath(); cx.arc(held.x, held.y, 9, 0, 7); cx.stroke(); }
+  drawShip(cx, W / 2, sy(G.y), G.hdg, Math.max(.8, s / 7));
+  /* debesų šešėliai */
+  for(let i = 0; i < 4; i++){ const bx = ((i * 197 + ts / 1000 * (5 + i)) % (W + 300)) - 150, by = (i * 131) % H; cx.fillStyle = "rgba(20,40,58,.05)"; cx.beginPath(); cx.ellipse(bx, by, 90, 36, 0, 0, 7); cx.fill(); }
+  /* kompasas */
+  cx.save(); cx.translate(W - 30, 30); cx.fillStyle = "rgba(255,253,246,.85)"; cx.strokeStyle = "#14283a"; cx.lineWidth = 1.3; cx.beginPath(); cx.arc(0, 0, 20, 0, 7); cx.fill(); cx.stroke(); cx.fillStyle = "#c0392b"; cx.beginPath(); cx.moveTo(0, -16); cx.lineTo(4, 0); cx.lineTo(-4, 0); cx.fill(); cx.fillStyle = "#14283a"; cx.beginPath(); cx.moveTo(0, 16); cx.lineTo(4, 0); cx.lineTo(-4, 0); cx.fill(); cx.font = "800 9px Manrope,sans-serif"; cx.textAlign = "center"; cx.fillText("Š", 0, -23); cx.restore();
+  if(G.cur){ cx.font = "800 11.5px Manrope,sans-serif"; const tx = T.inCur(G.cur.c.name, G.cur.c.warm), tw = cx.measureText(tx).width; cx.fillStyle = G.cur.c.warm ? "rgba(214,72,0,.92)" : "rgba(20,92,200,.92)"; cx.fillRect(8, H - 28, tw + 14, 20); cx.fillStyle = "#fff"; cx.fillText(tx, 15, H - 14); }
+}
+function hud(){
+  $("pos").textContent = `${T.lat(Math.round(LAT(G.y)))}, ${T.lon(Math.round(LON(G.x)))}`;
+  const f = 1 - G.used / G.range, e = $("fuel"); e.style.width = Math.max(0, f * 100) + "%"; e.className = f < .25 ? "lo" : "";
+  const d = $("dock"); if(G.near && !G.paused){ d.hidden = false; d.textContent = T.dock; } else d.hidden = true;
+}
+let hudT = 0;
+function loop(ts){
+  requestAnimationFrame(loop); const dt = Math.min(.05, (ts - lastTs) / 1000 || 0); lastTs = ts;
+  if(G && !G.over){ if(!W) fit(); for(let i = 0; i < (G.boost || 1) && !G.paused && !G.over; i++) step(dt); render(ts); if(ts - hudT > 200){ hudT = ts; hud(); } }
+  else if(!$("menu").hidden) heroDraw(ts);
+}
+/* ---------- valdymas ---------- */
+const ptr = e => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+cv.addEventListener("pointerdown", e => { if(!G || G.paused) return; e.preventDefault(); cv.setPointerCapture(e.pointerId); held = ptr(e); });
+cv.addEventListener("pointermove", e => { if(held) held = ptr(e); });
+["pointerup", "pointercancel", "pointerleave"].forEach(n => cv.addEventListener(n, () => { held = null; }));
+document.addEventListener("keydown", e => { if(!G || G.over || $("game").hidden) return; if(["ArrowLeft", "ArrowRight", "ArrowUp"].includes(e.key)){ keys[e.key] = true; e.preventDefault(); } if(e.key === "Enter"){ const go = $("go"); if(go) go.click(); else tryDock(); } });
+document.addEventListener("keyup", e => { keys[e.key] = false; });
+$("dock").onclick = tryDock;
+$("bHint").onclick = () => { if(!G || G.paused) return; const t = G.tasks[G.ti]; if(!G.hinted){ G.hinted = true; G.errs++; } MK.sfx.tap(); toast(t.hint, 0, 7000); };
+$("bWorld").onclick = () => {
+  if(!G) return; G.paused = true; held = null; MK.sfx.tap();
+  $("ov").innerHTML = `<div class="sheet"><div class="in"><h3>${T.world}</h3><canvas id="wmap"></canvas><button type="button" class="b pri full" id="wc">${T.close}</button></div></div>`;
+  const c = $("wmap"), w = c.clientWidth, h = Math.round(w * .62), dpr = Math.min(2, window.devicePixelRatio || 1); c.style.height = h + "px"; c.width = w * dpr; c.height = h * dpr; const g = c.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const s = w / 1000, o = drawWorld(g, 500, (YMIN + YMAX) / 2 + 20, s, w, h, 0, { grid: 30, names: 1 }), kn = known();
+  g.textAlign = "center"; g.font = "700 8px Manrope,sans-serif";
+  for(const p of PORTS){ if(!kn.has(p.id)) continue; g.fillStyle = "#d98a00"; g.beginPath(); g.arc(o.sx(p.x), o.sy(p.y), 2.4, 0, 7); g.fill(); }
+  g.fillStyle = "#e03131"; g.strokeStyle = "#fff"; g.lineWidth = 2; g.beginPath(); g.arc(o.sx(G.x), o.sy(G.y), 5, 0, 7); g.fill(); g.stroke();
+  $("wc").onclick = () => { $("ov").innerHTML = ""; G.paused = false; };
+};
+$("ov").addEventListener("click", e => { const a = e.target.closest("[data-a]"); if(!a) return; MK.sfx.tap(); $("ov").innerHTML = ""; const vi = G.vi; a.dataset.a === "next" ? start(vi + 1) : a.dataset.a === "again" ? start(vi) : showMenu(); });
+$("quit").onclick = () => { MK.sfx.tap(); showMenu(); };
+window.addEventListener("resize", () => { W = 0; hW = 0; });
+/* ---------- meniu ---------- */
+const hc = $("hero"), hg = hc.getContext("2d"); let hW = 0, hH = 0;
+function heroDraw(ts){
+  if(!hW){ const w = hc.clientWidth; if(!w) return; const dpr = Math.min(2, window.devicePixelRatio || 1); hW = w; hH = Math.round(w / 2.4); hc.width = hW * dpr; hc.height = hH * dpr; hg.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  const t = ts / 1000, px = 470 + (t * 4) % 60, py = 305 - Math.sin(t * .2) * 6, s = hW / 150;
+  drawWorld(hg, px + 20, py, s, hW, hH, t, { waves: 1, names: 1 }); drawShip(hg, hW / 2 - 20 * s, hH / 2, -0.12, Math.max(1, s / 3));
+}
+function showMenu(){
+  G = null; $("ov").innerHTML = ""; $("game").hidden = true; $("menu").hidden = false; hW = 0;
+  const best = MK.best(GAME), tot = T.voyages.reduce((a, v) => a + (best[v.id] || 0), 0), kn = known().size;
+  $("rank").innerHTML = `<h2>${T.rankT}</h2><p class="rank">${T.ranks[tot >= 22 ? 4 : tot >= 15 ? 3 : tot >= 8 ? 2 : tot >= 3 ? 1 : 0]}</p><p>${T.portsP(kn, PORTS.length)}</p>`;
+  const st = n => `<span class="st" aria-label="${n} iš 3">${[0, 1, 2].map(k => k < n ? "<u>★</u>" : "★").join("")}</span>`;
+  $("voys").innerHTML = T.voyages.map((v, i) => `<button type="button" class="voy" data-i="${i}"><b>${v.name}</b><span>${v.sub}</span>${st(best[v.id] || 0)}</button>`).join("") + `<button type="button" class="voy" data-i="-1"><b>${T.free.name}</b><span>${T.free.sub}</span>${st(best.laisvas || 0)}</button>`;
+  window.scrollTo(0, 0);
+}
+$("voys").addEventListener("click", e => { const b = e.target.closest("[data-i]"); if(b) start(+b.dataset.i); });
+$("app").prepend(MK.top({ title: T.title, grade: 9 }));
+$("kick").textContent = T.kicker; $("h1").textContent = T.h1; $("lead").textContent = T.lead; $("note").textContent = T.note; $("voyT").textContent = T.voyT; $("manT").textContent = T.manualT; $("fuelL").textContent = T.fuel; $("posL").textContent = T.posL; $("bHint").textContent = T.hintBtn; $("bWorld").textContent = T.world;
+$("manual").innerHTML = T.manual.map(m => `<details class="man"><summary>${m.name}</summary>${m.html}</details>`).join("");
+window.__ok = { get G(){ return G; }, PORTS, ZONES, CURS, isLand, X, Y, LAT, LON, tgt, wrapDx, mask, MW, MH, MS, YMIN, YMAX, curAt, hold: p => { held = p; } };
+showMenu(); requestAnimationFrame(loop);
+</script>
+</body>
+</html>
