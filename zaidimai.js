@@ -560,6 +560,17 @@ window.MK_ZAIDIMAI = [
   "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMxYjg0ZDgiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIyMyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjMiLz48ZyBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxwYXRoIGQ9Ik0zMiAxMnY1TTMyIDQ3djVNMTIgMzJoNU00NyAzMmg1Ii8+PC9nPjxwYXRoIGQ9Ik0zMiAzMlYxOU0zMiAzMmwxMCA2IiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMy42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIzIiBmaWxsPSIjZTU1MzNkIi8+PC9zdmc+"
  },
  {
+  "id": "bokstinis-kranas",
+  "subject": "mat",
+  "grades": [
+   3
+  ],
+  "title": "Bokštinis kranas",
+  "desc": "Valdyk kraną ir statyk miestelį: smulkink ir stambink ilgio bei masės matavimo vienetus – mm, cm, dm, m, kg ir t.",
+  "url": "/bokstinis-kranas/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiNmMmE5MDAiLz48cmVjdCB4PSIxMyIgeT0iMTIiIHdpZHRoPSI3IiBoZWlnaHQ9IjQyIiBmaWxsPSIjZmZmIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMiIvPjxwYXRoIGQ9Ik0xMyAyMGw3IDhNMjAgMjBsLTcgOE0xMyAzMmw3IDhNMjAgMzJsLTcgOE0xMyA0NGw3IDhNMjAgNDRsLTcgOCIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjEuNCIvPjxyZWN0IHg9IjYiIHk9IjEyIiB3aWR0aD0iNTIiIGhlaWdodD0iNiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIiLz48cmVjdCB4PSI2IiB5PSIxOCIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzEyMWEzMyIvPjxwYXRoIGQ9Ik00NCAxOHYxNiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIiLz48cGF0aCBkPSJNNDQgMzRsLTEyIDZNNDQgMzRsMTIgNiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjEuNiIvPjxyZWN0IHg9IjI5IiB5PSI0MCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjgiIHJ4PSIyIiBmaWxsPSIjZjA4YTVkIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMiIvPjxyZWN0IHg9IjgiIHk9IjU0IiB3aWR0aD0iNDgiIGhlaWdodD0iNCIgcng9IjIiIGZpbGw9IiMxMjFhMzMiLz48L3N2Zz4="
+ },
+ {
   "id": "meteorologijos-stotis",
   "subject": "geo",
   "grades": [
