@@ -103,7 +103,11 @@ details.bk p{margin:8px 0 12px}
 .rec{border-top:2px dashed var(--ink);border-bottom:2px dashed var(--ink);padding:6px 0;margin:8px 0;font:700 13.5px/1.6 ui-monospace,Menlo,Consolas,monospace}
 .rec div{display:flex;justify-content:space-between;gap:10px}
 .stars{font-size:34px;letter-spacing:4px;color:#d8d2bf;text-align:center;margin:4px 0}.stars u{text-decoration:none;color:#f0a400}
-@media (min-width:700px){.bub{font-size:15px}.pad{opacity:.6}}
+@media (min-width:700px){.bub{font-size:15px}#joy{opacity:.6}}
+/* Kompiuteryje žaidimas užima visą naršyklės langą */
+@media (min-width:900px){body.playing .mk-app{max-width:none;height:100vh;height:100dvh;min-height:0;padding-inline:18px;padding-block:6px 10px}
+  body.playing .mk-top{max-width:none}body.playing #game .bub{font-size:16px}}
+.mk-app:fullscreen{max-width:none;height:100vh;padding:8px 14px;background:var(--paper,#fff4dd)}
 @media (prefers-reduced-motion:reduce){.mbox{animation:none}}
 </style>
 </head>
@@ -125,7 +129,7 @@ details.bk p{margin:8px 0 12px}
       <canvas id="cv"></canvas>
       <div class="chip"><button type="button" id="quit" aria-label="">✕</button><span id="cnt"></span><span id="mon"></span></div>
       <div id="wait" hidden><div id="waitBar"></div></div>
-      <div class="tr"><button type="button" class="btn" id="helpB"></button><button type="button" class="btn" id="mapB"></button></div>
+      <div class="tr"><button type="button" class="btn" id="fsB" hidden></button><button type="button" class="btn" id="helpB"></button><button type="button" class="btn" id="mapB"></button></div>
       <div class="zoom"><button type="button" class="btn" id="zIn" aria-label="Didinti">+</button><button type="button" class="btn" id="zOut" aria-label="Mažinti">−</button></div>
       <div id="joy" role="application"><b>▲</b><b>▼</b><b>◀</b><b>▶</b><i></i></div>
       <button type="button" id="here"></button>
@@ -196,6 +200,7 @@ Object.assign(IC, {
 const P2 = {}; for(const k in IC) P2[k] = { f: IC[k].f && new Path2D(IC[k].f), s: IC[k].s && new Path2D(IC[k].s) };
 const icoSvg = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${IC[k].f ? `<path d="${IC[k].f}" fill="${INK}"/>` : ""}${IC[k].s ? `<path d="${IC[k].s}" fill="none" stroke="${INK}" stroke-width="${k === "carpark" ? 3.4 : 1.9}" stroke-linecap="round" stroke-linejoin="round"/>` : ""}</svg>`;
 const SVGI = {
+  fs: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l7 7-7 7v-5H3z" fill="#ffc928" stroke="#1d2433" stroke-width="2" stroke-linejoin="round"/></svg>',
   spk: '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.500 8.500a5 5 0 0 1 0 7M19 6a8.500 8.500 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linecap="round"/></svg>',
   map: '<svg viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linejoin="round"/></svg>'
@@ -218,6 +223,7 @@ const money = n => T.hud.money(n);
 /* ---------- meniu ---------- */
 function rankOf(c){ let r = T.ranks[0][1]; for(const [n, name] of T.ranks) if(c >= n) r = name; return r; }
 function menu(){
+  document.body.classList.remove("playing"); if(document.fullscreenElement) document.exitFullscreen().catch(() => {});
   $("menu").hidden = false; $("game").hidden = true; G = null;
   const best = MK.best(GAME);
   $("kick").textContent = T.kick; $("h1").textContent = T.title; $("lead").textContent = T.lead;
@@ -269,7 +275,7 @@ function speak(s){
 
 /* ---------- žaidimo būsena ---------- */
 let G = null;
-const car = { x: 0, y: 0, a: 0, v: 0 }, cam = { a: 0 }, LANE = 12;      /* juostos vidurys – 12 vnt. nuo kelio ašies į dešinę */
+const car = { x: 0, y: 0, a: 0, v: 0 }, cam = { a: 0 }, LANE = 12, FARE = 10, TIP = 2;      /* užmokestis už kelionę ir arbatpinigiai (£) */      /* juostos vidurys – 12 vnt. nuo kelio ašies į dešinę */
 const keys = new Set(), joy = { x: 0, y: 0, id: null };
 let ai = [], walkers = [];
 const onRoad = (x, y, m) => {
@@ -290,7 +296,7 @@ function start(id){
   const fares = M.genShift(id); if(!fares) return;
   G = { id, fares, done: 0, state: "call", fare: null, call: null, earned: 0, sum: { fares: 0, tip: 0, wrong: 0, hint: 0, red: 0, crash: 0, late: 0 }, gps: false, arrow: false, map: false, mapX: 0, mapY: 0, t: 0, sel: null, st: 0, cool: {}, callT: 0, callMax: 1, node: null };
   fares.forEach((f, n) => { f.n = n; f.status = "wait"; f.look = PASS[n % PASS.length]; });
-  $("menu").hidden = true; $("game").hidden = false; window.scrollTo(0, 0);
+  document.body.classList.add("playing"); $("menu").hidden = true; $("game").hidden = false; window.scrollTo(0, 0);
   const p0 = passPos(lots[fares[0].pickup]); let bx = AX[1], by = SY[2], bd = 0;
   for(let i = 0; i < NA; i++) for(let j = 0; j < NS; j++){ const d = Math.hypot(AX[i] - p0.x, SY[j] - p0.y); if(d > 380 && d < 700 && d > bd && !M.LIGHTS.has(i + "," + j)){ bd = d; bx = AX[i]; by = SY[j]; } }
   car.x = bx; car.y = by; car.a = Math.round(Math.atan2(p0.y - by, p0.x - bx) / (Math.PI / 2)) * Math.PI / 2; car.v = 0; cam.a = car.a;
@@ -309,7 +315,7 @@ function nextCall(){
 function hud(){
   $("cnt").textContent = T.hud.fare(Math.min(G.done + 1, G.fares.length), G.fares.length); $("mon").textContent = money(G.earned); $("mon").classList.toggle("neg", G.earned < 0);
   $("quit").setAttribute("aria-label", T.hud.quit); $("mapB").innerHTML = SVGI.map + `<span>${G.map ? T.hud.mapClose : T.hud.map}</span>`; $("mapB").setAttribute("aria-label", G.map ? T.hud.mapClose : T.hud.map);
-  $("helpB").innerHTML = `${SVGI.arrow}<span>${T.hud.help}</span>`; $("helpB").classList.toggle("off", !save.help); $("helpB").setAttribute("aria-pressed", save.help); $("helpB").setAttribute("aria-label", T.hud.helpL);
+  fsBtn(); $("helpB").innerHTML = `${SVGI.arrow}<span>${T.hud.help}</span>`; $("helpB").classList.toggle("off", !save.help); $("helpB").setAttribute("aria-pressed", save.help); $("helpB").setAttribute("aria-label", T.hud.helpL);
   $("here").textContent = T.hud.here; $("here").disabled = G.state !== "fare"; $("wait").hidden = G.state !== "call";
 }
 function radio(){
@@ -375,18 +381,18 @@ async function here(){
   await modal(h, [{ t: T.wrong.again, y: 1 }]);
 }
 async function finish(f){
-  const clean = !f.wrong && !f.hints, tip = clean && !f.fined ? 1 : 0, newG = [];
-  f.status = "done"; G.done++; G.earned += 5 + tip; G.sum.fares += 5; G.sum.tip += tip; G.gps = false;
+  const clean = !f.wrong && !f.hints, tip = clean && !f.fined ? TIP : 0, newG = [];
+  f.status = "done"; G.done++; G.earned += FARE + tip; G.sum.fares += FARE; G.sum.tip += tip; G.gps = false;
   if(clean) f.stops.forEach(s => { const l = lots[s]; if(l.kind === "place" && !save.guide.includes(l.place)){ save.guide.push(l.place); newG.push("the " + PL[l.place].en); } });
   store(); MK.sfx.good(); setTimeout(() => MK.sfx.coins(), 350);
   G.state = "paid"; hud();
-  await modal(`<h2 class="ok">${MK.pick(T.done.t)}</h2><div class="lab">${T.done.said}</div><p class="en" lang="en">${MK.esc(f.en)}</p><div class="lab">${T.done.means}</div><p>${MK.esc(f.lt)}</p><div class="lab">${T.done.words}</div><ul>${f.notes.map(n => `<li>${n}</li>`).join("")}</ul><p><b>${T.done.pay(5, tip)}</b>${newG.length ? " " + T.done.guide(newG.join(", ")) : ""}</p>`, [{ t: T.done.next, y: 1 }]);
+  await modal(`<h2 class="ok">${MK.pick(T.done.t)}</h2><div class="lab">${T.done.said}</div><p class="en" lang="en">${MK.esc(f.en)}</p><div class="lab">${T.done.means}</div><p>${MK.esc(f.lt)}</p><div class="lab">${T.done.words}</div><ul>${f.notes.map(n => `<li>${n}</li>`).join("")}</ul><p><b>${T.done.pay(FARE, tip)}</b>${newG.length ? " " + T.done.guide(newG.join(", ")) : ""}</p>`, [{ t: T.done.next, y: 1 }]);
   G.start = null;
   if(G.done >= G.fares.length) return endShift();
   nextCall();
 }
 async function endShift(){
-  const n = G.fares.length, r = G.earned / (6 * n), stars = r >= 0.75 ? 3 : r >= 0.45 ? 2 : 1, S = G.sum;
+  const n = G.fares.length, r = G.earned / ((FARE + TIP) * n), stars = r >= 0.75 ? 3 : r >= 0.45 ? 2 : 1, S = G.sum;
   save.coins = Math.max(0, save.coins + G.earned); save.total += Math.max(0, G.earned); store(); MK.best(GAME, G.id, stars); if(stars >= 2){ MK.sfx.win(); MK.confetti && stars === 3 && MK.confetti(40); }
   const id = G.id, line = (t, v, neg) => v ? `<div><span>${t}</span><span>${neg ? "−" : "+"}£${v}</span></div>` : "";
   G.state = "paid";
@@ -396,6 +402,11 @@ async function endShift(){
 $("here").addEventListener("click", here);
 $("quit").addEventListener("click", async () => { if(modalOpen) return; const r = await modal(`<h2>${T.hud.quit}</h2><p>${T.quitQ}</p>`, [{ t: T.no, y: 1 }, { t: T.yes }]); if(r === 1) menu(); });
 $("mapB").addEventListener("click", toggleMap);
+/* Viso ekrano režimas (kompiuteryje ir Android telefonuose; iPhone naršyklės jo nepalaiko) */
+const fsOk = !!(document.fullscreenEnabled && document.documentElement.requestFullscreen);
+function fsBtn(){ const on = !!document.fullscreenElement; $("fsB").hidden = !fsOk; $("fsB").innerHTML = `${SVGI.fs}<span>${on ? T.hud.fsOff : T.hud.fsOn}</span>`; $("fsB").setAttribute("aria-label", on ? T.hud.fsOff : T.hud.fsOn); }
+$("fsB").addEventListener("click", () => { MK.sfx.tap(); if(document.fullscreenElement) document.exitFullscreen().catch(() => {}); else $("app").requestFullscreen().catch(() => {}); });
+document.addEventListener("fullscreenchange", () => { fsBtn(); setTimeout(() => { if(G) resize(); }, 60); });
 $("helpB").addEventListener("click", () => { if(!G || modalOpen) return; save.help = !save.help; store(); MK.sfx.tap(); toast(save.help ? T.hud.helpOn : T.hud.helpOff, 2600); hud(); });
 function toggleMap(){ if(!G || modalOpen) return; G.map = !G.map; G.mapX = car.x; G.mapY = car.y; G.mapZ = Math.max(1, Math.min(6, 0.8 / mapFit())); ptrs.clear(); drag = null; $("stage").classList.toggle("map", G.map); $("maphint").hidden = !G.map; $("maphint").textContent = T.hud.mapHint; clearTimeout(window.__mh); if(G.map) window.__mh = setTimeout(() => { $("maphint").hidden = true; }, 5000); hud(); MK.sfx.tap(); }
 

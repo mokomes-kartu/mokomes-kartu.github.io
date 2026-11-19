@@ -9,7 +9,7 @@ window.MK_T = {
   licence: "Vairuotojo pažymėjimas",
   coins: (w, tot) => `Piniginė: £${w} · iš viso uždirbta: £${tot}`,
   guide: (a, b) => `Miesto gidas: ${a} iš ${b} vietų`,
-  ranks: [[0, "Mokinys vairuotojas"], [40, "Jaunesnysis vairuotojas"], [100, "Taksi vairuotojas"], [200, "Patyręs vairuotojas"], [350, "Rivertono žinovas"], [550, "Rivertono legenda"]],
+  ranks: [[0, "Mokinys vairuotojas"], [80, "Jaunesnysis vairuotojas"], [200, "Taksi vairuotojas"], [400, "Patyręs vairuotojas"], [700, "Rivertono žinovas"], [1100, "Rivertono legenda"]],
   shiftsT: "Pamainos",
   shifts: [
     { id: "p1", name: "Rytinė pamaina", sub: "Vietos mieste: kur žmonėms reikia? (the bakery, the chemist's, the town hall…)" },
@@ -28,11 +28,11 @@ window.MK_T = {
     t: "Kaip vairuoti",
     touch: "Viskas valdoma vienu nykščiu – vairalazde apačioje dešinėje: stumk aukštyn – važiuoji, į kairę ar į dešinę – suki, žemyn – stabdai ir važiuoji atgal. Virš vairalazdės – mygtukas „Čia!“: privažiuok prie pat pastato, arčiau jo šaligatvio (pastatas apsibrėš geltonai), ir paspausk.",
     keys: "Klaviatūra: rodyklės arba W A S D – važiuoti ir sukti, tarpas arba Enter – „Čia!“, M – žemėlapis, V – vertimas, R – grįžti į pradžią.",
-    rule: "Dispečerė angliškai praneša, kur laukia keleivis. Jis laukia ne amžinai (juostelė viršuje) – nespėsi, mokėsi £2 ir gausi rodyklę. Už nuvežimą be klaidų – £5 ir £1 arbatpinigių. Baudos: ne ten atvežei – £2, vertimas – £1, pravažiavai raudoną šviesoforą – £2, atsitrenkei į kitą automobilį – £1. Rivertone važiuojama dešiniąja kelio puse, kaip Lietuvoje (tikroje Didžiojoje Britanijoje važiuojama kaire). Geltona rodyklė prieš taksi ir geltonas ratas rodo, kur MAŽDAUG važiuoti – tikslią vietą rasi tik supratęs angliškus žodžius. Rodyklę galima išjungti mygtuku „Rodyklė“.",
+    rule: "Dispečerė angliškai praneša, kur laukia keleivis. Jis laukia ne amžinai (juostelė viršuje) – nespėsi, mokėsi £2 ir gausi rodyklę. Už nuvežimą – £10, o be klaidų ir užuominų – dar £2 arbatpinigių. Baudos: ne ten atvežei – £2, vertimas – £1, pravažiavai raudoną šviesoforą – £2, atsitrenkei į kitą automobilį – £1. Rivertone važiuojama dešiniąja kelio puse, kaip Lietuvoje (tikroje Didžiojoje Britanijoje važiuojama kaire). Geltona rodyklė prieš taksi ir geltonas ratas rodo, kur MAŽDAUG važiuoti – tikslią vietą rasi tik supratęs angliškus žodžius. Rodyklę galima išjungti mygtuku „Rodyklė“.",
     ok: "Supratau, važiuojam"
   },
   hud: {
-    quit: "Į garažą", map: "Žemėlapis", mapClose: "Uždaryti žemėlapį", listen: "Paklausyti", tr: "Vertimas (−£1)", back: "Į pradžią", here: "Čia!",
+    quit: "Į garažą", fsOn: "Visas ekranas", fsOff: "Išeiti iš viso ekrano", map: "Žemėlapis", mapClose: "Uždaryti žemėlapį", listen: "Paklausyti", tr: "Vertimas (−£1)", back: "Į pradžią", here: "Čia!",
     showText: "Rodyti tekstą (−£1)", fare: (a, b) => `${a}/${b}`, money: n => (n < 0 ? "−£" + (-n) : "£" + n),
     joy: "Vairalazdė: aukštyn – važiuoti, į šonus – sukti, žemyn – stabdyti ir atgal", mapHint: "Stumdyk pirštu ar pele. Didink ir mažink dviem pirštais, pelės ratuku arba + / −. Šiaurė – viršuje.",
     help: "Rodyklė", helpL: "Pagalbinė rodyklė: rodo apytikslę vietą", helpOn: "Pagalbinė rodyklė įjungta: ji rodo, kur maždaug važiuoti. Tikslią vietą rasi pagal angliškus žodžius.", helpOff: "Pagalbinė rodyklė išjungta – važiuok tik pagal angliškus žodžius.",
@@ -54,7 +54,7 @@ window.MK_T = {
   },
   shop: {
     t: "Garažas: taksi spalva", buy: p => `Pirkti už £${p}`, use: "Naudoti", on: "Naudojama", poor: "Dar neužtenka pinigų.",
-    cars: [["classic", "Geltonas klasikinis", 0], ["black", "Londono juodas", 30], ["red", "Raudonas", 70], ["blue", "Mėlynas", 120], ["green", "Žalias", 180], ["pink", "Rožinis", 250]]
+    cars: [["classic", "Geltonas klasikinis", 0], ["black", "Londono juodas", 60], ["red", "Raudonas", 140], ["blue", "Mėlynas", 240], ["green", "Žalias", 360], ["pink", "Rožinis", 500]]
   },
   disp: "Dispečerė",
   pass: "Keleivis",
@@ -79,7 +79,7 @@ window.MK_T = {
   hint: { t: "Vertimas (užuomina)", ok: "Aišku" },
   done: {
     t: ["Atvykome!", "Tiksliai čia!", "Thank you, driver!", "Here we are!", "Perfect, thank you!"],
-    said: "Keleivis sakė:", means: "Lietuviškai:", words: "Įsidėmėk:", pay: (n, tip) => n > 0 ? `Uždarbis: £${n}` + (tip ? " + £1 arbatpinigių už tvarkingą kelionę" : "") : "Uždarbio už šią kelionę nėra – klaidos ir užuominos suvalgė viską.",
+    said: "Keleivis sakė:", means: "Lietuviškai:", words: "Įsidėmėk:", pay: (n, tip) => n > 0 ? `Uždarbis: £${n}` + (tip ? " + £" + tip + " arbatpinigių už tvarkingą kelionę" : "") : "Uždarbio už šią kelionę nėra – klaidos ir užuominos suvalgė viską.",
     guide: w => `Į miesto gidą įrašyta: ${w}.`, next: "Važiuoti toliau"
   },
   end: {
