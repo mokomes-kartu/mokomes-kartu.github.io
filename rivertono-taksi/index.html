@@ -70,20 +70,19 @@ details.bk p{margin:8px 0 12px}
 .tr{position:absolute;top:8px;right:8px;display:flex;gap:6px}
 .tr .btn{min-height:38px;padding:0 10px}
 @media (max-width:520px){.tr .btn span{display:none}}
-.pad{position:absolute;background:rgba(255,255,255,.74);border:3px solid var(--ink);border-radius:22px;touch-action:none}
-.pad i{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px;border-radius:50%;background:var(--taxi);border:3px solid var(--ink);box-shadow:2px 2px 0 var(--ink);pointer-events:none;display:grid;place-items:center;font:900 20px/1 var(--kid);font-style:normal}
-#thr{left:12px;bottom:12px;width:76px;height:176px}
-#thr::before,#thr::after,#steer::before,#steer::after{position:absolute;font:900 15px/1 var(--kid);color:rgba(29,36,51,.5)}
-#thr::before{content:"▲";left:50%;top:7px;transform:translateX(-50%)}#thr::after{content:"▼";left:50%;bottom:7px;transform:translateX(-50%)}
-#steer{right:12px;bottom:12px;width:176px;height:76px}
-#steer::before{content:"◀";left:8px;top:50%;transform:translateY(-50%)}#steer::after{content:"▶";right:8px;top:50%;transform:translateY(-50%)}
-#here{position:absolute;right:16px;bottom:100px;width:92px;height:92px;border-radius:50%;background:var(--taxi);border:3.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink);font:italic 900 22px/1 var(--kid);color:var(--ink);cursor:pointer;touch-action:manipulation}
+#joy{position:absolute;right:12px;bottom:12px;width:136px;height:136px;border-radius:50%;background:rgba(255,255,255,.74);border:3px solid var(--ink);touch-action:none}
+#joy::before{content:"";position:absolute;inset:18px;border:2px dashed rgba(29,36,51,.35);border-radius:50%}
+#joy b{position:absolute;font:900 13px/1 var(--kid);color:rgba(29,36,51,.5);pointer-events:none}
+#joy b:nth-of-type(1){left:50%;top:5px;transform:translateX(-50%)}#joy b:nth-of-type(2){left:50%;bottom:5px;transform:translateX(-50%)}
+#joy b:nth-of-type(3){left:6px;top:50%;transform:translateY(-50%)}#joy b:nth-of-type(4){right:6px;top:50%;transform:translateY(-50%)}
+#joy i{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px;border-radius:50%;background:var(--taxi);border:3px solid var(--ink);box-shadow:2px 2px 0 var(--ink);pointer-events:none}
+#here{position:absolute;right:36px;bottom:160px;width:88px;height:88px;border-radius:50%;background:var(--taxi);border:3.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink);font:italic 900 22px/1 var(--kid);color:var(--ink);cursor:pointer;touch-action:manipulation}
 #here:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
 #here:disabled{background:#eee6cf;color:#a59c84;border-color:#a59c84;box-shadow:none}
 #toast{position:absolute;left:50%;top:56px;transform:translateX(-50%);max-width:88%;background:var(--ink);color:#fff;border-radius:10px;padding:9px 13px;font:700 13.5px/1.35 var(--body);text-align:center;opacity:0;transition:opacity .25s;pointer-events:none}
 #toast.on{opacity:1}#toast.bad{background:#c2331f}
 #maphint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:#fff;border:2.5px solid var(--ink);border-radius:9px;padding:7px 10px;font:700 12.5px/1.3 var(--body);white-space:nowrap}
-.stage.map .pad,.stage.map #here{display:none}
+.stage.map #joy,.stage.map #here{display:none}
 #mon{background:#e9f8e0}#mon.neg{background:#ffe1dc;color:#b3261a}
 #wait{position:absolute;left:8px;right:8px;top:50px;height:12px;background:#fff;border:2.5px solid var(--ink);border-radius:7px;overflow:hidden}#wait[hidden]{display:none}
 #waitBar{height:100%;width:100%;background:var(--taxi)}#wait.low #waitBar{background:#e5533d}
@@ -125,8 +124,7 @@ details.bk p{margin:8px 0 12px}
       <div class="chip"><button type="button" id="quit" aria-label="">✕</button><span id="cnt"></span><span id="mon"></span></div>
       <div id="wait" hidden><div id="waitBar"></div></div>
       <div class="tr"><button type="button" class="btn" id="mapB"></button></div>
-      <div class="pad" id="thr" role="application"><i></i></div>
-      <div class="pad" id="steer" role="application"><i></i></div>
+      <div id="joy" role="application"><b>▲</b><b>▼</b><b>◀</b><b>▶</b><i></i></div>
       <button type="button" id="here"></button>
       <div id="toast" role="status"></div>
       <div id="maphint" hidden></div>
@@ -244,7 +242,7 @@ $("shop").addEventListener("click", e => {
 let modalOpen = false;
 function modal(html, btns){
   return new Promise(res => {
-    modalOpen = true; keys.clear(); pad.thr = pad.st = 0; padReset();
+    modalOpen = true; keys.clear(); joyReset();
     $("mbox").innerHTML = html + `<div class="row">${btns.map((b, i) => `<button type="button" class="btn big ${b.y ? "y" : ""}" data-i="${i}">${b.t}</button>`).join("")}</div>`;
     $("modal").hidden = false;
     const bs = $("mbox").querySelectorAll("button[data-i]"); bs[0].focus();
@@ -268,7 +266,7 @@ function speak(s){
 /* ---------- žaidimo būsena ---------- */
 let G = null;
 const car = { x: 0, y: 0, a: 0, v: 0 }, cam = { a: 0 };
-const keys = new Set(), pad = { thr: 0, st: 0, tid: null, sid: null };
+const keys = new Set(), joy = { x: 0, y: 0, id: null };
 let ai = [], walkers = [];
 const onRoad = (x, y, m) => {
   for(let j = 0; j < NS; j++) if(Math.abs(y - SY[j]) <= RW - m && x >= -RW + m && x <= XM + RW - m){
@@ -295,7 +293,7 @@ function start(id){
   ai = [[0, 0], [7, 5], [1, 3], [5, 1], [4, 2], [2, 4], [6, 3], [3, 0], [6, 0]].map(([i, j], n) => ({ i, j, ni: i, nj: j + (j < NS - 1 ? 1 : -1), t: (n * 0.17) % 0.7, x: -999, y: -999, a: 0, col: ["#e5533d", "#3f7fe0", "#f7f4ea", "#4caf63", "#8d5fd3", "#f28a2e", "#9aa1b3", "#f08bb4", "#3f7fe0"][n], stop: 0 }));
   walkers = Array.from({ length: 20 }, (_, n) => ({ b: (n * 7) % 30, t: (n * 0.37) % 1, s: n % 2 ? 1 : -1, col: ["#e5533d", "#3f7fe0", "#8d5fd3", "#f28a2e", "#4caf63"][n % 5] }));
   $("stage").classList.remove("map"); $("maphint").hidden = true;
-  $("thr").setAttribute("aria-label", T.hud.thr); $("steer").setAttribute("aria-label", T.hud.steer);
+  $("joy").setAttribute("aria-label", T.hud.joy);
   nextCall(); resize();
   if(!save.how){ save.how = true; store(); modal(`<h2>${T.how.t}</h2><p>${T.how.touch}</p><p>${T.how.keys}</p><p>${T.how.rule}</p>`, [{ t: T.how.ok, y: 1 }]); }
 }
@@ -407,17 +405,14 @@ addEventListener("keydown", e => {
 });
 addEventListener("keyup", e => keys.delete(e.key.length === 1 ? e.key.toLowerCase() : e.key));
 addEventListener("blur", () => keys.clear());
-const thrEl = $("thr"), stEl = $("steer");
-function padReset(){ thrEl.firstElementChild.style.transform = ""; stEl.firstElementChild.style.transform = ""; pad.tid = pad.sid = null; }
-function bindPad(el, vertical){
-  const key = vertical ? "tid" : "sid";
-  const mv = e => { const r = el.getBoundingClientRect(), R = (vertical ? r.height : r.width) / 2 - 26; let v = vertical ? -(e.clientY - r.top - r.height / 2) / R : (e.clientX - r.left - r.width / 2) / R; v = Math.max(-1, Math.min(1, v)); if(vertical) pad.thr = v; else pad.st = v; el.firstElementChild.style.transform = vertical ? `translateY(${-v * R}px)` : `translateX(${v * R}px)`; };
-  el.addEventListener("pointerdown", e => { e.preventDefault(); pad[key] = e.pointerId; try{ el.setPointerCapture(e.pointerId); }catch(_){ } mv(e); });
-  el.addEventListener("pointermove", e => { if(pad[key] === e.pointerId) mv(e); });
-  const end = e => { if(pad[key] === e.pointerId){ pad[key] = null; if(vertical) pad.thr = 0; else pad.st = 0; el.firstElementChild.style.transform = ""; } };
-  el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
-}
-bindPad(thrEl, true); bindPad(stEl, false);
+/* Viena vairalazdė (valdoma vienu nykščiu): aukštyn – važiuoti, į šonus – sukti, žemyn – stabdyti / atgal. */
+const jEl = $("joy"), knob = jEl.querySelector("i");
+function joyReset(){ joy.x = joy.y = 0; joy.id = null; knob.style.transform = ""; }
+function jMove(e){ const r = jEl.getBoundingClientRect(), R = r.width / 2 - 22; let x = (e.clientX - r.left - r.width / 2) / R, y = (e.clientY - r.top - r.height / 2) / R; const m = Math.hypot(x, y); if(m > 1){ x /= m; y /= m; } joy.x = x; joy.y = y; knob.style.transform = `translate(${x * R}px,${y * R}px)`; }
+jEl.addEventListener("pointerdown", e => { e.preventDefault(); joy.id = e.pointerId; try{ jEl.setPointerCapture(e.pointerId); }catch(_){ } jMove(e); });
+jEl.addEventListener("pointermove", e => { if(joy.id === e.pointerId) jMove(e); });
+const jEnd = e => { if(joy.id === e.pointerId) joyReset(); };
+jEl.addEventListener("pointerup", jEnd); jEl.addEventListener("pointercancel", jEnd);
 const cv = $("cv"), ctx = cv.getContext("2d"); let drag = null, W = 300, H = 300, DPR = 1;
 cv.addEventListener("pointerdown", e => { if(G && G.map){ drag = { x: e.clientX, y: e.clientY, mx: G.mapX, my: G.mapY }; cv.setPointerCapture(e.pointerId); } });
 cv.addEventListener("pointermove", e => { if(drag && G && G.map){ const s = mapScale(); G.mapX = Math.max(-40, Math.min(XM + 40, drag.mx - (e.clientX - drag.x) / s)); G.mapY = Math.max(-40, Math.min(YM + 40, drag.my - (e.clientY - drag.y) / s)); } });
@@ -431,8 +426,10 @@ function input(){
   let thr = 0, st = 0;
   if(keys.has("ArrowUp") || keys.has("w")) thr += 1; if(keys.has("ArrowDown") || keys.has("s")) thr -= 1;
   if(keys.has("ArrowLeft") || keys.has("a")) st -= 1; if(keys.has("ArrowRight") || keys.has("d")) st += 1;
-  if(pad.tid != null && Math.abs(pad.thr) > 0.12) thr = pad.thr > 0 ? 0.35 + 0.65 * pad.thr : -1;
-  if(pad.sid != null && Math.abs(pad.st) > 0.1) st = Math.sign(pad.st) * Math.pow(Math.abs(pad.st), 1.4);
+  if(joy.id != null && Math.hypot(joy.x, joy.y) > 0.18){
+    st = Math.abs(joy.x) > 0.15 ? Math.sign(joy.x) * Math.pow(Math.abs(joy.x), 1.4) : 0;          /* švelnus vairas, kaip 2 versijoje */
+    thr = joy.y < -0.2 ? 0.35 + 0.65 * Math.min(1, -joy.y * 1.15) : joy.y > 0.5 ? -1 : Math.abs(joy.x) > 0.3 ? 0.45 : 0;   /* tik į šoną – lėtas važiavimas sukant */
+  }
   return { thr, st };
 }
 function fine(kind, n, msg){ if((G.cool[kind] || 0) > G.t) return; G.cool[kind] = G.t + 4; charge(kind, n); toast(msg, 3200, true); MK.sfx.bad(); }

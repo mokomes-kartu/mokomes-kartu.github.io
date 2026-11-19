@@ -26,7 +26,7 @@ window.MK_T = {
   note: "Žaidimas nieko nesiunčia – pažanga saugoma tik šiame įrenginyje.",
   how: {
     t: "Kaip vairuoti",
-    touch: "Kairė ranka – greitis: stumk svirtį aukštyn – važiuoji, žemyn – stabdai ir važiuoji atgal. Dešinė ranka – vairas: stumk į kairę arba į dešinę. Virš vairo – mygtukas „Čia!“: privažiuok prie pat pastato, arčiau jo šaligatvio (pastatas apsibrėš geltonai), ir paspausk.",
+    touch: "Viskas valdoma vienu nykščiu – vairalazde apačioje dešinėje: stumk aukštyn – važiuoji, į kairę ar į dešinę – suki, žemyn – stabdai ir važiuoji atgal. Virš vairalazdės – mygtukas „Čia!“: privažiuok prie pat pastato, arčiau jo šaligatvio (pastatas apsibrėš geltonai), ir paspausk.",
     keys: "Klaviatūra: rodyklės arba W A S D – važiuoti ir sukti, tarpas arba Enter – „Čia!“, M – žemėlapis, V – vertimas, R – grįžti į pradžią.",
     rule: "Dispečerė angliškai praneša, kur laukia keleivis. Jis laukia ne amžinai (juostelė viršuje) – nespėsi, mokėsi £2 ir gausi rodyklę. Už nuvežimą be klaidų – £5 ir £1 arbatpinigių. Baudos: ne ten atvežei – £2, vertimas – £1, pravažiavai raudoną šviesoforą – £2, atsitrenkei į kitą automobilį – £1. Rivertone, kaip visoje Didžiojoje Britanijoje, važiuojama kairiąja kelio puse.",
     ok: "Supratau, važiuojam"
@@ -34,7 +34,7 @@ window.MK_T = {
   hud: {
     quit: "Į garažą", map: "Žemėlapis", mapClose: "Uždaryti žemėlapį", listen: "Paklausyti", tr: "Vertimas (−£1)", back: "Į pradžią", here: "Čia!",
     showText: "Rodyti tekstą (−£1)", fare: (a, b) => `${a}/${b}`, money: n => (n < 0 ? "−£" + (-n) : "£" + n),
-    thr: "Greitis", steer: "Vairas", mapHint: "Žemėlapį galima stumdyti pirštu. Šiaurė – viršuje."
+    joy: "Vairalazdė: aukštyn – važiuoti, į šonus – sukti, žemyn – stabdyti ir atgal", mapHint: "Žemėlapį galima stumdyti pirštu. Šiaurė – viršuje."
   },
   call: {
     at: ["Pick up a passenger outside {D}.", "Paimkite keleivį: važiuokite į {D}."],
