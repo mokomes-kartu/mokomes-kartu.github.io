@@ -91,7 +91,7 @@ h2.sec{font:800 14px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercas
         <g transform="rotate(5 238 56)"><rect x="196" y="22" width="88" height="62" rx="12" fill="#7048e8" stroke="#121a33" stroke-width="3"/><text x="240" y="64" text-anchor="middle" font-family="Unbounded,Arial Black,sans-serif" font-weight="800" font-size="26" fill="#fff">EN</text><path d="M214 84l-6 16 18-16" fill="#7048e8" stroke="#121a33" stroke-width="3" stroke-linejoin="round"/></g>
       </svg></div>
       <h1>VBE <em>anglų</em></h1>
-      <p>Use of English: žodžių daryba, laikai, prielinksniai, jungiamieji žodžiai ir kolokacijos. Po kiekvieno atsakymo – paaiškinimas lietuviškai.</p>
+      <p>Kalbos vartojimas: žodžių daryba, laikai, prielinksniai, jungiamieji žodžiai, kolokacijos, spragos vienu žodžiu ir žodžio forma. Po kiekvieno atsakymo – paaiškinimas lietuviškai.</p>
     </div>
     <div id="levels"></div>
     <h2 class="sec">Tavo temos</h2>
@@ -132,7 +132,19 @@ const ZD = [
   ["He apologised for his ___ behaviour at the party.", "POLITE", ["impolite"], "Atsiprašė – vadinasi, elgesys buvo nemandagus: <b>impolite</b> (priešdėlis im-)."],
   ["The scientist made an important ___ in medicine.", "DISCOVER", ["discovery"], "Po <i>an important</i> reikia daiktavardžio: discover → <b>discovery</b>."],
   ["___, the weather was perfect for our trip.", "LUCK", ["luckily"], "Sakinio pradžioje su kableliu reikia prieveiksmio: <b>Luckily</b> – laimei."],
-  ["The teacher praised the students for their ___ work.", "CREATE", ["creative"], "Prieš daiktavardį <i>work</i> reikia būdvardžio: create → <b>creative</b>."]
+  ["The teacher praised the students for their ___ work.", "CREATE", ["creative"], "Prieš daiktavardį <i>work</i> reikia būdvardžio: create → <b>creative</b>."],
+  ["The government was criticised for its ___ to act quickly.", "FAIL", ["failure"], "Po <i>its</i> reikia daiktavardžio: fail → <b>failure</b> – nesugebėjimas, nesėkmė."],
+  ["His ___ of the rules led to a heavy fine.", "IGNORE", ["ignorance"], "Po <i>his</i> reikia daiktavardžio: ignore → <b>ignorance</b> – nežinojimas (priesaga -ance)."],
+  ["The new law met with strong ___ from local businesses.", "RESIST", ["resistance"], "Po būdvardžio <i>strong</i> reikia daiktavardžio: resist → <b>resistance</b> – pasipriešinimas."],
+  ["It was ___ of you to leave the door unlocked.", "RESPONSIBLE", ["irresponsible"], "Palikti duris neužrakintas – neatsakinga: <b>irresponsible</b> (prieš r priešdėlis ir-)."],
+  ["The report highlights the growing ___ between rich and poor regions.", "EQUAL", ["inequality"], "Reikia daiktavardžio su neigiama reikšme: equal → equality → <b>inequality</b> – nelygybė (du žingsniai: priesaga -ity ir priešdėlis in-)."],
+  ["She spoke so ___ that everyone believed her.", "PERSUADE", ["persuasively"], "Žodis apibūdina veiksmažodį <i>spoke</i> – reikia prieveiksmio: persuade → persuasive → <b>persuasively</b>."],
+  ["The company is looking for ___ and reliable staff.", "KNOWLEDGE", ["knowledgeable"], "Prieš daiktavardį <i>staff</i> reikia būdvardžio: knowledge → <b>knowledgeable</b> – išmanantis (raidė e išlieka)."],
+  ["Rising prices have led to widespread ___ among customers.", "SATISFY", ["dissatisfaction"], "Kainos kyla – klientai nepatenkinti: satisfy → satisfaction → <b>dissatisfaction</b> (priešdėlis dis-)."],
+  ["The bridge was closed because of the ___ of the old steel cables.", "WEAK", ["weakness"], "Po <i>the</i> ir prieš <i>of</i> reikia daiktavardžio: weak → <b>weakness</b>."],
+  ["Scientists warn that the damage to the reef may be ___.", "REVERSE", ["irreversible"], "Po <i>may be</i> reikia būdvardžio; žala nebepataisoma: reverse → reversible → <b>irreversible</b>."],
+  ["His ___ of the situation turned out to be completely wrong.", "ASSESS", ["assessment"], "Po <i>his</i> reikia daiktavardžio: assess → <b>assessment</b> – įvertinimas (priesaga -ment)."],
+  ["The festival attracts thousands of ___ from all over Europe.", "VISIT", ["visitors"], "Po <i>thousands of</i> reikia asmenį reiškiančio daiktavardžio daugiskaitos: visit → <b>visitors</b> (-or)."]
 ];
 const LK = [
   ["I ___ in Kaunas since 2019.", ["have lived", "live", "lived", "am living"], "<i>since</i> + laiko pradžia, veiksmas tęsiasi iki dabar → <b>Present Perfect</b>: have lived."],
@@ -152,7 +164,19 @@ const LK = [
   ["He told me that he ___ the film the day before.", ["had seen", "has seen", "sees", "will see"], "Netiesioginė kalba ir <i>the day before</i> – laikas „pasislenka“ atgal → <b>Past Perfect</b>."],
   ["I ___ to the cinema tonight – I've already bought the tickets.", ["am going", "go", "went", "have gone"], "Iš anksto suplanuotas ateities veiksmas → <b>Present Continuous</b>."],
   ["When I was a child, I ___ climb trees every summer.", ["used to", "use to", "am used to", "was used to"], "Praeities įprotis, kurio dabar nebėra → <b>used to + veiksmažodis</b>."],
-  ["She ___ English for six years before she moved to Ireland.", ["had been learning", "has been learning", "is learning", "learns"], "Veiksmas tęsėsi iki kito praeities veiksmo → <b>Past Perfect Continuous</b>."]
+  ["She ___ English for six years before she moved to Ireland.", ["had been learning", "has been learning", "is learning", "learns"], "Veiksmas tęsėsi iki kito praeities veiksmo → <b>Past Perfect Continuous</b>."],
+  ["By next June, she ___ at this school for ten years.", ["will have been teaching", "will teach", "is teaching", "has been teaching"], "<i>By next June … for ten years</i> – trukmė iki būsimo momento → <b>Future Perfect Continuous</b>."],
+  ["If I ___ about the traffic, I would have left earlier.", ["had known", "knew", "would know", "have known"], "Nereali praeities sąlyga (trečiasis sąlygos sakinys): if + <b>Past Perfect</b>, would have + III forma."],
+  ["I wish I ___ more time to prepare for the exam last week.", ["had had", "have had", "would have", "had"], "Apgailestavimas dėl praeities (<i>last week</i>): wish + <b>Past Perfect</b> → had had."],
+  ["The new stadium ___ by the end of next year.", ["will have been completed", "will complete", "is completing", "has completed"], "<i>By the end of next year</i> + stadionas pats nestato (neveikiamoji rūšis) → <b>Future Perfect Passive</b>."],
+  ["She said that she ___ the report the day before.", ["had finished", "has finished", "finishes", "will finish"], "Netiesioginė kalba, veiksmas ankstesnis (<i>the day before</i>) → <b>Past Perfect</b>."],
+  ["He ___ for the company for twenty years when it finally closed down.", ["had been working", "has been working", "was working", "works"], "Trukmė iki kito praeities įvykio → <b>Past Perfect Continuous</b>."],
+  ["It's high time you ___ taking your studies seriously.", ["started", "start", "will start", "have started"], "Po <i>it's (high) time</i> + asmuo vartojamas <b>Past Simple</b>, nors kalbama apie dabartį."],
+  ["Hardly ___ the house when it started to rain.", ["had we left", "we had left", "we left", "did we left"], "Po sakinio pradžioje esančio <i>hardly</i> – inversija su Past Perfect: <b>had we left</b>."],
+  ["This time tomorrow we ___ over the Atlantic.", ["will be flying", "fly", "will have flown", "are flown"], "Veiksmas vyks konkrečiu būsimu momentu (<i>this time tomorrow</i>) → <b>Future Continuous</b>."],
+  ["The suspect is believed ___ the country last night.", ["to have left", "to leave", "leaving", "that he left"], "<i>is believed</i> + bendratis; veiksmas ankstesnis (<i>last night</i>) → <b>perfect infinitive</b>: to have left."],
+  ["If she ___ so late last night, she wouldn't be so tired now.", ["hadn't stayed up", "didn't stay up", "wouldn't stay up", "hasn't stayed up"], "Mišrus sąlygos sakinys: praeities sąlyga (<b>Past Perfect</b>) – dabarties pasekmė (would + bendratis)."],
+  ["I'd rather you ___ anyone about this yet.", ["didn't tell", "don't tell", "won't tell", "not tell"], "<i>would rather</i> + kitas asmuo → <b>Past Simple</b> (kalbama apie dabartį ar ateitį)."]
 ];
 const PR = [
   ["My sister is very good ___ maths.", ["at", "in", "on", "for"], "Pastovi frazė: <b>good at</b> something – gerai sekasi."],
@@ -170,7 +194,19 @@ const PR = [
   ["She is married ___ a doctor.", ["to", "with", "on", "by"], "Pastovi frazė: <b>married to</b> someone."],
   ["He insisted ___ paying for dinner.", ["on", "in", "at", "for"], "Pastovi frazė: <b>insist on</b> + -ing."],
   ["The town is famous ___ its old castle.", ["for", "of", "with", "by"], "Pastovi frazė: <b>famous for</b>."],
-  ["Is there anything wrong ___ your phone?", ["with", "of", "at", "on"], "Pastovi frazė: <b>something is wrong with</b> – kažkas negerai su."]
+  ["Is there anything wrong ___ your phone?", ["with", "of", "at", "on"], "Pastovi frazė: <b>something is wrong with</b> – kažkas negerai su."],
+  ["She has always taken pride ___ her work.", ["in", "of", "for", "at"], "Pastovi frazė: <b>take pride in</b> – didžiuotis (bet: be proud <i>of</i>)."],
+  ["The minister refused to comment ___ the rumours.", ["on", "to", "for", "at"], "Pastovi frazė: <b>comment on</b> something."],
+  ["There has been a sharp increase ___ the number of electric cars.", ["in", "of", "at", "for"], "<b>an increase in</b> something – ko nors padidėjimas (bet: an increase <i>of</i> 10 %)."],
+  ["He was accused ___ stealing confidential data.", ["of", "for", "with", "about"], "Pastovi frazė: <b>accuse someone of</b> (bet: charge <i>with</i>, blame <i>for</i>)."],
+  ["I'm not accustomed ___ getting up so early.", ["to", "with", "at", "for"], "<b>be accustomed to</b> + -ing; čia <i>to</i> yra prielinksnis, ne bendraties dalelytė."],
+  ["The success of the project is largely due ___ her efforts.", ["to", "of", "for", "from"], "Pastovi frazė: <b>due to</b> – dėl."],
+  ["They finally succeeded ___ persuading the investors.", ["in", "at", "to", "with"], "<b>succeed in</b> + -ing – pavykti ką nors padaryti."],
+  ["The village was cut ___ from the rest of the country by the floods.", ["off", "out", "down", "away"], "Frazinis veiksmažodis: <b>cut off</b> – atkirsti, izoliuoti."],
+  ["We ran ___ of petrol in the middle of nowhere.", ["out", "off", "away", "down"], "Frazinis veiksmažodis: <b>run out of</b> – pritrūkti."],
+  ["You can always count ___ him in a crisis.", ["on", "at", "for", "with"], "Frazinis veiksmažodis: <b>count on</b> – pasikliauti."],
+  ["She is perfectly capable ___ running the department on her own.", ["of", "to", "for", "at"], "Pastovi frazė: <b>capable of</b> + -ing."],
+  ["___ behalf of the whole team, I would like to thank you.", ["On", "In", "At", "By"], "Pastovi frazė: <b>on behalf of</b> – kieno nors vardu."]
 ];
 const JG = [
   ["___ it was raining, we went for a walk.", ["Although", "Despite", "However", "Because of"], "Po tarpo eina visas sakinys (it was raining) → <b>Although</b>. <i>Despite</i> vartojamas su daiktavardžiu."],
@@ -186,7 +222,19 @@ const JG = [
   ["We waited outside ___ the shop opened.", ["until", "unless", "while", "since"], "Laukėme iki to momento, kol atsidarė → <b>until</b>."],
   ["The film was very long. ___, it was really interesting.", ["Nevertheless", "Although", "Because", "Unless"], "Prieštaravimas ankstesniam sakiniui, su kableliu → <b>Nevertheless</b> (vis dėlto)."],
   ["She is not only clever ___ also very kind.", ["but", "and", "so", "or"], "Pastovi konstrukcija: <b>not only ... but also</b>."],
-  ["I'd rather stay at home ___ go out tonight.", ["than", "then", "that", "as"], "Pastovi konstrukcija: <b>would rather ... than</b>. Nepainiok <i>than</i> (nei) su <i>then</i> (tada)."]
+  ["I'd rather stay at home ___ go out tonight.", ["than", "then", "that", "as"], "Pastovi konstrukcija: <b>would rather ... than</b>. Nepainiok <i>than</i> (nei) su <i>then</i> (tada)."],
+  ["___ had we sat down to eat than the phone rang.", ["No sooner", "Hardly", "As soon as", "Not only"], "Su <i>than</i> vartojama <b>No sooner … than</b>. <i>Hardly</i> reikalautų <i>when</i>."],
+  ["She passed the exam ___ having missed half of the lessons.", ["despite", "although", "however", "even"], "Po tarpo eina -ing forma, todėl <b>despite</b>. <i>Although</i> reikalautų sakinio."],
+  ["___ the fact that it was expensive, we decided to buy it.", ["In spite of", "Although", "Even though", "However"], "<b>In spite of the fact that</b> … – po <i>in spite of</i> eina daiktavardis (the fact)."],
+  ["He speaks English fluently, ___ his brother barely knows a word.", ["whereas", "unless", "because", "so that"], "Dviejų faktų priešprieša → <b>whereas</b> – tuo tarpu kai."],
+  ["Take an umbrella ___ it rains.", ["in case", "unless", "so that", "even"], "<b>in case</b> – jei kartais (atsargumo dėlei)."],
+  ["You can borrow my car ___ you bring it back by six.", ["provided that", "unless", "although", "in case of"], "<b>provided that</b> – su sąlyga, kad."],
+  ["The flight was cancelled ___ the storm.", ["owing to", "because", "since", "although"], "Po tarpo eina daiktavardis → <b>owing to</b> (= because of). <i>Because</i> ir <i>since</i> reikalautų sakinio."],
+  ["___ I admire her work, I don't always agree with her.", ["Much as", "Despite", "However", "In spite"], "<b>Much as</b> + sakinys – „kad ir kaip“ (nuolaida). <i>Despite</i> reikalautų daiktavardžio."],
+  ["She spoke quietly ___ wake the baby.", ["so as not to", "in order not", "so that not", "for not to"], "Neigiamas tikslas: <b>so as not to</b> + bendratis (arba in order not to)."],
+  ["The plan was risky. ___, it was the only option we had.", ["Nevertheless", "Although", "Despite", "Whereas"], "Naujas sakinys su kableliu ir priešprieša → <b>Nevertheless</b> – vis dėlto."],
+  ["___ you change your mind, give me a call.", ["Should", "Would", "Unless", "Had"], "Oficiali sąlyga be <i>if</i>: <b>Should you change</b> = If you should change."],
+  ["It was ___ a difficult task that nobody volunteered.", ["such", "so", "too", "very"], "<b>such</b> + a + būdvardis + daiktavardis … that. <i>So</i> – tik prieš būdvardį be daiktavardžio."]
 ];
 const KL = [
   ["Could you ___ me a favour?", ["do", "make", "give", "take"], "Pastovi frazė: <b>do someone a favour</b> – padaryti paslaugą."],
@@ -204,27 +252,85 @@ const KL = [
   ["Our school ___ part in an international project last year.", ["took", "made", "did", "had"], "Pastovi frazė: <b>take part in</b> – dalyvauti."],
   ["Can you ___ me the way to the station?", ["tell", "say", "speak", "talk"], "<b>tell someone something</b> – pasakyti kam nors. <i>say</i> nevartojamas su asmeniu be <i>to</i>."],
   ["He ___ his promise and came to help us.", ["kept", "held", "made", "did"], "Pastovi frazė: <b>keep a promise</b> – ištesėti pažadą."],
-  ["Who ___ the dishes after dinner in your family?", ["does", "makes", "takes", "puts"], "Pastovi frazė: <b>do the dishes</b> – išplauti indus."]
+  ["Who ___ the dishes after dinner in your family?", ["does", "makes", "takes", "puts"], "Pastovi frazė: <b>do the dishes</b> – išplauti indus."],
+  ["The government has ___ steps to reduce pollution.", ["taken", "made", "done", "put"], "Pastovi frazė: <b>take steps</b> – imtis priemonių."],
+  ["She ___ a strong impression on the interviewers.", ["made", "did", "took", "put"], "Pastovi frazė: <b>make an impression on</b> someone."],
+  ["We need to ___ this problem into account.", ["take", "put", "bring", "get"], "Pastovi frazė: <b>take something into account</b> – atsižvelgti."],
+  ["The meeting was ___ off until next week.", ["put", "taken", "set", "turned"], "Frazinis veiksmažodis: <b>put off</b> – atidėti."],
+  ["He ___ the blame for the accident.", ["took", "made", "did", "kept"], "Pastovi frazė: <b>take the blame</b> – prisiimti kaltę."],
+  ["It ___ no difference to me where we go.", ["makes", "does", "has", "gives"], "Pastovi frazė: <b>make no difference</b> – nėra jokio skirtumo."],
+  ["The company went ___ after losing its biggest client.", ["bankrupt", "broken", "failed", "poor"], "Pastovi frazė: <b>go bankrupt</b> – bankrutuoti."],
+  ["She ___ her temper and shouted at everyone.", ["lost", "missed", "dropped", "broke"], "Pastovi frazė: <b>lose your temper</b> – prarasti savitvardą."],
+  ["Could you ___ an eye on my bag for a minute?", ["keep", "hold", "put", "give"], "Pastovi frazė: <b>keep an eye on</b> – prižiūrėti."],
+  ["The scandal ___ serious damage to his reputation.", ["did", "made", "gave", "brought"], "Pastovi frazė: <b>do damage to</b> – padaryti žalos (ne <i>make</i>)."],
+  ["They ___ up with a brilliant idea.", ["came", "went", "got", "made"], "Frazinis veiksmažodis: <b>come up with</b> – sugalvoti."],
+  ["I can't ___ up with this noise any longer.", ["put", "get", "keep", "take"], "Frazinis veiksmažodis: <b>put up with</b> – pakęsti."]
+];
+/* Vienas žodis: spragos be duoto žodžio (kaip skaitymo dalies užduotyse, kur į tekstą įrašomas vienas žodis). */
+const OC = [
+  ["This is the village ___ my grandparents were born.", "", ["where"], "Vieta, kurioje kas nors vyko → santykinis prieveiksmis <b>where</b> (= in which)."],
+  ["She has been working here ___ she left university.", "", ["since"], "Present Perfect Continuous + laiko pradžia → <b>since</b>."],
+  ["Not ___ did he arrive late, but he also forgot the tickets.", "", ["only"], "<b>Not only … but also</b>; po <i>not only</i> sakinio pradžioje – inversija (did he arrive)."],
+  ["He is the scientist ___ research changed modern medicine.", "", ["whose"], "Priklausymas (jo tyrimai) → <b>whose</b>."],
+  ["Scarcely had we arrived ___ it began to snow.", "", ["when"], "<b>Scarcely / hardly … when</b> (bet: no sooner … than)."],
+  ["The film was ___ boring that we left before the end.", "", ["so"], "<b>so</b> + būdvardis + that (bet: such a boring film that)."],
+  ["There is hardly ___ milk left in the fridge.", "", ["any"], "<i>hardly</i> turi neigiamą reikšmę, todėl vartojama <b>any</b>, ne <i>some</i> ar <i>no</i>."],
+  ["You had ___ leave now, or you will miss the train.", "", ["better"], "<b>had better</b> + bendratis be <i>to</i> – primygtinis patarimas."],
+  ["It was not ___ midnight that the guests finally left.", "", ["until", "till"], "<b>It was not until … that</b> – tik tada, kai…"],
+  ["The more you practise, ___ better you become.", "", ["the"], "Dvigubas lyginimas: <b>the</b> + aukštesnysis laipsnis …, <b>the</b> + aukštesnysis laipsnis."],
+  ["He behaved as ___ nothing had happened.", "", ["if", "though"], "<b>as if / as though</b> – tarsi."],
+  ["She is used ___ working under pressure.", "", ["to"], "<b>be used to</b> + -ing – būti įpratusiam (čia <i>to</i> – prielinksnis)."],
+  ["We have run out ___ time.", "", ["of"], "Frazinis veiksmažodis: <b>run out of</b> – pritrūkti."],
+  ["Neither the teacher ___ the students knew the answer.", "", ["nor"], "<b>neither … nor</b> – nei… nei."],
+  ["I look forward to ___ from you soon.", "", ["hearing"], "<b>look forward to</b> + -ing: <i>to</i> čia prielinksnis, todėl <b>hearing</b>."],
+  ["This castle is said ___ have been built in the 14th century.", "", ["to"], "<b>is said to have been built</b> – neveikiamoji konstrukcija su perfect infinitive."],
+  ["___ of the two brothers speaks French, so we needed an interpreter.", "", ["neither"], "Apie du asmenis, neigiamai, su vienaskaitos veiksmažodžiu → <b>Neither</b> of…"],
+  ["Had it not ___ for your help, I would have failed.", "", ["been"], "Inversija vietoje <i>if</i>: <b>Had it not been for</b> = If it had not been for."]
+];
+/* Žodžio forma: skliaustuose esantį žodį reikia pavartoti tinkama gramatine forma. */
+const ZF = [
+  ["Regular exercise ___ many common diseases.", "PREVENT", ["prevents"], "Vienaskaitos trečiasis asmuo (exercise), Present Simple → <b>prevents</b>."],
+  ["The new exhibition was warmly ___ by critics.", "WELCOME", ["welcomed"], "Neveikiamoji rūšis: was + III forma → <b>welcomed</b>."],
+  ["Without ___ the risks, he invested all his savings.", "RECOGNISE", ["recognising", "recognizing"], "Po prielinksnio <i>without</i> – -ing forma: <b>recognising</b>."],
+  ["She denied ___ the window.", "BREAK", ["breaking"], "Po <i>deny</i> vartojama -ing forma: <b>breaking</b>."],
+  ["The letter ___ yesterday has not arrived yet.", "SEND", ["sent"], "Sutrumpintas šalutinis sakinys (which was sent) → III forma <b>sent</b>."],
+  ["He is ___ to be the best player of his generation.", "CONSIDER", ["considered"], "Neveikiamoji rūšis: is + III forma + to be → <b>considered</b>."],
+  ["This is the ___ book I have ever read.", "BAD", ["worst"], "Po <i>the</i> ir su <i>ever</i> – aukščiausiasis laipsnis: bad → worse → <b>worst</b>."],
+  ["The ___ you leave, the earlier you will arrive.", "SOON", ["sooner"], "Dvigubas lyginimas: the + aukštesnysis laipsnis → <b>sooner</b>."],
+  ["Each of the students ___ given a different task yesterday.", "BE", ["was"], "<i>Each of</i> + daugiskaita → veiksmažodis vienaskaitos; praeitis (yesterday) → <b>was</b>."],
+  ["I regret not ___ harder when I was at school.", "STUDY", ["studying"], "<i>regret</i> + -ing – gailėtis dėl to, kas jau įvyko: <b>studying</b>."],
+  ["My parents let me ___ up late at weekends.", "STAY", ["stay"], "Po <i>let</i> + asmuo – bendratis be <i>to</i>: <b>stay</b> (forma nesikeičia)."],
+  ["Several ___ were arrested last night.", "THIEF", ["thieves"], "Daugiskaita: thief → <b>thieves</b> (f → ves)."],
+  ["The news ___ surprising, isn't it?", "BE", ["is"], "<i>News</i> – neskaičiuojamas daiktavardis, veiksmažodis vienaskaitos: <b>is</b> (tai rodo ir <i>isn't it</i>)."],
+  ["By the time help arrived, the fire had already ___ to the roof.", "SPREAD", ["spread"], "Past Perfect: had + III forma; spread – spread – <b>spread</b> (forma nesikeičia)."],
+  ["She suggested ___ a taxi instead of waiting for the bus.", "TAKE", ["taking"], "Po <i>suggest</i> – -ing forma: <b>taking</b>."],
+  ["The painting, ___ in 1889, is now worth millions.", "PAINT", ["painted"], "Sutrumpintas šalutinis sakinys (which was painted) → III forma <b>painted</b>."],
+  ["He has ___ far more countries than I have.", "VISIT", ["visited"], "Present Perfect: has + III forma → <b>visited</b>."],
+  ["It's no use ___ about things you cannot change.", "WORRY", ["worrying"], "<b>It's no use</b> + -ing: <b>worrying</b>."]
 ];
 const TOPICS = {
   zd: { name: "Žodžių daryba", art: "-ion", items: ZD.map(([q, w, ans, ex]) => ({ q, w, ans, ex })) },
   lk: { name: "Veiksmažodžių laikai", art: "-ed", items: LK.map(([q, o, ex]) => ({ q, o, ex })) },
   pr: { name: "Prielinksniai", art: "at", items: PR.map(([q, o, ex]) => ({ q, o, ex })) },
   jg: { name: "Jungiamieji žodžiai", art: "&", items: JG.map(([q, o, ex]) => ({ q, o, ex })) },
-  kl: { name: "Kolokacijos", art: "do", items: KL.map(([q, o, ex]) => ({ q, o, ex })) }
+  kl: { name: "Kolokacijos ir fraziniai veiksmažodžiai", art: "do", items: KL.map(([q, o, ex]) => ({ q, o, ex })) },
+  oc: { name: "Vienas žodis", art: "__", items: OC.map(([q, w, ans, ex]) => ({ q, w, ans, ex })) },
+  zf: { name: "Žodžio forma", art: "-s", items: ZF.map(([q, w, ans, ex]) => ({ q, w, ans, ex })) }
 };
 const TK = Object.keys(TOPICS);
 const LEVELS = [
   { id: "misrus", name: "Mišrus", sub: "10 užduočių iš visų temų", art: "Mix", topics: TK },
   { id: "egzaminas", name: "Egzamino režimas", sub: "10 užduočių · 12 min · paaiškinimai pabaigoje", art: `<svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="25" r="14" fill="#fff" stroke="#121a33" stroke-width="2.6"/><path d="M18 5h8M22 5v6M34 12l3-3" stroke="#121a33" stroke-width="2.6" stroke-linecap="round"/><path d="M22 25V16" stroke="#7048e8" stroke-width="3" stroke-linecap="round"/><path d="M22 25l6 4" stroke="#121a33" stroke-width="2.6" stroke-linecap="round"/><circle cx="22" cy="25" r="2.4" fill="#121a33"/></svg>`, topics: TK, exam: true },
-  ...TK.map(k => ({ id: k, name: TOPICS[k].name, sub: `Temos treniruotė · ${TOPICS[k].items.length} užduočių`, art: TOPICS[k].art, topics: [k] }))
+  ...TK.map(k => ({ id: k, name: TOPICS[k].name, sub: `Temos treniruotė · ${TOPICS[k].items.length} ${(n => n % 10 === 1 && n % 100 !== 11 ? "užduotis" : n % 10 >= 2 && (n % 100 < 10 || n % 100 > 20) ? "užduotys" : "užduočių")(TOPICS[k].items.length)}`, art: TOPICS[k].art, topics: [k] }))
 ];
 const LEARN = [
   { name: "Žodžių daryba", level: 2, html: `<p>Pirmiausia nustatyk, <b>kokios kalbos dalies</b> reikia: po <i>the / a / his</i> – daiktavardžio, prieš daiktavardį – būdvardžio, prie veiksmažodžio – prieveiksmio.</p><ul><li>Daiktavardžiai: -ion, -ment, -ness, -ity, -ance/-ence, -er/-or (asmuo)</li><li>Būdvardžiai: -ful, -less, -ous, -able/-ible, -ive, -al</li><li>Prieveiksmiai: -ly</li><li>Veiksmažodžiai: -en, -ise/-ize, -ify</li><li>Neiginys: un-, in-, im-, ir-, il-, dis-</li></ul><span class="mk-ex">Patikrink prasmę: ar reikia neiginio, ar daugiskaitos?</span>` },
   { name: "Veiksmažodžių laikai", level: 3, html: `<ul><li><b>Present Simple</b> – įpročiai, tiesos (every day, usually)</li><li><b>Present Continuous</b> – vyksta dabar arba suplanuota ateitis</li><li><b>Present Perfect</b> – patirtis ar rezultatas iki dabar (since, for, already, so far)</li><li><b>Past Simple</b> – konkretus praeities laikas (yesterday, in 2010, ago)</li><li><b>Past Continuous</b> – vyko tam tikru praeities momentu</li><li><b>Past Perfect</b> – įvyko anksčiau už kitą praeities veiksmą</li><li><b>will / be going to</b> – ateitis; going to – kai matome ženklus</li></ul><span class="mk-ex">Po if, when, as soon as apie ateitį rašome Present Simple, ne will.</span>` },
   { name: "Prielinksniai", level: 4, html: `<p>Laikas: <b>at</b> 7 o'clock, <b>on</b> Monday / 5 May, <b>in</b> May / 2024 / the morning.</p><p>Dažnos frazės: good <b>at</b>, interested <b>in</b>, depend <b>on</b>, afraid <b>of</b>, famous <b>for</b>, married <b>to</b>, look forward <b>to</b> + -ing, apologise <b>for</b>, insist <b>on</b>.</p><span class="mk-ex">Frazes geriausia mokytis kartu su prielinksniu, kaip vieną žodį.</span>` },
   { name: "Jungiamieji žodžiai", level: 5, html: `<ul><li><b>although / even though</b> + sakinys; <b>despite / in spite of</b> + daiktavardis ar -ing</li><li><b>because</b> + sakinys; <b>because of</b> + daiktavardis</li><li><b>however, nevertheless</b> – naujo sakinio pradžioje su kableliu</li><li><b>unless</b> = if not; <b>in case</b> – dėl visa ko</li><li><b>so that</b> – tikslas; <b>while / whereas</b> – priešprieša</li></ul>` },
-  { name: "Kolokacijos: make ir do", level: 6, html: `<p><b>make</b> – kai kažkas sukuriama: make a decision, a mistake, a noise, a plan, an effort, the bed.</p><p><b>do</b> – darbai ir pareigos: do homework, the shopping, the dishes, someone a favour, your best.</p><p>Kitos: <b>take</b> a photo / a break / part in, <b>pay</b> attention, <b>keep</b> a promise, <b>have</b> a party.</p>` }
+  { name: "Kolokacijos: make ir do", level: 6, html: `<p><b>make</b> – kai kažkas sukuriama: make a decision, a mistake, a noise, a plan, an effort, the bed.</p><p><b>do</b> – darbai ir pareigos: do homework, the shopping, the dishes, someone a favour, your best.</p><p>Kitos: <b>take</b> a photo / a break / part in, <b>pay</b> attention, <b>keep</b> a promise, <b>have</b> a party.</p>` },
+  { name: "Vienas žodis", level: 7, html: `<p>Spragai tinka tik <b>vienas</b> žodis – dažniausiai „mažas“ gramatinis: artikelis, prielinksnis, jungtukas, pagalbinis veiksmažodis, įvardis.</p><ul><li>Poros: <b>neither … nor</b>, <b>not only … but also</b>, <b>so … that</b>, <b>such a … that</b>, <b>hardly … when</b>, <b>no sooner … than</b></li><li>Santykiniai žodžiai: <b>who, which, whose, where</b></li><li>Pastovios konstrukcijos: had <b>better</b>, as <b>if</b>, used <b>to</b> + -ing, look forward <b>to</b> + -ing, <b>the</b> more … <b>the</b> better</li></ul><p>Visada perskaityk visą sakinį: atsakymą dažnai parodo žodis už spragos (<i>than, that, nor</i>).</p>` },
+  { name: "Žodžio forma", level: 8, html: `<p>Žodis lieka ta pati kalbos dalis, bet keičiasi jo <b>gramatinė forma</b>.</p><ul><li>Veiksmažodis: laikas ir asmuo (<i>prevents</i>), III forma neveikiamojoje rūšyje ir po <i>have</i> (<i>was welcomed, has visited</i>)</li><li><b>-ing</b> po prielinksnių ir po <i>deny, suggest, regret, it's no use</i></li><li>Bendratis be <i>to</i> po <i>let, make</i></li><li>Būdvardžių laipsniai: bad – worse – <b>worst</b></li><li>Netaisyklinga daugiskaita: thief – <b>thieves</b></li></ul>` }
 ];
 
 const $ = id => document.getElementById(id);
@@ -279,7 +385,7 @@ function next(){
     : `<form class="ansrow" id="f" autocomplete="off"><input id="inp" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="Įrašyk žodį" aria-label="Atsakymas"><button class="mk-btn" type="submit">Tikrinti</button></form>`;
   board.innerHTML = `<div class="card"><small>${ti + 1} / ${N} · ${TOPICS[cur.t].name}</small>
     <div class="task" lang="en">${gap(cur.q, '<span class="gap">_____</span>')}${cur.w ? ` <b class="kw">(${cur.w})</b>` : ""}</div>
-    ${cur.w ? `<div class="hint">Pakeisk skliaustuose esantį žodį, kad tiktų sakinyje.</div>` : ""}${ans}<div id="fbBox"></div></div>`;
+    ${cur.w ? `<div class="hint">Pakeisk skliaustuose esantį žodį, kad tiktų sakinyje.</div>` : cur.ans ? `<div class="hint">Įrašyk vieną tinkamą žodį.</div>` : ""}${ans}<div id="fbBox"></div></div>`;
   const inp = $("inp"); if(inp && matchMedia("(hover:hover)").matches) inp.focus();
 }
 const rightOf = c => c.ans ? c.ans[0] : c.right;

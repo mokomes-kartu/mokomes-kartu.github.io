@@ -358,8 +358,8 @@ window.MK_ZAIDIMAI = [
    11,
    12
   ],
-  "title": "VBE anglų: Use of English",
-  "desc": "Žodžių daryba, laikai, prielinksniai, jungiamieji žodžiai ir kolokacijos su paaiškinimais lietuviškai.",
+  "title": "VBE anglų: kalbos vartojimas",
+  "desc": "180 užduočių: žodžių daryba, laikai, prielinksniai, jungiamieji žodžiai, kolokacijos, spragos vienu žodžiu ir žodžio forma – su paaiškinimais lietuviškai.",
   "url": "/vbe-anglu/",
   "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM3MDQ4ZTgiLz48cmVjdCB4PSI5IiB5PSIxNCIgd2lkdGg9IjQ2IiBoZWlnaHQ9IjM0IiByeD0iNiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjx0ZXh0IHg9IjMyIiB5PSIzOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTciIGZpbGw9IiMxMjFhMzMiPkVOPC90ZXh0PjxwYXRoIGQ9Ik0xOCA1NGgyOCIgc3Ryb2tlPSIjZmZkNDNiIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg=="
  },
@@ -512,6 +512,17 @@ window.MK_ZAIDIMAI = [
   "desc": "Kinematika prieš VBE: apskaičiuok ir paleisk vežimėlį, droną ar kamuoliukų mašiną – judėjimas, grafikai, kritimas ir mesti kūnai.",
   "url": "/trajektoriju-laboratorija/",
   "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMzYjViZGIiLz48cGF0aCBkPSJNOCA1MGg0OCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xMyA0OFEzMS0xNCA0OSA0NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtZGFzaGFycmF5PSIxIDciLz48Y2lyY2xlIGN4PSIxMyIgY3k9IjQ4IiByPSI1IiBmaWxsPSIjZmY4YTFmIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PGVsbGlwc2UgY3g9IjQ5IiBjeT0iNTAiIHJ4PSIxMCIgcnk9IjQiIGZpbGw9IiNmZmYiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48ZWxsaXBzZSBjeD0iNDkiIGN5PSI1MCIgcng9IjQuNSIgcnk9IjEuOCIgZmlsbD0iI2U1MjQzYiIvPjxwYXRoIGQ9Ik0zMSAxN2gxMk0zMSAxN3YxMSIgc3Ryb2tlPSIjZmZjNjFhIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGNpcmNsZSBjeD0iMzEiIGN5PSIxNyIgcj0iMy41IiBmaWxsPSIjZmZjNjFhIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg=="
+ },
+ {
+  "id": "nusileidimo-modulis",
+  "subject": "fiz",
+  "grades": [
+   11
+  ],
+  "title": "Nusileidimo modulis",
+  "desc": "Pilotuok modulį ir minkštai nutūpk Mėnulyje, Marse ar Europoje: Niutono dėsniai, svoris, visuotinė trauka, judesio kiekis, energija, darbas ir galia (VBE).",
+  "url": "/nusileidimo-modulis/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiNkOTQ4MGYiLz48cGF0aCBkPSJNNCA1NHExNC02IDI4LTN0MjgtNHYxN0g0eiIgZmlsbD0iI2YzZjVmMiIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxnIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0iTTI0IDM0bC03IDExTTQwIDM0bDcgMTFNMTMgNDVoOE00MyA0NWg4IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTIyIDI2aDIwbDMgM3Y2bC0zIDNIMjJsLTMtM3YtNnoiIGZpbGw9IiNlMmIwNGEiLz48cGF0aCBkPSJNMjUgMjZsMi05cTUtNSAxMCAwbDIgOXoiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMjkgMTloNmwxIDRoLTh6IiBmaWxsPSIjMTIxYTMzIi8+PC9nPjxwYXRoIGQ9Ik0yOCAzOXE0IDExIDQgMTF0NC0xMXoiIGZpbGw9IiNmZmQ0M2IiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+"
  },
  {
   "id": "skyrybos-spaustuve",
