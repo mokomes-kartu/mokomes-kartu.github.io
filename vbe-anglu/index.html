@@ -248,9 +248,10 @@ function drawWeak(){
 }
 /* Užduotys nesikartoja, kol neišnaudotos visos temos užduotys. */
 const bag = {};
-function draw1(t){
+function draw1(t, used){
   if(!bag[t] || !bag[t].length) bag[t] = MK.shuffle(TOPICS[t].items);
-  const it = bag[t].pop();
+  let i = bag[t].length - 1; while(i > 0 && used.has(bag[t][i])) i--;      /* tame pačiame raunde užduotis nesikartoja net ir papildžius krepšį */
+  const it = bag[t].splice(i, 1)[0]; used.add(it);
   return it.o ? Object.assign({ t, choices: MK.shuffle(it.o), right: it.o[0] }, it) : Object.assign({ t }, it);
 }
 
@@ -259,7 +260,7 @@ function showMenu(){ clearInterval(timer); play.hidden = true; menu.hidden = fal
 function start(i){
   MK.music.stop(); lvl = i; L = LEVELS[i]; ti = 0; pts = 0; okN = 0; log = [];
   const order = []; while(order.length < N) order.push(...MK.shuffle(L.topics));
-  tasks = order.slice(0, N).map(draw1);
+  const used = new Set(); tasks = order.slice(0, N).map(t => draw1(t, used));
   menu.hidden = true; play.hidden = false; window.scrollTo(0, 0);
   dots = MK.dots($("dots"), N); $("pts").textContent = 0;
   t0 = Date.now(); clearInterval(timer); timer = setInterval(tick, 500); tick();
