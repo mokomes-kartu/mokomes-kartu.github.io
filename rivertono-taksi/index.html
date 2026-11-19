@@ -81,8 +81,10 @@ details.bk p{margin:8px 0 12px}
 #here:disabled{background:#eee6cf;color:#a59c84;border-color:#a59c84;box-shadow:none}
 #toast{position:absolute;left:50%;top:56px;transform:translateX(-50%);max-width:88%;background:var(--ink);color:#fff;border-radius:10px;padding:9px 13px;font:700 13.5px/1.35 var(--body);text-align:center;opacity:0;transition:opacity .25s;pointer-events:none}
 #toast.on{opacity:1}#toast.bad{background:#c2331f}
-#maphint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:#fff;border:2.5px solid var(--ink);border-radius:9px;padding:7px 10px;font:700 12.5px/1.3 var(--body);white-space:nowrap}
+#maphint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:#fff;border:2.5px solid var(--ink);border-radius:9px;padding:7px 10px;font:700 12.5px/1.3 var(--body);white-space:nowrap;max-width:calc(100% - 24px);text-align:center;white-space:normal}
 .stage.map #joy,.stage.map #here{display:none}
+.zoom{position:absolute;right:8px;top:54px;display:none;flex-direction:column;gap:6px}.stage.map .zoom{display:flex}.zoom .btn{width:42px;min-height:42px;padding:0;font:900 22px/1 var(--kid)}
+#helpB.off{opacity:.55}
 #mon{background:#e9f8e0}#mon.neg{background:#ffe1dc;color:#b3261a}
 #wait{position:absolute;left:8px;right:8px;top:50px;height:12px;background:#fff;border:2.5px solid var(--ink);border-radius:7px;overflow:hidden}#wait[hidden]{display:none}
 #waitBar{height:100%;width:100%;background:var(--taxi)}#wait.low #waitBar{background:#e5533d}
@@ -123,7 +125,8 @@ details.bk p{margin:8px 0 12px}
       <canvas id="cv"></canvas>
       <div class="chip"><button type="button" id="quit" aria-label="">✕</button><span id="cnt"></span><span id="mon"></span></div>
       <div id="wait" hidden><div id="waitBar"></div></div>
-      <div class="tr"><button type="button" class="btn" id="mapB"></button></div>
+      <div class="tr"><button type="button" class="btn" id="helpB"></button><button type="button" class="btn" id="mapB"></button></div>
+      <div class="zoom"><button type="button" class="btn" id="zIn" aria-label="Didinti">+</button><button type="button" class="btn" id="zOut" aria-label="Mažinti">−</button></div>
       <div id="joy" role="application"><b>▲</b><b>▼</b><b>◀</b><b>▶</b><i></i></div>
       <button type="button" id="here"></button>
       <div id="toast" role="status"></div>
@@ -138,7 +141,7 @@ details.bk p{margin:8px 0 12px}
 const T = window.MK_T, M = window.MK_MIESTAS.make(T), { AX, SY, RW, lots, NA, NS, RIV } = M, GAME = "rivertono-taksi", SKEY = "mk-rivertono-taksi-vairuotojas";
 const $ = id => document.getElementById(id), INK = "#1d2433";
 const XM = AX[NA - 1], YM = SY[NS - 1], RX0 = AX[RIV] + RW + 26, RX1 = AX[RIV + 1] - RW - 26, RXC = (RX0 + RX1) / 2;
-const save = Object.assign({ coins: 0, guide: [], how: false, cars: ["classic"], car: "classic" }, MK.get(SKEY, {}));
+const save = Object.assign({ coins: 0, guide: [], how: false, cars: ["classic"], car: "classic", help: true }, MK.get(SKEY, {}));
 if(save.total == null) save.total = save.coins;
 const store = () => MK.set(SKEY, save);
 const PL = {}; T.places.forEach(p => PL[p.id] = p);
@@ -193,6 +196,7 @@ Object.assign(IC, {
 const P2 = {}; for(const k in IC) P2[k] = { f: IC[k].f && new Path2D(IC[k].f), s: IC[k].s && new Path2D(IC[k].s) };
 const icoSvg = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${IC[k].f ? `<path d="${IC[k].f}" fill="${INK}"/>` : ""}${IC[k].s ? `<path d="${IC[k].s}" fill="none" stroke="${INK}" stroke-width="${k === "carpark" ? 3.4 : 1.9}" stroke-linecap="round" stroke-linejoin="round"/>` : ""}</svg>`;
 const SVGI = {
+  arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l7 7-7 7v-5H3z" fill="#ffc928" stroke="#1d2433" stroke-width="2" stroke-linejoin="round"/></svg>',
   spk: '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.500 8.500a5 5 0 0 1 0 7M19 6a8.500 8.500 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linecap="round"/></svg>',
   map: '<svg viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linejoin="round"/></svg>'
 };
@@ -265,7 +269,7 @@ function speak(s){
 
 /* ---------- žaidimo būsena ---------- */
 let G = null;
-const car = { x: 0, y: 0, a: 0, v: 0 }, cam = { a: 0 };
+const car = { x: 0, y: 0, a: 0, v: 0 }, cam = { a: 0 }, LANE = 12;      /* juostos vidurys – 12 vnt. nuo kelio ašies į dešinę */
 const keys = new Set(), joy = { x: 0, y: 0, id: null };
 let ai = [], walkers = [];
 const onRoad = (x, y, m) => {
@@ -305,6 +309,7 @@ function nextCall(){
 function hud(){
   $("cnt").textContent = T.hud.fare(Math.min(G.done + 1, G.fares.length), G.fares.length); $("mon").textContent = money(G.earned); $("mon").classList.toggle("neg", G.earned < 0);
   $("quit").setAttribute("aria-label", T.hud.quit); $("mapB").innerHTML = SVGI.map + `<span>${G.map ? T.hud.mapClose : T.hud.map}</span>`; $("mapB").setAttribute("aria-label", G.map ? T.hud.mapClose : T.hud.map);
+  $("helpB").innerHTML = `${SVGI.arrow}<span>${T.hud.help}</span>`; $("helpB").classList.toggle("off", !save.help); $("helpB").setAttribute("aria-pressed", save.help); $("helpB").setAttribute("aria-label", T.hud.helpL);
   $("here").textContent = T.hud.here; $("here").disabled = G.state !== "fare"; $("wait").hidden = G.state !== "call";
 }
 function radio(){
@@ -391,7 +396,8 @@ async function endShift(){
 $("here").addEventListener("click", here);
 $("quit").addEventListener("click", async () => { if(modalOpen) return; const r = await modal(`<h2>${T.hud.quit}</h2><p>${T.quitQ}</p>`, [{ t: T.no, y: 1 }, { t: T.yes }]); if(r === 1) menu(); });
 $("mapB").addEventListener("click", toggleMap);
-function toggleMap(){ if(!G || modalOpen) return; G.map = !G.map; G.mapX = car.x; G.mapY = car.y; $("stage").classList.toggle("map", G.map); $("maphint").hidden = !G.map; $("maphint").textContent = T.hud.mapHint; hud(); MK.sfx.tap(); }
+$("helpB").addEventListener("click", () => { if(!G || modalOpen) return; save.help = !save.help; store(); MK.sfx.tap(); toast(save.help ? T.hud.helpOn : T.hud.helpOff, 2600); hud(); });
+function toggleMap(){ if(!G || modalOpen) return; G.map = !G.map; G.mapX = car.x; G.mapY = car.y; G.mapZ = Math.max(1, Math.min(6, 0.8 / mapFit())); ptrs.clear(); drag = null; $("stage").classList.toggle("map", G.map); $("maphint").hidden = !G.map; $("maphint").textContent = T.hud.mapHint; clearTimeout(window.__mh); if(G.map) window.__mh = setTimeout(() => { $("maphint").hidden = true; }, 5000); hud(); MK.sfx.tap(); }
 
 /* ---------- valdymas: kairė – greitis, dešinė – vairas ---------- */
 addEventListener("keydown", e => {
@@ -414,12 +420,24 @@ jEl.addEventListener("pointermove", e => { if(joy.id === e.pointerId) jMove(e); 
 const jEnd = e => { if(joy.id === e.pointerId) joyReset(); };
 jEl.addEventListener("pointerup", jEnd); jEl.addEventListener("pointercancel", jEnd);
 const cv = $("cv"), ctx = cv.getContext("2d"); let drag = null, W = 300, H = 300, DPR = 1;
-cv.addEventListener("pointerdown", e => { if(G && G.map){ drag = { x: e.clientX, y: e.clientY, mx: G.mapX, my: G.mapY }; cv.setPointerCapture(e.pointerId); } });
-cv.addEventListener("pointermove", e => { if(drag && G && G.map){ const s = mapScale(); G.mapX = Math.max(-40, Math.min(XM + 40, drag.mx - (e.clientX - drag.x) / s)); G.mapY = Math.max(-40, Math.min(YM + 40, drag.my - (e.clientY - drag.y) / s)); } });
-cv.addEventListener("pointerup", () => drag = null); cv.addEventListener("pointercancel", () => drag = null);
+/* Žemėlapis: stumdyti vienu pirštu ar pele, didinti ir mažinti – pelės ratuku arba dviem pirštais. */
+const ptrs = new Map(); let pinch = null;
+const clampMap = () => { G.mapX = Math.max(-40, Math.min(XM + 40, G.mapX)); G.mapY = Math.max(-40, Math.min(YM + 40, G.mapY)); };
+function zoomAt(f, sx, sy){ const s0 = mapScale(), wx = G.mapX + (sx - W / 2) / s0, wy = G.mapY + (sy - H / 2) / s0; G.mapZ = Math.max(1, Math.min(6, G.mapZ * f)); const s1 = mapScale(); G.mapX = wx - (sx - W / 2) / s1; G.mapY = wy - (sy - H / 2) / s1; clampMap(); }
+const loc = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+cv.addEventListener("pointerdown", e => { if(!G || !G.map) return; ptrs.set(e.pointerId, loc(e)); try{ cv.setPointerCapture(e.pointerId); }catch(_){ }
+  if(ptrs.size === 1){ drag = { x: e.clientX, y: e.clientY, mx: G.mapX, my: G.mapY }; } else if(ptrs.size === 2){ const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]) || 1 }; drag = null; } });
+cv.addEventListener("pointermove", e => { if(!G || !G.map || !ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId, loc(e));
+  if(pinch && ptrs.size >= 2){ const [a, b] = [...ptrs.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]) || 1; zoomAt(d / pinch.d, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2); pinch.d = d; }
+  else if(drag){ const s = mapScale(); G.mapX = drag.mx - (e.clientX - drag.x) / s; G.mapY = drag.my - (e.clientY - drag.y) / s; clampMap(); } });
+const pEnd = e => { ptrs.delete(e.pointerId); if(ptrs.size < 2) pinch = null; if(ptrs.size === 1 && G && G.map){ const [id] = [...ptrs.keys()], p = ptrs.get(id), r = cv.getBoundingClientRect(); drag = { x: p[0] + r.left, y: p[1] + r.top, mx: G.mapX, my: G.mapY }; } else if(!ptrs.size) drag = null; };
+cv.addEventListener("pointerup", pEnd); cv.addEventListener("pointercancel", pEnd);
+cv.addEventListener("wheel", e => { if(!G || !G.map) return; e.preventDefault(); const [x, y] = loc(e); zoomAt(Math.exp(-e.deltaY * 0.0015), x, y); }, { passive: false });
+$("zIn").addEventListener("click", () => { if(G && G.map){ zoomAt(1.4, W / 2, H / 2); MK.sfx.tap(); } });
+$("zOut").addEventListener("click", () => { if(G && G.map){ zoomAt(1 / 1.4, W / 2, H / 2); MK.sfx.tap(); } });
 function resize(){ const r = cv.getBoundingClientRect(); DPR = Math.min(2, window.devicePixelRatio || 1); W = Math.max(50, r.width); H = Math.max(50, r.height); cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); }
 addEventListener("resize", () => { if(G) resize(); else drawHero(); });
-const mapScale = () => Math.max(Math.min(W / (XM + 160), H / (YM + 160)), 0.42);
+const mapFit = () => Math.max(Math.min(W / (XM + 160), H / (YM + 160)), 0.36), mapScale = () => mapFit() * (G ? G.mapZ || 1 : 1);
 
 /* ---------- fizika ---------- */
 function input(){
@@ -427,7 +445,7 @@ function input(){
   if(keys.has("ArrowUp") || keys.has("w")) thr += 1; if(keys.has("ArrowDown") || keys.has("s")) thr -= 1;
   if(keys.has("ArrowLeft") || keys.has("a")) st -= 1; if(keys.has("ArrowRight") || keys.has("d")) st += 1;
   if(joy.id != null && Math.hypot(joy.x, joy.y) > 0.18){
-    st = Math.abs(joy.x) > 0.15 ? Math.sign(joy.x) * Math.pow(Math.abs(joy.x), 1.4) : 0;          /* švelnus vairas, kaip 2 versijoje */
+    st = Math.abs(joy.x) > 0.2 ? Math.sign(joy.x) * Math.pow((Math.abs(joy.x) - 0.2) / 0.8, 1.8) : 0;   /* negyva zona ir laipsninė kreivė – mažas pirštų judesys tik šiek tiek pasuka */
     thr = joy.y < -0.2 ? 0.35 + 0.65 * Math.min(1, -joy.y * 1.15) : joy.y > 0.5 ? -1 : Math.abs(joy.x) > 0.3 ? 0.45 : 0;   /* tik į šoną – lėtas važiavimas sukant */
   }
   return { thr, st };
@@ -437,7 +455,7 @@ function step(dt){
   G.t += dt;
   for(const c of ai){
     const x0 = AX[c.i], y0 = SY[c.j], x1 = AX[c.ni], y1 = SY[c.nj], len = Math.hypot(x1 - x0, y1 - y0) || 1, dx = (x1 - x0) / len, dy = (y1 - y0) / len;
-    c.x = x0 + (x1 - x0) * c.t + dy * 11; c.y = y0 + (y1 - y0) * c.t - dx * 11; c.a = Math.atan2(dy, dx);
+    c.x = x0 + (x1 - x0) * c.t - dy * LANE; c.y = y0 + (y1 - y0) * c.t + dx * LANE;          /* dešinioji eismo pusė */ c.a = Math.atan2(dy, dx);
     const px = car.x - c.x, py = car.y - c.y, fwd = px * dx + py * dy, lat = Math.abs(px * -dy + py * dx);
     const blocked = fwd > 0 && fwd < 42 && lat < 15, rem = (1 - c.t) * len;
     const red = M.LIGHTS.has(c.ni + "," + c.nj) && rem > RW + 6 && rem < RW + 20 && light(c.ni, c.nj, dx ? "ew" : "ns", G.t) !== "g";
@@ -452,12 +470,13 @@ function step(dt){
   for(const w of walkers) w.t = (w.t + dt * 0.022 * w.s + 1) % 1;
   if(G.state === "board" || G.state === "paid" || G.map){ car.v = 0; return; }
   const { thr, st } = input();
-  G.st += (st - G.st) * Math.min(1, dt * 7);
+  G.st += (st - G.st) * Math.min(1, dt * 4.5);
   if(thr > 0) car.v = Math.min(92 * thr, car.v + 58 * thr * dt + (car.v < 0 ? 140 * dt : 0));
   else if(thr < 0) car.v = car.v > 4 ? Math.max(0, car.v - 150 * dt) : Math.max(-32, car.v - 45 * dt);
   else car.v *= Math.max(0, 1 - 1.5 * dt);
   if(Math.abs(car.v) < 0.6 && !thr) car.v = 0;
-  car.a += G.st * 1.85 * Math.max(-1, Math.min(1, car.v / 24)) * dt;
+  car.a += G.st * 1.5 * Math.max(-1, Math.min(1, car.v / 24)) * (1 - 0.3 * Math.max(0, Math.min(1, (Math.abs(car.v) - 45) / 45))) * dt;
+  assist(dt);
   const dx = Math.cos(car.a) * car.v * dt, dy = Math.sin(car.a) * car.v * dt, sg = car.v >= 0 ? 1 : -1, px = car.x, py = car.y;
   const hitAi = (x, y) => ai.some(c => Math.hypot(c.x - x, c.y - y) < 16 && Math.hypot(c.x - car.x, c.y - car.y) >= Math.hypot(c.x - x, c.y - y));
   const ok = (x, y) => onRoad(x, y, 7) && !hitAi(x, y);
@@ -478,9 +497,20 @@ function step(dt){
   if(G.state === "call"){
     G.callT -= dt; $("waitBar").style.width = Math.max(0, G.callT / G.callMax * 100) + "%"; $("wait").classList.toggle("low", G.callT < G.callMax * 0.25);
     if(G.callT <= 0){ G.callT = G.callMax; G.arrow = true; charge("late", 2); toast(T.call.late, 4200, true); MK.sfx.bad(); }
-    const p = passPos(lots[G.call.pickup]); if(Math.abs(car.v) < 14 && Math.hypot(p.x - car.x, p.y - car.y) < 34) board(G.call);
+    const p = passPos(lots[G.call.pickup]); if(Math.abs(car.v) < 14 && Math.hypot(p.x - car.x, p.y - car.y) < 44) board(G.call);
   }
   G.sel = G.state === "fare" ? M.lotAt(car.x, car.y) : null;
+}
+/* Paleidus vairą automobilis išsitiesina pagal gatvę ir švelniai grįžta į dešiniosios juostos vidurį (ne sankryžoje). */
+const inCross = (x, y) => AX.some(ax => Math.abs(x - ax) < RW + 2) && SY.some(sy => Math.abs(y - sy) < RW + 2);
+function assist(dt){
+  if(Math.abs(G.st) > 0.06 || car.v < 6 || inCross(car.x, car.y)) return;
+  const q = Math.PI / 2, snap = Math.round(car.a / q) * q, da = Math.atan2(Math.sin(car.a - snap), Math.cos(car.a - snap));
+  if(Math.abs(da) > 0.8) return;
+  const horiz = Math.abs(Math.cos(snap)) > 0.5, roads = horiz ? SY : AX, pos = horiz ? car.y : car.x, c = roads.find(r => Math.abs(pos - r) < RW + 4);
+  let want = snap;
+  if(c != null && car.v > 22){ const r = horiz ? Math.cos(snap) : -Math.sin(snap), e = (pos - c) * r - LANE; want = snap - Math.max(-0.26, Math.min(0.26, e * 0.045)); }
+  let d = Math.atan2(Math.sin(want - car.a), Math.cos(want - car.a)); car.a += d * Math.min(1, dt * 2.2 * Math.min(1, car.v / 30));
 }
 function turnTo(t, dt){ let d = t - car.a; while(d > Math.PI) d -= 2 * Math.PI; while(d < -Math.PI) d += 2 * Math.PI; car.a += d * Math.min(1, dt * 3); }
 
@@ -534,8 +564,8 @@ function drawWorld(c, view){
     for(let n = -4; n <= 4; n++){ if(M.hEdge(i, j)) c.fillRect(x + RW + 6, y + n * 5 - 1.300, 8, 2.600); if(M.hEdge(i - 1, j)) c.fillRect(x - RW - 14, y + n * 5 - 1.300, 8, 2.600); if(M.vEdge(i, j)) c.fillRect(x + n * 5 - 1.300, y + RW + 6, 2.600, 8); if(M.vEdge(i, j - 1)) c.fillRect(x + n * 5 - 1.300, y - RW - 14, 2.600, 8); }
     c.strokeStyle = INK; c.lineWidth = 0.8;
     const bar = (bx, by, bw, bh, col) => { c.fillStyle = col; c.fillRect(bx, by, bw, bh); c.strokeRect(bx, by, bw, bh); };
-    if(M.hEdge(i - 1, j)) bar(x - RW - 4, y - RW, 4, RW, ew); if(M.hEdge(i, j)) bar(x + RW, y, 4, RW, ew);
-    if(M.vEdge(i, j - 1)) bar(x, y - RW - 4, RW, 4, ns); if(M.vEdge(i, j)) bar(x - RW, y + RW, RW, 4, ns);
+    if(M.hEdge(i - 1, j)) bar(x - RW - 4, y, 4, RW, ew); if(M.hEdge(i, j)) bar(x + RW, y - RW, 4, RW, ew);
+    if(M.vEdge(i, j - 1)) bar(x - RW, y - RW - 4, RW, 4, ns); if(M.vEdge(i, j)) bar(x, y + RW, RW, 4, ns);
   }
   /* sklypai */
   for(const l of lots){
@@ -575,22 +605,41 @@ function drawWorld(c, view){
     for(let i = 0; i < NA; i++) for(let j = 0; j < NS - 1; j++) plate(AX[i], (SY[j] + SY[j + 1]) / 2, T.avenues[i]);
     if(view.map){ c.font = "italic 800 11px Rubik,system-ui,sans-serif"; for(const y of [105, 525, 945]){ const p = w2s(RXC, y); c.fillStyle = "#1c5f86"; c.fillText(T.river, p[0], p[1]); } }
   }
-  /* šviesoforų stulpeliai kiekvienai privažiavimo krypčiai (kairysis artimasis kampas) */
+  /* šviesoforų stulpeliai kiekvienai privažiavimo krypčiai (dešinysis artimasis kampas – eismas dešine puse) */
   if(!view.hero) for(const [i, j] of LNODES){ const x = AX[i], y = SY[j], q = RW + 7, u = Math.max(0.7, Math.min(1.15, s / 1.4));
-    for(const [ex, ax, hx, hy] of [[M.hEdge(i - 1, j), "ew", x - q, y - q], [M.hEdge(i, j), "ew", x + q, y + q], [M.vEdge(i, j - 1), "ns", x + q, y - q], [M.vEdge(i, j), "ns", x - q, y + q]]){ if(!ex) continue; const p = w2s(hx, hy); if(!inV(p)) continue; const st = light(i, j, ax, view.t); c.fillStyle = INK; rr(c, p[0] - 5 * u, p[1] - 12 * u, 10 * u, 24 * u, 3 * u); c.fill(); ["r", "a", "g"].forEach((k, n) => { c.fillStyle = k === st ? LCOL[k] : "#4a5266"; c.beginPath(); c.arc(p[0], p[1] + (n - 1) * 7 * u, 2.800 * u, 0, 7); c.fill(); }); } }
+    for(const [ex, ax, hx, hy] of [[M.hEdge(i - 1, j), "ew", x - q, y + q], [M.hEdge(i, j), "ew", x + q, y - q], [M.vEdge(i, j - 1), "ns", x - q, y - q], [M.vEdge(i, j), "ns", x + q, y + q]]){ if(!ex) continue; const p = w2s(hx, hy); if(!inV(p)) continue; const st = light(i, j, ax, view.t); c.fillStyle = INK; rr(c, p[0] - 5 * u, p[1] - 12 * u, 10 * u, 24 * u, 3 * u); c.fill(); ["r", "a", "g"].forEach((k, n) => { c.fillStyle = k === st ? LCOL[k] : "#4a5266"; c.beginPath(); c.arc(p[0], p[1] + (n - 1) * 7 * u, 2.800 * u, 0, 7); c.fill(); }); } }
   for(const l of lots) if(l.kind === "place"){ const p = w2s(l.cx, l.cy); if(!inV(p)) continue; const r = Math.max(8.500, Math.min(18, 13.500 * s)); c.fillStyle = "#fff"; c.strokeStyle = INK; c.lineWidth = 2; c.beginPath(); c.arc(p[0], p[1], r, 0, 7); c.fill(); c.stroke(); const k = r * 1.360 / 24; c.save(); c.translate(p[0] - 12 * k, p[1] - 12 * k); c.scale(k, k); const ic = P2[l.place]; c.fillStyle = INK; c.strokeStyle = INK; c.lineCap = "round"; c.lineJoin = "round"; c.lineWidth = l.place === "carpark" ? 3.400 : 1.900; if(ic.f) c.fill(ic.f); if(ic.s) c.stroke(ic.s); c.restore(); }
   return w2s;
+}
+function approx(){
+  if(!G || !save.help) return null; let x, y, key;
+  if(G.state === "call" && G.call){ const p = passPos(lots[G.call.pickup]); x = p.x; y = p.y; key = "c" + G.call.n; }
+  else if(G.state === "fare" && G.fare){ const l = lots[G.fare.stops[G.fare.stopIdx]]; x = l.cx; y = l.cy; key = "f" + G.fare.n + "-" + G.fare.stopIdx; }
+  else return null;
+  if(G.apK !== key){ const a = Math.random() * 6.283, r = 35 + Math.random() * 35; G.apK = key; G.apO = [Math.cos(a) * r, Math.sin(a) * r]; G.apNear = false; }
+  return { x: x + G.apO[0], y: y + G.apO[1], R: 105 };
 }
 function edgeArrow(c, w2s, x, y, col){
   const p = w2s(x, y), m = 26; if(p[0] > m && p[0] < W - m && p[1] > m + 40 && p[1] < H - m) return;
   const cx = W / 2, cy = H / 2, a = Math.atan2(p[1] - cy, p[0] - cx), k = Math.min((W / 2 - m) / Math.abs(Math.cos(a) || 1e-6), (H / 2 - m - 22) / Math.abs(Math.sin(a) || 1e-6)), ex = cx + Math.cos(a) * k, ey = cy + 12 + Math.sin(a) * k;
   c.save(); c.translate(ex, ey); c.rotate(a); c.fillStyle = col; c.strokeStyle = INK; c.lineWidth = 2.200; c.beginPath(); c.moveTo(15, 0); c.lineTo(-3, -11); c.lineTo(-3, -5); c.lineTo(-14, -5); c.lineTo(-14, 5); c.lineTo(-3, 5); c.lineTo(-3, 11); c.closePath(); c.fill(); c.stroke(); c.restore();
 }
+/* Didelė geltona rodyklė prieš taksi: rodo kryptį į apytikslę tikslo vietą (žiūrint iš vairuotojo vietos). */
+function helpArrow(x, y, view){
+  const a = Math.atan2(y - car.y, x - car.x) + view.a, cx = W / 2, cy = H * 0.6 - 64;
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(a); ctx.globalAlpha = 0.92; ctx.fillStyle = "#ffc928"; ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.lineJoin = "round";
+  ctx.beginPath(); ctx.moveTo(24, 0); ctx.lineTo(4, -17); ctx.lineTo(4, -8); ctx.lineTo(-20, -8); ctx.lineTo(-20, 8); ctx.lineTo(4, 8); ctx.lineTo(4, 17); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+}
 function render(){
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.fillStyle = "#cfe8a9"; ctx.fillRect(0, 0, W, H);
   const view = G.map ? { x: G.mapX, y: G.mapY, a: 0, s: mapScale(), cx: W / 2, cy: H / 2, w: W, h: H, map: true, names: true, t: G.t }
     : { x: car.x, y: car.y, a: -cam.a - Math.PI / 2, s: Math.max(1.1, Math.min(1.75, W / 330)), cx: W / 2, cy: H * 0.6, w: W, h: H, names: true, t: G.t };
   const w2s = drawWorld(ctx, view);
+  const ap = approx();
+  if(ap){ const p = w2s(ap.x, ap.y), r = ap.R * view.s; ctx.save(); ctx.fillStyle = "rgba(255,201,40,.13)"; ctx.strokeStyle = "rgba(201,140,0,.85)"; ctx.lineWidth = 2.5; ctx.setLineDash([9, 7]); ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, 7); ctx.fill(); ctx.stroke(); ctx.restore();
+    const d = Math.hypot(ap.x - car.x, ap.y - car.y);
+    if(!G.map && d > ap.R * 0.8) helpArrow(ap.x, ap.y, view);
+    if(!G.map && d < ap.R && !G.apNear){ G.apNear = true; toast(G.state === "call" ? T.hud.nearCall : T.hud.nearFare, 3600); } }
   if(G.state === "call" && G.arrow){ const p = passPos(lots[G.call.pickup]); edgeArrow(ctx, w2s, p.x, p.y, "#ffc928"); }
   if(G.gps && G.fare){ const l = lots[G.fare.stops[G.fare.stopIdx]]; edgeArrow(ctx, w2s, l.cx, l.cy, "#3ad06a"); }
   if(!G.map){ const a = view.a; ctx.save(); ctx.translate(W - 28, 72); ctx.fillStyle = "#fff"; ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, 17, 0, 7); ctx.fill(); ctx.stroke(); ctx.rotate(a); ctx.fillStyle = "#e5533d"; ctx.beginPath(); ctx.moveTo(0, -13); ctx.lineTo(5, 0); ctx.lineTo(-5, 0); ctx.closePath(); ctx.fill(); ctx.fillStyle = "#9aa1b3"; ctx.beginPath(); ctx.moveTo(0, 13); ctx.lineTo(5, 0); ctx.lineTo(-5, 0); ctx.closePath(); ctx.fill(); ctx.fillStyle = INK; ctx.font = "800 9px Rubik,sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("N", 0, -6); ctx.restore(); }
