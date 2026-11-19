@@ -126,6 +126,7 @@ MK.top = function(o){
     if(k === "music"){ ac(); if(musicBus) musicBus.gain.setTargetAtTime(prefs.music ? 1 : 0, ctx.currentTime, 0.05); MK.music.start(); }
     else MK.sfx.tap();
   });
+  setTimeout(() => { const t = MK.fullTip(); if(t && h.parentNode) h.after(t); }, 0);
   return h;
 };
 
@@ -247,6 +248,7 @@ button{font:inherit;color:inherit}
 :focus-visible{outline:3px solid #2f6bff;outline-offset:3px}
 .mk-app{max-width:760px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;
   padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));padding-block:8px 18px}
+.mk-fstip{position:relative;display:grid;gap:3px;margin:0 0 12px;padding:10px 44px 10px 12px;border-radius:12px;background:#fff8dc;box-shadow:inset 0 0 0 2px #e2c35a;font:600 14px/1.4 var(--body,system-ui)}.mk-fstip>b{font-weight:800}.mk-fstip i{font-style:normal;font-weight:800}.mk-fstip button{position:absolute;right:6px;top:6px;width:34px;height:34px;border:0;border-radius:8px;background:transparent;font:800 16px/1 system-ui;cursor:pointer;color:inherit}
 .mk-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:4px 0 10px}
 .mk-back{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 14px;border-radius:999px;background:var(--card);
   border:2.5px solid var(--ink);text-decoration:none;font:800 15px/1 var(--body);box-shadow:0 4px 0 rgba(18,26,51,.2)}
@@ -353,6 +355,19 @@ button{font:inherit;color:inherit}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
 `;
 const st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
+
+/* ---------- patarimas iPhone / iPad naudotojams: žaisti per visą ekraną ----------
+   iPhone naršyklė neleidžia svetainei pačiai paslėpti adreso juostos. Per visą ekraną žaidžiama tik
+   pridėjus MokomėsKartu prie pradžios ekrano (tada svetainė atsidaro kaip programėlė). */
+MK.standalone = () => !!(navigator.standalone || (window.matchMedia && (matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches)));
+MK.isIOS = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+MK.fullTip = function(){
+  if(!MK.isIOS() || MK.standalone() || MK.get("mk-fs-patarimas", 0)) return null;
+  const d = document.createElement("div"); d.className = "mk-fstip";
+  d.innerHTML = `<b>Žaisk per visą ekraną</b><span>Safari paspausk <b>⬆︎ Bendrinti</b> → <b>„Į pradžios ekraną“</b>. MokomėsKartu atsidarys kaip programėlė – be naršyklės juostų.</span><button type="button" aria-label="Uždaryti patarimą">✕</button>`;
+  d.querySelector("button").onclick = () => { MK.set("mk-fs-patarimas", 1); d.remove(); };
+  return d;
+};
 
 /* ---------- telefonas neturi netyčia priartinti žaidimo ----------
    1) dvigubas bakstelėjimas nebeartina (touch-action: manipulation – suspaudimas dviem pirštais meniu lieka galimas);
