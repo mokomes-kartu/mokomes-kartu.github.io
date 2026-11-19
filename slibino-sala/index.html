@@ -89,6 +89,14 @@ body{--paper:#eef6ff;--grid:#d9e8f7;--soft:#4a5a70;--kid:"Unbounded","Arial Blac
 #bJump{width:62px;height:62px;right:98px;bottom:2px}
 #bCrouch{width:62px;height:62px;right:84px;bottom:76px}
 #bDig{width:62px;height:62px;right:12px;bottom:98px}
+#bBike{width:62px;height:62px;right:150px;bottom:112px}
+#bBike[hidden]{display:none}
+.grule{margin:2px 0 8px;font:800 14px/1.3 var(--body)}
+.gbox{display:grid;gap:8px}
+.gbox button{display:grid;gap:3px;text-align:left;padding:10px 12px;border:0;border-radius:12px;background:var(--bc);color:var(--ink);box-shadow:inset 0 0 0 2.5px var(--ink),0 3px 0 var(--ink);cursor:pointer;touch-action:manipulation}
+.gbox button b{font:800 15px/1.2 var(--kid)}
+.gbox button span{font:700 15.5px/1.3 var(--body)}
+@media (orientation:landscape) and (min-width:640px){ .gbox{grid-template-columns:repeat(3,1fr)} }
 .tb:active{transform:translateY(2px)}
 
 /* langai */
@@ -213,6 +221,7 @@ body{--paper:#eef6ff;--grid:#d9e8f7;--soft:#4a5a70;--kid:"Unbounded","Arial Blac
     <div id="lookZone"></div>
     <div id="btns">
       <button type="button" class="tb" id="bDig"></button>
+      <button type="button" class="tb" id="bBike" hidden></button>
       <button type="button" class="tb" id="bCrouch"></button>
       <button type="button" class="tb" id="bJump"></button>
       <button type="button" class="tb big" id="bAct"></button>

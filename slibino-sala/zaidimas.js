@@ -1,6 +1,7 @@
 /* Slibino sala – žaidimo logika: meniu, valdymas, fizika, sąveikos, užduotys, kovos, žemėlapis, išsaugojimas. */
 import * as THREE from "./three.module.min.js";
 import { openVault } from "./sala-lobynas.js";
+import { addAdventure, gnomePuzzle } from "./sala-nuotykiai.js";
 import { buildWorld, makeDragon, animateDragon, glowTex, POI, HALF, SEG, PLATEAU_TOP } from "./sala-pasaulis.js";
 
 const T = window.MK_T, UZ = window.MK_SALA_U, INK = "#121a33";
@@ -23,12 +24,13 @@ const I = {
   jump: ic('<path d="M12 20V6M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>'),
   crouch: ic('<path d="M12 4v11M7 11l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'),
   dig: ic('<path d="M14 3l7 7-3 3-7-7z" fill="#c9a43b" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12.5 8.5L4 17" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M2.5 15.5l6 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>'),
+  bike: ic('<circle cx="5.5" cy="16" r="3.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18.5" cy="16" r="3.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5.5 16l4-8h6l3 8M9.5 8l4 8M13 5h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'),
   act: ic('<path d="M8 13V6a1.6 1.6 0 0 1 3.2 0v5V4.6a1.6 1.6 0 0 1 3.2 0V11V6a1.6 1.6 0 0 1 3.2 0v7c0 4.5-2.6 8-6.6 8-3 0-4.6-1.6-6-4l-1.8-3.2a1.5 1.5 0 0 1 2.6-1.5L8 13" fill="#fff" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>')
 };
 const gemSvg = (id, on) => `<svg viewBox="0 0 20 26" aria-hidden="true"><path d="M10 1l8 8-8 16L2 9z" fill="${on ? COL[id] : "#e8e4da"}" stroke="${on ? INK : "#b4ad9c"}" stroke-width="1.8" stroke-linejoin="round"/>${on ? '<path d="M2 9h16M10 1l-3 8 3 16 3-16z" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.1"/>' : ""}</svg>`;
 
 /* ---------- išsaugojimas ---------- */
-const fresh = () => ({ v: 1, pos: null, yaw: 0, found: {}, opened: {}, dug: false, bridge: false, placed: {}, green: false, red: false, gate: false, clues: [], seen: [], mask: "", time: 0, lastProg: 0, redMist: 0, lever: 0, dials: {}, vault: {}, vaultDone: false });
+const fresh = () => ({ v: 1, pos: null, yaw: 0, found: {}, opened: {}, dug: false, bridge: false, placed: {}, green: false, red: false, gate: false, clues: [], seen: [], mask: "", time: 0, lastProg: 0, redMist: 0, lever: 0, dials: {}, vault: {}, vaultDone: false, sword: false, bike: false, chute: false, gnomeTry: 0 });
 let S = Object.assign(fresh(), MK.get(SKEY, {}));
 const save = () => { if(world) S.mask = maskStr(); MK.set(SKEY, S); };
 const hasSave = () => !!MK.get(SKEY, null);
@@ -107,6 +109,7 @@ $("qSeg").addEventListener("click", e => { const b = e.target.closest("[data-q]"
 /* ===================== 3D ===================== */
 let renderer, scene, camera, world = null, sun, hemi, lantern, sky, clock, running = false;
 let greenD = null, redD = null, holes = [], bolts = [], fires = [];
+let adv = null, riding = false, gliding = false, swingT = 0, nightN = -1;
 const P = { x: 0, y: 0, z: 0, vy: 0, yaw: 0, pitch: 0, ground: true, crouch: false, eye: 1.65, bob: 0 };
 const RAD = 0.35;
 let mode = "walk"; // walk | ui | fight | cut
@@ -151,6 +154,7 @@ function init3D(){
   sky = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false })); sky.renderOrder = -1; scene.add(sky);
   const sunS = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex(), color: "#fff3c0", fog: false, depthWrite: false })); sunS.scale.set(140, 140, 1); sunS.position.set(-300, 560, 200); sky.add(sunS);
   world = buildWorld(scene, Q); world.camPos = camera.position;
+  scene.add(camera); adv = addAdventure(scene, world, camera);
   /* slibinai */
   greenD = makeDragon({ body: "#3fae4a", belly: "#c8ef9a", wing: "#7fd36a", horn: "#f2e6c4" });
   greenD.scale.setScalar(1.15); greenD.position.set(POI.plateau[0] - 3, PLATEAU_TOP, POI.plateau[1] + 3); greenD.rotation.y = Math.PI / 2; scene.add(greenD);
@@ -161,7 +165,7 @@ function init3D(){
   clock = new THREE.Clock();
   addEventListener("resize", onResize);
   initInput(); buildHud(); initMap();
-  if(TEST) window.__sala = { P, S, world, setMode: m => mode = m, tp: (x, z) => { P.x = x; P.z = z; P.y = world.groundAt(x, z, 999, 999); P.vy = 0; }, quiz: () => quiz, fight: () => F, act: () => doAct(), dig: () => doDig(), render: () => renderer.render(scene, camera), cam: camera, solve: () => quizSolve(), vault: () => vaultApi, enterVault, rescue, safe: () => safeList, trapped: () => isTrapped(), inter: () => curInter,
+  if(TEST) window.__sala = { adv, bike: toggleBike, st: () => ({ riding, gliding, nk: nightK() }), gnome: () => GP, P, S, world, setMode: m => mode = m, tp: (x, z) => { P.x = x; P.z = z; P.y = world.groundAt(x, z, 999, 999); P.vy = 0; }, quiz: () => quiz, fight: () => F, act: () => doAct(), dig: () => doDig(), render: () => renderer.render(scene, camera), cam: camera, solve: () => quizSolve(), vault: () => vaultApi, enterVault, rescue, safe: () => safeList, trapped: () => isTrapped(), inter: () => curInter,
     sim: (keys, sec, jump) => { const old = mode; mode = "walk"; keys.forEach(k => K[k] = true); if(jump) wantJump = true; for(let t = 0; t < sec; t += 1 / 60) movePlayer(1 / 60); keys.forEach(k => K[k] = false); mode = old; return [P.x, P.y, P.z]; } };
 }
 function onResize(){ if(!renderer) return; renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
@@ -181,6 +185,7 @@ function applySave(){
   if(S.gate){ W.gate.open = true; W.gate.opening = 1; W.gate.doorCol.on = false; }
   if(S.green) greenD.visible = false;
   if(S.gate && !S.red){ redD.visible = true; redD.position.set(POI.gate[0], world.groundAt(POI.gate[0], POI.gate[1] + 22, 999, 999), POI.gate[1] + 22); redD.rotation.y = 0; }
+  adv.bike.g.visible = !S.bike; adv.pack.g.visible = !S.chute; $("bBike").hidden = !S.bike;
   updateGems();
 }
 
@@ -197,6 +202,7 @@ function initInput(){
     if(e.code === "Space"){ wantJump = true; e.preventDefault(); }
     if(k === "c" || e.code === "ControlLeft") toggleCrouch();
     if(k === "f") wantDig = true;
+    if(k === "b") toggleBike();
     if(k === "e" || k === "enter") wantAct = true;
     if(k === "m") openMap();
     if(k === "j") openNotes();
@@ -218,7 +224,7 @@ function initInput(){
   const lEnd = e => looks.delete(e.pointerId);
   lz.addEventListener("pointerup", lEnd); lz.addEventListener("pointercancel", lEnd);
   const tap = (id, f) => $(id).addEventListener("pointerdown", e => { e.preventDefault(); e.stopPropagation(); MK.unlock(); MK.music.stop(); f(); });
-  tap("bJump", () => wantJump = true); tap("bCrouch", toggleCrouch); tap("bDig", () => wantDig = true); tap("bAct", () => wantAct = true);
+  tap("bJump", () => wantJump = true); tap("bCrouch", toggleCrouch); tap("bDig", () => wantDig = true); tap("bAct", () => wantAct = true); tap("bBike", toggleBike);
   $("hMenu").onclick = openPause; $("hMap").onclick = openMap; $("hNotes").onclick = openNotes;
   $("game").addEventListener("click", e => { const c = e.target.closest("[data-close]"); if(c){ MK.sfx.tap(); closeOv(c.closest(".ov")); } });
   document.addEventListener("visibilitychange", () => { if(document.hidden) save(); });
@@ -227,14 +233,21 @@ function initInput(){
 function buildHud(){
   $("hMenu").innerHTML = I.menu; $("hMap").innerHTML = I.map + `<span class="lbl" style="display:none"></span>`; $("hNotes").innerHTML = I.notes;
   $("hMenu").setAttribute("aria-label", T.hud.menu); $("hMap").setAttribute("aria-label", T.hud.map); $("hNotes").setAttribute("aria-label", T.hud.notes);
-  $("bJump").innerHTML = I.jump + T.hud.jump; $("bCrouch").innerHTML = I.crouch + T.hud.crouch; $("bDig").innerHTML = I.dig + T.hud.dig; $("bAct").innerHTML = I.act + `<span id="actL">${T.hud.act}</span>`;
+  $("bJump").innerHTML = I.jump + T.hud.jump; $("bCrouch").innerHTML = I.crouch + T.hud.crouch; $("bDig").innerHTML = I.dig + T.hud.dig; $("bBike").innerHTML = I.bike + T.hud.bike; $("bAct").innerHTML = I.act + `<span id="actL">${T.hud.act}</span>`;
   $("joyHint").textContent = T.joy; $("rot").textContent = T.hud.rotate; $("rot").classList.add("show");
   setTimeout(() => $("rot").classList.remove("show"), 9000);
 }
 function toggleCrouch(){
   if(mode !== "walk") return;
   if(P.crouch && headBlocked(P.x, P.z, P.y)){ toast(T.crouchStuck); return; }
+  if(riding) toggleBike();
   P.crouch = !P.crouch; $("bCrouch").classList.toggle("on", P.crouch); MK.sfx.tap();
+}
+function inMaze(x, z){ const m = world.maze; return x > m.ox - 2 && x < m.ox + 54 && z > m.oz - 2 && z < m.oz + 54; }
+function toggleBike(){
+  if(mode !== "walk" || !S.bike) return;
+  if(!riding && (P.crouch || !P.ground || world.cave.inside(P.x, P.z) || inMaze(P.x, P.z) || Math.abs(world.terrain(P.x, P.z) - P.y) > 0.3)){ toast(T.adv.bikeNo); return; }
+  riding = !riding; $("bBike").classList.toggle("on", riding); MK.sfx.tap(); toast(riding ? T.adv.bikeOn : T.adv.bikeOff, 2200);
 }
 function updateGems(){ $("hgems").innerHTML = IDS.map(id => gemSvg(id, S.found[id])).join(""); }
 
@@ -265,7 +278,8 @@ function movePlayer(dt){
   if(K.ShiftLeft || K.ShiftRight) run = true;
   if(joy.id !== null){ fx += joy.x; fz += -joy.y; if(Math.hypot(joy.x, joy.y) > 0.92) run = true; }
   const l = Math.hypot(fx, fz); if(l > 1){ fx /= l; fz /= l; }
-  const sp = P.crouch ? 2.3 : run ? 8.5 : 5.2;
+  if(riding && (world.cave.inside(P.x, P.z) || inMaze(P.x, P.z))){ riding = false; $("bBike").classList.remove("on"); toast(T.adv.bikeOff, 2200); }
+  const sp = P.crouch ? 2.3 : gliding ? 9 : riding ? (run ? 15 : 12) : run ? 8.5 : 5.2;
   const sy = Math.sin(P.yaw), cy = Math.cos(P.yaw);
   let dx = (-sy * fz + cy * fx) * sp * dt, dz = (-cy * fz - sy * fx) * sp * dt;
   const step = P.ground ? 0.5 : 0.06;
@@ -286,10 +300,14 @@ function movePlayer(dt){
     if(g >= P.y - 0.65) P.y = g; else { P.ground = false; P.vy = 0; }
   }
   if(!P.ground){
-    P.vy -= 24 * dt; let ny = P.y + P.vy * dt;
+    P.vy -= 24 * dt;
+    /* parašiutas: išsiskleidžia krintant iš aukštai, toliau žaidėjas vairuoja pats */
+    if(S.chute && !gliding && P.vy < -4 && P.y - world.groundAt(P.x, P.z, P.y, 0.06) > 4.5){ gliding = true; riding = false; $("bBike").classList.remove("on"); toast(T.adv.glide, 3200); MK.sfx.whoosh(); }
+    if(gliding) P.vy = Math.max(P.vy, -4.5);
+    let ny = P.y + P.vy * dt;
     if(P.vy > 0){ for(const o of nearAll(P.x, P.z)) if(o.on && o.t === "b" && P.x > o.x0 - RAD && P.x < o.x1 + RAD && P.z > o.z0 - RAD && P.z < o.z1 + RAD && o.y0 >= P.y + bodyH() - 0.01 && o.y0 < ny + bodyH()){ ny = o.y0 - bodyH(); P.vy = 0; } }
     const sup = world.groundAt(P.x, P.z, P.y, 0.06);
-    if(ny <= sup){ P.y = sup; P.vy = 0; P.ground = true; } else P.y = ny;
+    if(ny <= sup){ P.y = sup; P.vy = 0; P.ground = true; if(gliding){ gliding = false; lastPillar = -1; MK.sfx.hop(1); } } else P.y = ny;
   }
   /* Erelio uolos šlaitas per status: juo neužlipsi – žaidėjas nuslysta žemyn (į viršų veda tik stulpai) */
   if(P.ground){ const [ex, , ez] = world.eagleTop, dC = Math.hypot(P.x - ex, P.z - ez);
@@ -360,8 +378,55 @@ function interactions(){
   else if(!S.red && redD.visible) L.push({ d: d2(redD.position.x, redD.position.z), r: 26, label: T.act.fight, f: () => startFight("red") });
   else if(S.red && !S.vaultDone) L.push({ d: d2(gx, gz), r: 14, label: T.act.vault, f: enterVault });
   else if(S.vaultDone) L.push({ d: d2(gx, gz), r: 12, label: T.act.cave, f: () => { S.pos = [P.x, P.y, P.z]; S.yaw = P.yaw; save(); location.href = "pozemis/"; } });
+  L.push({ d: d2(adv.gnome.x, adv.gnome.z), r: 3.4, label: T.act.talk, f: talkGnome });
+  if(!S.bike) L.push({ d: d2(adv.bike.x, adv.bike.z), r: 3, label: T.act.take, f: () => { S.bike = true; adv.bike.g.visible = false; $("bBike").hidden = false; MK.sfx.coins(); progress(); save(); openDlg(`<h2>${T.adv.bikeT}</h2>${MK.guide(T.adv.bikeB)}<button type="button" class="mk-btn" data-close>${T.task.next}</button>`); } });
+  if(!S.chute && Math.abs(P.y - PLATEAU_TOP) < 3) L.push({ d: d2(adv.pack.x, adv.pack.z), r: 3, label: T.act.take, f: () => { S.chute = true; adv.pack.g.visible = false; MK.sfx.coins(); progress(); save(); openDlg(`<h2>${T.adv.chuteT}</h2>${MK.guide(T.adv.chuteB)}<button type="button" class="mk-btn" data-close>${T.task.next}</button>`); } });
+  if(S.sword){ let dw = 99; for(const w of adv.wolves) if(w.on && !w.flee) dw = Math.min(dw, d2(w.x, w.z)); if(dw < 6) L.push({ d: dw - 4, r: 6, label: T.act.swing, f: swing }); }
   let best = null; for(const it of L) if(it.d < it.r && (!best || it.d - it.r < best.d - best.r)) best = it;
   return best;
+}
+/* ---------- nykštukas ir kardas ---------- */
+let GP = null;
+function talkGnome(){ const G = T.adv.gnome; if(S.sword){ openDlg(`<button type="button" class="x" data-close aria-label="${T.close}">✕</button><h2>${G.n}</h2>${MK.guide(G.after)}<button type="button" class="mk-btn" data-close>${T.task.next}</button>`); return; } GP = gnomePuzzle(G); drawGnome(G.hello); }
+function drawGnome(msg){
+  const G = T.adv.gnome, cols = ["#ff8f80", "#8fc0ff", "#8fe0a0"];
+  openDlg(`<button type="button" class="x" data-close aria-label="${T.close}">✕</button><h2>${G.n}</h2>${MK.guide(msg)}<p class="grule">${G.rule}</p>
+    <div class="gbox">${GP.st.map((q, i) => `<button type="button" data-gb="${i}" style="--bc:${cols[i]}"><b>${G.boxes[i]}</b><span>„${q.txt}“</span></button>`).join("")}</div>`);
+  $("dlgP").querySelector(".gbox").onclick = e => { const b = e.target.closest("[data-gb]"); if(!b) return; const i = +b.dataset.gb;
+    if(i !== GP.a){ S.gnomeTry++; save(); MK.sfx.bad(); GP = gnomePuzzle(G); drawGnome(G.wrong); return; }
+    const why = GP.cnt.map((n, s) => G.whyRow(G.boxIn[s], n, n === 1)).join("<br>");
+    S.sword = true; progress(); save(); MK.sfx.win(); inGame(() => MK.confetti(30));
+    openDlg(`<h2>${G.n}</h2>${MK.guide(G.right)}${MK.why({ ok: true, head: T.adv.gotSword, body: "", more: why, sum: G.why, open: true })}<button type="button" class="mk-btn" data-close>${T.task.next}</button>`); };
+}
+function swing(){
+  if(swingT > 0) return; swingT = 0.35; MK.sfx.whoosh();
+  let n = 0; for(const w of adv.wolves) if(w.on && d2(w.x, w.z) < 6.5){ w.flee = 14; n++; }
+  if(n) toast(T.adv.wolfAway, 2200);
+}
+/* ---------- naktis ir vilkai ---------- */
+const DAY = 420;
+function nightK(){ const ph = S.time % DAY; return ph < 285 ? 0 : ph < 300 ? (ph - 285) / 15 : ph < 405 ? 1 : (DAY - ph) / 15; }
+function tickWolves(dt, nk){
+  const n = Math.floor(S.time / DAY);
+  if(nk > 0 && nightN !== n){ nightN = n; toast(S.sword ? T.adv.duskSword : T.adv.dusk, 6500); }
+  const open = Math.abs(world.terrain(P.x, P.z) - P.y) < 1.5 && !world.cave.inside(P.x, P.z) && !inMaze(P.x, P.z) && world.terrain(P.x, P.z) > 1;
+  const safe = d2(world.light[0], world.light[1]) < 32, act = nk > 0.6 && mode === "walk" && !F;
+  for(const w of adv.wolves){
+    if(!act){ if(w.on && (nk < 0.3 || mode === "fight")){ w.on = false; w.g.visible = false; } continue; }
+    if(!w.on){ if(!open || safe) continue;
+      for(let k = 0; k < 6; k++){ const a = Math.random() * Math.PI * 2, x = P.x + Math.cos(a) * 30, z = P.z + Math.sin(a) * 30; if(world.terrain(x, z) > 1.5 && !world.cave.inside(x, z) && !inMaze(x, z)){ w.x = x; w.z = z; w.on = true; w.flee = 0; w.g.visible = true; break; } }
+      if(!w.on) continue; }
+    let tx = P.x, tz = P.z, v = 6.3;
+    if(w.flee > 0 || !open || safe){ w.flee = Math.max(0, w.flee - dt); const ax = w.x - P.x, az = w.z - P.z, l = Math.hypot(ax, az) || 1; tx = w.x + ax / l * 5; tz = w.z + az / l * 5; v = l > 34 ? 0 : 8; }
+    const ax = tx - w.x, az = tz - w.z, l = Math.hypot(ax, az);
+    if(l > 0.2 && v){ const nx = w.x + ax / l * v * dt, nz = w.z + az / l * v * dt; if(world.terrain(nx, nz) > 0.6){ w.x = nx; w.z = nz; } w.g.rotation.y = Math.atan2(ax, az); w.t += dt * v * 1.8; }
+    w.g.position.set(w.x, world.terrain(w.x, w.z), w.z);
+    w.g.userData.legs.forEach((lg, k) => lg.rotation.x = Math.sin(w.t + (k % 3 ? Math.PI : 0)) * 0.6);
+    if(!w.flee && open && !safe && d2(w.x, w.z) < 1.3){
+      MK.sfx.bad(); toast(S.sword ? T.adv.wolfBiteSword : T.adv.wolfBite, 4600); $("vign").classList.add("on"); setTimeout(() => $("vign").classList.remove("on"), 600);
+      const bx = P.x - w.x, bz = P.z - w.z, bl = Math.hypot(bx, bz) || 1, px = P.x + bx / bl * 5, pz = P.z + bz / bl * 5; if(!blocked(px, pz, P.y, 0.5)){ P.x = px; P.z = pz; }
+      for(const q of adv.wolves) q.flee = 9; }
+  }
 }
 function updatePrompt(){
   curInter = mode === "walk" ? interactions() : null;
@@ -369,7 +434,7 @@ function updatePrompt(){
   if(curInter){ p.hidden = touch; p.innerHTML = `<kbd>E</kbd>${curInter.label}`; $("actL").textContent = curInter.label; $("bAct").classList.add("ready"); }
   else { p.hidden = true; $("actL").textContent = T.hud.act; $("bAct").classList.remove("ready"); }
 }
-function doAct(){ if(mode !== "walk") return; if(curInter){ MK.sfx.tap(); curInter.f(); } }
+function doAct(){ if(mode !== "walk") return; if(curInter){ MK.sfx.tap(); curInter.f(); } else if(S.sword) swing(); }
 
 /* užrašai */
 function openClue(id){
@@ -717,7 +782,7 @@ function loop(){
   wantAct = wantDig = false;
   updatePrompt();
   /* kamera */
-  P.eye += ((P.crouch ? 1.05 : 1.65) - P.eye) * Math.min(1, dt * 10);
+  P.eye += ((P.crouch ? 1.05 : riding ? 1.5 : 1.65) - P.eye) * Math.min(1, dt * 10);
   let ey = P.y + P.eye + Math.sin(P.bob) * 0.04 - (digT > 0 ? Math.sin(digT / 0.5 * Math.PI) * 0.35 : 0); digT = Math.max(0, digT - dt);
   camera.position.set(P.x, ey, P.z);
   if(mode === "fight" && F){
@@ -744,7 +809,16 @@ function loop(){
   scene.fog.color.setRGB(0.80 * (1 - caveK) + 0.07 * caveK, 0.91 * (1 - caveK) + 0.05 * caveK, 0.97 * (1 - caveK) + 0.1 * caveK);
   scene.fog.near = 70 * (1 - caveK) + 2 * caveK; scene.fog.far = (Q === "high" ? 360 : 250) * (1 - caveK) + 24 * caveK;
   hemi.intensity = 1.9 * (1 - caveK) + 0.25 * caveK; sun.intensity = 2.6 * (1 - caveK) + 0.05 * caveK;
-  lantern.intensity = 26 * caveK; lantern.position.set(P.x, ey + 0.3, P.z);
+  /* naktis: sutemsta, saloje pasirodo vilkai */
+  const nk = nightK() * (1 - caveK);
+  if(nk > 0){ const f = scene.fog.color; f.setRGB(f.r * (1 - nk) + 0.06 * nk, f.g * (1 - nk) + 0.09 * nk, f.b * (1 - nk) + 0.2 * nk); scene.fog.far *= 1 - 0.45 * nk; hemi.intensity *= 1 - 0.72 * nk; sun.intensity *= 1 - 0.86 * nk; }
+  sky.material.color.setRGB(1 - 0.82 * nk, 1 - 0.78 * nk, 1 - 0.6 * nk);
+  if(mode === "walk" || mode === "fight") tickWolves(dt, nightK());
+  lantern.intensity = 26 * caveK + 16 * nk; lantern.position.set(P.x, ey + 0.3, P.z);
+  adv.canopy.visible = gliding; if(gliding){ adv.canopy.position.set(P.x, P.y, P.z); adv.canopy.rotation.y = P.yaw; }
+  adv.bars.visible = riding && mode === "walk"; adv.sword.visible = S.sword && !riding && !gliding && mode === "walk";
+  if(swingT > 0){ swingT = Math.max(0, swingT - dt); const k = 1 - swingT / 0.35; adv.sword.rotation.set(-0.9 - Math.sin(k * Math.PI) * 0.9, 0, 0.35 + Math.sin(k * Math.PI) * 1.2); } else adv.sword.rotation.set(-0.9, 0, 0.35);
+  { const g = adv.gnome.g, a = Math.atan2(P.x - adv.gnome.x, P.z - adv.gnome.z); if(d2(adv.gnome.x, adv.gnome.z) < 14) g.rotation.y += (((a - g.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * Math.min(1, dt * 3); }
   $("dark").style.opacity = caveK * 0.9;
   /* animacijos */
   for(const f of W.anim) f(tAll, dt);
