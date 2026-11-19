@@ -100,6 +100,8 @@ window.MK_T = {
   /* statinio pabaiga */
   endTitle: ["", "Statinys baigtas!", "Statinys baigtas – labai gerai!", "Statinys baigtas – puikiai!"],
   endText: (name, m) => "„" + name + "“ jau stovi miestelyje. " + (m === 0 ? "Nė vienos klaidos!" : m === 1 ? "Tik viena klaida." : "Klaidų: " + m + "."),
+  endLook: "Pažiūrėti statinį", lookBack: "Paliesk ekraną – langas sugrįš.", finBuild: "Karkasas baigtas – statybininkai užbaigia statinį!",
+  signs: ["SODO NAMELIS", "AUTOBUSŲ STOTELĖ", "DIRBTUVĖS", "SANDĖLIS", "MOKYKLA", "APŽVALGOS BOKŠTAS"],
   endNext: "Kitas sklypas →", endAgain: "Statyti dar kartą", endPlan: "Į statybų planą",
   newRank: r => "Naujos pareigos: " + r + "!",
   quit: "Ar tikrai grįžti į planą? Šio statinio darbai nebus išsaugoti.",
