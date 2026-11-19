@@ -1,151 +1,126 @@
-/* Genetikos laboratorija – visi mokiniui rodomi tekstai (lietuvių k.). Verčiant keisti tik šį failą.
-   Terminai – pagal vidurinio ugdymo biologijos BP ir jos įgyvendinimo rekomendacijas (29.3.3 „Paveldimumas ir kintamumas“)
-   bei pagrindinio ugdymo (10 kl.) 27.1.1 „Genetika“. */
+/* Genetikos konsultacija – visi mokiniui rodomi tekstai (lietuvių k.). Verčiant užtenka išversti šį failą.
+   Terminai – pagal Biologijos bendrąją programą (III gimnazijos klasė, „Paveldimumas ir kintamumas“): alelis, genotipas, fenotipas,
+   homozigota, heterozigota, hemizigota, dominuojantis ir recesyvinis alelis, su lytimi sukibęs paveldėjimas, dihibridinis kryžminimas,
+   analizuojamasis kryžminimas, kodominavimas, nepilnas dominavimas, sukibę genai, genealoginis medis. */
 (function(){
 "use strict";
-const many = (n, one, few, lots) => { const d = n % 10, h = n % 100; return d === 1 && h !== 11 ? one : d >= 2 && (h < 10 || h >= 20) ? few : lots; };
+const GT = { AA: "AA", Aa: "Aa", aa: "aa", "A?": "AA arba Aa", XAXA: "XᴬXᴬ", XAXa: "XᴬXᵃ", XaXa: "XᵃXᵃ", "XA?": "XᴬXᴬ arba XᴬXᵃ", XAY: "XᴬY", XaY: "XᵃY" };
+const fr = a => a.d === 1 ? String(a.n) : a.n + "/" + a.d;
+const cls = { "A_": "A_", aa: "aa", "B_": "B_", bb: "bb", "C_": "C_", cc: "cc" };
+const ph2 = tg => `${tg[0] === "A_" ? "geltonų" : "žalių"} ${tg[1] === "B_" ? "glotnių" : "raukšlėtų"}`;
+const col = { RR: "raudonais", Rr: "rožiniais", rr: "baltais" }, hgt = { "T_": "aukšti", tt: "žemi" };
+const abo = g => ({ AO: "Iᴬi", BO: "Iᴮi", AB: "IᴬIᴮ", OO: "ii", AA: "IᴬIᴬ", BB: "IᴮIᴮ" })[g];
+
 window.MK_T = {
-  title: "Genetikos laboratorija",
-  heroA: "Genetikos", heroB: "laboratorija",
-  hero: "Kryžmink, pildyk Peneto gardelę ir prognozuok palikuonis. Kiekvienas teisingai išspręstas uždavinys papildo laboratorijos kolekciją.",
-  levels: [
-    ["Monohibridinis kryžminimas", "Dominuojantis ir recesyvinis alelis · 10 kl. kartojimas"],
-    ["Analizuojamasis ir nepilnas dominavimas", "Nežinomas genotipas, tarpinis fenotipas"],
-    ["Kodominavimas: kraujo grupės", "ABO sistema"],
-    ["Su lytimi sukibęs paveldėjimas", "Hemofilija, daltonizmas, hemizigota"],
-    ["Dihibridinis kryžminimas", "Du nesukibę genai, 9 : 3 : 3 : 1"],
-    ["VBE treniruotė", "Visos temos kartu · 10 uždavinių"]
+  GT, fr,
+  title: "Genetikos konsultacija",
+  kicker: "Genetikos konsultacija · 11–12 klasė · biologija (VBE)",
+  h1: "Genetikos konsultacija",
+  lead: "Į konsultaciją ateina šeimos su genealoginiais medžiais. Ištirk medį: surask įrodymą, koks paveldėjimo tipas, nustatyk šeimos narių genotipus ir apskaičiuok riziką būsimiems vaikams. Kryžminimų stale – užduotys be Peneto gardelės: tikimybių daugyba, sukibę genai, nežinomo genotipo nustatymas iš palikuonių.",
+  note: "Šeimos ir ligos išgalvotos. Visuose medžiuose galioja retų ligų uždavinių prielaida: į šeimą atėję sveiki asmenys ligos alelio neturi. Turinys – pagal Biologijos bendrąją programą, III gimnazijos klasė, „Paveldimumas ir kintamumas“. Rezultatai saugomi tik šiame įrenginyje.",
+  fileT: "Konsultanto kortelė", shiftsT: "Darbo dienos", manualT: "Žinynas",
+  ranks: ["Praktikantas", "Jaunesnysis konsultantas", "Konsultantas", "Vyresnysis konsultantas", "Genetikos ekspertas"],
+  career: o => `Ištirta šeimų: ${o.cases} · stalo užduočių: ${o.bench} · atsakymų iš pirmo karto: ${o.ok} iš ${o.all}`,
+  shifts: [
+    { id: "d1", name: "Pirmoji priėmimo diena", sub: "4 šeimos: autosominis recesyvinis ir autosominis dominantinis paveldėjimas.", code: "4 medžiai" },
+    { id: "d2", name: "Sudėtingi atvejai", sub: "4 šeimos: su X chromosoma sukibęs paveldėjimas, tikimybės keliems vaikams, „galbūt nešiotojas“.", code: "4 medžiai · sunkiau" },
+    { id: "d3", name: "Kryžminimų stalas", sub: "6 užduotys: dihibridinis ir trihibridinis kryžminimas, kraujo grupės ir rezus, sukibę genai, analizuojamasis kryžminimas.", code: "6 užduotys" },
+    { id: "d4", name: "Atestacija", sub: "2 sunkios šeimos ir 4 stalo užduotys – viskas kartu.", code: "egzaminas" }
   ],
-  colH: "Laboratorijos kolekcija",
-  colP: (n, max) => n >= max ? `Kolekcija pilna (${n}). Puikus darbas!` : `Kolekcijoje ${n} iš ${max}. Kiekvienas teisingai išspręstas uždavinys prideda po vieną pavyzdį.`,
-  colEmpty: "Dar tuščia – išspręsk pirmą uždavinį.",
-  pts: "Taškai",
-  task: (i, n) => `${i} / ${n}`,
-  g1H: "1 žingsnis. Gametos",
-  gStepQ: who => `Kokias gametas sudaro ${who}?`,
-  gridH: "2 žingsnis. Peneto gardelė",
-  gridHelp: "Paliesk langelius – sujunk gametas (arba užpildyk visą gardelę).",
-  gridFill: "Užpildyti visą gardelę",
-  gridH2: "Peneto gardelė",
-  qH: "3 žingsnis. Klausimas",
-  qH1: "Klausimas",
-  next: "Toliau",
-  finish: "Baigti",
-  ok: ["Teisingai!", "Puiku!", "Tiksliai!", "Šaunu!"],
-  bad: "Ne visai.",
-  right: a => `Teisingas atsakymas: <b>${a}</b>.`,
-  why: "Kaip spręsti?",
-  ptsPlus: n => `+${n}`,
-  mother: "motina", father: "tėvas", motherG: "motina", fatherG: "tėvas",
-  motherT: "Motina", fatherT: "Tėvas",
-  p1: "1 augalas", p2: "2 augalas", p1G: "1 augalas", p2G: "2 augalas",
-  female: "♀", male: "♂",
-  gamOnly: a => `tik ${a}`,
-  gamAnd: (a, b) => `${a} ir ${b}`,
-  gamList: l => l.join(", "),
-  gamWhy: (g, list, n) => n === 1 ? `Genotipas ${g} – homozigota, todėl visos gametos vienodos: ${list}. Gametoje yra tik po vieną kiekvieno geno alelį.` : `Kiekvienoje gametoje yra tik po vieną kiekvieno geno alelį. Genotipas ${g} sudaro ${n} skirtingų tipų gametas: ${list}.`,
-  gamWhyDi: (g, list) => `Nesukibę genai į gametas patenka nepriklausomai: kiekvienas vieno geno alelis derinasi su kiekvienu kito geno aleliu. ${g} → ${list}. Gametoje negali būti dviejų to paties geno alelių (pvz., „Aa“).`,
-  /* ---- požymiai ---- */
-  tr: {
-    seedC: { name: "sėklų spalva", D: "geltonos", R: "žalios", pD: "geltonų sėklų žirnis", pR: "žalių sėklų žirnis", q: ph => `Kokia dalis palikuonių sėklų bus ${ph}?`, cnt: (n, ph) => `Gauta ${n} sėklų. Kiek iš jų tikėtina bus ${ph}?`, fact: "Žirnių geltona sėklų spalva (A) dominuoja prieš žalią (a)." },
-    seedS: { name: "sėklų forma", D: "glotnios", R: "raukšlėtos", pD: "glotnių sėklų žirnis", pR: "raukšlėtų sėklų žirnis", q: ph => `Kokia dalis palikuonių sėklų bus ${ph}?`, cnt: (n, ph) => `Gauta ${n} sėklų. Kiek iš jų tikėtina bus ${ph}?`, fact: "Žirnių glotni sėklų forma (B) dominuoja prieš raukšlėtą (b)." },
-    flower: { name: "žiedų spalva", D: "violetiniai", R: "balti", pD: "violetinių žiedų žirnis", pR: "baltų žiedų žirnis", q: ph => `Kokia dalis palikuonių turės ${ph === "violetiniai" ? "violetinius" : "baltus"} žiedus?`, cnt: (n, ph) => `Išaugo ${n} augalų. Kiek iš jų tikėtina turės ${ph === "violetiniai" ? "violetinius" : "baltus"} žiedus?`, fact: "Žirnių violetinė žiedų spalva (A) dominuoja prieš baltą (a)." },
-    albin: { name: "albinizmas", D: "normalios pigmentacijos", R: "albinosai", pD: "", pR: "", q: ph => ph === "albinosai" ? "Kokia tikimybė, kad vaikas bus albinosas?" : "Kokia tikimybė, kad vaikas bus normalios pigmentacijos?", fact: "Albinizmą lemia recesyvinis alelis (a): melanino pigmentas nesigamina. Normalią pigmentaciją lemia dominuojantis alelis (A)." },
-    inc: { name: "žiedų spalva (nepilnas dominavimas)", AA: "raudoni", Aa: "rožiniai", aa: "balti", pAA: "raudonų žiedų augalas", pAa: "rožinių žiedų augalas", paa: "baltų žiedų augalas", q: ph => `Kokia dalis palikuonių turės ${({ raudoni: "raudonus", "rožiniai": "rožinius", balti: "baltus" })[ph]} žiedus?`, fact: "Nepilnas dominavimas: heterozigotos (Aa) fenotipas tarpinis – žiedai rožiniai (AA – raudoni, aa – balti)." }
+  caseN: (i, n) => `Šeima ${i} iš ${n}`, taskN: (i, n) => `Užduotis ${i} iš ${n}`,
+  caseIntro: "Šeimoje paveldima reta liga. Tamsūs simboliai – sergantys asmenys, kvadratas – vyras, apskritimas – moteris. Į šeimą atėję sveiki asmenys ligos alelio neturi.",
+  step: ["1. Paveldėjimo tipas", "2. Genotipai", "3. Rizika"],
+  s1q: "Koks šios ligos paveldėjimo tipas? Pasirink ir medyje paliesk asmenį, kuris tai įrodo.",
+  modes: { AR: "Autosominis recesyvinis", AD: "Autosominis dominantinis", XR: "Recesyvinis, sukibęs su X chromosoma" },
+  s1pick: "Paliesk įrodantį asmenį medyje", s1sel: c => `Įrodymas: ${c}`,
+  s1need: "Pasirink tipą ir paliesk asmenį medyje.",
+  s1ok: "Teisingai – ir tipas, ir įrodymas.",
+  s1badType: "Tipas netinka. Užuomina: pirmiausia pažiūrėk, ar sergantys vaikai turi sergantį tėvą ar motiną; tada – ar serga ir moterys.",
+  s1badEv: { AR: "Tipas teisingas, bet šis asmuo to neįrodo. Sergantis sūnus tiktų ir su X sukibusiam paveldėjimui – ieškok asmens, kuris tą galimybę atmeta.", AD: "Tipas teisingas, bet šis asmuo to neįrodo. Ieškok atvejo, kai liga perduota iš tėvo sūnui.", XR: "Tipas teisingas, bet šis asmuo to neįrodo. Ieškok sergančio asmens, kurio tėvas atėjo į šeimą ir yra sveikas." },
+  s1why: {
+    AR: c => `${c} serga, nors abu jos tėvai sveiki – požymis recesyvinis. Ji – moteris, o jos tėvas sveikas: jei alelis būtų X chromosomoje, tėvas būtų perdavęs dukrai sveiką X ir ji nesirgtų. Vadinasi, paveldėjimas autosominis recesyvinis.`,
+    AD: c => `Liga pasireiškia kiekvienoje kartoje, kiekvienas sergantis turi sergantį tėvą ar motiną, o jų sutuoktiniai, atėję į šeimą, alelio neturi – požymis dominantinis. ${c} ligą paveldėjo iš tėvo: sūnus iš tėvo gauna Y chromosomą, todėl alelis negali būti X chromosomoje. Paveldėjimas autosominis dominantinis.`,
+    XR: c => `${c} serga, nors abu tėvai sveiki – požymis recesyvinis. Jo tėvas atėjo į šeimą ir alelio neturi, todėl alelį sūnus galėjo gauti tik iš motinos – su X chromosoma. Serga tik vyrai (hemizigotos). Paveldėjimas recesyvinis, sukibęs su X chromosoma.`
   },
-  /* ---- kryžminimo aprašai ---- */
-  crossPlants: (a, b) => `Kryžminami ${a} ir ${b}.`,
-  crossAlbin: (m, f) => `Albinizmas paveldimas kaip recesyvinis požymis. ${m} ${f}`,
-  albinParent: (who, g) => g === "aa" ? `${who} – albinosas (${g}).` : g === "Aa" ? `${who} normalios pigmentacijos, heterozigota (${g}).` : `${who} normalios pigmentacijos, homozigota (${g}).`,
-  plantG: (name, g) => `${name} (${g})`,
-  phenoQ: "Koks palikuonių fenotipų santykis?",
-  genoQ: "Koks palikuonių genotipų santykis?",
-  hetQ: "Kokia dalis palikuonių bus heterozigotos?",
-  all: l => `visi ${l}`, allF: l => `visos ${l}`,
-  ratio: (nums, labels) => `${nums.join(" : ")} (${labels.join(" : ")})`,
-  gRatio: (nums, labels) => nums.map((n, i) => `${n} ${labels[i]}`).join(" : "),
-  allG: g => `visi ${g}`,
-  explGrid: (cells, total) => `Gardelėje ${total} vienodai tikėtini langeliai: ${cells}.`,
-  explPheno: parts => `Fenotipai: ${parts}.`,
-  explP: (k, n, p) => `Tinka ${k} iš ${n} langelių, todėl tikimybė ${p}.`,
-  explCnt: (n, p, a) => `Tikimybė ${p}, todėl ${n} · ${p} = ${a}. Tai tikėtinas skaičius; tikri rezultatai gali šiek tiek skirtis.`,
-  /* ---- analizuojamasis kryžminimas ---- */
-  testIntro: (d, r, res) => `${d[0].toUpperCase() + d.slice(1)} (genotipas nežinomas) sukryžmintas su ${r} (aa). ${res}`,
-  testRes1: (n1, n2, a, b) => `Gauta ${a.replace(/os$/, "ų")} sėklų: ${n1}, ${b.replace(/os$/, "ų")}: ${n2}.`,
-  testRes2: (n, a) => `Visos ${n} gautos sėklos ${a}.`,
-  testQ: "Koks tiriamojo augalo genotipas?",
-  testWhy: g => g === "Aa" ? "Recesyvinė homozigota (aa) sudaro tik a gametas, todėl palikuonių fenotipas atskleidžia tiriamojo augalo gametas. Atsirado recesyvinio fenotipo palikuonių – vadinasi, tiriamasis augalas sudaro ir a gametas: jis heterozigota Aa (skilimas 1 : 1)." : "Recesyvinė homozigota (aa) sudaro tik a gametas. Visi palikuonys dominuojančio fenotipo (Aa) – vadinasi, tiriamasis augalas sudaro tik A gametas: jis homozigota AA.",
-  testConcQ: "Kodėl atliekant analizuojamąjį kryžminimą tiriamasis organizmas kryžminamas su recesyvine homozigota?",
-  testConcA: ["Jos gametose yra tik recesyvinis alelis, todėl palikuonių fenotipai parodo, kokias gametas sudaro tiriamasis organizmas", "Recesyvinė homozigota visada užgožia dominuojantį alelį", "Taip gaunama daugiau palikuonių", "Recesyvinės homozigotos nesudaro gametų, todėl netrukdo tyrimui"],
-  testConcWhy: "Recesyvinė homozigota (aa) sudaro tik vieno tipo gametas (a), kurios neužgožia jokio alelio. Todėl kiekvieno palikuonio fenotipą lemia tiriamojo organizmo gametos alelis: skilimas 1 : 1 rodo heterozigotą, vienodi palikuonys – dominuojančią homozigotą.",
-  incSameQ: "Kuo ypatingas šis kryžminimas, lyginant su pilnu dominavimu?",
-  incSameA: ["Fenotipų santykis sutampa su genotipų santykiu (1 : 2 : 1)", "Fenotipų santykis yra 3 : 1, kaip ir pilno dominavimo atveju", "Visi palikuonys yra rožiniai", "Heterozigotų neatsiranda"],
-  incSameWhy: "Esant nepilnam dominavimui, heterozigotos fenotipas tarpinis, todėl kiekvienas genotipas turi savo fenotipą: 1 AA (raudoni) : 2 Aa (rožiniai) : 1 aa (balti). Esant pilnam dominavimui AA ir Aa atrodytų vienodai – būtų 3 : 1.",
-  /* ---- ABO ---- */
-  aboIntro: (m, f) => `Motinos genotipas ${m}, tėvo – ${f}.`,
-  aboPhenIntro: (m, f) => `Motinos kraujo grupė ${m}, tėvo – ${f}. Tėvų genotipai nežinomi.`,
-  aboPossQ: "Kokių kraujo grupių gali būti šių tėvų vaikai?",
-  aboProbQ: g => `Kokia tikimybė, kad vaiko kraujo grupė bus ${g}?`,
-  aboInfIntro: (m, c) => `Motinos kraujo grupė ${m}, vaiko – ${c}.`,
-  aboInfQ: "Kokios kraujo grupės tėvas NEGALI būti šio vaiko tėvas?",
-  aboWhyGen: "ABO kraujo grupes lemia trys aleliai: Iᴬ ir Iᴮ yra kodominuojantys (genotipe Iᴬ Iᴮ pasireiškia abu – grupė AB), o i – recesyvinis (grupė 0 tik genotipe ii).",
-  aboWhyPoss: (list) => `Galimi vaikų genotipai: ${list}.`,
-  aboWhyPhen: (m, f) => `Grupė A gali būti Iᴬ Iᴬ arba Iᴬ i, grupė B – Iᴮ Iᴮ arba Iᴮ i. Imame visus galimus tėvų genotipus: ${m} ir ${f}.`,
-  aboWhyInf: (c, need, no) => `Vaikas su grupe ${c} gauna po vieną alelį iš abiejų tėvų. ${need} Todėl tėvas negali būti ${no} grupės.`,
-  aboNeed0: "Vaikas ii, todėl i alelį turėjo gauti ir iš tėvo.",
-  aboNeedAB: "Motina negali duoti Iᴮ, todėl Iᴮ alelį vaikas gavo iš tėvo.",
-  aboNone: "nė viena (bet kuri tinka)",
-  grp: "grupė",
-  /* ---- su lytimi sukibęs ---- */
-  xl: {
-    hem: { name: "hemofilija", L: "H", sickM: "sergantis hemofilija", sickF: "serganti hemofilija", desc: "Hemofiliją lemia recesyvinis alelis Xʰ, esantis X chromosomoje." },
-    dal: { name: "daltonizmas", L: "D", sickM: "daltonikas", sickF: "daltonikė", desc: "Daltonizmą lemia recesyvinis alelis Xᵈ, esantis X chromosomoje." }
+  s2q: "Nustatyk pažymėtų asmenų genotipus: paliesk asmenį, tada pasirink genotipą.",
+  s2legend: { AR: "A – normalus alelis, a – ligos alelis.", AD: "A – ligos alelis (dominuojantis), a – normalus alelis.", XR: "Xᴬ – X chromosoma su normaliu aleliu, Xᵃ – su ligos aleliu." },
+  s2pick: c => `Asmens ${c} genotipas:`, s2none: "Paliesk medyje asmenį su klaustuku.",
+  s2need: "Pažymėk visų asmenų su klaustuku genotipus.",
+  s2ok: "Visi genotipai teisingi.", s2bad: k => `Netikslu: ${k} iš pažymėtų genotipų neteisingi (raudoni). Pataisyk.`, s2show: "Teisingi genotipai ir pagrindimas:",
+  why: {
+    aff: "serga, o recesyvinis požymis pasireiškia tik homozigotoje",
+    inlaw: "atėjo į šeimą ir yra sveikas – ligos alelio neturi",
+    parAff: "sveikas, bet turi sergantį vaiką – nešiotojas",
+    kidAff: "sveikas, bet vienas iš tėvų serga (aa) – iš jo tikrai gavo a",
+    unk23: "sveikas, abu tėvai – nešiotojai: genotipo nustatyti negalima (nešiotojas su tikimybe 2/3)",
+    unk: "sveikas; vienas iš tėvų gali būti nešiotojas, kitas alelio neturi – nustatyti negalima",
+    adAff: "serga ir turi sveiką tėvą, motiną ar vaiką – heterozigota",
+    adH: "sveikas – dominuojančio ligos alelio neturi", adIn: "atėjo į šeimą ir yra sveikas – ligos alelio neturi",
+    xM1: "sergantis vyras – hemizigota, jo vienintelėje X chromosomoje yra ligos alelis", xM0: "sveikas vyras – jo X chromosomoje normalus alelis",
+    xCarKid: "sveika, bet turi sergantį sūnų – nešiotoja", xCarFa: "sveika, bet jos tėvas serga – iš jo tikrai gavo Xᵃ",
+    xUnk: "sveika, jos motina nešiotoja: gali būti ir nešiotoja, ir ne (tikimybė 1/2)"
   },
-  xlMother: (g, s) => `Motina ${s} (${g})`,
-  xlFather: (g, s) => `tėvas ${s} (${g}).`,
-  xlHealthyF: "sveika", xlCarrier: "sveika, bet nešiotoja", xlSickF: d => d,
-  xlHealthyM: "sveikas", xlSickM: d => d,
-  xlQSon: d => `Kokia tikimybė, kad šių tėvų SŪNUS bus ${d}?`,
-  xlQSonAll: d => `Kokia tikimybė, kad šių tėvų vaikas bus ${d} sūnus?`,
-  xlQDauCar: "Kokia tikimybė, kad šių tėvų DUKTĖ bus nešiotoja?",
-  xlQDauSick: d => `Kokia tikimybė, kad šių tėvų DUKTĖ bus ${d}?`,
-  xlWhySon: (k, n, p) => `Sūnūs – tai langeliai su Y chromosoma (${n}). Iš jų ${k} su recesyviniu aleliu, todėl tikimybė ${p}.`,
-  xlWhyAll: (k, p) => `Skaičiuojami visi 4 langeliai (sūnūs ir dukterys). Tinka ${k}, todėl tikimybė ${p}.`,
-  xlWhyDau: (k, n, p) => `Dukterys – tai langeliai su dviem X chromosomomis (${n}). Iš jų tinka ${k}, todėl tikimybė ${p}.`,
-  xlWhyGen: "Vyras turi vieną X chromosomą – jis hemizigota, todėl vienas recesyvinis alelis X chromosomoje jau pasireiškia. Sūnus X chromosomą gauna iš motinos, o Y – iš tėvo.",
-  hemiQ: "Kodėl su X chromosoma sukibusios recesyvinės ligos (pvz., hemofilija) dažniau pasireiškia vyrams?",
-  hemiA: ["Vyras turi vieną X chromosomą – jis hemizigota, todėl vienas recesyvinis alelis jau pasireiškia", "Y chromosomoje yra dominuojantis ligos alelis", "Vyrai X chromosomą gauna iš tėvo", "Moterų X chromosomose ligos alelių nebūna"],
-  hemiWhy: "Moteriai (XX) liga pasireiškia tik turint du recesyvinius alelius (Xʰ Xʰ); turėdama vieną ji yra nešiotoja. Vyras (XY) šio geno alelį turi tik vieną – jis hemizigota, todėl Xʰ Y jau serga. Sūnus X chromosomą gauna iš motinos.",
-  son: "sūnus", dau: "duktė", child: "Vaikas",
-  /* ---- dihibridinis ---- */
-  diIntro: (a, b) => `Žirniai: geltona sėklų spalva (A) dominuoja prieš žalią (a), glotni sėklų forma (B) – prieš raukšlėtą (b). Genai nesukibę. Kryžminami ${a} ir ${b}.`,
-  diPh: { AB: "geltonos glotnios", Ab: "geltonos raukšlėtos", aB: "žalios glotnios", ab: "žalios raukšlėtos" },
-  diQ: ph => `Kokia dalis palikuonių sėklų bus ${ph}?`,
-  diPhenoQ: "Koks palikuonių fenotipų santykis?",
-  diGamQ: "Kiek skirtingų tipų gametų sudaro organizmas, kurio genotipas AaBbCc (genai nesukibę)?",
-  diGamWhy: "Kiekvienas heterozigotinis genas padvigubina gametų tipų skaičių: 2 · 2 · 2 = 2³ = 8.",
-  diWhyGen: "Nesukibę genai paveldimi nepriklausomai, todėl kiekviena 4 tipų gameta gali susijungti su kiekviena kitos gameta – 16 langelių.",
-  /* ---- rezultatai ---- */
-  res: (ok, n, pts) => `Teisingi žingsniai: ${ok} iš ${n}. ${pts} ${many(pts, "taškas", "taškai", "taškų")}.`,
-  resCol: n => `Kolekcija papildyta ${n} ${many(n, "pavyzdžiu", "pavyzdžiais", "pavyzdžių")}.`,
-  /* ---- teorija ---- */
-  learn: [
-    { name: "Pagrindinės sąvokos", level: 0, html: `<p><b>Genas</b> – DNR atkarpa, turinti informaciją apie požymį. To paties geno formos vadinamos <b>aleliais</b>; kiekvienoje alelių poroje vienas alelis gautas iš tėvo, kitas – iš motinos.</p>
-      <ul><li><b>Dominuojantis alelis</b> (A) pasireiškia ir heterozigotoje, <b>recesyvinis</b> (a) – tik homozigotoje aa.</li><li><b>Homozigota</b> – du vienodi aleliai (AA, aa), <b>heterozigota</b> – skirtingi (Aa).</li><li><b>Genotipas</b> – organizmo alelių rinkinys, <b>fenotipas</b> – pasireiškę požymiai.</li></ul>` },
-    { name: "Monohibridinis kryžminimas ir Peneto gardelė", level: 0, html: `<p>Gametoje yra tik po vieną kiekvieno geno alelį. Peneto gardelėje vieno tėvo gametas rašome viršuje, kito – kairėje, o langeliuose sujungiame.</p>
-      <span class="mk-ex">Aa × Aa → 1 AA : 2 Aa : 1 aa, fenotipai 3 : 1</span><span class="mk-ex">Aa × aa → 1 Aa : 1 aa, fenotipai 1 : 1</span>
-      <p>Tikimybė = tinkančių langelių skaičius / visų langelių skaičius.</p>` },
-    { name: "Analizuojamasis kryžminimas", level: 1, html: `<p>Dominuojančio fenotipo organizmas (AA ar Aa?) kryžminamas su recesyvine homozigota aa. Ji sudaro tik a gametas, todėl palikuonys „parodo“ tiriamojo gametas.</p>
-      <span class="mk-ex">visi dominuojantys → AA</span><span class="mk-ex">skilimas 1 : 1 → Aa</span>` },
-    { name: "Nepilnas dominavimas", level: 1, html: `<p>Heterozigotos fenotipas tarpinis. Pvz., AA – raudoni žiedai, Aa – rožiniai, aa – balti.</p><span class="mk-ex">Aa × Aa → 1 raudoni : 2 rožiniai : 1 balti</span><p>Fenotipų santykis sutampa su genotipų santykiu.</p>` },
-    { name: "Kodominavimas: ABO kraujo grupės", level: 2, html: `<p>Trys aleliai: Iᴬ, Iᴮ ir i. Iᴬ ir Iᴮ – kodominuojantys (abu pasireiškia), i – recesyvinis.</p>
-      <ul><li>A: Iᴬ Iᴬ arba Iᴬ i</li><li>B: Iᴮ Iᴮ arba Iᴮ i</li><li>AB: Iᴬ Iᴮ</li><li>0: i i</li></ul><span class="mk-ex">Iᴬ i × Iᴮ i → A, B, AB, 0 po ¼</span>` },
-    { name: "Su lytimi sukibęs paveldėjimas", level: 3, html: `<p>Genas yra X chromosomoje. Moteris (XX) gali būti homozigota arba heterozigota – <b>nešiotoja</b> (Xᴴ Xʰ). Vyras (XY) turi vieną X – jis <b>hemizigota</b>, todėl Xʰ Y serga.</p>
-      <p>Sūnus X chromosomą gauna iš motinos, duktė – po vieną iš abiejų tėvų.</p><span class="mk-ex">Xᴴ Xʰ × Xᴴ Y → pusė sūnų serga, pusė dukterų – nešiotojos</span>` },
-    { name: "Dihibridinis kryžminimas", level: 4, html: `<p>Du nesukibę genai paveldimi nepriklausomai. AaBb sudaro 4 tipų gametas: AB, Ab, aB, ab. Gardelė 4 × 4 = 16 langelių.</p>
-      <span class="mk-ex">AaBb × AaBb → 9 : 3 : 3 : 1</span><span class="mk-ex">AaBb × aabb → 1 : 1 : 1 : 1</span>
-      <p>Patogu dauginti tikimybes: P(aabb) = ¼ · ¼ = 1/16.</p>` }
-  ],
-  learnH: "Noriu pasimokyti"
+  s3q: "Apskaičiuok ir įrašyk tikimybę paprastąja arba dešimtaine trupmena (pvz., 3/8 arba 0,375).",
+  ans: "Tikimybė", check: "Tikrinti", empty: "Įrašyk atsakymą.", next: "Toliau", nextCase: "Kita šeima", nextTask: "Kita užduotis", finish: "Dienos ataskaita",
+  ok1: "Teisingai.", ok2: "Teisingai iš antro karto.", hintT: "Netikslu. Užuomina:", solT: "Netikslu. Sprendimas:", right: "Teisingas atsakymas:",
+  /* klausimai apie medį: w – asmens (-ų) kodai */
+  q: {
+    A1: w => ({ q: `${w[0]} tuokiasi su sveiku žmogumi, kuris yra šios ligos nešiotojas. Kokia tikimybė, kad jų vaikas sirgs?`, h: `Pirma nustatyk ${w[0]} genotipą: vienas iš jo tėvų serga.`, s: `${w[0]} – nešiotojas (Aa), nes vienas iš tėvų serga (aa). Aa × Aa: tikimybė gauti aa = 1/2 · 1/2 = 1/4.` }),
+    A2: w => ({ q: `${w[0]} tuokiasi su sveiku žmogumi, kurio tėvai sveiki, bet sesuo serga šia liga. Kokia tikimybė, kad jų vaikas sirgs?`, h: "Sveikas sergančiojo brolis ar sesuo yra nešiotojas ne su tikimybe 1/2, o 2/3 (iš AA, Aa, Aa – aa atmetame).", s: `${w[0]} – Aa (tikimybė 1). Partneris – nešiotojas su tikimybe 2/3. Vaikas aa: 1 · 2/3 · 1/4 = 1/6.` }),
+    A3: w => ({ q: `${w[0]} tuokiasi su žmogumi, kuris serga šia liga. Kokia tikimybė, kad jų vaikas sirgs?`, h: `${w[0]} – nešiotojas (Aa), partneris – aa.`, s: `Aa × aa: iš ${w[0]} vaikas gauna a su tikimybe 1/2, iš partnerio – visada a. Tikimybė 1/2.` }),
+    A4: w => ({ q: `${w[0]} tuokiasi su sveiku žmogumi, kuris yra šios ligos nešiotojas. Kokia tikimybė, kad jų vaikas sirgs?`, h: `${w[0]} sveikas, o abu jo tėvai nešiotojai. Kokia tikimybė, kad jis pats nešiotojas?`, s: `${w[0]} – nešiotojas su tikimybe 2/3 (sveikas Aa × Aa palikuonis). Vaikas aa: 2/3 · 1/4 = 1/6.` }),
+    A5: w => ({ q: `${w[0]} tuokiasi su sveiku žmogumi, kuris yra šios ligos nešiotojas. Kokia tikimybė, kad jų vaikas sirgs?`, h: `Eik per kartas: ${w[0]} tėvas ar motina iš šios šeimos yra nešiotojas su tikimybe 2/3, o alelį vaikui perduoda su tikimybe 1/2.`, s: `Tikimybė, kad ${w[0]} nešiotojas: 2/3 · 1/2 = 1/3. Vaikas aa: 1/3 · 1/4 = 1/12.` }),
+    A6: w => ({ q: `${w[0]} ir ${w[1]} laukiasi dar vieno vaiko. Kokia tikimybė, kad jis bus sveikas, bet ligos alelio nešiotojas?`, h: "Abu tėvai – Aa. Kokią dalį palikuonių sudaro Aa?", s: "Aa × Aa → 1/4 AA, 1/2 Aa, 1/4 aa. Sveikas nešiotojas (Aa): 1/2." }),
+    A7: w => ({ q: `${w[0]} ir ${w[1]} planuoja dar du vaikus. Kokia tikimybė, kad abu bus sveiki?`, h: "Vieno vaiko tikimybė būti sveikam – 3/4; vaikai nepriklausomi.", s: "(3/4)² = 9/16." }),
+    A8: w => ({ q: `${w[0]} ir ${w[1]} planuoja dar tris vaikus. Kokia tikimybė, kad bent vienas iš jų sirgs?`, h: "Patogiau per priešingą įvykį: visi trys sveiki.", s: "1 − (3/4)³ = 1 − 27/64 = 37/64." }),
+    A9: w => ({ q: `${w[0]} ir ${w[1]} laukiasi dar vieno vaiko. Kokia tikimybė, kad tai bus serganti mergaitė?`, h: "Du nepriklausomi įvykiai: vaikas serga (aa) ir vaikas – mergaitė.", s: "1/4 · 1/2 = 1/8." }),
+    A10: w => ({ q: `${w[0]} tuokiasi su sveiku žmogumi, kurio tėvai sveiki, bet brolis serga šia liga. Kokia tikimybė, kad jų vaikas sirgs?`, h: "Abu būsimi tėvai – sveiki sergančiųjų broliai ar seserys: kiekvienas nešiotojas su tikimybe 2/3.", s: "2/3 · 2/3 · 1/4 = 1/9." }),
+    A11: w => ({ q: `${w[0]} susituokė su šios ligos nešiotoju. Jie planuoja du vaikus. Kokia tikimybė, kad bent vienas sirgs?`, h: `${w[0]} – Aa. Priešingas įvykis: abu vaikai sveiki.`, s: "Aa × Aa: sveikas vaikas – 3/4. 1 − (3/4)² = 7/16." }),
+    D1: w => ({ q: `${w[0]} tuokiasi su sveiku žmogumi. Kokia tikimybė, kad jų vaikas sirgs?`, h: `${w[0]} serga ir turi sveiką tėvą ar motiną – koks jo genotipas?`, s: `${w[0]} – Aa, partneris – aa. Aa × aa: 1/2 Aa (serga), 1/2 aa. Tikimybė 1/2.` }),
+    D2: w => ({ q: `${w[0]} ir sveikas partneris planuoja tris vaikus. Kokia tikimybė, kad bent vienas sirgs?`, h: "Aa × aa: vienas vaikas sveikas su tikimybe 1/2. Priešingas įvykis – visi trys sveiki.", s: "1 − (1/2)³ = 7/8." }),
+    D3: w => ({ q: `${w[0]} tuokiasi su sveiku žmogumi. Kokia tikimybė, kad jų pirmas vaikas bus sveikas berniukas?`, h: "Du nepriklausomi įvykiai: sveikas (aa) ir berniukas.", s: "1/2 · 1/2 = 1/4." }),
+    D4: w => ({ q: `${w[0]} tuokiasi su žmogumi, kuris irgi serga šia liga (vienas iš partnerio tėvų sveikas). Kokia tikimybė, kad jų vaikas sirgs?`, h: "Abu – heterozigotos (Aa). Serga visi, kas turi bent vieną A.", s: "Aa × Aa: 1/4 AA, 1/2 Aa, 1/4 aa. Serga AA ir Aa: 3/4." }),
+    D5: w => ({ q: `${w[0]} tuokiasi su žmogumi, kuris irgi serga šia liga (vienas iš partnerio tėvų sveikas). Kokia tikimybė, kad jų vaikas bus homozigotinis pagal ligos alelį (AA)?`, h: "Abu tėvai – Aa.", s: "Aa × Aa: AA tikimybė 1/2 · 1/2 = 1/4." }),
+    D6: w => ({ q: `${w[0]} ir sveikas partneris planuoja du vaikus. Kokia tikimybė, kad abu bus sveiki?`, h: "Aa × aa: sveikas vaikas – 1/2.", s: "(1/2)² = 1/4." }),
+    D7: w => ({ q: `${w[0]} (sveikas) tuokiasi su sveiku žmogumi. Kokia tikimybė, kad jų vaikas sirgs šia liga?`, h: "Ar sveikas žmogus gali turėti dominuojantį ligos alelį?", s: `Dominuojantis alelis visada pasireiškia, todėl sveikas ${w[0]} yra aa. aa × aa: tikimybė 0.` }),
+    X1: w => ({ q: `${w[0]} ir jos vyras laukiasi sūnaus. Kokia tikimybė, kad sūnus sirgs?`, h: `${w[0]} – nešiotoja (XᴬXᵃ). Sūnus X chromosomą gauna tik iš motinos.`, s: "Sūnus iš motinos gauna Xᴬ arba Xᵃ su tikimybe 1/2. Tikimybė 1/2." }),
+    X2: w => ({ q: `${w[0]} ir jos vyras laukiasi vaiko, lytis dar nežinoma. Kokia tikimybė, kad vaikas sirgs?`, h: "Sirgti gali tik sūnus: reikia, kad gimtų sūnus ir kad jis gautų Xᵃ.", s: "XᴬXᵃ × XᴬY: 1/2 (sūnus) · 1/2 (gauna Xᵃ) = 1/4. Dukros neserga." }),
+    X3: w => ({ q: `${w[0]} tuokiasi su sveiku vyru. Kokia tikimybė, kad jų vaikas sirgs?`, h: `${w[0]} motina – nešiotoja, tad ji pati nešiotoja su tikimybe 1/2.`, s: `${w[0]} nešiotoja su tikimybe 1/2. Tada vaikas serga su tikimybe 1/4. Iš viso: 1/2 · 1/4 = 1/8.` }),
+    X4: w => ({ q: `${w[0]} tuokiasi su sveiku vyru, jų pirmas vaikas – sūnus. Kokia tikimybė, kad jis sirgs?`, h: `${w[0]} nešiotoja su tikimybe 1/2; nešiotojos sūnus serga su tikimybe 1/2.`, s: "1/2 · 1/2 = 1/4." }),
+    X5: w => ({ q: `${w[0]} (serga) tuokiasi su moterimi, kuri ligos alelio neturi. Kokia tikimybė, kad jų dukra bus ligos alelio nešiotoja?`, h: "Dukra visada gauna tėvo X chromosomą.", s: `${w[0]} – XᵃY. Kiekviena dukra iš jo gauna Xᵃ, iš motinos – Xᴬ: visos dukros XᴬXᵃ. Tikimybė 1.` }),
+    X6: w => ({ q: `${w[0]} tuokiasi su vyru, kuris serga šia liga. Kokia tikimybė, kad jų vaikas sirgs?`, h: `${w[0]} tėvas serga, todėl ji – nešiotoja (XᴬXᵃ). Šioje šeimoje sirgti gali ir dukros.`, s: "XᴬXᵃ × XᵃY: sūnūs – 1/2 serga; dukros – 1/2 XᵃXᵃ (serga). Iš viso 1/2." }),
+    X7: w => ({ q: `${w[0]} ir jos vyras susilaukė dar dviejų sūnų. Kokia tikimybė, kad abu sveiki?`, h: "Nešiotojos sūnus sveikas su tikimybe 1/2; sūnūs nepriklausomi.", s: "(1/2)² = 1/4." }),
+    X8: w => ({ q: `${w[0]} ištekėjo už sveiko vyro ir susilaukė dviejų sūnų. Kokia tikimybė, kad abu sveiki?`, h: `Du atvejai: ${w[0]} nešiotoja (1/2) arba ne (1/2). Kiekvienam atvejui suskaičiuok atskirai ir sudėk.`, s: "Jei ne nešiotoja (1/2): abu sveiki su tikimybe 1. Jei nešiotoja (1/2): (1/2)² = 1/4. Iš viso: 1/2 · 1 + 1/2 · 1/4 = 5/8." }),
+    X9: w => ({ q: `${w[0]} tuokiasi su sveiku vyru. Kokia tikimybė, kad jų pirmas vaikas bus sergantis berniukas?`, h: `${w[0]} tėvas serga – ji tikrai nešiotoja.`, s: "XᴬXᵃ × XᴬY: 1/2 (berniukas) · 1/2 (gauna Xᵃ) = 1/4." })
+  },
+  /* kryžminimų stalas */
+  benchIntro: "Kryžminimų stalas",
+  grow: "Auginti palikuonis", growMore: "Auginti dar 80", grown: n => `Užauginta palikuonių: ${n}`, hit: "ieškomi", miss: "kiti", expect: (p, n) => `Pagal tikimybę ${p} tikėtina apie ${n} ieškomų.`,
+  benchTry: "Atsakęs galėsi užauginti palikuonis ir palyginti su savo skaičiavimu.",
+  genoPick: "Sudėk nežinomo augalo genotipą:", numAns: "Atsakymas",
+  b: {
+    B1: v => ({ q: `Žirnių sėklų spalva: A – geltona, a – žalia; forma: B – glotni, b – raukšlėta. Genai nesukibę. Kryžminami AaBb × AaBb. Kokia tikimybė, kad palikuonis bus ${ph2(v.tg)} sėklų (${v.tg.join(" ")})?`, h: "Nebraižyk 4×4 gardelės: kiekvieną geną skaičiuok atskirai ir tikimybes sudaugink.", s: `Aa × Aa: ${v.tg[0]} – ${v.tg[0] === "A_" ? "3/4" : "1/4"}. Bb × Bb: ${v.tg[1]} – ${v.tg[1] === "B_" ? "3/4" : "1/4"}. Sandauga – atsakymas.` }),
+    B1g: v => ({ q: `Kryžminami AaBb × AaBb (genai nesukibę). Kokia tikimybė, kad palikuonio genotipas bus ${v.tg.join("")}?`, h: "Aa × Aa duoda 1/4 AA, 1/2 Aa, 1/4 aa. Tas pats kitam genui. Tikimybes sudaugink.", s: `${v.tg[0]} – ${v.tg[0] === "Aa" ? "1/2" : "1/4"}; ${v.tg[1]} – ${v.tg[1] === "Bb" ? "1/2" : "1/4"}. Sandauga – atsakymas.` }),
+    B2: v => ({ q: `Žirniai: A – geltonos sėklos, a – žalios; B – glotnios, b – raukšlėtos (genai nesukibę). Kryžminami ${v.pr[0]}${v.pr[2]} × ${v.pr[1]}${v.pr[3]}. Kokia tikimybė, kad palikuonis bus ${ph2(v.tg)} sėklų (${v.tg.join(" ")})?`, h: `Skaičiuok atskirai: ${v.pr[0]} × ${v.pr[1]} ir ${v.pr[2]} × ${v.pr[3]}.`, s: `Iš ${v.pr[0]} × ${v.pr[1]} rask ${v.tg[0]} dalį, iš ${v.pr[2]} × ${v.pr[3]} – ${v.tg[1]} dalį, ir sudaugink.` }),
+    B3: v => ({ q: `Trihibridinis kryžminimas: AaBbCc × AaBbCc, genai nesukibę, visi trys požymiai visiškai dominuoja. Kokia tikimybė, kad palikuonio fenotipas bus ${v.tg.join(" ")}?`, h: "Kiekvienam genui: dominuojantis fenotipas – 3/4, recesyvinis – 1/4. Sudaugink tris tikimybes.", s: v.tg.map(x => (x[1] === "_" ? "3/4" : "1/4")).join(" · ") + " – atsakymas." }),
+    B4: v => ({ q: `Tėvų kraujo grupių genotipai: ${abo(v.pr[0])} ${v.pr[2]} ir ${abo(v.pr[1])} ${v.pr[3]} (D – teigiamas rezus faktorius, d – neigiamas; genai nesukibę). Kokia tikimybė, kad vaiko kraujo grupė bus ${v.grp}, o rezus faktorius ${v.rh === "D_" ? "teigiamas" : "neigiamas"}?`, h: "Atskirai rask kraujo grupės tikimybę (ABO sistema, kodominavimas) ir rezus faktoriaus tikimybę, tada sudaugink.", s: `ABO: ${abo(v.pr[0])} × ${abo(v.pr[1])} – surašyk keturis derinius ir rask ${v.grp} grupės dalį. Rezus: ${v.pr[2]} × ${v.pr[3]} – rask ${v.rh === "D_" ? "D_" : "dd"} dalį. Sandauga – atsakymas.` }),
+    B5: v => ({ q: `Analizuojamasis kryžminimas: nežinomo genotipo žirnis geltonomis glotniomis sėklomis sukryžmintas su žaliu raukšlėtu (aabb). Užauginti ${v.n} palikuonys – jų fenotipai lentelėje. Koks nežinomo augalo genotipas?`, h: "Jei tarp palikuonių atsiranda recesyvinis požymis (aa arba bb), nežinomas augalas pagal tą geną heterozigotinis.", s: "Yra žalių (aa) – augalas Aa; nėra – AA. Yra raukšlėtų (bb) – augalas Bb; nėra – BB." }),
+    B6: v => ({ q: `Genai A ir B yra toje pačioje chromosomoje (sukibę). Diheterozigota AB/ab sukryžminta su ab/ab. Užauginta ${v.n} palikuonių – jų fenotipai lentelėje. Apskaičiuok krosingoverio dažnį procentais (dešimtųjų tikslumu).`, h: "Rekombinantai – tie palikuonys, kurių požymių derinio neturėjo nė vienas iš tėvų: A_ bb ir aa B_.", s: `Rekombinantų: ${v.r}. Dažnis = ${v.r} : ${v.n} · 100 %.` }),
+    B7: v => ({ q: `Kryžminami AaBb × AaBb (A – geltonos sėklos, a – žalios; B – glotnios, b – raukšlėtos; genai nesukibę). Užauginta ${v.n} sėklų. Kiek iš jų tikėtina ${ph2(v.tg)}?`, h: "Pirma rask šio fenotipo tikimybę (9/16, 3/16 ar 1/16), tada padaugink iš sėklų skaičiaus.", s: `Tikimybė ${fr(v.p)}. ${v.n} · ${fr(v.p)} – atsakymas.` }),
+    B8: v => ({ q: `Albinizmą lemia autosominis recesyvinis alelis a, hemofiliją – recesyvinis alelis h X chromosomoje. Tėvai: Aa XᴴXʰ ir Aa XᴴY. Kokia tikimybė, kad jų vaikas bus ${({ sonBoth: "albinosas hemofilija sergantis sūnus", healthy: "sveikas pagal abu požymius (ne albinosas ir neserga hemofilija)", dauCarAlb: "albinosė dukra – hemofilijos alelio nešiotoja", hemNonAlb: "hemofilija sergantis, bet ne albinosas" })[v.k]}?`, h: "Autosominį ir su lytimi sukibusį požymį skaičiuok atskirai (tarp visų vaikų), tada sudaugink.", s: `Aa × Aa: aa – 1/4, A_ – 3/4. XᴴXʰ × XᴴY tarp visų vaikų: sergantis sūnus – 1/4, dukra nešiotoja – 1/4, neserga – 3/4. Sudaugink reikiamas dalis.` }),
+    B9: v => ({ q: `Žiedų spalva paveldima nepilno dominavimo būdu (RR – raudoni, Rr – rožiniai, rr – balti), augalo aukštis – visiškai dominuojant (T – aukštas, t – žemas); genai nesukibę. Kryžminami RrTt × RrTt. Kokia tikimybė, kad palikuonis bus ${col[v.tg[0]]} žiedais ir ${hgt[v.tg[1]].slice(0, -1)}as?`.replace("aukštas", "aukštas").replace("žemas", "žemas"), h: "Rr × Rr: 1/4 RR, 1/2 Rr, 1/4 rr. Tt × Tt: 3/4 aukštų, 1/4 žemų. Sudaugink.", s: `${v.tg[0]} – ${v.tg[0] === "Rr" ? "1/2" : "1/4"}; ${v.tg[1] === "T_" ? "aukštas – 3/4" : "žemas – 1/4"}. Sandauga – atsakymas.` })
+  },
+  rep: {
+    head: "Dienos ataskaita", pts: (a, b) => `Taškai: ${a} iš ${b}`, first: (a, b) => `Iš pirmo karto: ${a} iš ${b} žingsnių`,
+    stars: ["Dar reikia pasikartoti – atsiversk žinyną ir bandyk iš naujo.", "Diena užskaityta. Atidžiau ieškok įrodymų medyje.", "Geras darbas. Iki aukščiausio įvertinimo trūksta nedaug.", "Puikiai: tikslūs įrodymai ir skaičiavimai."],
+    next: "Kita diena", again: "Kartoti dieną", menu: "Į kabinetą"
+  },
+  manual: [
+    { name: "Kaip skaityti genealoginį medį", html: "<p>Kvadratas – vyras, apskritimas – moteris, tamsus simbolis – sergantis asmuo. Horizontali linija jungia sutuoktinius, nuo jos žemyn – vaikai. Kartos žymimos romėniškais skaičiais, asmenys kartoje – arabiškais (II-3).</p><p><b>Recesyvinis požymis:</b> sergantis vaikas gimsta sveikiems tėvams. <b>Dominantinis:</b> kiekvienas sergantis turi sergantį tėvą ar motiną, liga matoma kiekvienoje kartoje.</p><p><b>Sukibęs su X:</b> dažniausiai serga vyrai; sergančio sūnaus motina – nešiotoja; iš tėvo sūnui toks alelis neperduodamas. Jei serga dukra, o jos tėvas sveikas – recesyvinis alelis ne X chromosomoje.</p>" },
+    { name: "Genotipai ir „galbūt nešiotojas“", html: "<p>Sveiko sergančiojo brolio ar sesers (tėvai Aa × Aa) genotipas nežinomas: iš trijų sveikų variantų (AA, Aa, Aa) du – nešiotojai, todėl tikimybė <b>2/3</b>, ne 1/2.</p><p>Nešiotojos (XᴬXᵃ) dukra yra nešiotoja su tikimybe <b>1/2</b>. Sergančio vyro (XᵃY) dukros – visos nešiotojos.</p><p class='ex'>Rizika = P(tėvas nešiotojas) · P(motina nešiotoja) · P(vaikas serga, jei abu nešiotojai)</p>" },
+    { name: "Tikimybės keliems vaikams", html: "<p>Kiekvienas vaikas – nepriklausomas įvykis: tikimybės dauginamos. „Bent vienas“ skaičiuojamas per priešingą įvykį.</p><p class='ex'>Abu sveiki: (3/4)² = 9/16<br>Bent vienas iš trijų serga: 1 − (3/4)³ = 37/64<br>Serganti mergaitė: 1/4 · 1/2 = 1/8</p><p>Jei tėvo ar motinos genotipas nežinomas, kiekvieną galimą atvejį skaičiuok atskirai ir sudėk.</p>" },
+    { name: "Dihibridinis kryžminimas be gardelės", html: "<p>Kai genai nesukibę, kiekvienas paveldimas nepriklausomai. Kiekvienam genui atskirai rask reikiamo genotipo ar fenotipo dalį ir tikimybes <b>sudaugink</b>.</p><p class='ex'>AaBb × AaBb: A_ bb = 3/4 · 1/4 = 3/16<br>AaBbCc × AaBbCc: aabbcc = (1/4)³ = 1/64</p><p>Tas pats tinka kraujo grupėms su rezus faktoriumi ir autosominiam požymiui kartu su sukibusiu su X.</p>" },
+    { name: "Analizuojamasis kryžminimas ir sukibę genai", html: "<p><b>Analizuojamasis kryžminimas</b> – su recesyvine homozigota (aabb). Palikuonių fenotipai tiesiogiai parodo nežinomo tėvo gametas: jei atsiranda recesyvinis požymis, tėvas pagal tą geną heterozigotinis.</p><p><b>Sukibę genai</b> yra toje pačioje chromosomoje ir paveldimi kartu; naujus derinius sukuria krosingoveris.</p><p class='ex'>Krosingoverio dažnis = rekombinantų skaičius : visų palikuonių skaičius · 100 %</p>" }
+  ]
 };
 })();
