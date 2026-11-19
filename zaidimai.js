@@ -410,6 +410,17 @@ window.MK_ZAIDIMAI = [
   "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMyZjhmNWIiLz48cGF0aCBkPSJNMTggNDYgMzIgMzFNNDYgNDYgMzIgMzFNMzIgMzEgMjIgMTVNMzIgMzEgNDQgMTQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjE3IiBjeT0iNDciIHI9IjgiIGZpbGw9IiM4ZmQ0NWEiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjIiLz48Y2lyY2xlIGN4PSI0NyIgY3k9IjQ3IiByPSI4IiBmaWxsPSIjOGZkNDVhIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi4yIi8+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMSIgcj0iOCIgZmlsbD0iI2ZmZDc2YSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuMiIvPjxjaXJjbGUgY3g9IjIxIiBjeT0iMTQiIHI9IjcuNTAwIiBmaWxsPSIjZmY5YTdhIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi4yIi8+PGNpcmNsZSBjeD0iNDUiIGN5PSIxMyIgcj0iNy41MDAiIGZpbGw9IiNmZjlhN2EiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjIiLz48L3N2Zz4="
  },
  {
+  "id": "kraujo-kelias",
+  "subject": "bio",
+  "grades": [
+   9
+  ],
+  "title": "Kraujo kelias",
+  "desc": "Plauk kraujagyslėmis kaip eritrocitas, leukocitas, trombocitas ar kraujo plazma: širdis ir vožtuvai, mažasis ir didysis kraujo apytakos ratai, dujų apykaita, medžiagų pernaša.",
+  "url": "/kraujo-kelias/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiNiZjNhMmQiLz48cGF0aCBkPSJNMzIgMjBjLTctOS0yMS00LTE5IDggMSA5IDEwIDE2IDE5IDI0IDktOCAxOC0xNSAxOS0yNCAyLTEyLTEyLTE3LTE5LTh6IiBmaWxsPSIjZmJlM2RkIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTMyIDIwdjMyTTE3IDMzaDMwIiBmaWxsPSJub25lIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMiIvPjxjaXJjbGUgY3g9IjI0IiBjeT0iMjciIHI9IjQiIGZpbGw9IiMyZjVhYTgiLz48Y2lyY2xlIGN4PSI0MCIgY3k9IjI3IiByPSI0IiBmaWxsPSIjZDgzOTJiIi8+PGNpcmNsZSBjeD0iMjYiIGN5PSI0MCIgcj0iMy40IiBmaWxsPSIjMmY1YWE4Ii8+PGNpcmNsZSBjeD0iMzgiIGN5PSI0MCIgcj0iMy40IiBmaWxsPSIjZDgzOTJiIi8+PC9zdmc+"
+ },
+ {
   "id": "atomu-kalve",
   "subject": "che",
   "grades": [
