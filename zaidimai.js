@@ -144,6 +144,17 @@ window.MK_ZAIDIMAI = [
   "desc": "100 netaisyklingųjų veiksmažodžių: paveikslėliai, tikras tarimas, pažymiai ir statistika."
  },
  {
+  "id": "rivertono-taksi",
+  "subject": "en",
+  "grades": [
+   6
+  ],
+  "title": "Rivertono taksi",
+  "desc": "Vairuok taksi angliškame mieste: suprask, kur nori nuvažiuoti keleivis – vietos mieste, vietos prielinksniai ir kelio nurodymai.",
+  "url": "/rivertono-taksi/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMzYjViZGIiLz48cGF0aCBkPSJNOCAwdjY0TTU2IDB2NjQiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtZGFzaGFycmF5PSI2IDYiIG9wYWNpdHk9Ii41NSIvPjxnIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxyZWN0IHg9IjE5IiB5PSIxMCIgd2lkdGg9IjI2IiBoZWlnaHQ9IjQ0IiByeD0iOSIgZmlsbD0iI2ZmZDQzYiIvPjxwYXRoIGQ9Ik0yMyAyMmgxOGwtMiA4SDI1eiIgZmlsbD0iIzlmZDNmMiIvPjxwYXRoIGQ9Ik0yNSA0MGgxNGwyIDdIMjN6IiBmaWxsPSIjOWZkM2YyIi8+PHJlY3QgeD0iMjYiIHk9IjMxIiB3aWR0aD0iMTIiIGhlaWdodD0iNyIgcng9IjIiIGZpbGw9IiNmZmYiLz48L2c+PHRleHQgeD0iMzIiIHk9IjM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSI2IiBmaWxsPSIjMTIxYTMzIj5UQVhJPC90ZXh0Pjwvc3ZnPg=="
+ },
+ {
   "id": "detektyvu-agentura",
   "subject": "en",
   "grades": [
