@@ -193,7 +193,32 @@ const TOPICS = {
         sol: `${m(`${a} : ${b} · 100 % = ${pct} %`)}.` }; },
     () => { const base = 50 * R(4, 40), pct = P([4, 5, 8, 10]), yrs = 2, ans = Math.round(base * Math.pow(1 + pct / 100, yrs) * 100) / 100;
       return { q: `Į banką padėta ${base} € su ${pct} % metinėmis sudėtinėmis palūkanomis. Kiek eurų bus sąskaitoje po ${yrs} metų? (Atsakymą pateikite šimtųjų tikslumu.)`, ans,
-        sol: `${m(`${base} · ${num(1 + pct / 100)}<sup>${yrs}</sup> = ${num(ans)}`)} €.` }; }
+        sol: `${m(`${base} · ${num(1 + pct / 100)}<sup>${yrs}</sup> = ${num(ans)}`)} €.` }; },
+    /* --- papildyta 2026-11-19: daugiau užduočių tipų --- */
+    () => { const orig = 20 * R(2, 30), pc = P([10, 20, 25, 30, 40]), now = orig * (100 - pc) / 100;
+      return { q: `Po ${pc} % nuolaidos prekė kainuoja ${num(now)} €. Kiek eurų prekė kainavo iki nuolaidos?`, ans: orig,
+        sol: `Dabartinė kaina sudaro ${100 - pc} % pradinės: ${m(`${num(now)} : ${num((100 - pc) / 100)} = ${orig}`)} €.` }; },
+    () => { let a, pc, up, b; do { a = P([40, 50, 80, 120, 200, 250, 400]); pc = P([10, 20, 25, 30, 40, 50, 60]); up = R(0, 1); b = a * (100 + (up ? pc : -pc)) / 100; } while(!Number.isInteger(b));
+      return { q: `Dydis pakito nuo ${a} iki ${b}. Keliais procentais jis ${up ? "padidėjo" : "sumažėjo"}?`, ans: pc,
+        sol: `Pokytis ${m(`${Math.abs(b - a)}`)}; lyginame su pradine reikšme: ${m(`${Math.abs(b - a)} : ${a} · 100 % = ${pc} %`)}.` }; },
+    () => { const [u, d, r] = P([[20, 20, 4], [10, 10, 1], [50, 50, 25], [25, 25, 6.25], [20, 25, 10], [10, 20, 12], [25, 40, 25], [50, 40, 10], [20, 50, 40], [60, 50, 20]]);
+      return { q: `Prekės kaina iš pradžių padidinta ${u} %, o paskui sumažinta ${d} %. Keliais procentais galutinė kaina mažesnė už pradinę?`, ans: r,
+        sol: `Kaina dauginama iš ${m(`${num(1 + u / 100)} · ${num(1 - d / 100)} = ${num((1 + u / 100) * (1 - d / 100))}`)}, t. y. lieka ${num(100 - r)} % pradinės – sumažėjo ${num(r)} %.` }; },
+    () => { let m1, m2, p1, p2, ans; do { m1 = P([100, 200, 300, 400]); m2 = P([100, 200, 300, 600]); p1 = P([10, 20, 30, 40]); p2 = P([5, 10, 15, 25, 50]); ans = (m1 * p1 + m2 * p2) / (m1 + m2); } while(p1 === p2 || !Number.isInteger(ans * 100));
+      return { q: `Sumaišyta ${m1} g ${p1} % ir ${m2} g ${p2} % druskos tirpalo. Kokia gauto tirpalo koncentracija procentais?`, ans,
+        sol: `Druskos: ${m(`${m1} · ${num(p1 / 100)} + ${m2} · ${num(p2 / 100)} = ${num(m1 * p1 / 100 + m2 * p2 / 100)}`)} g; tirpalo ${m1 + m2} g. ${m(`${num(m1 * p1 / 100 + m2 * p2 / 100)} : ${m1 + m2} · 100 % = ${num(ans)} %`)}.` }; },
+    () => { const V = 1000 * R(2, 20), pc = P([10, 20, 25]), ans = V * Math.pow(1 - pc / 100, 2);
+      return { q: `Automobilis kainavo ${V} €. Kasmet jo vertė sumažėja ${pc} % (nuo tų metų vertės). Kiek eurų automobilis bus vertas po 2 metų?`, ans,
+        sol: `${m(`${V} · ${num(1 - pc / 100)}<sup>2</sup> = ${num(ans)}`)} €.` }; },
+    () => { const orig = 20 * R(2, 25), pc = P([5, 10, 20, 25, 50]), now = orig * (100 + pc) / 100;
+      return { q: `Skaičių padidinus ${pc} %, gautas skaičius ${num(now)}. Koks buvo pradinis skaičius?`, ans: orig,
+        sol: `Gautas skaičius sudaro ${100 + pc} % pradinio: ${m(`${num(now)} : ${num(1 + pc / 100)} = ${orig}`)}.` }; },
+    () => { const base = 10 * R(2, 40), tot = Math.round(base * 121) / 100;
+      return { q: `Prekės kaina su 21 % pridėtinės vertės mokesčiu (PVM) yra ${num(tot)} €. Kokia prekės kaina be PVM (eurais)?`, ans: base,
+        sol: `Kaina su PVM sudaro 121 % kainos be PVM: ${m(`${num(tot)} : 1,21 = ${base}`)} €.` }; },
+    () => { const V = 100 * R(5, 30), pc = P([2, 4, 5]), y = R(2, 6), Y = V * pc / 100 * y;
+      return { q: `Į banką padėta ${V} € su ${pc} % metinėmis paprastosiomis palūkanomis. Po kelerių metų palūkanos sudarys ${num(Y)} €?`, ans: y,
+        sol: `Per metus priskaičiuojama ${m(`${V} · ${num(pc / 100)} = ${num(V * pc / 100)}`)} €; ${m(`${num(Y)} : ${num(V * pc / 100)} = ${y}`)} metai.` }; }
   ]},
   isvestine: { name: "Išvestinė", art: "f′", gens: [
     () => { const a = P([1, 2, -1]), b = R(-3, 3), c = R(-5, 5), d = R(-5, 5), x0 = P([-2, -1, 1, 2, 3]), ans = 3 * a * x0 * x0 + 2 * b * x0 + c;
@@ -205,7 +230,32 @@ const TOPICS = {
         sol: `${m(`f′(x) = 3x² − ${3 * p * p} = 0`)} ⇒ ${m(`x² = ${p * p}`)} ⇒ ${m(`x = ±${p}`)}. Didesnis – ${m(`x = ${p}`)}.` }; },
     () => { const k = R(2, 5), x0 = R(1, 3), ans = 2 * k * x0;
       return { q: `Koks funkcijos ${m(`y = ${k}x²`)} grafiko liestinės, nubrėžtos taške, kurio abscisė ${m(`x = ${x0}`)}, krypties koeficientas?`, ans,
-        sol: `Liestinės krypties koeficientas lygus išvestinės reikšmei: ${m(`y′ = ${2 * k}x`)}, ${m(`y′(${x0}) = ${ans}`)}.` }; }
+        sol: `Liestinės krypties koeficientas lygus išvestinės reikšmei: ${m(`y′ = ${2 * k}x`)}, ${m(`y′(${x0}) = ${ans}`)}.` }; },
+    /* --- papildyta 2026-11-19: daugiau užduočių tipų --- */
+    () => { const a = P([2, 3]), b = R(-4, 4) || 1, x0 = R(-2, 2), ans = 2 * a * (a * x0 + b);
+      return { q: `Duota funkcija ${m(`f(x) = (${a}x${sgn(b)})<sup>2</sup>`)}. Apskaičiuokite ${m(`f′(${num(x0)})`)}.`, ans,
+        sol: `Sudėtinės funkcijos išvestinė: ${m(`f′(x) = 2(${a}x${sgn(b)}) · ${a}`)}; ${m(`f′(${num(x0)}) = ${2 * a} · ${xs(a * x0 + b)} = ${num(ans)}`)}.` }; },
+    () => { const x0 = P([1, 2, -1, -2]), k = R(1, 5), a = -x0 * x0 * k, ans = k;
+      return { q: `Duota funkcija ${m("f(x) =")} ${F(`${num(a)}/x`)}. Apskaičiuokite ${m(`f′(${num(x0)})`)}.`, ans,
+        sol: `${m(`f(x) = ${num(a)}x<sup>−1</sup>`)}, todėl ${m(`f′(x) = ${-a}x<sup>−2</sup>`)}; ${m(`f′(${num(x0)}) = ${-a} : ${x0 * x0} = ${k}`)}.` }; },
+    () => { const r = P([1, 2, 3, 4]), x0 = r * r, k = R(1, 4), a = 2 * r * k;
+      return { q: `Duota funkcija ${m(`f(x) = ${a}√x`)}. Apskaičiuokite ${m(`f′(${x0})`)}.`, ans: k,
+        sol: `${m("(√x)′ = 1 : (2√x)")}, todėl ${m(`f′(x) = ${a} : (2√x)`)}; ${m(`f′(${x0}) = ${a} : ${2 * r} = ${k}`)}.` }; },
+    () => { const pp = P([-4, -3, -2, -1, 1, 2, 3, 4]), c = R(pp * pp + 1, pp * pp + 12), ans = c - pp * pp;
+      return { q: `Raskite mažiausią funkcijos ${m(`f(x) = x²${sgn(-2 * pp)}x + ${c}`)} reikšmę.`, ans,
+        sol: `${m(`f′(x) = 2x${sgn(-2 * pp)} = 0`)} ⇒ ${m(`x = ${num(pp)}`)}; ${m(`f(${num(pp)}) = ${pp * pp}${sgn(-2 * pp * pp)} + ${c} = ${ans}`)}.` }; },
+    () => { const pp = R(1, 3), ans = 2 * pp * pp * pp;
+      return { q: `Raskite didžiausią funkcijos ${m(`f(x) = x³ − ${3 * pp * pp}x`)} reikšmę atkarpoje ${m(`[−${2 * pp}; 0]`)}.`, ans,
+        sol: `${m(`f′(x) = 3x² − ${3 * pp * pp} = 0`)} ⇒ ${m(`x = ±${pp}`)}; atkarpai priklauso ${m(`x = −${pp}`)}. ${m(`f(−${pp}) = ${ans}`)}, ${m(`f(−${2 * pp}) = −${ans}`)}, ${m("f(0) = 0")}. Didžiausia reikšmė – ${ans}.` }; },
+    () => { const x0 = R(1, 3), b = R(-3, 3), c = R(x0 * x0 + 1, x0 * x0 + 9), k = 2 * x0 + b, ans = c - x0 * x0;
+      return { q: `Funkcijos ${m(`f(x) = x²${b ? (sgn(b) + "x").replace(/ ([+−]) 1x$/, " $1 x") : ""} + ${c}`)} grafiko liestinė taške, kurio abscisė ${m(`x = ${x0}`)}, užrašoma lygtimi ${m("y = kx + b")}. Raskite šios lygties laisvąjį narį ${m("b")}.`, ans,
+        sol: `${m(`f′(x) = 2x${b ? sgn(b) : ""}`)}, ${m(`k = f′(${x0}) = ${num(k)}`)}; ${m(`f(${x0}) = ${x0 * x0 + b * x0 + c}`)}. Liestinė: ${m(`y = ${x0 * x0 + b * x0 + c} + ${xs(k)}(x − ${x0})`)}, laisvasis narys ${m(`${x0 * x0 + b * x0 + c} − ${xs(k)} · ${x0} = ${ans}`)}.` }; },
+    () => { const a = P([1, 2]), b = R(1, 3), c = R(1, 5), t0 = R(1, 3), ans = 3 * a * t0 * t0 + 2 * b * t0 + c;
+      return { q: `Kūno nueitas kelias (metrais) priklauso nuo laiko (sekundėmis): ${m(`s(t) = ${a === 1 ? "" : a}t³ + ${b === 1 ? "" : b}t² + ${c === 1 ? "" : c}t`)}. Koks kūno greitis (m/s) laiko momentu ${m(`t = ${t0}`)}?`, ans,
+        sol: `Greitis – kelio išvestinė: ${m(`v(t) = s′(t) = ${3 * a}t² + ${2 * b}t + ${c}`)}; ${m(`v(${t0}) = ${3 * a * t0 * t0} + ${2 * b * t0} + ${c} = ${ans}`)}.` }; },
+    () => { const p1 = R(-3, 2), q1 = p1 + 2 * R(1, 3), B = -3 * (p1 + q1) / 2, Cc = 3 * p1 * q1;
+      return { q: `Raskite funkcijos ${m(`f(x) = x³${B ? (sgn(B) + "x²").replace(/ ([+−]) 1x²$/, " $1 x²") : ""}${Cc ? sgn(Cc) + "x" : ""}`)} mažėjimo intervalo ilgį.`, ans: q1 - p1,
+        sol: `${m(`f′(x) = 3x²${B ? sgn(2 * B) + "x" : ""}${Cc ? sgn(Cc) : ""} = 3(x${sgn(-p1)})(x${sgn(-q1)})`)}. Išvestinė neigiama, kai ${m(`${num(p1)} < x < ${num(q1)}`)}; intervalo ilgis ${q1 - p1}.` }; }
   ]},
   tikimybes: { name: "Tikimybės", art: "P", gens: [
     () => { const r = R(2, 9), b = R(2, 9), g = R(1, 6), n = r + b + g, ans = fr(r, n);
@@ -253,7 +303,34 @@ const TOPICS = {
         sol: `${m(`S<sub>n</sub> = (2a<sub>1</sub> + (n − 1)d) · n / 2 = (${2 * a1} + ${(n - 1) * d}) · ${n} / 2 = ${ans}`)}.` }; },
     () => { const b1 = P([1, 2, 3, 5]), q = P([2, 3, -2]), n = R(4, 6), ans = b1 * Math.pow(q, n - 1);
       return { q: `Geometrinės progresijos ${m(`b<sub>1</sub> = ${b1}`)}, ${m(`q = ${num(q)}`)}. Raskite ${m(`b<sub>${n}</sub>`)}.`, ans,
-        sol: `${m(`b<sub>n</sub> = b<sub>1</sub> · q<sup>n−1</sup> = ${b1} · ${q < 0 ? `(${num(q)})` : q}<sup>${n - 1}</sup> = ${num(ans)}`)}.` }; }
+        sol: `${m(`b<sub>n</sub> = b<sub>1</sub> · q<sup>n−1</sup> = ${b1} · ${q < 0 ? `(${num(q)})` : q}<sup>${n - 1}</sup> = ${num(ans)}`)}.` }; },
+    /* --- papildyta 2026-11-19: daugiau užduočių tipų --- */
+    () => { const a1 = R(-8, 12), d = P([-3, -2, 2, 3, 4, 5]), i = R(2, 4), j = i + R(3, 6), ai = a1 + (i - 1) * d, aj = a1 + (j - 1) * d;
+      return { q: `Aritmetinės progresijos ${m(`a<sub>${i}</sub> = ${num(ai)}`)}, ${m(`a<sub>${j}</sub> = ${num(aj)}`)}. Raskite progresijos skirtumą ${m("d")}.`, ans: d,
+        sol: `${m(`a<sub>${j}</sub> − a<sub>${i}</sub> = ${j - i}d`)} ⇒ ${m(`d = (${num(aj)} − ${xs(ai)}) : ${j - i} = ${num(d)}`)}.` }; },
+    () => { const a1 = R(1, 15), d = P([2, 3, 4, 5, 7]), n = R(10, 30), an = a1 + (n - 1) * d;
+      return { q: `Aritmetinės progresijos ${m(`a<sub>1</sub> = ${a1}`)}, ${m(`d = ${d}`)}. Kelintas šios progresijos narys lygus ${an}?`, ans: n,
+        sol: `${m(`${a1} + (n − 1) · ${d} = ${an}`)} ⇒ ${m(`n − 1 = ${(an - a1) / d}`)} ⇒ ${m(`n = ${n}`)}.` }; },
+    () => { const a1 = R(-5, 10), d = R(1, 4), n = P([10, 12, 16, 20]), an = a1 + (n - 1) * d, ans = (a1 + an) * n / 2;
+      return { q: `Aritmetinės progresijos ${m(`a<sub>1</sub> = ${num(a1)}`)}, ${m(`a<sub>${n}</sub> = ${an}`)}. Raskite pirmųjų ${n} narių sumą.`, ans,
+        sol: `${m(`S<sub>${n}</sub> = (a<sub>1</sub> + a<sub>${n}</sub>) · ${n} / 2 = (${num(a1)} + ${an}) · ${n / 2} = ${num(ans)}`)}.` }; },
+    () => { const b1 = P([1, 2, 3, 5]), q = P([2, 3]), n = q === 2 ? R(4, 7) : R(3, 5), ans = b1 * (Math.pow(q, n) - 1) / (q - 1);
+      return { q: `Geometrinės progresijos ${m(`b<sub>1</sub> = ${b1}`)}, ${m(`q = ${q}`)}. Raskite pirmųjų ${n} narių sumą.`, ans,
+        sol: `${m(`S<sub>n</sub> = b<sub>1</sub>(q<sup>n</sup> − 1) / (q − 1) = ${b1} · (${Math.pow(q, n)} − 1) / ${q - 1} = ${ans}`)}.` }; },
+    () => { const b1 = P([1, 2, 3, 5]), q = P([2, 3, -2]), b2 = b1 * q, b5 = b1 * Math.pow(q, 4);
+      return { q: `Geometrinės progresijos ${m(`b<sub>2</sub> = ${num(b2)}`)}, ${m(`b<sub>5</sub> = ${num(b5)}`)}. Raskite progresijos vardiklį ${m("q")}.`, ans: q,
+        sol: `${m(`b<sub>5</sub> = b<sub>2</sub> · q<sup>3</sup>`)} ⇒ ${m(`q<sup>3</sup> = ${num(b5)} : ${xs(b2)} = ${num(Math.pow(q, 3))}`)} ⇒ ${m(`q = ${num(q)}`)}.` }; },
+    () => { const [b1, qn, qd, S] = P([[8, 1, 2, 16], [9, 1, 3, 13.5], [12, 1, 4, 16], [6, -1, 2, 4], [10, 1, 2, 20], [6, 1, 3, 9], [9, -1, 2, 6], [12, -1, 3, 9], [15, 1, 4, 20], [20, 3, 5, 50], [14, 2, 9, 18]]);
+      return { q: `Nykstamosios geometrinės progresijos ${m(`b<sub>1</sub> = ${b1}`)}, ${m("q =")} ${F(`${qn < 0 ? "−" : ""}${Math.abs(qn)}/${qd}`)}. Raskite visų jos narių sumą.`, ans: S,
+        sol: `${m("S = b<sub>1</sub> : (1 − q)")} ${m(`= ${b1} :`)} ${F(`${qd - qn}/${qd}`)} ${m(`= ${num(S)}`)}.` }; },
+    () => { const a = R(2, 6), d = P([1, 2]), n = R(6, 12), ans = n * (2 * a + (n - 1) * d) / 2;
+      return { q: `Pirmą dieną sportininkė nubėgo ${a} km, o kiekvieną kitą dieną – ${d} km daugiau nei ankstesnę. Kiek kilometrų iš viso ji nubėgo per ${n} dienų?`, ans,
+        sol: `Atstumai sudaro aritmetinę progresiją: ${m(`a<sub>1</sub> = ${a}`)}, ${m(`d = ${d}`)}. ${m(`S<sub>${n}</sub> = (2 · ${a} + ${n - 1} · ${d}) · ${n} / 2 = ${ans}`)} km.` }; },
+    () => { const v = R(0, 1), [a, b, g] = P([[2, 8, 4], [3, 12, 6], [4, 9, 6], [2, 18, 6], [5, 20, 10], [1, 16, 4], [4, 25, 10], [3, 27, 9]]), a2 = R(-9, 9), b2 = a2 + 2 * R(2, 9);
+      return v ? { q: `Teigiami skaičiai ${a}, ${m("x")}, ${b} yra trys iš eilės einantys geometrinės progresijos nariai. Raskite ${m("x")}.`, ans: g,
+        sol: `Vidurinis narys: ${m(`x² = ${a} · ${b} = ${a * b}`)}, ${m("x > 0")}, todėl ${m(`x = ${g}`)}.` }
+        : { q: `Skaičiai ${num(a2)}, ${m("x")}, ${num(b2)} yra trys iš eilės einantys aritmetinės progresijos nariai. Raskite ${m("x")}.`, ans: (a2 + b2) / 2,
+        sol: `Vidurinis narys lygus gretimų narių aritmetiniam vidurkiui: ${m(`x = (${num(a2)} + ${xs(b2)}) : 2 = ${num((a2 + b2) / 2)}`)}.` }; }
   ]},
   lygtys: { name: "Lygtys", art: "x=?", gens: [
     () => { const b = P([2, 3, 5]), a = P([1, 2]), x = R(-1, 3), c = R(-2, 2), k = a * x + c;
@@ -266,7 +343,32 @@ const TOPICS = {
         sol: `Pagal Vieto teoremą ${m(`x<sub>1</sub> + x<sub>2</sub> = ${num(s)}`)}, ${m(`x<sub>1</sub> · x<sub>2</sub> = ${num(p)}`)}, todėl sprendiniai ${num(Math.min(r1, r2))} ir ${num(ans)}. Didesnis – ${num(ans)}.` }; },
     () => { const a = R(2, 5), x = R(-4, 6), b = R(-9, 9), c = R(1, a - 1 || 1), rhs = a * x + b - c * x;
       return { q: `Išspręskite lygtį: ${m(`${a}x${b ? sgn(b) : ""} = ${c === 1 ? "" : c}x${rhs ? sgn(rhs) : ""}`)}`, ans: x,
-        sol: `${m(`${a}x − ${c === 1 ? "" : c}x = ${num(rhs)}${b ? sgn(-b) : ""}`)} ⇒ ${m(`${a - c === 1 ? "" : a - c}x = ${num(rhs - b)}`)} ⇒ ${m(`x = ${num(x)}`)}.` }; }
+        sol: `${m(`${a}x − ${c === 1 ? "" : c}x = ${num(rhs)}${b ? sgn(-b) : ""}`)} ⇒ ${m(`${a - c === 1 ? "" : a - c}x = ${num(rhs - b)}`)} ⇒ ${m(`x = ${num(x)}`)}.` }; },
+    /* --- papildyta 2026-11-19: daugiau užduočių tipų --- */
+    () => { const a = P([2, 3]); let r1 = R(-5, 5), r2 = R(-5, 6); if(r1 === r2) r2 += 2; const B = -a * (r1 + r2), Cc = a * r1 * r2;
+      return { q: `Raskite lygties ${m(`${a}x²${B ? sgn(B) + "x" : ""}${Cc ? sgn(Cc) : ""} = 0`)} sprendinių skirtumo modulį.`, ans: Math.abs(r1 - r2),
+        sol: `Padaliję iš ${a}: ${m(`x²${r1 + r2 ? (sgn(-(r1 + r2)) + "x").replace(/ ([+−]) 1x$/, " $1 x") : ""}${r1 * r2 ? sgn(r1 * r2) : ""} = 0`)}; sprendiniai ${num(Math.min(r1, r2))} ir ${num(Math.max(r1, r2))}. ${m(`|x<sub>1</sub> − x<sub>2</sub>| = ${Math.abs(r1 - r2)}`)}.` }; },
+    () => { const x = R(1, 7), y = R(1, 7), A = 2 * x + y, B = x - y;
+      return { q: `Išspręskite lygčių sistemą ${m(`2x + y = ${A}`)}, ${m(`x − y = ${num(B)}`)}. Atsakyme įrašykite ${m("x")} reikšmę.`, ans: x,
+        sol: `Sudėję lygtis: ${m(`3x = ${A + B}`)} ⇒ ${m(`x = ${x}`)} (tada ${m(`y = ${y}`)}).` }; },
+    () => { const k = R(2, 7), c = R(-6, k * k - 1) || 1, x = k * k - c;
+      return { q: `Išspręskite lygtį: ${m(`√(x${sgn(c)}) = ${k}`)}`, ans: x,
+        sol: `Keliame kvadratu: ${m(`x${sgn(c)} = ${k * k}`)} ⇒ ${m(`x = ${x}`)}. Tikrinimas: ${m(`√${k * k} = ${k}`)} ✓.` }; },
+    () => { const a = P([1, 2]), c = R(0, 3), x0 = c + a + R(1, 5), b = (x0 - c) * (x0 - c) - a * x0, x1 = 2 * c + a - x0;
+      return { q: `Išspręskite lygtį: ${m(`√(${a === 1 ? "" : a}x${b ? sgn(b) : ""}) = x${c ? sgn(-c) : ""}`)}`, ans: x0,
+        sol: `Keliame kvadratu: ${m(`${a === 1 ? "" : a}x${b ? sgn(b) : ""} = (x${c ? sgn(-c) : ""})²`)} ⇒ ${m(`x² − ${2 * c + a}x${c * c - b ? sgn(c * c - b) : ""} = 0`)} ⇒ ${m(`x = ${x0}`)} arba ${m(`x = ${num(x1)}`)}. Dešinioji pusė turi būti neneigiama (${m(`x ≥ ${c}`)}), todėl tinka tik ${m(`x = ${x0}`)}.` }; },
+    () => { const b = R(1, 7), a = R(1 - b, 6), ans = a + b;
+      return { q: `Raskite didesnįjį lygties ${m(`|x${a ? sgn(-a) : ""}| = ${b}`)} sprendinį.`, ans,
+        sol: `${m(`x${a ? sgn(-a) : ""} = ${b}`)} arba ${m(`x${a ? sgn(-a) : ""} = −${b}`)} ⇒ ${m(`x = ${num(a + b)}`)} arba ${m(`x = ${num(a - b)}`)}. Didesnis – ${num(ans)}.` }; },
+    () => { let k, b, x, a; do { k = P([2, 3]); b = R(1, 5); x = b + R(1, 8); a = k * (x - b) - x; } while(a === 0);
+      return { q: `Išspręskite lygtį: ${F(`x${sgn(a)}/x − ${b}`)} ${m(`= ${k}`)}`, ans: x,
+        sol: `${m(`x${sgn(a)} = ${k}(x − ${b})`)} ⇒ ${m(`x${sgn(a)} = ${k}x − ${k * b}`)} ⇒ ${m(`${k - 1 === 1 ? "" : k - 1}x = ${a + k * b}`)} ⇒ ${m(`x = ${x}`)}. Vardiklis nelygus nuliui ✓.` }; },
+    () => { const pq = MK.shuffle([1, 2, 3, 4, 5]), p1 = pq[0], q1 = pq[1];
+      return { q: `Raskite didžiausią lygties ${m(`x⁴ − ${p1 * p1 + q1 * q1}x² + ${p1 * p1 * q1 * q1} = 0`)} sprendinį.`, ans: Math.max(p1, q1),
+        sol: `Pažymime ${m("t = x²")}: ${m(`t² − ${p1 * p1 + q1 * q1}t + ${p1 * p1 * q1 * q1} = 0`)} ⇒ ${m(`t = ${Math.min(p1, q1) ** 2}`)} arba ${m(`t = ${Math.max(p1, q1) ** 2}`)}. Sprendiniai ${m(`±${Math.min(p1, q1)}`)} ir ${m(`±${Math.max(p1, q1)}`)}; didžiausias – ${Math.max(p1, q1)}.` }; },
+    () => { const b = P([2, 3]), k = R(1, 3), v = Math.pow(b, k);
+      return { q: `Raskite didesnįjį lygties ${m(`${b}<sup>2x</sup> − ${v + 1} · ${b}<sup>x</sup> + ${v} = 0`)} sprendinį.`, ans: k,
+        sol: `Pažymime ${m(`t = ${b}<sup>x</sup>`)}: ${m(`t² − ${v + 1}t + ${v} = 0`)} ⇒ ${m("t = 1")} arba ${m(`t = ${v}`)}. Tada ${m("x = 0")} arba ${m(`x = ${k}`)}. Didesnis – ${k}.` }; }
   ]}
 };
 function fracChoices(ans, wrong){
