@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Nusileidimo modulis – MokomėsKartu.lt</title>
+<meta name="description" content="Fizikos žaidimas 11 klasei (VBE): valdyk nusileidimo modulį Mėnulyje, Marse, Europoje, Titane, Ijo ir Ganimede – Niutono dėsniai, svoris, visuotinė trauka, judesio kiekis, energija, darbas, galia.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#eef0ec">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<script src="uzduotys.js"></script>
+<style>
+/* Nusileidimo modulis: šviesus techninio brėžinio stilius – popieriaus fonas, tušo linijos, oranžiniai akcentai. */
+body{--paper:#eef0ec;--ink:#1c2330;--soft:#59636f;--kid:"Space Grotesk",system-ui,sans-serif;--body:"Space Grotesk",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --ac:#d9480f;--ac2:#1f5fbf;--line:#c2c8c3;--okc:#1b7a43;--warn:#c62828;background:#eef0ec;background-image:none;font-weight:500;color:var(--ink)}
+.mk-app{max-width:760px;padding-block:6px 16px}
+.mk-top{padding-bottom:8px}
+.mk-back,.mk-ico{border-radius:4px;border-width:1.5px;box-shadow:none;height:40px}
+.mk-ico{width:40px}.mk-ico[data-k="music"]{display:none}
+.mk-title{font:700 15px/1.1 var(--body);letter-spacing:.08em;text-transform:uppercase}
+.kick{font:700 11px/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+h1{margin:6px 0;font:700 clamp(30px,8vw,42px)/1.02 var(--body);letter-spacing:-.02em}
+.lead{margin:0 0 14px;font-size:15.5px;line-height:1.5;color:#2a3340;max-width:60ch}
+.hero{display:block;width:100%;height:auto;border:1.5px solid var(--ink);border-radius:4px;background:#f7f8f5;margin-bottom:12px}
+.card{background:#fff;border:1.5px solid var(--ink);border-radius:4px;padding:12px 14px;margin:0 0 12px}
+.card h2{margin:0 0 6px;font:700 11px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.card p{margin:0 0 4px;font-size:14px;line-height:1.45}
+.rank{font:700 20px/1.2 var(--body)}
+.bars{display:inline-flex;gap:3px;vertical-align:middle;margin-left:8px}
+.bars i{width:8px;height:14px;background:#d5dad5}.bars i.on{background:var(--ac)}
+.smp{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:8px 0 6px}
+.smp i{aspect-ratio:1;border:1.5px dashed var(--line);border-radius:4px;display:grid;place-items:center;font:700 10px/1 var(--mono);color:#aab1ab;font-style:normal}
+.smp i.on{border:1.5px solid var(--ink);color:var(--ink)}
+.smp i.on span{width:58%;height:58%;border-radius:50% 46% 54% 48%;border:1.5px solid var(--ink);display:block}
+.sm{font-size:12.5px;color:var(--soft);line-height:1.45}
+.mis{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:2px 12px;align-items:center;width:100%;text-align:left;background:#fff;border:1.5px solid var(--ink);border-radius:4px;padding:11px 12px;margin:0 0 8px;cursor:pointer;font:inherit;color:inherit}
+.mis:hover{background:#fafbf8}.mis:active{transform:translateY(1px)}
+.mis svg{grid-row:1/span 3;width:54px;height:54px}
+.mis b{font:700 17px/1.2 var(--body)}
+.mis b small{font:700 10.5px/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--soft);margin-left:6px}
+.mis span{grid-column:2;font-size:13.5px;line-height:1.35;color:#2a3340}
+.mis code{grid-column:2;font:500 11px/1.35 var(--mono);color:var(--soft)}
+.mis .stars{grid-row:1/span 3;grid-column:3;font:700 15px/1 var(--mono);letter-spacing:2px;color:#c5cbc5}
+.mis .stars u,.big u{text-decoration:none;color:var(--ac)}
+.tag{display:inline-block;font:700 10px/1 var(--mono);text-transform:uppercase;letter-spacing:.05em;border:1.5px solid var(--ink);border-radius:2px;padding:2px 5px;margin-left:6px;vertical-align:2px}
+details.man{background:#fff;border:1.5px solid var(--line);border-radius:4px;padding:0 14px;margin:0 0 6px}
+details.man summary{cursor:pointer;font-weight:700;font-size:15px;padding:12px 0;list-style:none}
+details.man summary::-webkit-details-marker{display:none}
+details.man summary::before{content:"+ ";font-family:var(--mono);color:var(--ac)}
+details.man[open] summary::before{content:"− "}
+details.man p,.intro p{margin:0 0 10px;font-size:14.5px;line-height:1.5}
+.ex{background:#fbefe6;border-left:3px solid var(--ac);padding:8px 10px;font-family:var(--mono);font-size:12.5px;line-height:1.6}
+.note{color:var(--soft);font-size:12.5px;line-height:1.45;margin:12px 0 0}
+
+#game{position:relative;user-select:none;-webkit-user-select:none}
+.sbar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;margin-bottom:6px}
+.sbar button{width:38px;height:38px;border:1.5px solid var(--ink);border-radius:4px;background:#fff;font:700 14px/1 var(--mono);cursor:pointer;padding:0;color:var(--ink)}
+.sbar .m{font:500 11px/1.3 var(--mono);color:#2a3340;overflow:hidden}
+.sbar .m b{display:block;font:700 13px/1.2 var(--body);color:var(--ink);letter-spacing:.04em;text-transform:uppercase}
+#cv{display:block;width:100%;border:1.5px solid var(--ink);border-radius:4px;background:#f4f5f2;touch-action:none}
+.tip{min-height:34px;display:flex;align-items:center;font:500 12px/1.3 var(--mono);color:#2a3340;padding:4px 2px}
+.ctl{display:grid;grid-template-columns:68px 68px minmax(0,1fr) minmax(118px,150px);gap:8px;touch-action:none}
+.cb{height:68px;border:1.5px solid var(--ink);border-radius:4px;background:#fff;color:var(--ink);font:700 22px/1 var(--mono);cursor:pointer;touch-action:none;padding:0;-webkit-tap-highlight-color:transparent}
+.cb.on{background:#e3e8e3;transform:translateY(1px)}
+.cb.eng{grid-column:4;background:var(--ac);color:#fff;border-color:var(--ink);font:700 15px/1.15 var(--body);letter-spacing:.06em}
+.cb.eng small{display:block;font:500 10.5px/1.2 var(--mono);opacity:.85;letter-spacing:.03em;margin-top:3px}
+.cb.eng.on{background:#b53a08}
+.cb.eng.rel{background:var(--ink)}
+.keys{font:500 11px/1.4 var(--mono);color:var(--soft);margin-top:8px;display:none}
+@media (hover:hover) and (pointer:fine){.keys{display:block}}
+
+#ov:empty{display:none}
+#ov{position:fixed;inset:0;z-index:30;display:flex;align-items:flex-end;justify-content:center;background:rgba(28,35,48,.32)}
+#ov.clear{background:transparent;pointer-events:none}
+#ov.clear>*{pointer-events:auto}
+.sheet{width:min(100%,560px);max-height:94dvh;overflow:auto;background:#fff;border:1.5px solid var(--ink);border-bottom:0;border-radius:6px 6px 0 0;padding:14px 16px calc(14px + env(safe-area-inset-bottom))}
+@media (min-width:700px){#ov{align-items:center}.sheet{border-bottom:1.5px solid var(--ink);border-radius:6px}}
+.ch{font:700 10.5px/1.4 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--soft);display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}
+.ch b{color:var(--ac)}
+.qq{margin:0 0 6px;font-size:15.5px;line-height:1.5}
+.rnd{margin:0 0 10px;font:500 12px/1.4 var(--mono);color:var(--soft)}
+.ansrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;margin-bottom:8px}
+.disp{height:48px;border:1.5px solid var(--ink);border-radius:4px;background:#f7f8f5;font:700 24px/46px var(--mono);padding:0 12px;overflow:hidden;white-space:nowrap}
+.disp:empty::before{content:attr(data-ph);color:#aab1ab;font-weight:500;font-size:15px}
+.disp.cur::after{content:"";display:inline-block;width:2px;height:24px;background:var(--ac);vertical-align:-4px;margin-left:2px;animation:bl 1s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+.unit{font:700 17px/1 var(--mono);min-width:44px}
+.fb{font-size:14.5px;line-height:1.5;margin:0 0 10px;padding:9px 11px;border-left:3px solid var(--line);background:#f4f5f2}
+.fb:empty{display:none}
+.fb.ok{border-color:var(--okc);background:#e9f5ee}.fb.bad{border-color:var(--warn);background:#fbecec}
+.fb b{font-weight:700}
+.fb .sol{display:block;margin-top:6px;font:500 13px/1.6 var(--mono)}
+.pad{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:10px}
+.pad button{height:46px;border:1.5px solid var(--ink);border-radius:4px;background:#fff;font:700 19px/1 var(--mono);cursor:pointer;color:var(--ink);padding:0}
+.pad button:active{background:#e3e8e3}
+.btn{display:block;width:100%;min-height:50px;border:1.5px solid var(--ink);border-radius:4px;background:var(--ink);color:#fff;font:700 15.5px/1.2 var(--body);letter-spacing:.03em;cursor:pointer;padding:8px 12px}
+.btn.sec{background:#fff;color:var(--ink)}
+.btn.or{background:var(--ac)}
+.btn+.btn,.row2+.btn{margin-top:8px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row2 .btn+.btn{margin-top:0}
+.rw{margin:10px 0 0;font:500 11.5px/1.45 var(--mono);color:var(--soft)}
+.peek{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:auto;min-height:44px;z-index:31}
+.rep h3,.outc h3{margin:0 0 2px;font:700 22px/1.15 var(--body)}
+.rep .who{font:700 11px/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--soft);margin-bottom:6px}
+.big{font:700 30px/1 var(--mono);letter-spacing:6px;color:#c5cbc5;margin:6px 0 8px}
+.rep ul{list-style:none;margin:8px 0 12px;padding:0;border-top:1.5px solid var(--line)}
+.rep li{padding:7px 0;border-bottom:1.5px solid var(--line);font-size:14px;line-height:1.4}
+.rep li small{display:block;font:500 11.5px/1.4 var(--mono);color:var(--soft)}
+.outc p{margin:6px 0 10px;font-size:14.5px;line-height:1.5}
+sup,sub{font-size:.72em;line-height:0}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <main id="menu">
+    <svg class="hero" viewBox="0 0 560 200" role="img" aria-label="Nusileidimo modulio brėžinys">
+      <defs><pattern id="gr" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#dfe3de" stroke-width="1"/></pattern></defs>
+      <rect width="560" height="200" fill="url(#gr)"/>
+      <path d="M0 168q60-14 120-4t110-6 120 6 110-8 100 6v38H0z" fill="#d7dbd6" stroke="#1c2330" stroke-width="1.5"/>
+      <g stroke="#1c2330" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M248 118l-26 40M312 118l26 40M262 124l-34 30M298 124l34 30" fill="none"/>
+        <path d="M214 158h16M330 158h16" stroke-width="3"/>
+        <path d="M244 96h72l8 10v18l-8 8h-72l-8-8v-18z" fill="#e2b04a"/>
+        <path d="M262 96v36M298 96v36M236 114h88" fill="none" stroke-width="1"/>
+        <path d="M272 132h16l7 16h-30z" fill="#aab1b8"/>
+        <path d="M256 96l4-28q20-16 40 0l4 28z" fill="#f2f4f1"/>
+        <path d="M270 76h20l3 12h-26z" fill="#1c2330"/>
+        <path d="M300 62l14-14M310 44l8 8" fill="none"/><circle cx="316" cy="46" r="5" fill="#f2f4f1"/>
+        <path d="M240 84h-10v8h10M320 84h10v8h-10" fill="#aab1b8"/>
+      </g>
+      <path d="M268 150q12 26 12 26t12-26" fill="#f08c3a" stroke="#d9480f" stroke-width="1.5"><animate attributeName="d" dur=".5s" repeatCount="indefinite" values="M268 150q12 26 12 26t12-26;M268 150q12 18 12 18t12-18;M268 150q12 26 12 26t12-26"/></path>
+      <g font-family="JetBrains Mono,monospace" font-size="10.5" font-weight="700" fill="#1c2330" stroke="#1c2330" stroke-width="1">
+        <path d="M356 96v62M352 96h8M352 158h8" fill="none"/><text x="364" y="131" stroke="none">mg ↓</text>
+        <path d="M196 132V70M192 70l4-8 4 8" fill="none" stroke="#d9480f"/><text x="150" y="98" stroke="none" fill="#d9480f">F ↑</text>
+        <text x="386" y="60" stroke="none">ma = F − mg</text><text x="386" y="78" stroke="none" fill="#59636f">h = v² / 2a</text>
+        <text x="60" y="44" stroke="none" fill="#59636f">MODULIS NM-1</text><path d="M60 50h96" fill="none" stroke="#59636f"/>
+      </g>
+    </svg>
+    <div class="kick" id="kick"></div>
+    <h1 id="h1"></h1>
+    <p class="lead" id="lead"></p>
+    <section class="card" id="lic"></section>
+    <div class="kick" id="misT" style="margin:14px 0 8px"></div>
+    <div id="mlist"></div>
+    <div class="kick" id="manT" style="margin:16px 0 8px"></div>
+    <div id="manual"></div>
+    <p class="note" id="note"></p>
+  </main>
+  <main id="game" hidden>
+    <div class="sbar"><button type="button" id="quit" aria-label="Nutraukti misiją">✕</button><div class="m" id="minfo"></div><button type="button" id="bPause" aria-label="Pauzė">II</button></div>
+    <canvas id="cv"></canvas>
+    <div class="tip" id="tip" aria-live="polite"></div>
+    <div class="ctl">
+      <button type="button" class="cb" id="bL">◀</button>
+      <button type="button" class="cb" id="bR">▶</button>
+      <button type="button" class="cb eng" id="bE"></button>
+    </div>
+    <div class="keys" id="keys"></div>
+  </main>
+</div>
+<div id="ov"></div>
+<script>
+"use strict";
+const T = window.MK_T, U = window.NM_U, n = T.n, GAME = "nusileidimo-modulis", CKEY = "mk-nusileidimo-modulis-karjera", SKEY = "mk-nusileidimo-modulis-matyta", $ = id => document.getElementById(id);
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x)), mix = (a, b, t) => a + (b - a) * t, sstep = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+const hsh = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+
+/* ---------- misijos: tikri g, M, R; modulio parametrai parinkti patogiam skrydžiui ---------- */
+const MIS = [
+  { g: 1.62, m: 2000, F: 8000, u: 2500, M: 7.35e22, R: 1737, H: 300, vx: 5, padA: 150, padB: -280, burn: 25, amp: 13, seed: 3, pools: ["N"], nT: 4, pre: 2, th: "moon" },
+  { g: 3.71, m: 1500, F: 12000, u: 3000, M: 6.42e23, R: 3390, H: 280, vx: -5, padA: -160, padB: 300, burn: 24, amp: 17, seed: 8, pools: ["S"], nT: 4, pre: 2, th: "mars" },
+  { g: 1.31, m: 2400, F: 7200, u: 2400, M: 4.80e22, R: 1561, H: 280, vx: 6, padA: 190, padB: -300, burn: 32, amp: 7, seed: 14, pools: ["J"], nT: 4, pre: 2, th: "europa" },
+  { g: 1.35, m: 1800, F: 5400, u: 2700, M: 1.345e23, R: 2575, H: 320, vx: -4, padA: -170, padB: 280, burn: 24, amp: 9, seed: 21, pools: ["E"], nT: 4, pre: 2, th: "titan", vt: 16 },
+  { g: 1.80, m: 2500, F: 10000, u: 2500, M: 8.93e22, R: 1821.5, H: 300, vx: 6, padA: 230, padB: -300, burn: 32, amp: 15, seed: 29, pools: ["K", "M"], nT: 5, pre: 2, th: "io", mesa: 36 },
+  { g: 1.43, m: 3000, F: 9000, u: 3000, M: 1.482e23, R: 2631, H: 320, vx: -7, padA: -300, padB: 380, burn: 38, amp: 15, seed: 37, pools: ["N", "S", "J", "E", "K", "M"], nT: 6, pre: 3, th: "gany", hard: 1 }
+];
+const TH = {
+  moon: { sky: ["#f5f6f3", "#dde2e6"], far: ["#d3d8dc", "#c2c8cd"], gr: ["#cdd1d3", "#a9afb4"], dust: "#b4b9bd", body: "earth", stars: 1 },
+  mars: { sky: ["#faf1e8", "#f0dcc9"], far: ["#e6c5ab", "#d9ad8e"], gr: ["#d6a07e", "#b97b5b"], dust: "#d9ab8c", body: "sun" },
+  europa: { sky: ["#f4f7f9", "#dce8ef"], far: ["#d3e0e8", "#c0d2dd"], gr: ["#eaf1f5", "#c2d3dd"], dust: "#e3ecf1", body: "jupiter", stars: 1, cracks: 1 },
+  titan: { sky: ["#fcf3de", "#f1dcae"], far: ["#e8cc92", "#dbb977"], gr: ["#cca562", "#aa8446"], dust: "#d9b97f", body: "saturn" },
+  io: { sky: ["#f8f6e6", "#ede8c0"], far: ["#e2d894", "#d4c672"], gr: ["#dccb66", "#b9a843"], dust: "#e4da8e", body: "jupiter", stars: 1, volcano: 1 },
+  gany: { sky: ["#f3f3f0", "#dfded7"], far: ["#ccc9be", "#bab6a8"], gr: ["#bab4a5", "#989182"], dust: "#c3bdaf", body: "jupiter", stars: 1, cracks: 2 }
+};
+const INK = "#1c2330", AC = "#d9480f", FEET = 4;
+
+/* ---------- reljefas ---------- */
+function mkGround(c){
+  const ws = [[0.0105, 1], [0.0233, 0.55], [0.0471, 0.28], [0.0983, 0.11]], ph = ws.map((_, i) => hsh(c.seed + i) * 6.283);
+  const raw = x => { let y = 0; for(let i = 0; i < 4; i++) y += ws[i][1] * Math.sin(ws[i][0] * x + ph[i]); y *= c.amp; if(c.mesa){ const d = (x - c.padA) / 135; y += c.mesa * Math.exp(-d * d); } return y; };
+  const pads = [{ x: c.padA, w: 21, k: "A" }, { x: c.padB, w: 13, k: "B" }]; pads.forEach(p => p.y = raw(p.x));
+  const f = x => { for(const p of pads){ const d = Math.abs(x - p.x); if(d < p.w + 34) return d <= p.w ? p.y : mix(p.y, raw(x), sstep((d - p.w) / 34)); } return raw(x); };
+  f.pads = pads; return f;
+}
+
+/* ---------- būsena ---------- */
+if(!CanvasRenderingContext2D.prototype.roundRect) CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h){ this.rect(x, y, w, h); };
+let S = null, cv = $("cv"), cx = cv.getContext("2d"), W = 360, Hh = 480, DPR = 1, raf = 0, last = 0;
+const key = { l: 0, r: 0, e: 0 };
+const career = () => Object.assign({ land: 0, soft: 0, ok: 0, all: 0, smp: {}, intro: 0 }, MK.get(CKEY, {}));
+
+function newMission(mi){
+  const c = MIS[mi], seen = MK.get(SKEY, {});
+  const ids = U.choose(c.pools, c.nT, seen, { hard: c.hard });
+  /* viena „gyva“ užduotis skrydžio metu: jei tarp parinktų yra tokia, ji eina į vidurį */
+  const li = ids.findIndex((id, i) => i >= 1 && U.byId[id].live); if(li >= 0){ const [x] = ids.splice(li, 1); ids.splice(c.pre, 0, x); }
+  const tasks = ids.map((id, i) => ({ id, phase: i < c.pre ? "pre" : i === c.pre ? "mid" : "post", res: null }));
+  ids.forEach(id => seen[id] = (seen[id] || 0) + 1); MK.set(SKEY, seen);
+  const s = { mi, c, t: T.missions[mi], th: TH[c.th], gnd: mkGround(c), tasks, ti: 0, bonus: 0, okN: 0, retries: 0, marker: false, mode: "pre", crashes: 0, midDone: false, auto: false, parts: [], time: 0, shake: 0, out: null };
+  resetFlight(s); return s;
+}
+function resetFlight(s){
+  const c = s.c; s.x = 0; s.y = s.gnd(0) + c.H + FEET; s.vx = 0; s.vy = 0; s.ang = 0; s.thr = 0; s.fuel = c.burn * (1 + s.bonus); s.fuel0 = s.fuel;
+  s.cam = { x: 0, y: s.gnd(0) + 120, hm: 450 }; s.car = { x: 0, y: s.y + 13, vy: 0, away: 0 }; s.parts = []; s.landed = null; s.beeped = false; s.touch = null; s.ign = 0;
+  camUpdate(s, 1);
+}
+const alt = s => s.y - FEET - s.gnd(s.x);
+const ctxOf = (s, live) => ({ g: s.c.g, m: s.c.m, F: s.c.F, u: s.c.u, M: s.c.M, R: s.c.R, live });
+
+/* ---------- fizika ---------- */
+function autopilot(s){
+  const p = s.gnd.pads[0], a = alt(s), dx = p.x - s.x, an = s.c.F / s.c.m - s.c.g, far = Math.abs(dx) > 16;
+  const vxd = clamp(dx * 0.12, -9, 9), tilt = clamp((vxd - s.vx) * 0.1, -0.42, 0.42);
+  const floor = far ? 38 : (Math.abs(s.vx) > 1.2 || Math.abs(dx) > 11) ? 9 : 0;      /* kol ne virš aikštelės – laikyti aukštį */
+  const vyd = a < floor ? clamp((floor - a) * 0.6, 0.4, 6) : -Math.max(floor ? 0 : 1.2, Math.sqrt(Math.max(0, 2 * an * 0.5 * (a - floor - 1.5))));
+  key.l = s.ang > tilt + 0.04 ? 1 : 0; key.r = s.ang < tilt - 0.04 ? 1 : 0; key.e = s.vy < vyd ? 1 : 0; s.fuel = Math.max(s.fuel, 5);
+}
+function step(s, dt){
+  const c = s.c; s.time += dt;
+  if(s.mode !== "fly") return;
+  if(s.auto) autopilot(s);
+  const rot = (key.r ? 1 : 0) - (key.l ? 1 : 0);
+  if(rot) s.ang = clamp(s.ang + rot * 1.25 * dt, -1.4, 1.4); else s.ang -= Math.sign(s.ang) * Math.min(Math.abs(s.ang), 0.6 * dt);
+  s.thr = key.e && s.fuel > 0 ? 1 : 0;
+  if(s.thr){ s.fuel = Math.max(0, s.fuel - dt); if(s.time - s.ign > 0.5 && !s.wasThr) MK.sfx.vroom(); s.ign = s.time; }
+  s.wasThr = s.thr;
+  let ax = Math.sin(s.ang) * s.thr * c.F / c.m, ay = Math.cos(s.ang) * s.thr * c.F / c.m - c.g;
+  if(c.vt){ const kd = c.g / c.vt; ax -= kd * s.vx; ay -= kd * s.vy; }
+  s.vx += ax * dt; s.vy += ay * dt; s.x += s.vx * dt; s.y += s.vy * dt;
+  s.car.away += dt; s.car.y += Math.min(30, s.car.away * 8) * dt; s.car.x -= Math.sign(c.vx) * Math.min(14, s.car.away * 4) * dt;
+  const a = alt(s);
+  /* skrydžio vidurio skaičiavimas */
+  if(!s.midDone && !s.auto && a < c.H * 0.62 && a > c.H * 0.3){ s.midDone = true; const tk = s.tasks.find(t => t.phase === "mid" && !t.res); if(tk){ openTask(tk); return; } }
+  if(s.marker && !s.beeped && s.vy < -4){ const hb = s.vy * s.vy / (2 * (c.F / c.m - c.g)); if(a <= hb + 4){ s.beeped = true; MK.sfx.beep(true); } }
+  if(a <= 0){ s.y = s.gnd(s.x) + FEET; touchdown(s); }
+}
+function touchdown(s){
+  const vv = Math.abs(s.vy), vh = Math.abs(s.vx), ad = Math.abs(s.ang) * 57.3, g = s.gnd, sl = Math.abs(Math.atan((g(s.x + 4) - g(s.x - 4)) / 8)) * 57.3;
+  const pad = g.pads.find(p => Math.abs(s.x - p.x) <= p.w - 2.5);
+  let kind = vv <= 3.05 && vh <= 2.05 && ad <= 12 && sl < 8 ? "soft" : vv <= 6.05 && vh <= 4.05 && ad <= 25 && sl < 14 ? "hard" : "crash";
+  s.touch = { vv, vh, ad, sl, pad: pad ? pad.k : null, kind, auto: s.auto, fuel: s.fuel };
+  s.vx = s.vy = 0; s.thr = 0; s.mode = kind === "crash" ? "crashed" : "landed"; if(kind !== "crash") s.tasks.forEach(t => { if(t.phase === "mid" && t.res == null) t.phase = "post"; }); key.l = key.r = key.e = 0;
+  for(let i = 0; i < (kind === "crash" ? 46 : 16); i++) s.parts.push({ x: s.x + (Math.random() - .5) * 8, y: s.y - FEET + 0.5, vx: (Math.random() - .5) * (kind === "crash" ? 26 : 9), vy: Math.random() * (kind === "crash" ? 18 : 4), life: 0, max: 1.2 + Math.random() * 1.6, k: kind === "crash" && i % 3 === 0 ? 2 : 1, r: 1 + Math.random() * 2 });
+  if(kind === "crash"){ s.shake = 0.6; s.crashes++; MK.sfx.bad(); } else { s.ang = 0; MK.sfx.dig(); }
+  setTimeout(() => { if(S === s) outcome(s); }, kind === "crash" ? 1100 : 900);
+}
+function camUpdate(s, k){
+  const a = Math.max(0, alt(s)), hm = clamp(a * 1.22 + 84, 84, 470), g0 = s.gnd(s.x);
+  s.cam.hm = mix(s.cam.hm, hm, k); s.cam.x = mix(s.cam.x, s.x + s.vx * 0.5, k); s.cam.y = mix(s.cam.y, g0 + s.cam.hm * 0.36, k);
+}
+function particles(s, dt){
+  const c = s.c, P = s.parts;
+  if(s.thr && s.mode === "fly"){
+    const nx = s.x - Math.sin(s.ang) * 3.4, ny = s.y - Math.cos(s.ang) * 3.4 + 0.2;
+    for(let i = 0; i < 2; i++) P.push({ x: nx, y: ny, vx: s.vx - Math.sin(s.ang) * 22 + (Math.random() - .5) * 6, vy: s.vy - Math.cos(s.ang) * 22 + (Math.random() - .5) * 6, life: 0, max: 0.5 + Math.random() * 0.4, k: 0, r: 0.9 });
+    const a = alt(s); if(a < 26 && Math.abs(s.ang) < 0.6){ const gx = s.x + (Math.random() - .5) * 10, d = Math.random() < .5 ? -1 : 1; P.push({ x: gx, y: s.gnd(gx) + 0.4, vx: d * (8 + Math.random() * 14) * (1 - a / 30), vy: 1 + Math.random() * 4, life: 0, max: 0.9 + Math.random() * 0.9, k: 1, r: 1.2 + Math.random() * 1.8 }); }
+  }
+  for(let i = P.length - 1; i >= 0; i--){ const p = P[i]; p.life += dt; if(p.life > p.max){ P.splice(i, 1); continue; } if(p.k) p.vy -= c.g * dt; p.x += p.vx * dt; p.y += p.vy * dt; if(p.k && p.y < s.gnd(p.x)){ p.y = s.gnd(p.x); p.vy *= -0.3; p.vx *= 0.6; } }
+  if(P.length > 260) P.splice(0, P.length - 260);
+}
+
+/* ---------- piešimas ---------- */
+function fit(){
+  const w = cv.clientWidth || 360, vh = window.innerHeight, h = Math.round(clamp(vh - 262, 280, w < 520 ? w * 1.42 : 540));
+  DPR = Math.min(2, window.devicePixelRatio || 1); W = w; Hh = h; cv.style.height = h + "px"; cv.width = Math.round(w * DPR); cv.height = Math.round(h * DPR);
+}
+function landerShape(g, sc, thr, t, broken){
+  /* vienetai – metrai; (0,0) – modulio centras, atramų padai ties y = +4 */
+  g.lineJoin = "round"; g.lineCap = "round"; g.strokeStyle = INK; g.lineWidth = Math.max(1.2 / sc, 0.16);
+  if(thr){ const L = 5.5 + Math.sin(t * 47) * 0.9 + Math.sin(t * 31) * 0.6; const gr = g.createLinearGradient(0, 3, 0, 3 + L); gr.addColorStop(0, "#fff3c4"); gr.addColorStop(0.35, "#f59f3a"); gr.addColorStop(1, "rgba(217,72,15,0)");
+    g.fillStyle = gr; g.beginPath(); g.moveTo(-1.15, 3.1); g.quadraticCurveTo(-0.9, 3.1 + L * 0.6, 0, 3.1 + L); g.quadraticCurveTo(0.9, 3.1 + L * 0.6, 1.15, 3.1); g.fill();
+    g.fillStyle = "rgba(255,255,255,.9)"; g.beginPath(); g.moveTo(-0.5, 3.1); g.quadraticCurveTo(0, 3.1 + L * 0.5, 0.5, 3.1); g.fill(); }
+  g.beginPath(); for(const d of [-1, 1]){ g.moveTo(d * 2.7, 1.3); g.lineTo(d * 4.6, 3.8); g.moveTo(d * 1.6, 1.8); g.lineTo(d * 4.3, 3.5); g.moveTo(d * 3.0, 0.2); g.lineTo(d * 3.9, 2.9); } g.stroke();
+  g.lineWidth *= 2.2; g.beginPath(); g.moveTo(-5.5, 3.95); g.lineTo(-3.7, 3.95); g.moveTo(3.7, 3.95); g.lineTo(5.5, 3.95); g.stroke(); g.lineWidth /= 2.2;
+  g.fillStyle = "#9aa2aa"; g.beginPath(); g.moveTo(-0.7, 1.8); g.lineTo(0.7, 1.8); g.lineTo(1.25, 3.15); g.lineTo(-1.25, 3.15); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle = broken ? "#b99a55" : "#e2b04a"; g.beginPath(); g.moveTo(-2.6, -0.3); g.lineTo(2.6, -0.3); g.lineTo(3.2, 0.4); g.lineTo(3.2, 1.3); g.lineTo(2.6, 1.9); g.lineTo(-2.6, 1.9); g.lineTo(-3.2, 1.3); g.lineTo(-3.2, 0.4); g.closePath(); g.fill(); g.stroke();
+  g.save(); g.lineWidth *= 0.6; g.beginPath(); g.moveTo(-1.3, -0.3); g.lineTo(-1.3, 1.9); g.moveTo(1.3, -0.3); g.lineTo(1.3, 1.9); g.moveTo(-3.2, 0.85); g.lineTo(3.2, 0.85); g.stroke(); g.restore();
+  g.fillStyle = "#f3f5f2"; g.beginPath(); g.moveTo(-2.0, -0.3); g.lineTo(-1.7, -2.3); g.quadraticCurveTo(0, -3.9, 1.7, -2.3); g.lineTo(2.0, -0.3); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle = INK; g.beginPath(); g.moveTo(-0.9, -2.0); g.lineTo(0.9, -2.0); g.lineTo(1.15, -1.0); g.lineTo(-1.15, -1.0); g.closePath(); g.fill();
+  g.fillStyle = "#9aa2aa"; g.fillRect(-2.75, -1.5, 0.75, 0.6); g.strokeRect(-2.75, -1.5, 0.75, 0.6); g.fillRect(2.0, -1.5, 0.75, 0.6); g.strokeRect(2.0, -1.5, 0.75, 0.6);
+  g.beginPath(); g.moveTo(1.0, -3.0); g.lineTo(2.0, -4.2); g.stroke(); g.fillStyle = "#f3f5f2"; g.beginPath(); g.arc(2.2, -4.4, 0.55, 0, 6.283); g.fill(); g.stroke();
+  g.fillStyle = AC; g.fillRect(-0.35, 0.15, 0.7, 0.45);
+}
+function carrierShape(g, sc, t){
+  g.strokeStyle = INK; g.lineWidth = Math.max(1.2 / sc, 0.18); g.lineJoin = "round";
+  g.fillStyle = "#2c5fa8"; for(const d of [-1, 1]){ g.fillRect(d * 9 - (d < 0 ? 8 : 0), -1.4, 8, 2.8); g.strokeRect(d * 9 - (d < 0 ? 8 : 0), -1.4, 8, 2.8); g.beginPath(); for(let i = 1; i < 4; i++){ g.moveTo(d * 9 + d * i * 2, -1.4); g.lineTo(d * 9 + d * i * 2, 1.4); } g.stroke(); }
+  g.fillStyle = "#eef0ed"; g.beginPath(); g.moveTo(-8, -1.2); g.quadraticCurveTo(-9, -3.2, -5, -3.4); g.lineTo(5, -3.4); g.quadraticCurveTo(9, -3.2, 8, -1.2); g.lineTo(6, 2.2); g.lineTo(-6, 2.2); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle = INK; g.fillRect(-4, -2.2, 2.2, 1.1); g.fillRect(-1.1, -2.2, 2.2, 1.1); g.fillRect(1.8, -2.2, 2.2, 1.1);
+  g.fillStyle = AC; g.fillRect(-6, 1.0, 12, 0.5);
+  g.fillStyle = "#9aa2aa"; g.fillRect(-1.2, 2.2, 2.4, 1.2); g.strokeRect(-1.2, 2.2, 2.4, 1.2);
+}
+function skyBody(th, t){
+  const k = th.body; cx.save(); cx.lineWidth = 1.5; cx.strokeStyle = "rgba(28,35,48,.55)";
+  if(k === "earth"){ const x = W * 0.27, y = Hh * 0.34, r = 26; cx.fillStyle = "#cfe0ee"; cx.beginPath(); cx.arc(x, y, r, 0, 6.283); cx.fill(); cx.save(); cx.clip(); cx.fillStyle = "#b7d2bf"; cx.beginPath(); cx.ellipse(x - 8, y - 6, 13, 9, 0.5, 0, 6.283); cx.ellipse(x + 12, y + 12, 10, 7, -0.4, 0, 6.283); cx.fill(); cx.fillStyle = "rgba(255,255,255,.8)"; cx.beginPath(); cx.ellipse(x + 2, y - 16, 20, 4, 0.2, 0, 6.283); cx.ellipse(x - 6, y + 10, 16, 3, -0.3, 0, 6.283); cx.fill(); cx.fillStyle = "rgba(28,35,48,.2)"; cx.beginPath(); cx.arc(x + 24, y + 6, r * 1.15, 0, 6.283); cx.fill(); cx.restore(); cx.beginPath(); cx.arc(x, y, r, 0, 6.283); cx.stroke(); }
+  else if(k === "jupiter"){ const x = W * 0.26, y = Hh * 0.36, r = Math.min(W, Hh) * 0.12; cx.beginPath(); cx.arc(x, y, r, 0, 6.283); cx.save(); cx.clip(); const cols = ["#f3ebdd", "#e6d3b8", "#f5eee2", "#dfc5a4", "#f1e6d5", "#e4cfb2", "#f4ecdf", "#dcc1a0"]; for(let i = 0; i < 8; i++){ cx.fillStyle = cols[i]; cx.fillRect(x - r, y - r + i * r / 4, 2 * r, r / 4 + 1); } cx.fillStyle = "#d39a7c"; cx.beginPath(); cx.ellipse(x + r * 0.35, y + r * 0.42, r * 0.16, r * 0.09, 0, 0, 6.283); cx.fill(); cx.restore(); cx.stroke(); }
+  else if(k === "saturn"){ const x = W * 0.27, y = Hh * 0.33, r = 22; cx.globalAlpha = 0.5; cx.fillStyle = "#f3e2b8"; cx.beginPath(); cx.arc(x, y, r, 0, 6.283); cx.fill(); cx.stroke(); cx.beginPath(); cx.ellipse(x, y, r * 2.1, r * 0.5, -0.35, 0, 6.283); cx.stroke(); }
+  else { cx.fillStyle = "#fff8e6"; cx.beginPath(); cx.arc(W * 0.28, Hh * 0.3, 9, 0, 6.283); cx.fill(); cx.stroke(); cx.fillStyle = "#b9a08c"; cx.beginPath(); cx.ellipse(W * 0.72, Hh * 0.36, 6, 4, 0.4, 0, 6.283); cx.fill(); cx.stroke(); }
+  cx.restore();
+}
+function draw(s){
+  const th = s.th, c = s.c, sc = Hh / s.cam.hm, t = s.time;
+  let ox = 0, oy = 0; if(s.shake > 0){ ox = (Math.random() - .5) * 14 * s.shake; oy = (Math.random() - .5) * 14 * s.shake; }
+  const X = wx => W / 2 + (wx - s.cam.x) * sc + ox, Y = wy => Hh / 2 - (wy - s.cam.y) * sc + oy;
+  cx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  const sg = cx.createLinearGradient(0, 0, 0, Hh); sg.addColorStop(0, th.sky[0]); sg.addColorStop(1, th.sky[1]); cx.fillStyle = sg; cx.fillRect(0, 0, W, Hh);
+  if(th.stars){ cx.fillStyle = "rgba(28,35,48,.32)"; for(let i = 0; i < 46; i++){ const px = (hsh(i) * W * 1.4 - s.cam.x * 0.03) % W, py = hsh(i + 77) * Hh * 0.62; cx.fillRect((px + W) % W, py, hsh(i + 5) < 0.2 ? 2 : 1.2, hsh(i + 5) < 0.2 ? 2 : 1.2); } }
+  skyBody(th, t);
+  /* tolimi kalnagūbriai (paralaksas) */
+  const gy0 = Y(s.gnd(s.cam.x));
+  for(let L = 0; L < 2; L++){
+    const par = L ? 0.38 : 0.16, base = mix(Hh * (L ? 0.74 : 0.63), gy0, L ? 0.5 : 0.3), A = clamp(sc * (L ? 9 : 14), 8, 44) * (c.th === "europa" ? 0.5 : 1);
+    cx.beginPath(); cx.moveTo(-4, Hh + 4);
+    for(let px = -4; px <= W + 8; px += 6){ const wx = s.cam.x * par + px / (sc * 0.35 + 0.5) + L * 500; let r = Math.sin(wx * 0.011 + c.seed) + 0.5 * Math.sin(wx * 0.027 + L) + 0.25 * Math.sin(wx * 0.061); if(th.volcano && !L){ const d = (wx - 260) / 60; r += 2.2 * Math.max(0, 1 - Math.abs(d)); } cx.lineTo(px, base - r * A); }
+    cx.lineTo(W + 8, Hh + 4); cx.closePath(); cx.fillStyle = th.far[L]; cx.fill(); cx.strokeStyle = "rgba(28,35,48,.35)"; cx.lineWidth = 1; cx.stroke();
+    if(th.volcano && !L){ const vx = (260 - s.cam.x * par) * (sc * 0.35 + 0.5), vy = base - 2.9 * A; for(let i = 0; i < 9; i++){ const k = ((t * 0.35 + i / 9) % 1); cx.fillStyle = `rgba(250,250,240,${0.5 * (1 - k)})`; cx.beginPath(); cx.arc(vx + Math.sin(i * 2.3) * 20 * k, vy - k * 70, 4 + k * 16, 0, 6.283); cx.fill(); } }
+  }
+  /* paviršius */
+  const pts = []; for(let px = -8; px <= W + 12; px += 4){ const wx = s.cam.x + (px - ox - W / 2) / sc; pts.push([px, Y(s.gnd(wx)), wx]); }
+  cx.beginPath(); cx.moveTo(-8, Hh + 8); pts.forEach(p => cx.lineTo(p[0], p[1])); cx.lineTo(W + 12, Hh + 8); cx.closePath();
+  const gg = cx.createLinearGradient(0, gy0 - 20, 0, Hh); gg.addColorStop(0, th.gr[0]); gg.addColorStop(1, th.gr[1]); cx.fillStyle = gg; cx.fill();
+  cx.save(); cx.clip();
+  for(const [off, al] of [[7, 0.3], [17, 0.17], [31, 0.1]]){ cx.beginPath(); pts.forEach((p, i) => i ? cx.lineTo(p[0], p[1] + off) : cx.moveTo(p[0], p[1] + off)); cx.strokeStyle = `rgba(28,35,48,${al})`; cx.lineWidth = 1; cx.stroke(); }
+  const i0 = Math.floor((s.cam.x - W / sc) / 19), i1 = Math.ceil((s.cam.x + W / sc) / 19);
+  cx.strokeStyle = "rgba(28,35,48,.2)"; cx.lineWidth = 1;
+  for(let i = i0; i <= i1; i++){ const wx = i * 19 + hsh(i) * 9, px = X(wx), py = Y(s.gnd(wx)) + 26 + hsh(i + 9) * 30; cx.beginPath(); cx.moveTo(px, py); cx.lineTo(px - 7, py + 9); cx.stroke();
+    if(th.cracks && hsh(i + 40) < (th.cracks === 1 ? 0.3 : 0.2)){ cx.save(); cx.strokeStyle = th.cracks === 1 ? "rgba(150,70,50,.55)" : "rgba(28,35,48,.35)"; cx.lineWidth = 1.4; cx.beginPath(); let qx = px, qy = Y(s.gnd(wx)); cx.moveTo(qx, qy); for(let k = 0; k < 5; k++){ qx += (hsh(i * 7 + k) - .5) * 16 * sc * 0.4; qy += 5 + sc * 2.2; cx.lineTo(qx, qy); } cx.stroke(); cx.restore(); } }
+  cx.restore();
+  cx.beginPath(); pts.forEach((p, i) => i ? cx.lineTo(p[0], p[1]) : cx.moveTo(p[0], p[1])); cx.strokeStyle = INK; cx.lineWidth = 2; cx.stroke();
+  /* akmenys */
+  for(let i = i0; i <= i1; i++){ if(hsh(i + 20) > 0.42) continue; const wx = i * 19 + hsh(i + 3) * 14; if(s.gnd.pads.some(p => Math.abs(wx - p.x) < p.w + 4)) continue; const r = (0.7 + hsh(i + 31) * 1.9) * sc, px = X(wx), py = Y(s.gnd(wx)); if(r < 1.2) continue;
+    cx.fillStyle = th.gr[1]; cx.strokeStyle = INK; cx.lineWidth = 1.2; cx.beginPath(); cx.moveTo(px - r, py + 1); cx.lineTo(px - r * 0.6, py - r * 0.8); cx.lineTo(px + r * 0.3, py - r); cx.lineTo(px + r, py + 1); cx.closePath(); cx.fill(); cx.stroke(); }
+  /* aikštelės */
+  s.gnd.pads.forEach(p => {
+    const x0 = X(p.x - p.w), x1 = X(p.x + p.w), y = Y(p.y), hgt = Math.max(4, 1.5 * sc), isA = p.k === "A";
+    cx.save(); cx.setLineDash([5, 6]); cx.strokeStyle = isA ? "rgba(217,72,15,.45)" : "rgba(31,95,191,.45)"; cx.lineWidth = 1.2; cx.beginPath(); cx.moveTo(x0, y); cx.lineTo(x0, y - 60 * sc); cx.moveTo(x1, y); cx.lineTo(x1, y - 60 * sc); cx.stroke(); cx.restore();
+    cx.fillStyle = "#f3f5f2"; cx.fillRect(x0, y, x1 - x0, hgt); cx.save(); cx.beginPath(); cx.rect(x0, y, x1 - x0, hgt); cx.clip(); cx.fillStyle = isA ? AC : "#1f5fbf"; const sw = Math.max(6, 2.2 * sc); for(let q = x0 - hgt; q < x1; q += sw * 2){ cx.beginPath(); cx.moveTo(q, y + hgt); cx.lineTo(q + hgt, y); cx.lineTo(q + hgt + sw, y); cx.lineTo(q + sw, y + hgt); cx.fill(); } cx.restore();
+    cx.strokeStyle = INK; cx.lineWidth = 1.5; cx.strokeRect(x0, y, x1 - x0, hgt);
+    const on = Math.floor(t * 2) % 2; for(const q of [x0, x1]){ cx.beginPath(); cx.moveTo(q, y); cx.lineTo(q, y - Math.max(8, 2.6 * sc)); cx.stroke(); cx.fillStyle = on ? (isA ? AC : "#1f5fbf") : "#fff"; cx.beginPath(); cx.arc(q, y - Math.max(8, 2.6 * sc), 2.6, 0, 6.283); cx.fill(); cx.stroke(); }
+    const lx = (x0 + x1) / 2, ly = y - Math.max(26, 9 * sc); if(lx > -20 && lx < W + 20){ cx.fillStyle = "#fff"; cx.fillRect(lx - 10, ly - 10, 20, 18); cx.strokeRect(lx - 10, ly - 10, 20, 18); cx.fillStyle = INK; cx.font = "700 12px JetBrains Mono,monospace"; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(p.k, lx, ly); }
+  });
+  /* dalelės už modulio */
+  const dsc = Math.max(sc, 3.4);
+  for(const p of s.parts){ const k = p.life / p.max, px = X(p.x), py = Y(p.y); if(p.k === 0){ cx.fillStyle = `rgba(255,255,255,${0.55 * (1 - k)})`; cx.beginPath(); cx.arc(px, py, (p.r + k * 2.4) * dsc * 0.5, 0, 6.283); cx.fill(); } else if(p.k === 1){ cx.fillStyle = th.dust; cx.globalAlpha = 0.75 * (1 - k); cx.beginPath(); cx.arc(px, py, p.r * (0.6 + k) * dsc * 0.5, 0, 6.283); cx.fill(); cx.globalAlpha = 1; } else { cx.fillStyle = INK; cx.fillRect(px - 2, py - 2, 4 * p.r * 0.6, 3); } }
+  /* šešėlis ant paviršiaus */
+  const a = Math.max(0, alt(s)), shy = Y(s.gnd(s.x)), sx = X(s.x);
+  cx.fillStyle = `rgba(28,35,48,${clamp(0.3 - a / 600, 0.06, 0.3)})`; cx.beginPath(); cx.ellipse(sx, shy + 1, clamp(5.2 * dsc * (1 - a / 900), 6, 60), 2.4, 0, 0, 6.283); cx.fill();
+  /* nešėjas ir lynas */
+  if(s.car.away < 9){ const kx = X(s.car.x), ky = Y(s.car.y); if(s.car.away === 0){ cx.strokeStyle = INK; cx.lineWidth = 1.5; cx.beginPath(); cx.moveTo(kx, ky + 3 * dsc); cx.lineTo(sx, Y(s.y) - 3.6 * dsc); cx.stroke(); } cx.save(); cx.translate(kx, ky + Math.sin(t * 1.3) * 1.5); cx.scale(dsc, dsc); carrierShape(cx, dsc, t); cx.restore(); }
+  /* modulis */
+  if(s.mode !== "crashed"){ cx.save(); cx.translate(sx, Y(s.y)); cx.rotate(s.ang); cx.scale(dsc, dsc); landerShape(cx, dsc, s.thr, t, s.touch && s.touch.kind === "hard"); cx.restore(); }
+  else { cx.save(); cx.translate(sx, Y(s.y) + 1.6 * dsc); cx.rotate(1.25); cx.scale(dsc, dsc); cx.globalAlpha = 0.9; landerShape(cx, dsc, 0, t, true); cx.restore(); }
+  hud(s, a, X, Y, dsc);
+}
+function hud(s, a, X, Y, dsc){
+  const c = s.c, H = T.hud, near = a < 70 && s.mode === "fly", vv = -s.vy, vh = Math.abs(s.vx);
+  cx.textBaseline = "alphabetic"; cx.textAlign = "left";
+  /* prietaisų skydelis */
+  cx.fillStyle = "rgba(255,255,255,.88)"; cx.strokeStyle = INK; cx.lineWidth = 1.5; cx.beginPath(); cx.roundRect(8, 8, 146, 90, 4); cx.fill(); cx.stroke();
+  const row = (y, lab, val, unit, col) => { cx.font = "700 9.5px JetBrains Mono,monospace"; cx.fillStyle = "#59636f"; cx.fillText(lab, 16, y); cx.font = "700 15px JetBrains Mono,monospace"; cx.fillStyle = col || INK; cx.textAlign = "right"; cx.fillText(val, 118, y); cx.font = "500 9.5px JetBrains Mono,monospace"; cx.fillStyle = "#59636f"; cx.textAlign = "left"; cx.fillText(unit, 122, y); };
+  const col = (v, s1, s2) => !near ? INK : v <= s1 ? "#1b7a43" : v <= s2 ? "#b86a00" : "#c62828";
+  row(26, H.alt, n(Math.max(0, a), a < 20 ? 1 : 0), "m");
+  row(45, H.vv, n(Math.abs(vv), 1) + (vv > 0.05 ? "↓" : vv < -0.05 ? "↑" : " "), H.ms, col(Math.abs(vv), 3, 6));
+  row(64, H.vh, n(vh, 1) + (s.vx > 0.05 ? "→" : s.vx < -0.05 ? "←" : " "), H.ms, col(vh, 2, 4));
+  const fr = s.fuel / c.burn; cx.font = "700 9.5px JetBrains Mono,monospace"; cx.fillStyle = "#59636f"; cx.fillText(H.fuel, 16, 84); cx.strokeRect(56, 76, 62, 9); cx.fillStyle = fr < 0.2 ? "#c62828" : AC; cx.fillRect(57, 77, 60 * clamp(fr / Math.max(1, s.fuel0 / c.burn), 0, 1), 7); cx.fillStyle = INK; cx.fillText(Math.round(fr * 100) + "%", 122, 84);
+  /* kameros langelis */
+  const R = 40, kx = W - R - 10, ky = R + 10; cx.save(); cx.beginPath(); cx.arc(kx, ky, R, 0, 6.283); cx.fillStyle = s.th.sky[0]; cx.fill(); cx.clip();
+  const gz = 6.2, gl = ky + (FEET + a) * gz + 6; if(gl < ky + R + 4){ cx.fillStyle = s.th.gr[0]; cx.fillRect(kx - R, gl, 2 * R, R * 2); cx.strokeStyle = INK; cx.lineWidth = 1.5; cx.beginPath(); cx.moveTo(kx - R, gl); cx.lineTo(kx + R, gl); cx.stroke(); }
+  if(s.mode !== "crashed"){ cx.translate(kx, ky + 6); cx.rotate(s.ang); cx.scale(gz, gz); landerShape(cx, gz, s.thr, s.time, s.touch && s.touch.kind === "hard"); }
+  cx.restore(); cx.strokeStyle = INK; cx.lineWidth = 1.5; cx.beginPath(); cx.arc(kx, ky, R, 0, 6.283); cx.stroke();
+  cx.font = "700 8.5px JetBrains Mono,monospace"; cx.fillStyle = "#59636f"; cx.textAlign = "center"; cx.fillText(H.cam + " " + Math.round(Math.abs(s.ang) * 57.3) + "°", kx, ky + R + 11);
+  /* aukščio skalė su stabdymo žymekliu */
+  const tx = W - 16, t0 = ky + R + 22, t1 = Hh - 16, top = c.H * 1.08, ty = h => mix(t1, t0, clamp(h / top, 0, 1));
+  cx.strokeStyle = INK; cx.lineWidth = 1.5; cx.beginPath(); cx.moveTo(tx, t0); cx.lineTo(tx, t1); cx.stroke(); cx.lineWidth = 1; cx.font = "500 8.5px JetBrains Mono,monospace"; cx.textAlign = "right"; cx.fillStyle = "#59636f";
+  for(let h = 0; h <= top; h += 50){ const y = ty(h); cx.beginPath(); cx.moveTo(tx - (h % 100 ? 4 : 7), y); cx.lineTo(tx, y); cx.stroke(); if(h % 100 === 0) cx.fillText(h, tx - 10, y + 3); }
+  if(s.marker && s.vy < -1 && s.mode === "fly"){ const hb = s.vy * s.vy / (2 * (c.F / c.m - c.g)) + 3, y = ty(hb); cx.strokeStyle = AC; cx.lineWidth = 2.5; cx.beginPath(); cx.moveTo(tx - 14, y); cx.lineTo(tx + 6, y); cx.stroke(); cx.fillStyle = AC; cx.font = "700 9px JetBrains Mono,monospace"; cx.fillText(H.brake, tx - 17, y + 3);
+    const wy = Y(s.gnd(s.x) + hb + FEET); if(wy > 0 && wy < Hh){ cx.save(); cx.setLineDash([8, 6]); cx.lineWidth = 1.5; cx.beginPath(); cx.moveTo(X(s.x) - 46, wy); cx.lineTo(X(s.x) + 46, wy); cx.stroke(); cx.restore(); } }
+  const ly = ty(a); cx.fillStyle = INK; cx.beginPath(); cx.moveTo(tx + 1, ly); cx.lineTo(tx + 9, ly - 5); cx.lineTo(tx + 9, ly + 5); cx.closePath(); cx.fill();
+  /* rodyklė į aikštelę už ekrano */
+  s.gnd.pads.forEach((p, i) => { const px = X(p.x); if(px > 20 && px < W - 20) return; const L = px <= 20, y = Hh * 0.56 + i * 26, d = Math.round(Math.abs(p.x - s.x)), colr = i ? "#1f5fbf" : AC, w = 76;
+    cx.fillStyle = "rgba(255,255,255,.9)"; cx.strokeStyle = colr; cx.lineWidth = 1.5; cx.beginPath(); cx.roundRect(L ? 8 : W - w - 30, y - 10, w, 20, 3); cx.fill(); cx.stroke(); cx.fillStyle = colr; cx.font = "700 10.5px JetBrains Mono,monospace"; cx.textAlign = "center"; cx.fillText((L ? "◀ " : "") + p.k + " " + d + " m" + (L ? "" : " ▶"), (L ? 8 : W - w - 30) + w / 2, y + 4); });
+  if(s.mode === "paused" || s.mode === "wait"){ cx.fillStyle = "rgba(255,255,255,.9)"; cx.strokeStyle = INK; cx.lineWidth = 1.5; const w = Math.min(W - 40, 250); cx.beginPath(); cx.roundRect((W - w) / 2, Hh * 0.42, w, 34, 4); cx.fill(); cx.stroke(); cx.fillStyle = INK; cx.font = "700 12px JetBrains Mono,monospace"; cx.textAlign = "center"; cx.fillText(s.mode === "paused" ? T.paused : T.tip.resume, W / 2, Hh * 0.42 + 21); }
+}
+function tipText(s){
+  const a = alt(s), c = s.c, tp = T.tip;
+  if(s.mode === "hang") return tp.hang; if(s.mode === "wait") return tp.resume; if(s.mode !== "fly") return "";
+  if(s.fuel <= 0) return tp.nofuel;
+  const an = c.F / c.m - c.g, hb = s.vy < 0 ? s.vy * s.vy / (2 * an) : 0, p = s.gnd.pads[0], dx = p.x - s.x;
+  if(s.vy < -4 && a < hb * 1.15 + 6 && !s.thr) return tp.brake;
+  if(a < 60 && Math.abs(s.vx) > 3) return tp.side;
+  if(Math.abs(dx) > p.w) return (dx < 0 ? tp.padL : tp.padR) + " · " + Math.round(Math.abs(dx)) + " m";
+  if(a < 60 && -s.vy <= 3.2) return tp.slow;
+  return tp.fall;
+}
+function loop(ts){
+  raf = requestAnimationFrame(loop); if(!S || $("game").hidden) { last = ts; return; }
+  let dt = Math.min(0.05, (ts - last) / 1000 || 0); last = ts;
+  if(S.mode === "paused" || S.mode === "wait" || S.mode === "task"){ draw(S); return; }
+  const sub = 3; for(let i = 0; i < sub; i++) step(S, dt / sub);
+  particles(S, dt); if(S.shake > 0) S.shake = Math.max(0, S.shake - dt);
+  if(S.mode === "hang" || S.mode === "pre"){ S.y = S.gnd(0) + S.c.H + FEET + Math.sin(S.time * 1.3) * 0.5; S.car.y = S.y + 13; }
+  camUpdate(S, S.mode === "fly" ? 1 - Math.pow(0.02, dt) : 0.08);
+  draw(S); const tt = tipText(S); if($("tip").textContent !== tt) $("tip").textContent = tt;
+}
+
+/* ---------- valdymas ---------- */
+function act(){ if(S && S.mode === "wait"){ S.mode = "fly"; ui(); } }
+function release(){ if(!S || S.mode !== "hang") return; S.mode = "fly"; S.vx = S.c.vx; S.car.away = 0.02; MK.sfx.whoosh(); ui(); }
+function bindHold(id, k){
+  const b = $(id), dn = e => { e.preventDefault(); if(!S) return; if(k === "e" && S.mode === "hang"){ release(); return; } if(S.auto) return; act(); key[k] = 1; b.classList.add("on"); }, up = e => { key[k] = 0; b.classList.remove("on"); };
+  b.addEventListener("pointerdown", dn); ["pointerup", "pointercancel", "pointerleave"].forEach(ev => b.addEventListener(ev, up)); b.addEventListener("contextmenu", e => e.preventDefault());
+}
+bindHold("bL", "l"); bindHold("bR", "r"); bindHold("bE", "e");
+const KM = { ArrowLeft: "l", a: "l", A: "l", ArrowRight: "r", d: "r", D: "r", ArrowUp: "e", w: "e", W: "e", " ": "e" };
+window.addEventListener("keydown", e => {
+  if(task){ taskKey(e); return; } if(!S || $("game").hidden || $("ov").children.length) return;
+  if(e.key === "p" || e.key === "P"){ pause(); return; }
+  const k = KM[e.key]; if(!k) return; e.preventDefault(); if(e.repeat) return;
+  if(k === "e" && S.mode === "hang"){ release(); return; } if(S.auto) return; act(); key[k] = 1;
+});
+window.addEventListener("keyup", e => { const k = KM[e.key]; if(k) key[k] = 0; });
+function pause(){ if(!S) return; if(S.mode === "fly"){ S.mode = "paused"; } else if(S.mode === "paused"){ S.mode = "fly"; } ui(); }
+$("bPause").onclick = () => { MK.sfx.tap(); pause(); };
+document.addEventListener("visibilitychange", () => { if(document.hidden && S && S.mode === "fly"){ S.mode = "paused"; ui(); } });
+function ui(){
+  if(!S) return; const b = $("bE"), rel = S.mode === "hang";
+  b.classList.toggle("rel", rel); b.innerHTML = rel ? T.ctl.release : `${T.ctl.eng}<small>${T.ctl.engSub}</small>`;
+  $("bPause").textContent = S.mode === "paused" ? "▶" : "II";
+}
+
+/* ---------- borto kompiuteris: skaičiavimai ---------- */
+let task = null;
+function openTask(tk){
+  const s = S, c = s.c; let live = null;
+  if(tk.phase === "mid" && s.vy <= -8 && U.byId[tk.id].live){ const v = Math.round(-s.vy); s.vy = -v; live = { v, h: Math.round(alt(s)) }; }
+  const cxo = ctxOf(s, live), t = U.make(tk.id, cxo); t.v.live = t.live;
+  const txt = T.q[tk.id](t.v, s.t), k = s.tasks.indexOf(tk) + 1, C = T.comp;
+  task = { tk, t, txt, tries: 0, val: "", done: false, at: performance.now() }; if(s.mode === "fly") s.mode = "task"; key.l = key.r = key.e = 0;
+  $("ov").className = ""; $("ov").innerHTML = `<div class="sheet" id="sheet"><div class="ch"><span>${C.head} · <b>${C[tk.phase]}</b></span><span>${C.of(k, s.tasks.length)}</span></div>
+    <p class="qq">${txt.q}</p><p class="rnd">${C.round[t.dec]}</p>
+    <div class="ansrow"><div class="disp cur" id="disp" data-ph="${C.ans}"></div><span class="unit">${t.unit}</span></div>
+    <div class="fb" id="fb"></div>
+    <div class="pad" id="pad">${["1", "2", "3", "4", "5", "⌫", "6", "7", "8", "9", "0", ","].map(k => `<button type="button" data-k="${k}">${k}</button>`).join("")}</div>
+    <button type="button" class="btn or" id="chk">${C.check}</button>
+    ${tk.phase === "mid" ? `<button type="button" class="btn sec" id="peek">${C.peek}</button>` : ""}
+    <p class="rw">${tk.phase === "post" ? C.rewardPost : C.reward}</p></div>`;
+}
+function setVal(v){ task.val = v; $("disp").textContent = v; }
+function padKey(k){
+  if(!task || task.done) return; let v = task.val;
+  if(k === "⌫") v = v.slice(0, -1); else if(k === ","){ if(v.indexOf(",") < 0) v = (v || "0") + ","; } else if(v.replace(",", "").length < 9) v = v === "0" ? k : v + k;
+  setVal(v);
+}
+function taskKey(e){
+  if(/^[0-9]$/.test(e.key)) padKey(e.key); else if(e.key === "," || e.key === ".") padKey(","); else if(e.key === "Backspace"){ e.preventDefault(); padKey("⌫"); } else if(e.key === "Enter"){ e.preventDefault(); const b = $("chk") || $("cont"); if(b) b.click(); }
+}
+function checkTask(){
+  const C = T.comp, s = S, tk = task.tk, t = task.t, fb = $("fb");
+  if(!task.val || task.val === "0,"){ fb.className = "fb"; fb.textContent = C.empty; return; }
+  const x = parseFloat(task.val.replace(",", ".")), ok = U.check(t, x); task.tries++;
+  const sol = `<span class="sol">${task.txt.s}</span>`;
+  if(ok){
+    task.done = true; MK.sfx.good(); tk.res = task.tries === 1 ? 1 : 2; s.okN++;
+    let msg; if(tk.phase === "post") msg = C.okPost; else { const f = task.tries === 1 ? 15 : 7; s.bonus += f / 100; s.fuel += s.c.burn * f / 100; s.fuel0 = Math.max(s.fuel0, s.fuel); msg = (task.tries === 1 ? C.ok1 : C.ok2)(f); if(s.okN >= 2 && !s.marker){ s.marker = true; msg += " " + C.marker; } }
+    fb.className = "fb ok"; fb.innerHTML = `<b>${msg}</b>${sol}`;
+  } else if(task.tries === 1){ MK.sfx.bad(); fb.className = "fb bad"; fb.innerHTML = `<b>${C.wrong1}</b> ${task.txt.h}`; setVal(""); return; }
+  else { task.done = true; MK.sfx.bad(); tk.res = 0; fb.className = "fb bad"; fb.innerHTML = `<b>${C.wrong2}</b>${sol}<span class="sol"><b>${C.right} ${n(t.v.ans)} ${t.unit}</b></span>`; }
+  $("disp").classList.remove("cur"); $("pad").hidden = true; const nx = nextTask(), b = $("chk"); b.id = "cont"; b.className = "btn";
+  b.textContent = tk.phase === "post" && !nx ? C.toReport : tk.phase !== "post" && !nx ? C.fly : tk.phase === "mid" ? C.fly : C.cont; const pk = $("peek"); if(pk) pk.remove();
+}
+function nextTask(){ const s = S, ph = task.tk.phase; return ph === "mid" ? null : s.tasks.find(t => t.phase === ph && t.res == null && t !== task.tk); }
+function closeTask(){
+  const s = S, ph = task.tk.phase, nx = nextTask(); task = null; $("ov").innerHTML = "";
+  if(nx){ openTask(nx); return; }
+  if(ph === "pre"){ s.fuel = s.c.burn * (1 + s.bonus); s.fuel0 = s.fuel; s.mode = "hang"; ui(); }
+  else if(ph === "mid"){ s.mode = "wait"; ui(); }
+  else report();
+}
+$("ov").addEventListener("click", e => {
+  if(task && task.tk.phase === "mid" && performance.now() - task.at < 450) return;      /* ką tik iššoko skrydžio metu – atsitiktinio palietimo nepriimti */
+  const k = e.target.closest("[data-k]"); if(k){ MK.sfx.tap(); padKey(k.dataset.k); return; }
+  if(e.target.closest("#chk")){ checkTask(); return; }
+  if(e.target.closest("#cont")){ MK.sfx.tap(); closeTask(); return; }
+  if(e.target.closest("#peek")){ $("sheet").hidden = true; $("ov").className = "clear"; const b = document.createElement("button"); b.className = "btn peek"; b.id = "unpeek"; b.textContent = T.comp.back; $("ov").appendChild(b); return; }
+  if(e.target.closest("#unpeek")){ $("unpeek").remove(); $("sheet").hidden = false; $("ov").className = ""; return; }
+  if(e.target.closest("#dIntro")){ MK.sfx.tap(); const C = career(); C.intro = 1; MK.set(CKEY, C); $("ov").innerHTML = ""; beginTasks(); return; }
+  const a = e.target.closest("[data-a]"); if(!a) return; MK.sfx.tap(); const act = a.dataset.a; $("ov").innerHTML = "";
+  if(act === "retry"){ S.retries++; S.auto = false; resetFlight(S); S.mode = "hang"; ui(); }
+  else if(act === "auto"){ S.auto = true; resetFlight(S); S.mode = "fly"; S.vx = S.c.vx; S.car.away = 0.02; ui(); }
+  else if(act === "post"){ const tk = S.tasks.find(t => t.phase === "post" && t.res == null); tk ? openTask(tk) : report(); }
+  else if(act === "next") start(S.mi + 1); else if(act === "again") start(S.mi); else showMenu();
+});
+
+/* ---------- tūpimo baigtis, ataskaita ---------- */
+function outcome(s){
+  const O = T.out, tc = s.touch, where = tc.pad === "A" ? O.padA : tc.pad === "B" ? O.padB : O.off;
+  if(tc.kind === "crash"){
+    const why = tc.sl >= 14 && tc.vv <= 6 && tc.vh <= 4 && tc.ad <= 25 ? O.crashS : tc.ad > 25 && tc.vv <= 6 && tc.vh <= 4 ? O.crashA(Math.round(tc.ad)) : O.crashV(n(tc.vv, 1), n(tc.vh, 1));
+    $("ov").className = ""; $("ov").innerHTML = `<div class="sheet outc"><div class="ch"><span>${T.comp.head}</span></div><h3>${tc.ad > 25 || tc.sl >= 14 ? O.tip : O.crash}</h3><p>${why} ${O.crashWhy}</p>
+      <button type="button" class="btn or" data-a="retry">${O.retry}</button>${s.crashes >= 2 ? `<button type="button" class="btn sec" data-a="auto">${O.auto1}</button>` : ""}<p class="rw">${O.retryNote}${s.crashes >= 2 ? " " + O.autoNote : ""}</p></div>`;
+    return;
+  }
+  $("ov").className = "clear"; $("ov").innerHTML = `<div class="sheet outc"><div class="ch"><span>${T.comp.head}</span></div><h3>${tc.auto ? O.auto : (tc.kind === "soft" ? O.soft : O.hard) + " – " + where}</h3><p>${T.rep.touch(n(tc.vv, 1), n(tc.vh, 1), Math.round(tc.ad))}. ${tc.auto ? "" : tc.kind === "soft" ? O.softD : O.hardD}</p><button type="button" class="btn" data-a="post">${T.comp.cont}</button></div>`;
+}
+function report(){
+  const s = S, c = s.c, tc = s.touch, R = T.rep, O = T.out;
+  const landPts = tc.auto ? 0 : Math.max(0, (tc.kind === "soft" ? (tc.pad ? 30 : 15) : (tc.pad ? 18 : 8)) + Math.round(10 * clamp(tc.fuel / c.burn, 0, 1)) - 5 * s.retries);
+  const taskPts = s.tasks.reduce((a, t) => a + (t.res === 1 ? 15 : t.res === 2 ? 8 : 0), 0), max = 15 * s.tasks.length + 40, pts = landPts + taskPts, fr = pts / max;
+  const stars = fr >= 0.85 ? 3 : fr >= 0.6 ? 2 : fr >= 0.3 ? 1 : 0, first = s.tasks.filter(t => t.res === 1).length;
+  MK.best(GAME, s.t.id, stars);
+  const C = career(); C.land++; if(tc.kind === "soft" && !tc.auto) C.soft++; C.ok += first; C.all += s.tasks.length;
+  let smp = R.noSample; if(tc.kind === "soft" && tc.pad && !tc.auto){ const i = tc.pad === "B" ? 1 : 0, have = (C.smp[s.t.id] || [0, 0]); smp = have[i] ? R.sampleHave(s.t.sample[i]) : R.sample(s.t.sample[i]); have[i] = 1; C.smp[s.t.id] = have; }
+  MK.set(CKEY, C); if(stars >= 2) MK.sfx.win();
+  const where = tc.pad === "A" ? O.padA : tc.pad === "B" ? O.padB : O.off;
+  $("ov").className = ""; $("ov").innerHTML = `<div class="sheet rep"><div class="ch"><span>${R.head}</span></div><div class="who">${s.t.name} · ${s.t.site}</div><div class="big">${[0, 1, 2].map(i => i < stars ? "<u>★</u>" : "★").join("")}</div><h3>${R.pts(pts, max)}</h3><p class="qq">${R.stars[stars]}</p>
+    <ul><li>${R.landing}: ${tc.auto ? O.auto : (tc.kind === "soft" ? O.soft : O.hard) + " – " + where}<small>${R.touch(n(tc.vv, 1), n(tc.vh, 1), Math.round(tc.ad))} · ${R.fuel(Math.round(tc.fuel / c.burn * 100))}${s.retries ? " · " + R.retries(s.retries) : ""}</small></li>
+    <li>${R.calc(first, s.tasks.length)}<small>${s.tasks.map((t, i) => (i + 1) + (t.res === 1 ? " ✓" : t.res === 2 ? " ✓ " + R.second : " ✗")).join(" · ")}</small></li><li>${smp}</li></ul>
+    <div class="row2">${s.mi < MIS.length - 1 ? `<button type="button" class="btn" data-a="next">${R.next}</button>` : ""}<button type="button" class="btn sec" data-a="again">${R.again}</button></div><button type="button" class="btn sec" data-a="menu">${R.menu}</button></div>`;
+}
+
+/* ---------- misijos pradžia, meniu ---------- */
+function beginTasks(){ const tk = S.tasks.find(t => t.phase === "pre" && t.res == null); if(tk) openTask(tk); else { S.mode = "hang"; ui(); } }
+function start(mi){
+  $("menu").hidden = true; $("game").hidden = false; task = null; key.l = key.r = key.e = 0;
+  fit(); S = newMission(mi); const c = S.c;
+  $("minfo").innerHTML = `<b>${S.t.name} · ${S.t.site}</b>${T.bodyInfo(c.g, c.m, c.F)}`; $("keys").textContent = T.keys; ui(); window.scrollTo(0, 0); draw(S);
+  if(!career().intro) $("ov").innerHTML = `<div class="sheet"><div class="ch"><span>${T.comp.head}</span></div><h3 style="margin:0 0 8px;font:700 20px/1.2 var(--body)">${T.introT}</h3><div class="intro">${T.manual[0].html}</div><button type="button" class="btn" id="dIntro">${T.introBtn}</button></div>`;
+  else beginTasks();
+}
+const disc = (th, i) => { const t = TH[th]; return `<svg viewBox="0 0 54 54" aria-hidden="true"><circle cx="27" cy="27" r="23" fill="${t.gr[0]}" stroke="#1c2330" stroke-width="1.5"/><path d="M8 ${20 + i}q19 ${6 - i} 38 0M6 ${31 - i}q21 -7 42 2" fill="none" stroke="${t.gr[1]}" stroke-width="3"/><circle cx="${18 + i * 3}" cy="${36 - i * 2}" r="4" fill="${t.far[1]}" stroke="#1c2330" stroke-width="1"/><path d="M27 4a23 23 0 0 1 0 46a30 30 0 0 0 0-46z" fill="rgba(28,35,48,.14)"/></svg>`; };
+function showMenu(){
+  S = null; task = null; $("ov").innerHTML = ""; $("game").hidden = true; $("menu").hidden = false;
+  const best = MK.best(GAME), tot = Object.values(best).reduce((a, b) => a + (+b || 0), 0), rk = T.ranks[tot >= 17 ? 4 : tot >= 12 ? 3 : tot >= 7 ? 2 : tot >= 3 ? 1 : 0], C = career();
+  const got = T.missions.reduce((a, m) => a + ((C.smp[m.id] || [0, 0])[0] ? 1 : 0) + ((C.smp[m.id] || [0, 0])[1] ? 1 : 0), 0);
+  $("lic").innerHTML = `<h2>${T.logT}</h2><p class="rank">${rk}<span class="bars">${Array.from({ length: 18 }, (_, i) => `<i${i < tot ? ' class="on"' : ""}></i>`).join("")}</span></p><p>${T.career(C)}</p>
+    <h2 style="margin-top:12px">${T.samplesT} · ${T.sampleN(got, 12)}</h2><div class="smp">${T.missions.map((m, i) => [0, 1].map(k => { const on = (C.smp[m.id] || [0, 0])[k]; return `<i class="${on ? "on" : ""}" title="${on ? m.sample[k] : ""}">${on ? `<span style="background:${TH[MIS[i].th].gr[k]}"></span>` : m.name.slice(0, 2).toUpperCase() + (k ? "·B" : "·A")}</i>`; }).join("")).join("")}</div><p class="sm">${T.sampleHint}</p>`;
+  $("mlist").innerHTML = T.missions.map((m, i) => { const c = MIS[i]; return `<button type="button" class="mis" data-i="${i}">${disc(c.th, i)}<b>${m.name}<small>${m.site}</small>${c.hard ? `<span class="tag">${T.exam}</span>` : ""}</b><span>${m.sub}</span><code>g = ${n(c.g)} m/s² · ${T.tasksN(c.nT)}</code><span class="stars" aria-label="${best[m.id] || 0} iš 3">${[0, 1, 2].map(k => k < (best[m.id] || 0) ? "<u>★</u>" : "★").join("")}</span></button>`; }).join("");
+  window.scrollTo(0, 0);
+}
+$("mlist").addEventListener("click", e => { const b = e.target.closest("[data-i]"); if(b) start(+b.dataset.i); });
+$("quit").onclick = () => { MK.sfx.tap(); showMenu(); };
+window.addEventListener("resize", () => { if(S){ fit(); draw(S); } });
+$("app").prepend(MK.top({ title: T.title, grade: 11 }));
+$("kick").textContent = T.kicker; $("h1").textContent = T.h1; $("lead").textContent = T.lead; $("note").textContent = T.note; $("misT").textContent = T.missionsT; $("manT").textContent = T.manualT;
+$("manual").innerHTML = T.manual.map(m => `<details class="man"><summary>${m.name}</summary>${m.html}</details>`).join("");
+$("bL").setAttribute("aria-label", T.ctl.left); $("bR").setAttribute("aria-label", T.ctl.right);
+window.__nm = { get S(){ return S; }, get task(){ return task; }, MIS, key, step, alt, autopilot };
+showMenu(); raf = requestAnimationFrame(loop);
+</script>
+</body>
+</html>
