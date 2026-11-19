@@ -82,6 +82,7 @@ function drawMenu(){
   $("heroArt").innerHTML = heroSvg();
   const has = hasSave();
   $("starts").innerHTML = (has ? `<button type="button" class="mk-btn" data-go="cont">${T.cont}</button><button type="button" class="mk-btn alt" data-go="new">${T.newGame}</button>` : `<button type="button" class="mk-btn" data-go="new">${T.start}</button>`);
+  $("starts").insertAdjacentHTML("beforeend", S.vaultDone ? `<a class="mk-btn alt" href="pozemis/" style="text-decoration:none">${T.caveBtn}</a>` : `<p class="small" style="text-align:center">${T.caveSoon}</p>`);
   $("qL").textContent = T.quality;
   $("qSeg").innerHTML = [["high", T.qHigh], ["low", T.qLow]].map(([k, l]) => `<button type="button" data-q="${k}" aria-pressed="${Q === k}">${l}</button>`).join("");
   $("qN").textContent = T.qNote;
@@ -253,7 +254,7 @@ function blocked(x, z, feet, step){
   return 0;
 }
 function headBlocked(x, z, feet){ for(const o of nearAll(x, z)) if(o.on && o.t === "b" && x > o.x0 - RAD && x < o.x1 + RAD && z > o.z0 - RAD && z < o.z1 + RAD && o.y0 < feet + 1.8 && o.y1 > feet + 1.15) return true; return false; }
-let waterWarn = 0;
+let waterWarn = 0, slideWarn = 0;
 function movePlayer(dt){
   /* žiūrėjimas */
   P.yaw -= lookDX * 0.0024; P.pitch -= lookDY * 0.0024; lookDX = lookDY = 0;
@@ -290,6 +291,11 @@ function movePlayer(dt){
     const sup = world.groundAt(P.x, P.z, P.y, 0.06);
     if(ny <= sup){ P.y = sup; P.vy = 0; P.ground = true; } else P.y = ny;
   }
+  /* Erelio uolos šlaitas per status: juo neužlipsi – žaidėjas nuslysta žemyn (į viršų veda tik stulpai) */
+  if(P.ground){ const [ex, , ez] = world.eagleTop, dC = Math.hypot(P.x - ex, P.z - ez);
+    if(dC > 24.3 && dC < 32 && Math.abs(world.terrain(P.x, P.z) - P.y) < 0.06 && P.y > world.terrain(ex + (P.x - ex) / dC * 33, ez + (P.z - ez) / dC * 33) + 0.4){
+      const k = 9 * dt / dC; P.x += (P.x - ex) * k; P.z += (P.z - ez) * k; P.y = world.terrain(P.x, P.z);
+      if(performance.now() - slideWarn > 6000){ slideWarn = performance.now(); toast(T.cliffSlide, 3600); } } }
   if(P.y < -20){ placeSafe(); }
   if(P.ground) pillarCheck();
   safeTrack(dt, l);
@@ -353,6 +359,7 @@ function interactions(){
   if(!S.gate){ const d = d2(gx, gz); const have = IDS.filter(i => S.found[i] && !S.placed[i]).length; L.push({ d, r: 8, label: have ? T.act.place : T.act.gate, f: gateAct }); }
   else if(!S.red && redD.visible) L.push({ d: d2(redD.position.x, redD.position.z), r: 26, label: T.act.fight, f: () => startFight("red") });
   else if(S.red && !S.vaultDone) L.push({ d: d2(gx, gz), r: 14, label: T.act.vault, f: enterVault });
+  else if(S.vaultDone) L.push({ d: d2(gx, gz), r: 12, label: T.act.cave, f: () => { S.pos = [P.x, P.y, P.z]; S.yaw = P.yaw; save(); location.href = "pozemis/"; } });
   let best = null; for(const it of L) if(it.d < it.r && (!best || it.d - it.r < best.d - best.r)) best = it;
   return best;
 }

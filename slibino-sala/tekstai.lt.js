@@ -28,10 +28,13 @@ window.MK_T = {
   compass: { N: "Š", E: "R", S: "P", W: "V" },
   dirs: ["šiaurėje", "šiaurės rytuose", "rytuose", "pietryčiuose", "pietuose", "pietvakariuose", "vakaruose", "šiaurės vakaruose"],
 
-  act: { read: "Skaityti", open: "Atidaryti", unlock: "Atrakinti", take: "Paimti", lever: "Patraukti svirtį", place: "Įdėti kristalus", fight: "Kovoti", gate: "Apžiūrėti vartus", vault: "Įeiti į lobyną" },
+  act: { read: "Skaityti", open: "Atidaryti", unlock: "Atrakinti", take: "Paimti", lever: "Patraukti svirtį", place: "Įdėti kristalus", fight: "Kovoti", gate: "Apžiūrėti vartus", vault: "Įeiti į lobyną", cave: "Leistis į kalno požemį" },
   dig: { nothing: "Nieko neradai – tik smėlis ir žemė.", rock: "Čia per kieta žemė kasti.", water: "Vandenyje kasti negalima.", found: "Kastuvas atsitrenkė į kažką kieto… Skrynia!" },
   crouchStuck: "Čia per žema atsistoti.",
   cantSwim: "Per gilu – plaukti negalima.",
+  cliffSlide: "Per statu – nuslydai žemyn. Į Erelio uolą veda tik akmeniniai stulpai.",
+  caveBtn: "Naujas pasaulis: Kalno požemis →",
+  caveSoon: "Įveikus salą atsivers naujas pasaulis – Kalno požemis.",
 
   crystals: {
     shell:    { n: "Kriauklės kristalas", c: "oranžinis", where: "paplūdimyje" },
@@ -123,7 +126,7 @@ window.MK_T = {
     laterToast: "Į lobyną gali grįžti prie slibino vartų.",
     finish: "Pabaiga →"
   },
-  winMore: "Gali toliau tyrinėti salą arba pradėti naują kelionę.",
+  winMore: "Slibino vartai dabar veda į naują pasaulį – Kalno požemį! Prieik prie vartų arba rinkis jį meniu.",
   explore: "Tyrinėti toliau",
 
   /* užduočių langas */
