@@ -353,4 +353,20 @@ button{font:inherit;color:inherit}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
 `;
 const st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
+
+/* ---------- telefonas neturi netyčia priartinti žaidimo ----------
+   1) dvigubas bakstelėjimas nebeartina (touch-action: manipulation – suspaudimas dviem pirštais meniu lieka galimas);
+   2) įvedimo laukeliai ne mažesni nei 16 px – kitaip iPhone priartina juos paspaudus;
+   3) jei bent vienas pirštas yra žaidimo lauke (canvas, svg, valdymo zona), dviejų pirštų gestas neartina puslapio:
+      taip vairalazdė ir žiūrėjimas / žemėlapio artinimas dviem pirštais nebedidina viso ekrano. */
+const zst = document.createElement("style");
+zst.textContent = "html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}input,select,textarea{font-size:max(16px,1em)}";
+document.head.appendChild(zst);
+const inGame = t => { for(let el = t && t.nodeType === 1 ? t : t && t.parentElement; el && el !== document.documentElement; el = el.parentElement){
+  if(el.tagName === "CANVAS" || el.tagName === "svg" || el.tagName === "SVG") return true;
+  const ta = getComputedStyle(el).touchAction; if(ta === "none") return true; } return false; };
+let gameTouch = false;
+document.addEventListener("touchstart", e => { gameTouch = [...e.touches].some(t => inGame(t.target)); }, { passive: true, capture: true });
+document.addEventListener("touchmove", e => { if(e.touches.length > 1 && gameTouch && e.cancelable) e.preventDefault(); }, { passive: false, capture: true });
+for(const ev of ["gesturestart", "gesturechange"]) document.addEventListener(ev, e => { if(gameTouch) e.preventDefault(); }, { passive: false });
 })();
