@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="MokomėsKartu">
+<link rel="apple-touch-icon" href="/logo/mk-ikona-180.png">
+<title>Gelbėtojų kopėčios – MokomėsKartu.lt</title>
+<meta name="description" content="Matematikos žaidimas 9 klasei: vairuok autokopėčias ir gelbėk žmones – sinusas, kosinusas ir tangentas stačiajame trikampyje, aukščio matavimas kampamačiu, atstumas iki neprieinamos vietos.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f2f3ef">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<script src="uzduotys.js"></script>
+<style>
+/* Gelbėtojų kopėčios: santūrus techninis stilius – šviesus popierius, tušo linijos, signalinė raudona ir gintaro spalva. */
+body{--paper:#f2f3ef;--ink:#1d2530;--soft:#5c6873;--line:#c5cbc9;--red:#c8321f;--amb:#e9a23b;--okc:#1b7a43;--card:#fbfbf8;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--kid:var(--body);--mono:ui-monospace,"SF Mono",Menlo,Consolas,"Roboto Mono",monospace;
+  background:#f2f3ef;background-image:none;color:var(--ink);font-weight:500}
+.mk-app{max-width:780px;padding-block:6px 14px}
+.mk-top{padding-bottom:8px}
+.mk-back,.mk-ico{border-radius:5px;border-width:1.5px;box-shadow:none;height:40px}
+.mk-ico{width:40px}.mk-ico[data-k="music"]{display:none}
+.mk-title{font:700 14px/1.1 var(--body);letter-spacing:.09em;text-transform:uppercase}
+.kick{font:700 11px/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
+h1{margin:6px 0;font:800 clamp(30px,8vw,42px)/1.02 var(--body);letter-spacing:-.02em}
+.lead{margin:0 0 6px;font-size:15.5px;line-height:1.5;max-width:62ch}
+.note{margin:0 0 14px;font:500 13px/1.4 var(--body);color:var(--soft)}
+.hero{display:block;width:100%;height:auto;border:1.5px solid var(--ink);border-radius:5px;background:#e8eef2;margin-bottom:12px}
+h2{margin:18px 0 8px;font:700 12px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.rank{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:9px 12px;border:1.5px solid var(--ink);border-radius:5px;background:var(--card);font-size:14.5px}
+.rank b{font-weight:800}.rank .bar{flex:1 1 90px;height:8px;border:1.5px solid var(--ink);border-radius:2px;background:#fff;overflow:hidden}.rank .bar i{display:block;height:100%;background:var(--red)}
+.dl{display:grid;gap:8px}
+.dc{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;padding:10px 12px;border:1.5px solid var(--ink);border-radius:5px;background:var(--card);cursor:pointer;width:100%}
+.dc:hover{background:#fff}.dc:active{transform:translateY(1px)}
+.dc .no{width:44px;height:44px;display:grid;place-items:center;border-radius:4px;background:var(--red);color:#fff;font:800 20px/1 var(--mono)}
+.dc b{display:block;font:800 17px/1.15 var(--body)}.dc small{display:block;font:700 11px/1.3 var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--red);margin:2px 0}
+.dc span.ds{display:block;font-size:13.5px;line-height:1.35;color:#39424d}
+.st{display:flex;gap:2px}.st svg{width:17px;height:17px}
+.album{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:5px}
+.al{padding:6px 7px;min-width:0;border:1.5px dashed var(--line);border-radius:4px;font-size:12.5px;line-height:1.2;color:#8a929a;display:flex;gap:5px;align-items:center}
+.al.on{border:1.5px solid var(--ink);color:var(--ink);background:var(--card);font-weight:700}
+.al i{flex:none;width:10px;height:10px;border-radius:50%;border:1.5px solid currentColor}.al.on i{background:var(--okc);border-color:var(--ink)}
+details.man{border:1.5px solid var(--ink);border-radius:5px;background:var(--card);margin-bottom:6px}
+details.man summary{padding:10px 12px;font:700 15px/1.2 var(--body);cursor:pointer}
+details.man>*:not(summary){margin:0 12px 10px;font-size:14.5px;line-height:1.5}
+details.man svg{display:block;max-width:300px;width:100%;margin:6px 0}details.man svg text{font-family:var(--body);font-style:italic;font-weight:700}
+details.man table{border-collapse:collapse;font:500 14px/1.2 var(--mono)}details.man td,details.man th{border:1.5px solid var(--line);padding:5px 9px;text-align:center}
+/* žaidimo ekranas */
+#play{display:flex;flex-direction:column;gap:6px}
+.bar1{display:flex;gap:6px;align-items:center}
+.bar1 .cl{flex:1;min-width:0;font:700 11.5px/1.2 var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--soft);overflow:hidden}
+.sb{height:38px;padding:0 11px;border:1.5px solid var(--ink);border-radius:5px;background:var(--card);font:700 13px/1 var(--body);cursor:pointer;white-space:nowrap}
+.sb:active{background:#e9ebe6}
+#stage{position:relative;border:1.5px solid var(--ink);border-radius:5px;overflow:hidden;background:#dfe7ec;height:min(52vh,460px);height:min(calc(100dvh - 374px),460px);min-height:270px;touch-action:none}
+#cv{display:block;width:100%;height:100%}
+#toast{position:absolute;left:8px;right:8px;top:8px;text-align:center;pointer-events:none}
+#toast span{display:inline-block;padding:5px 10px;border-radius:4px;background:rgba(29,37,48,.88);color:#fff;font:600 13px/1.3 var(--body)}
+#inst{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.chip{padding:5px 8px;border:1.5px solid var(--ink);border-radius:5px;background:var(--card);min-width:0}
+.chip small{display:block;font:700 9.5px/1.2 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip b{display:block;font:700 18px/1.15 var(--mono);white-space:nowrap}
+.chip.off{border-style:dashed;border-color:var(--line);background:transparent}.chip.off b{font-size:12px;line-height:1.75;color:#8a929a;font-weight:600}
+.chip.lad{background:#fdf1e7}.chip.lim b{color:var(--red)}
+.chip .z{float:right;margin:-1px -3px 0 4px;width:30px;height:30px;border:1.5px solid var(--ink);border-radius:4px;background:#fff;font:700 13px/1 var(--mono);cursor:pointer}
+#pad{display:grid;gap:6px;user-select:none;-webkit-user-select:none}
+.row{display:grid;gap:6px}
+.r3{grid-template-columns:1fr 1fr 1.25fr}.r4{grid-template-columns:repeat(4,1fr)}.r2{grid-template-columns:1fr 1.6fr}
+.kb{position:relative;height:60px;border:1.5px solid var(--ink);border-radius:6px;background:var(--card);font:800 14px/1.1 var(--body);cursor:pointer;touch-action:none;display:grid;place-items:center;padding:2px;box-shadow:0 3px 0 rgba(29,37,48,.18)}
+.kb svg{width:26px;height:26px;display:block}.kb small{display:block;font:700 10px/1.1 var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--soft)}
+.kb.dn,.kb:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(29,37,48,.18);background:#e9ebe6}
+.kb.pri{background:var(--red);color:#fff;letter-spacing:.06em}.kb.pri.dn,.kb.pri:active{background:#a82818}
+.kb.sec{background:var(--amb)}
+.kb:disabled{opacity:.4;cursor:default}
+.keys{margin:2px 0 0;font:500 11.5px/1.4 var(--mono);color:var(--soft)}
+@media (hover:none),(pointer:coarse){.keys{display:none}}
+/* langai */
+#ov:empty{display:none}
+#ov{position:fixed;inset:0;z-index:50;background:rgba(29,37,48,.42);display:flex;align-items:flex-end;justify-content:center;padding:10px;overflow:auto}
+#play.cm #stage{height:20vh;min-height:130px}#play.cm #pad,#play.cm .keys{display:none}
+.card{pointer-events:auto;width:100%;max-width:560px;max-height:calc(100dvh - 20px);overflow:auto;background:var(--card);border:1.5px solid var(--ink);border-radius:8px;padding:14px 14px 12px;box-shadow:0 10px 30px rgba(29,37,48,.3)}
+@media (min-width:700px){#ov{align-items:center}}
+.card .k{font:700 11px/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--red);display:flex;gap:8px;align-items:center}
+.card .k::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--red)}
+.card h3{margin:6px 0 8px;font:800 20px/1.15 var(--body)}
+.card p{margin:0 0 8px;font-size:15px;line-height:1.48}
+.card p.cond{padding-left:10px;border-left:3px solid var(--amb)}
+.card p.rules{font-size:12.5px;line-height:1.4;color:var(--soft);margin-top:10px}
+.card p.tut{padding:8px 10px;background:#fdf1e7;border-radius:5px;font-size:13.5px}
+.card ol{margin:0 0 8px;padding-left:20px;font-size:14.5px;line-height:1.5}.card ol li{margin-bottom:5px}
+.card .hint{padding:8px 10px;border:1.5px solid var(--line);border-radius:5px;background:#fff;font-size:14px;line-height:1.45;margin-bottom:8px}
+.card .hint b.t{display:block;font:700 10.5px/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--soft);margin-bottom:2px}
+.btns{display:flex;gap:8px;margin-top:10px}.btns button{flex:1;height:48px;border:1.5px solid var(--ink);border-radius:6px;background:#fff;font:800 15px/1 var(--body);cursor:pointer}
+.btns button.pri{background:var(--red);color:#fff}
+.big{font:800 26px/1.1 var(--mono);margin:4px 0 8px}
+.stars{display:flex;gap:4px;margin:6px 0 10px}.stars svg{width:34px;height:34px}
+.calc{border:1.5px solid var(--ink);border-radius:6px;background:var(--card);padding:8px}
+.calc .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font:700 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.calc .scr{border:1.5px solid var(--ink);border-radius:5px;background:#fff;padding:4px 9px;margin-bottom:6px;min-height:52px}
+.calc .ex{font:500 14px/1.3 var(--mono);color:var(--soft);min-height:18px;word-break:break-all}
+.calc .rs{font:700 24px/1.2 var(--mono);text-align:right;min-height:29px}
+.calc .ks{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.calc .ks button{height:38px;border:1.5px solid var(--ink);border-radius:5px;background:#fff;font:700 16px/1 var(--mono);cursor:pointer;padding:0}
+.calc .ks button.f{background:#eef0ec;font-size:13.5px}.calc .ks button.e{background:var(--red);color:#fff}.calc .ks button:active{background:#dfe2dc}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <main id="menu">
+    <svg class="hero" viewBox="0 0 560 190" role="img" aria-label="Autokopėčios prie pastato: kopėčios, siena ir žemė sudaro statųjį trikampį">
+      <rect width="560" height="190" fill="#e8eef2"/>
+      <path d="M0 150h560v40H0z" fill="#aab2b7"/><path d="M0 150h560" stroke="#1d2530" stroke-width="1.5"/>
+      <path d="M0 150V104h28V88h30v36h22V96h36v54z" fill="#d3dade"/>
+      <rect x="400" y="14" width="170" height="136" fill="#e9dccb" stroke="#1d2530" stroke-width="1.5"/>
+      <g fill="#9fb4c2" stroke="#1d2530" stroke-width="1"><rect x="424" y="30" width="20" height="24"/><rect x="464" y="30" width="20" height="24"/><rect x="504" y="30" width="20" height="24"/><rect x="424" y="72" width="20" height="24"/><rect x="464" y="72" width="20" height="24"/><rect x="504" y="72" width="20" height="24"/><rect x="424" y="112" width="20" height="24"/><rect x="464" y="112" width="20" height="24"/><rect x="504" y="112" width="20" height="24"/></g>
+      <g fill="#d9dde0" opacity=".96"><circle cx="420" cy="34" r="30"/><circle cx="462" cy="22" r="34"/><circle cx="512" cy="30" r="36"/><circle cx="548" cy="54" r="30"/><circle cx="440" cy="62" r="24"/></g>
+      <path d="M196 126L400 40" stroke="#1d2530" stroke-width="6"/><path d="M196 126L400 40" stroke="#e7e9ea" stroke-width="3" stroke-dasharray="5 5"/>
+      <path d="M196 126H400V40" fill="none" stroke="#c8321f" stroke-width="1.5" stroke-dasharray="6 4"/><path d="M388 126v-12h12" fill="none" stroke="#c8321f" stroke-width="1.5"/>
+      <path d="M232 126a36 36 0 0 0-3-14" fill="none" stroke="#c8321f" stroke-width="2"/>
+      <g font-family="system-ui,sans-serif" font-weight="700" font-style="italic" font-size="15" fill="#c8321f"><text x="240" y="121">α</text><text x="286" y="76">L</text><text x="408" y="90">h</text><text x="292" y="143">d</text></g>
+      <g stroke="#1d2530" stroke-width="1.5" stroke-linejoin="round"><rect x="176" y="134" width="118" height="9" fill="#39424d"/><rect x="176" y="124" width="84" height="12" fill="#c8321f"/><path d="M262 143v-27h20l12 10v17z" fill="#c8321f"/><path d="M268 121h13l8 7h-21z" fill="#cfe3ee"/><circle cx="196" cy="126" r="5" fill="#8e979e"/>
+      <circle cx="194" cy="146" r="8" fill="#1d2530"/><circle cx="212" cy="146" r="8" fill="#1d2530"/><circle cx="276" cy="146" r="8" fill="#1d2530"/><rect x="270" y="111" width="8" height="5" fill="#2b6fd6"/></g>
+      <g fill="#8e979e"><circle cx="194" cy="146" r="3"/><circle cx="212" cy="146" r="3"/><circle cx="276" cy="146" r="3"/></g>
+    </svg>
+    <div class="kick" id="kick"></div><h1 id="h1"></h1><p class="lead" id="lead"></p><p class="note" id="note"></p>
+    <div class="rank" id="rank"></div>
+    <h2 id="disT"></h2><div class="dl" id="dl"></div>
+    <h2 id="albT"></h2><div class="album" id="album"></div>
+    <h2 id="manT"></h2><div id="manual"></div>
+  </main>
+  <main id="play" hidden>
+    <div class="bar1"><div class="cl" id="callL"></div><button class="sb" id="bTask" type="button"></button><button class="sb" id="bCalc" type="button"></button><button class="sb" id="bQuit" type="button" aria-label="">✕</button></div>
+    <div id="stage"><canvas id="cv"></canvas><div id="toast"></div></div>
+    <div id="inst"></div>
+    <div id="pad">
+      <div class="row r3" id="padD">
+        <button class="kb" type="button" data-h="back"><span><svg viewBox="0 0 24 24"><path d="M15 4L7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="kb" type="button" data-h="fwd"><span><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="kb sec" type="button" id="bLegs"></button>
+      </div>
+      <div id="padL" hidden>
+        <div class="row r4">
+          <button class="kb" type="button" data-h="aDn"><span><svg viewBox="0 0 24 24"><path d="M4 9l8 8 8-8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg><small id="lAd"></small></span></button>
+          <button class="kb" type="button" data-h="aUp"><span><svg viewBox="0 0 24 24"><path d="M4 15l8-8 8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg><small id="lAu"></small></span></button>
+          <button class="kb" type="button" data-h="lDn"><span><svg viewBox="0 0 24 24"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg><small id="lLd"></small></span></button>
+          <button class="kb" type="button" data-h="lUp"><span><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg><small id="lLu"></small></span></button>
+        </div>
+        <div class="row r2" style="margin-top:6px">
+          <button class="kb" type="button" id="bStow"></button>
+          <button class="kb pri" type="button" id="bGo"></button>
+        </div>
+      </div>
+    </div>
+    <div id="calc" class="calc" hidden></div>
+    <p class="keys" id="keys"></p>
+  </main>
+</div>
+<div id="ov"></div>
+<script>
+"use strict";
+const T = window.MK_T, K = window.MK_GK, GAME = "gelbetoju-kopecios", CKEY = "mk-" + GAME + "-karjera";
+const $ = id => document.getElementById(id), n = T.num, f1 = x => n(K.r1(x).toFixed(1));
+const cv = $("cv"), g = cv.getContext("2d");
+let S = null, W = 0, H = 0, DPR = 1, raf = 0, lastT = 0, toastT = 0;
+const career = () => Object.assign({ saved: {}, seen: {}, tut: 0 }, MK.get(CKEY, {}));
+const STAR = on => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 6 6.5.9-4.7 4.6 1.1 6.5L12 17.5l-5.8 3.1 1.1-6.5L2.6 9.5l6.5-.9z" fill="${on ? "#e9a23b" : "none"}" stroke="#1d2530" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+const stars3 = k => [0, 1, 2].map(i => STAR(i < k)).join("");
+
+/* ============================== meniu ============================== */
+function totalStars(){ const b = MK.best(GAME); return K.DISTRICTS.reduce((a, D) => a + (+b[D.id] || 0), 0); }
+const rankOf = s => s >= 14 ? 4 : s >= 10 ? 3 : s >= 6 ? 2 : s >= 2 ? 1 : 0;
+function showMenu(){
+  S = null; $("calc").hidden = true; $("play").classList.remove("cm"); $("play").hidden = true; $("menu").hidden = false; $("ov").innerHTML = ""; $("ov").className = "";
+  const b = MK.best(GAME), tot = totalStars(), C = career();
+  $("rank").innerHTML = `<span>${T.rankT}: <b>${T.ranks[rankOf(tot)]}</b></span><span class="bar" aria-hidden="true"><i style="width:${Math.round(tot / 15 * 100)}%"></i></span><span>${T.starsOf(tot, 15)}</span>`;
+  $("dl").innerHTML = K.DISTRICTS.map((D, i) => { const d = T.districts[D.id];
+    return `<button class="dc" type="button" data-d="${i}"><span class="no">${i + 1}</span><span><b>${d.name}</b><small>${d.sub}</small><span class="ds">${d.desc}</span></span><span class="st" aria-label="${T.starsOf(+b[D.id] || 0, 3)}">${stars3(+b[D.id] || 0)}</span></button>`; }).join("");
+  const all = T.who.flat();
+  $("album").innerHTML = all.map(w => `<div class="al${C.saved[w[0]] ? " on" : ""}"><i></i>${C.saved[w[0]] ? w[1] : "· · ·"}</div>`).join("");
+  window.scrollTo(0, 0);
+}
+$("dl").addEventListener("click", e => { const b = e.target.closest("[data-d]"); if(!b) return; MK.sfx.tap(); startShift(+b.dataset.d); });
+
+/* ============================== pamaina ============================== */
+function startShift(di){
+  const D = K.DISTRICTS[di], C = career(), seen = C.seen[D.id] || {};
+  let calls = K.round(D, seen);
+  const tut = di === 0 && !C.tut;
+  if(tut) calls = [K.ALL.find(c => c.id === "110")].concat(calls.filter(c => !(c.h === 1 && c.p === 1)).slice(0, D.n - 1));
+  S = { di, D, calls, ci: -1, pts: 0, first: 0, savedN: 0, tut, t: 0 };
+  $("menu").hidden = true; $("play").hidden = false; resize(); nextCall(); window.scrollTo(0, 0);
+}
+function nextCall(){
+  if(calcIsOpen()) calcClose();
+  S.ci++; const c = S.calls[S.ci], C = career();
+  const task = K.gen(c, { clear: S.tut && S.ci === 0 });
+  const used = S.usedWho || (S.usedWho = {}), list = T.who[c.t].filter(w => !used[w[0]]);
+  const fresh = list.filter(w => !C.saved[w[0]]), who = MK.pick(fresh.length ? fresh : list.length ? list : T.who[c.t]); used[who[0]] = 1;
+  Object.assign(S, { sc: 0, task, who, x: task.start, odo0: task.start, a: K.AMIN, L: K.LMIN, mode: "drive", legs: 0, tries: 0, smoke: task.clear ? 0 : 1, reveal: 0, res: null, climb: 0, held: {}, acc: 0, holdT: 0, wheel: 0, seed: 1 + Math.floor(Math.random() * 9999) });
+  S.roof = c.t === 1 ? task.mh : Math.ceil((task.mh + 3) / 3) * 3;
+  S.fh = task.fh || 3;
+  buildSmoke(); ui(); brief(true);
+}
+function ui(){
+  if(!S) return;
+  $("callL").textContent = `${T.districts[S.D.id].name} ${S.ci + 1}/${S.calls.length}`;
+  const lad = S.mode !== "drive";
+  $("padD").hidden = lad; $("padL").hidden = !lad;
+  const jam = S.task.p === 2;
+  document.querySelectorAll('[data-h="aUp"],[data-h="aDn"]').forEach(b => b.disabled = jam);
+}
+function toast(m){ $("toast").innerHTML = `<span>${m}</span>`; toastT = 2.2; }
+
+/* dispečerio pranešimas */
+function briefHtml(){
+  const t = S.task, B = T.b, tg = T.tgtName[t.t], out = [`<p>${S.who[2]}</p>`]; let info;
+  if(t.h === 1) info = B.h1[t.t](n(t.mh));
+  else if(t.h === 2) info = t.t === 1 ? B.h2[1](t.floors, n(t.fh)) : B.h2[t.t](t.floor, n(t.fh), n(t.sill));
+  else info = B["h" + t.h](tg);
+  out.push(`<p>${info}</p>`);
+  if(t.t === 1) out.push(`<p class="cond">${B.t1}</p>`);
+  if(t.t === 2) out.push(`<p class="cond">${B.t2(n(t.off))}</p>`);
+  const pin = t.p === 0 ? B.p0 : t.p === 1 ? B.p1 : t.p === 2 ? B.p2(t.jam) : t.p === 3 ? B.p3(n(t.lmax)) : t.p === 4 ? (t.h >= 4 ? B.p4x : B.p4(n(t.dmin))) : B.p5(t.xo, n(t.yo), n(t.lmax));
+  out.push(`<p class="cond">${pin}</p>`);
+  if(t.clear) out.push(`<p class="tut">${T.tutorial}</p>`);
+  out.push(`<p class="rules">${T.rules}</p>`);
+  return out.join("");
+}
+function brief(first){
+  $("ov").className = ""; $("ov").innerHTML = `<div class="card" role="dialog" aria-label="${T.dispatcher}"><div class="k">${T.dispatcher} · ${T.callOf(S.ci + 1, S.calls.length)}</div><h3>${S.who[1]}</h3>${briefHtml()}<div class="btns"><button class="pri" type="button" data-a="close">${first ? T.briefGo : T.briefBack}</button></div></div>`;
+  if(first) toast(T.msg.drive);
+}
+
+/* ============================== valdymas ============================== */
+const stepped = () => S && !S.res && !$("ov").innerHTML && S.mode !== "reveal" && S.mode !== "rescue" && S.mode !== "miss";
+function press(k){
+  if(!stepped() || S.held[k]) return;
+  S.held[k] = 1; S.holdT = 0; S.acc = 0;
+  if(S.mode === "drive" && (k === "fwd" || k === "back")) move(k === "fwd" ? 0.1 : -0.1, true);
+  if(S.mode === "ladder"){
+    if(k === "aUp") setA(S.a + 1); if(k === "aDn") setA(S.a - 1);
+    if(k === "lUp") setL(S.L + 0.1); if(k === "lDn") setL(S.L - 0.1);
+  }
+}
+function release(k){ if(!S || !S.held[k]) return; delete S.held[k]; if(S.mode === "drive") S.x = K.r1(S.x); S.L = K.r1(S.L); }
+function move(dx, say){
+  const t = S.task; let nx = S.x + dx; const lim = -t.dmin;
+  if(nx > lim + 1e-9){ nx = lim; if(say || dx > 0.05) toast(t.p === 4 ? T.msg.barrier : t.p === 5 ? T.msg.annex : T.msg.wall); }
+  if(nx < -88) nx = -88;
+  S.wheel += (nx - S.x) / 0.55; S.x = nx;
+}
+function setA(a){
+  if(S.task.p === 2){ toast(T.msg.jam); return; }
+  if(a > K.AMAX){ a = K.AMAX; toast(T.msg.amax); } if(a < K.AMIN) a = K.AMIN;
+  if(a !== S.a){ S.a = a; MK.sfx.tap(); }
+}
+function setL(L){
+  const mx = S.task.lmax; if(L > mx + 1e-9){ L = mx; toast(T.msg.lmax); } if(L < K.LMIN) L = K.LMIN; S.L = L;
+}
+function legsDown(){
+  if(!stepped() || S.mode !== "drive") return; const t = S.task; S.held = {}; S.x = K.r1(S.x);
+  if(t.p === 1){ if(Math.abs(-S.x - t.bay) > 1.2){ toast(T.msg.bayOnly); MK.sfx.bad(); return; } S.x = -t.bay; }
+  S.mode = "ladder"; MK.sfx.dig(); if(t.p === 2) S.aTo = t.jam; toast(T.msg.ladder); ui();
+}
+function stow(){ if(!stepped() || S.mode !== "ladder") return; S.held = {}; S.mode = "stow"; MK.sfx.whoosh(); }
+function go(){
+  if(!stepped() || S.mode !== "ladder" || S.aTo != null) return; S.held = {}; S.L = K.r1(S.L);
+  S.tries++; S.mode = "reveal"; S.reveal = 0; S.chk = K.check(S.task, -S.x, S.a, S.L); MK.sfx.whoosh(); if(!S.task.clear) toast(T.msg.clearing);
+}
+document.querySelectorAll("[data-h]").forEach(b => {
+  const k = b.dataset.h;
+  b.addEventListener("pointerdown", e => { e.preventDefault(); try{ b.setPointerCapture(e.pointerId); }catch(_){} b.classList.add("dn"); press(k); });
+  ["pointerup", "pointercancel", "lostpointercapture"].forEach(ev => b.addEventListener(ev, () => { b.classList.remove("dn"); release(k); }));
+  b.addEventListener("contextmenu", e => e.preventDefault());
+});
+$("bLegs").onclick = legsDown; $("bStow").onclick = stow; $("bGo").onclick = go;
+$("bTask").onclick = () => { if(S && !S.res){ MK.sfx.tap(); brief(false); } };
+$("bCalc").onclick = () => { MK.sfx.tap(); calcOpen(); };
+$("bQuit").onclick = () => { MK.sfx.tap(); showMenu(); };
+const KEYMAP = { ArrowLeft: ["back", "lDn"], ArrowRight: ["fwd", "lUp"], ArrowUp: [null, "aUp"], ArrowDown: [null, "aDn"] };
+addEventListener("keydown", e => {
+  if(!S) return;
+  if($("ov").innerHTML){ if(e.key === "Enter"){ const b = $("ov").querySelector("button.pri"); if(b){ e.preventDefault(); b.click(); } } return; }
+  if(calcIsOpen()){ calcKeyboard(e); return; }
+  const m = KEYMAP[e.key];
+  if(m){ e.preventDefault(); if(e.repeat) return; const k = m[S.mode === "drive" ? 0 : 1]; if(k) press(k); return; }
+  if(e.repeat) return;
+  if(e.key === " "){ e.preventDefault(); S.mode === "drive" ? legsDown() : stow(); }
+  else if(e.key === "Enter"){ e.preventDefault(); go(); }
+  else if(e.key === "s" || e.key === "S") calcOpen();
+  else if(e.key === "u" || e.key === "U") brief(false);
+});
+addEventListener("keyup", e => { const m = KEYMAP[e.key]; if(m && S) m.forEach(k => k && release(k)); });
+addEventListener("blur", () => { if(S) Object.keys(S.held).forEach(release); });
+
+/* ============================== eiga ============================== */
+function update(dt){
+  S.t += dt; if(toastT > 0){ toastT -= dt; if(toastT <= 0) $("toast").innerHTML = ""; }
+  const hk = Object.keys(S.held)[0];
+  if(hk && stepped()){
+    S.holdT += dt; const h = S.holdT - 0.28;
+    if(h > 0){
+      if(S.mode === "drive" && (hk === "fwd" || hk === "back")) move((hk === "fwd" ? 1 : -1) * Math.min(8, 0.8 + h * 6) * dt);
+      if(S.mode === "ladder" && S.aTo == null){
+        if(hk === "aUp" || hk === "aDn"){ S.acc += Math.min(24, 4 + h * 14) * dt; while(S.acc >= 1){ S.acc -= 1; setA(S.a + (hk === "aUp" ? 1 : -1)); } }
+        if(hk === "lUp" || hk === "lDn") setL(S.L + (hk === "lUp" ? 1 : -1) * Math.min(6, 0.6 + h * 4) * dt);
+      }
+    }
+  }
+  const lt = S.mode === "drive" ? 0 : 1; S.legs += Math.sign(lt - S.legs) * Math.min(Math.abs(lt - S.legs), dt * 3);
+  if(S.aTo != null){ const d = S.aTo - S.a; if(Math.abs(d) < 0.5){ S.a = S.aTo; S.aTo = null; } else S.a += Math.sign(d) * Math.min(Math.abs(d), 28 * dt); }
+  if(S.mode === "stow"){
+    S.L = Math.max(K.LMIN, S.L - 30 * dt); if(S.L <= K.LMIN) S.a = Math.max(K.AMIN, S.a - 90 * dt);
+    if(S.L <= K.LMIN && S.a <= K.AMIN){ S.a = K.AMIN; S.mode = "drive"; S.aTo = null; ui(); }
+  }
+  if(S.mode === "reveal"){
+    S.reveal += dt; if(!S.task.clear) S.smoke = Math.max(0, 1 - S.reveal / 1.1);
+    if(S.reveal > 1.5){ if(S.chk.ok){ S.mode = "rescue"; S.climb = 0; MK.sfx.good(); } else { S.mode = "miss"; MK.sfx.bad(); S.reveal = 0; } }
+  } else if(S.mode === "rescue"){ S.climb += dt / 2.2; if(S.climb >= 1){ S.climb = 1; S.mode = "done"; result(true); } }
+  else if(S.mode === "miss"){ S.reveal += dt; if(S.reveal > 1.3){ S.mode = "missed"; result(false); } }
+  else if(S.mode === "ladder" && !S.task.clear && S.smoke < 1) S.smoke = Math.min(1, S.smoke + dt * 1.2);
+}
+
+/* rezultatas po bandymo */
+function result(ok){
+  const F = T.fb, t = S.task, C = career(); let h;
+  if(ok){
+    const p = S.tries === 1 ? 3 : S.tries === 2 ? 2 : 1; S.pts += p; S.savedN++; if(S.tries === 1) S.first++;
+    const isNew = !C.saved[S.who[0]]; C.saved[S.who[0]] = 1; (C.seen[S.D.id] = C.seen[S.D.id] || {})[t.id] = 1;
+    if(Object.keys(C.seen[S.D.id]).length >= K.pool(S.D).length) C.seen[S.D.id] = {};
+    if(S.tut) C.tut = 1; MK.set(CKEY, C);
+    const last = S.ci === S.calls.length - 1;
+    h = `<div class="k">${T.callOf(S.ci + 1, S.calls.length)}</div><h3>${S.tries === 1 ? F.ok1 : S.tries === 2 ? F.ok2 : F.ok3}</h3><p>${F.saved(S.who[1])}${isNew ? " " + F.newAlbum : ""}</p><div class="big">${F.pts(p)}</div><div class="btns"><button class="pri" type="button" data-a="${last ? "report" : "next"}">${last ? F.finish : F.next}</button></div>`;
+    S.res = "ok";
+  } else {
+    const c = S.chk, num = S.tries >= 2, parts = [];
+    if(c.hit) parts.push(F.hit);
+    else {
+      const e = [];
+      if(Math.abs(c.dy) > K.TOL) e.push(c.dy < 0 ? (num ? F.low(f1(-c.dy)) : F.lowQ) : (num ? F.high(f1(c.dy)) : F.highQ));
+      if(Math.abs(c.dx) > K.TOL) e.push(c.dx < 0 ? (num ? F.short(f1(-c.dx)) : F.shortQ) : (num ? F.far(f1(c.dx)) : F.farQ));
+      parts.push(e.join(F.and) + ".");
+    }
+    let extra;
+    if(!num) extra = `<div class="hint"><b class="t">${F.hintT}</b>${[T.hintH[t.h], T.hintT[t.t], T.hintP[t.p]].filter(Boolean).join(" ")}</div>`;
+    else extra = `<div class="hint"><b class="t">${F.solT}</b><ol>${K.solution(t, T, { d: -S.x }).map(l => `<li>${l}</li>`).join("")}</ol></div>`;
+    h = `<div class="k">${T.callOf(S.ci + 1, S.calls.length)}</div><h3>${num ? F.miss2 : F.miss1} ${parts.join(" ")}</h3><p>${F.yours(f1(-S.x), S.a, f1(S.L), f1(K.tip(-S.x, S.a, S.L).y))}</p>${extra}<div class="btns"><button class="pri" type="button" data-a="retry">${F.retry}</button></div>`;
+    S.res = "miss";
+  }
+  $("ov").className = ""; $("ov").innerHTML = `<div class="card" role="dialog">${h}</div>`;
+}
+function report(){
+  const mx = S.calls.length * 3, r = S.pts / mx, st = r >= 0.85 ? 3 : r >= 0.6 ? 2 : 1, before = rankOf(totalStars());
+  MK.best(GAME, S.D.id, st); const after = rankOf(totalStars()); if(st >= 2) MK.sfx.win();
+  const R = T.rep, line = R.line[r >= 0.99 ? 3 : st === 3 ? 2 : st === 2 ? 1 : 0];
+  $("ov").innerHTML = `<div class="card" role="dialog"><div class="k">${T.districts[S.D.id].name}</div><h3>${R.title}</h3><div class="stars" aria-label="${T.starsOf(st, 3)}">${stars3(st)}</div><p>${line}</p><p>${R.saved(S.savedN)}<br>${R.pts(S.pts, mx)}<br>${R.first(S.first)}</p>${after > before ? `<p><b>${R.rankUp(T.ranks[after])}</b></p>` : ""}<div class="btns"><button type="button" data-a="menu">${R.menu}</button><button class="pri" type="button" data-a="again">${R.again}</button></div></div>`;
+}
+$("ov").addEventListener("click", e => {
+  const b = e.target.closest("[data-a]"); if(!b) return; const a = b.dataset.a; MK.sfx.tap();
+  if(a === "close"){ $("ov").innerHTML = ""; return; }
+  if(a === "retry"){ $("ov").innerHTML = ""; S.res = null; S.mode = "ladder"; return; }
+  if(a === "next"){ $("ov").innerHTML = ""; nextCall(); return; }
+  if(a === "report"){ report(); return; }
+  if(a === "menu"){ showMenu(); return; }
+  if(a === "again"){ const di = S.di; $("ov").innerHTML = ""; startShift(di); return; }
+});
+
+/* ============================== skaičiuotuvas ============================== */
+let cEx = "", cRes = "";
+const calcIsOpen = () => !$("calc").hidden;
+function calcClose(){ $("calc").hidden = true; $("play").classList.remove("cm"); resize(); }
+const CK = ["7", "8", "9", "÷", "sin", "4", "5", "6", "×", "cos", "1", "2", "3", "−", "tg", "0", ",", "(", ")", "+", "sin⁻¹", "cos⁻¹", "tg⁻¹", "√", "x²", "C", "⌫", "=", "", ""];
+function calcOpen(){
+  if(!S || $("ov").innerHTML) return;
+  if(calcIsOpen()){ calcClose(); return; }
+  $("calc").hidden = false; $("play").classList.add("cm");
+  $("calc").innerHTML = `<div class="hd"><span>${T.calc.title} · ${T.calc.deg}</span><button class="sb" type="button" data-c="close" style="height:32px">${T.calc.close}</button></div><div class="scr"><div class="ex" id="cEx"></div><div class="rs" id="cRs"></div></div><div class="ks">${CK.map(k => k ? `<button type="button" data-c="${k}" class="${/^[0-9,]$/.test(k) ? "" : k === "=" ? "e" : "f"}"${k === "=" ? ' style="grid-column:span 3"' : ""}>${k}</button>` : "").join("")}</div>`;
+  resize(); calcShow();
+}
+function calcShow(){ if($("cEx")){ $("cEx").textContent = cEx; $("cRs").textContent = cRes; } }
+function calcEval(src){
+  let s = src.replace(/sin⁻¹/g, "A").replace(/cos⁻¹/g, "B").replace(/tg⁻¹/g, "D").replace(/sin/g, "S").replace(/cos/g, "O").replace(/tg/g, "G").replace(/,/g, "."), i = 0;
+  const open = (s.match(/\(/g) || []).length - (s.match(/\)/g) || []).length; if(open > 0) s += ")".repeat(open);
+  const R = Math.PI / 180, FN = { S: x => Math.sin(x * R), O: x => Math.cos(x * R), G: x => Math.tan(x * R), A: x => Math.asin(x) / R, B: x => Math.acos(x) / R, D: x => Math.atan(x) / R, "√": Math.sqrt };
+  function expr(){ let v = term(); while(s[i] === "+" || s[i] === "−"){ const o = s[i++], w = term(); v = o === "+" ? v + w : v - w; } return v; }
+  function term(){ let v = fac(); while(s[i] === "×" || s[i] === "÷"){ const o = s[i++], w = fac(); v = o === "×" ? v * w : v / w; } return v; }
+  function fac(){ let v;
+    if(s[i] === "−"){ i++; return -fac(); }
+    if(FN[s[i]]){ const f = FN[s[i++]]; v = f(fac()); }
+    else if(s[i] === "("){ i++; v = expr(); if(s[i] !== ")") throw 1; i++; }
+    else { const m = /^\d+\.?\d*|^\.\d+/.exec(s.slice(i)); if(!m) throw 1; v = parseFloat(m[0]); i += m[0].length; }
+    while(s[i] === "²"){ i++; v = v * v; } return v; }
+  const v = expr(); if(i < s.length || !isFinite(v)) throw 1; return v;
+}
+const cFmt = v => n(String(+v.toFixed(6)));
+function calcKey(k){
+  if(k === "close"){ calcClose(); return; }
+  if(k === "C"){ cEx = ""; cRes = ""; }
+  else if(k === "⌫"){ const m = /(sin⁻¹\(|cos⁻¹\(|tg⁻¹\(|sin\(|cos\(|tg\(|√\(|.)$/.exec(cEx); cEx = m ? cEx.slice(0, -m[0].length) : ""; }
+  else if(k === "="){ if(!cEx) return; try{ const v = calcEval(cEx); cRes = cFmt(Math.round(v * 1e6) / 1e6); cLast = cRes; cDone = true; }catch(e){ cRes = T.calc.err; } calcShow(); return; }
+  else {
+    if(cDone){ cEx = /^[+−×÷]$|x²/.test(k) ? cLast : ""; cDone = false; }
+    cEx += k === "x²" ? "²" : /^(sin|cos|tg|√)/.test(k) ? k + "(" : k;
+  }
+  cDone = false; if(k !== "=") { try{ const v = calcEval(cEx); cRes = cFmt(Math.round(v * 1e6) / 1e6); }catch(e){ cRes = ""; } }
+  calcShow();
+}
+let cDone = false, cLast = "";
+$("calc").addEventListener("click", e => { const b = e.target.closest("[data-c]"); if(b){ MK.sfx.tap(); calcKey(b.dataset.c); } });
+function calcKeyboard(e){
+  const map = { "*": "×", "/": "÷", "-": "−", ".": ",", Enter: "=", Backspace: "⌫", Escape: "close", s: "sin", c: "cos", t: "tg" };
+  const k = map[e.key] || e.key; if(CK.includes(k) || k === "close"){ e.preventDefault(); calcKey(k); }
+}
+
+/* ============================== piešimas ============================== */
+function resize(){
+  const r = $("stage").getBoundingClientRect(); DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = Math.max(200, r.width); H = Math.max(200, r.height); cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+}
+addEventListener("resize", () => { if(S) resize(); });
+function rng(seed){ let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+let BLOBS = [];
+function buildSmoke(){
+  const r = rng(S.seed), top = Math.max(S.roof, S.task.ty) + 5; BLOBS = [];
+  for(let y = 3.4; y < top; y += 1.3) for(let x = -2.7; x < 30; x += 1.7) BLOBS.push({ x: x + (x < -2 ? 0 : (r() - 0.5) * 1.2), y: y + (r() - 0.5) * 0.8, r: x < -2 ? 1.35 + r() * 0.4 : 1.8 + r() * 1.1, p: r() * 6.28, c: r() });
+}
+let sc = 8, camX = 0, gy = 0;
+const X = wx => (wx - camX) * sc, Y = wy => gy - wy * sc;
+function draw(){
+  g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  const t = S.task, tm = S.t;
+  gy = H - 30; const want = Math.max(28, Math.min(44, -S.x + 17)), goal = Math.min(W / want, (H - 44) / (Math.max(S.roof, t.ty) + 4.5));
+  S.sc = S.sc ? S.sc + (goal - S.sc) * 0.07 : goal; sc = S.sc; const vw = W / sc; camX = Math.min(S.x - 10, (vw > 50 ? 9 : 6) - vw); camX = Math.max(camX, Math.min(S.x / 2 + 2 - vw / 2, S.x - 10));
+  /* dangus */
+  const sky = g.createLinearGradient(0, 0, 0, gy); sky.addColorStop(0, "#cfdde8"); sky.addColorStop(1, "#eef0ea"); g.fillStyle = sky; g.fillRect(0, 0, W, gy);
+  /* tolimas miestas (paralaksas) */
+  layer(0.25, "#d2d9de", 9, 14, 7, 7); layer(0.55, "#bcc6ce", 13, 10, 6, 5, true);
+  /* žemė */
+  g.fillStyle = "#c9cdc8"; g.fillRect(0, gy, W, 5); g.fillStyle = "#8d959b"; g.fillRect(0, gy + 5, W, H - gy - 5);
+  g.strokeStyle = "#1d2530"; g.lineWidth = 1.5; line(0, gy, W, gy);
+  g.strokeStyle = "#e8eaea"; g.lineWidth = 2; g.setLineDash([14, 14]); g.lineDashOffset = camX * sc; line(0, gy + 17, W, gy + 17); g.setLineDash([]);
+  /* žibintai */
+  g.strokeStyle = "#5c6873"; g.lineWidth = 1.5;
+  for(let lx = Math.floor((camX - 4) / 17) * 17; lx < Math.min(-9, camX + vw); lx += 17){ if(lx > -t.dmin - 2 && t.p === 5) continue; g.beginPath(); g.moveTo(X(lx), gy); g.lineTo(X(lx), Y(6)); g.lineTo(X(lx + 1.2), Y(6)); g.stroke(); g.fillStyle = "#e9a23b"; g.fillRect(X(lx + 0.8), Y(6) , sc * 0.6, 2.5); }
+  building(t, tm);
+  /* aikštelė / užtvara */
+  if(t.p === 1){ g.strokeStyle = "#fff"; g.lineWidth = 2; g.setLineDash([6, 4]); g.strokeRect(X(-t.bay - 2.2), gy + 7, 10.6 * sc, 18); g.setLineDash([]); g.fillStyle = "#fff"; g.font = "700 12px system-ui,sans-serif"; g.textAlign = "center"; g.fillText("P", X(-t.bay + 3), gy + 21); }
+  if(t.p === 4){ const bx = X(-t.dmin + 7.9); for(let i = 0; i < 2; i++){ const px = bx + i * sc * 1.6; g.fillStyle = "#1d2530"; g.fillRect(px - 1, Y(1.1), 2.5, 1.1 * sc); } for(let i = 0; i < 6; i++){ g.fillStyle = i % 2 ? "#fff" : "#c8321f"; g.fillRect(bx + i * sc * 1.6 / 6, Y(1.1), sc * 1.6 / 6 + 0.5, 4); } }
+  /* matavimo linijos */
+  const I = K.instruments(t, -S.x), px = X(S.x), py = Y(K.PIV);
+  if(I.has.tol){ g.strokeStyle = "#1f5fbf"; g.fillStyle = "#1f5fbf"; g.lineWidth = 1.2; const yy = gy + 9; line(px, yy, X(0), yy); line(px, yy - 4, px, yy + 4); line(X(0), yy - 4, X(0), yy + 4); g.setLineDash([2, 3]); line(px, py, px, yy); g.setLineDash([]); }
+  if(I.has.kamp && S.mode !== "rescue" && S.mode !== "done"){
+    const b = K.rad(I.beta), len = Math.min(I.r, 9); g.strokeStyle = I.has.laz ? "#c8321f" : "#1f5fbf"; g.lineWidth = 1.2; g.setLineDash([5, 4]);
+    line(px, py, px + Math.cos(b) * len * sc, py - Math.sin(b) * len * sc); line(px, py, px + 5.5 * sc, py); g.setLineDash([]);
+    g.beginPath(); g.arc(px, py, 3.6 * sc, -b, 0); g.stroke();
+  }
+  truck(tm);
+  ladder();
+  smoke(t, tm);
+  markers(t);
+}
+function line(a, b, c, d){ g.beginPath(); g.moveTo(a, b); g.lineTo(c, d); g.stroke(); }
+function layer(par, col, step, hmax, hmin, wv, win){
+  const off = camX * par, r0 = Math.floor(off / step) - 1;
+  for(let i = r0; i < r0 + Math.ceil(W / sc / step) + 3; i++){
+    const r = rng(1000 + (i * 7919 + (win ? 31 : 0)) % 100000 + 200000), hh = hmin + r() * hmax, ww = step * (0.55 + r() * 0.4), x = (i * step - off) * sc;
+    g.fillStyle = col; g.fillRect(x, gy - hh * sc, ww * sc, hh * sc);
+    if(win){ g.fillStyle = "#cdd6dc"; for(let yy = 2; yy < hh - 1.5; yy += 3) for(let xx = 1; xx < ww - 1.2; xx += 2.2) g.fillRect(x + xx * sc, gy - (yy + 1.4) * sc, 0.9 * sc, 1.2 * sc); }
+  }
+}
+function building(t, tm){
+  const roof = S.roof, x0 = X(0), yT = Y(roof), fh = S.fh;
+  if(x0 > W + 2) return;
+  if(t.p === 5){ g.fillStyle = "#b8a892"; g.strokeStyle = "#1d2530"; g.lineWidth = 1.5; g.fillRect(X(-t.xo), Y(t.yo), t.xo * sc, t.yo * sc); g.strokeRect(X(-t.xo), Y(t.yo), t.xo * sc, t.yo * sc);
+    g.fillStyle = "#8f8372"; for(let yy = 0.6; yy < t.yo - 1.6; yy += 3) g.fillRect(X(-t.xo + 0.8), Y(yy + 1.6), (t.xo - 1.6) * sc, 1.2 * sc); }
+  g.fillStyle = "#e6d9c6"; g.fillRect(x0, yT, W - x0 + 2, gy - yT); g.strokeStyle = "#1d2530"; g.lineWidth = 1.5; line(x0, gy, x0, yT); line(x0, yT, W, yT);
+  g.fillStyle = "#b9a58c"; g.fillRect(x0 - 0.3 * sc, yT - 0.4 * sc, W - x0 + 6, 0.4 * sc);
+  for(let f = 0; f * fh + 2.4 < roof; f++) for(let c = 0; c < 5; c++){
+    const wx = 1.4 + c * 3.1, wy = f * fh + 1; const fire = ((f * 5 + c + S.seed) % 4 === 0) && f > 0 && !t.clear;
+    g.fillStyle = fire ? `rgba(240,${120 + Math.round(50 * Math.sin(tm * 9 + c + f))},40,1)` : "#9db3c2"; g.fillRect(X(wx), Y(wy + 1.5), 1.5 * sc, 1.5 * sc); g.strokeStyle = "#1d2530"; g.lineWidth = 1; g.strokeRect(X(wx), Y(wy + 1.5), 1.5 * sc, 1.5 * sc);
+  }
+  g.fillStyle = "#6f5a44"; g.fillRect(X(1.6), Y(2.3), 1.3 * sc, 2.3 * sc);
+  /* taikinys ant sienos krašto */
+  const mx = X(-t.off), my = Y(t.mh);
+  g.strokeStyle = "#1d2530"; g.lineWidth = 1.5;
+  if(t.t === 0){ g.fillStyle = "#f6f1e6"; g.fillRect(x0 - 0.35 * sc, my - 1.5 * sc, 0.7 * sc, 1.5 * sc); g.strokeRect(x0 - 0.35 * sc, my - 1.5 * sc, 0.7 * sc, 1.5 * sc); g.fillStyle = "#1d2530"; g.fillRect(x0 - 0.55 * sc, my - 1, 0.9 * sc, 2.5); }
+  if(t.t === 2){ g.fillStyle = "#9a8f80"; g.fillRect(mx, my + 1 * sc - 2, t.off * sc, 3.5); line(mx, my + sc, mx, my); line(mx, my, x0, my); for(let k = 1; k < 4; k++) line(mx + k * t.off * sc / 4, my, mx + k * t.off * sc / 4, my + sc); }
+  if(S.mode !== "done" && !(S.mode === "rescue")) person(t.t === 1 ? x0 + 0.7 * sc : t.t === 2 ? mx + 0.55 * sc : x0 + 0.1 * sc, t.t === 1 ? yT : t.t === 2 ? my + sc : my + 0.15 * sc, tm, true);
+}
+function person(x, y, tm, wave){
+  const u = Math.max(sc, 7) * 0.55; g.strokeStyle = "#1d2530"; g.lineWidth = Math.max(1.5, u * 0.42); g.lineCap = "round";
+  line(x, y - u * 0.2, x, y - u * 1.9); g.beginPath(); g.arc(x, y - u * 2.5, u * 0.55, 0, 6.3); g.fillStyle = "#f0c9a0"; g.fill(); g.lineWidth = 1.2; g.stroke();
+  g.lineWidth = Math.max(1.3, u * 0.32); g.strokeStyle = "#c8321f"; const a = wave ? Math.sin(tm * 7) * 0.5 - 1.1 : 0.9; line(x, y - u * 1.7, x - Math.cos(a) * u * 1.1, y - u * 1.7 + Math.sin(a) * u * 1.1); g.lineCap = "butt";
+}
+function truck(tm){
+  const p = S.x, bob = S.mode === "drive" && Object.keys(S.held).length ? Math.sin(tm * 30) * 0.02 : 0, yb = v => Y(v + bob);
+  g.strokeStyle = "#1d2530"; g.lineWidth = 1.5; g.lineJoin = "round";
+  /* atramos */
+  if(S.legs > 0){ g.fillStyle = "#39424d"; [p - 1.3, p + 2.2].forEach(lx => { g.fillRect(X(lx) - 2, Y(0.9), 4, 0.9 * sc * S.legs); g.fillRect(X(lx) - 6, Y(0.9) + 0.9 * sc * S.legs - 3, 12, 3); }); }
+  g.fillStyle = "#39424d"; g.fillRect(X(p - 1.7), yb(1.25), 9.3 * sc, 0.6 * sc);
+  g.fillStyle = "#c8321f"; rect(X(p - 1.7), yb(2.05), 6.6 * sc, 0.85 * sc);
+  g.fillStyle = "#e7e9ea"; g.fillRect(X(p - 1.7), yb(1.62), 6.6 * sc, 0.16 * sc);
+  g.beginPath(); g.moveTo(X(p + 5), yb(1.0)); g.lineTo(X(p + 5), yb(2.9)); g.lineTo(X(p + 6.9), yb(2.9)); g.lineTo(X(p + 7.6), yb(2.0)); g.lineTo(X(p + 7.6), yb(1.0)); g.closePath(); g.fillStyle = "#c8321f"; g.fill(); g.stroke();
+  g.beginPath(); g.moveTo(X(p + 5.6), yb(2.05)); g.lineTo(X(p + 5.6), yb(2.7)); g.lineTo(X(p + 6.8), yb(2.7)); g.lineTo(X(p + 7.3), yb(2.05)); g.closePath(); g.fillStyle = "#cfe3ee"; g.fill(); g.lineWidth = 1; g.stroke();
+  const fl = Math.floor(tm * 5) % 2; g.fillStyle = fl ? "#2b6fd6" : "#9cc0f5"; g.fillRect(X(p + 5.9), yb(3.12), 0.7 * sc, 0.22 * sc);
+  if(fl){ g.fillStyle = "rgba(43,111,214,.16)"; g.beginPath(); g.arc(X(p + 6.25), yb(3.05), 2.2 * sc, 0, 6.3); g.fill(); }
+  [p - 0.5, p + 0.75, p + 6.2].forEach(wx => { g.fillStyle = "#1d2530"; g.beginPath(); g.arc(X(wx), Y(0.55), 0.55 * sc, 0, 6.3); g.fill(); g.strokeStyle = "#aeb5ba"; g.lineWidth = 1.2; const a = S.wheel; line(X(wx) - Math.cos(a) * 0.3 * sc, Y(0.55) - Math.sin(a) * 0.3 * sc, X(wx) + Math.cos(a) * 0.3 * sc, Y(0.55) + Math.sin(a) * 0.3 * sc); });
+  g.fillStyle = "#8e979e"; g.strokeStyle = "#1d2530"; g.lineWidth = 1.5; g.beginPath(); g.arc(X(p), yb(K.PIV), 0.42 * sc, 0, 6.3); g.fill(); g.stroke();
+}
+function rect(x, y, w, h){ g.fillRect(x, y, w, h); g.strokeRect(x, y, w, h); }
+function ladder(){
+  const a = K.rad(S.a), px = X(S.x), py = Y(K.PIV), ex = px + Math.cos(a) * S.L * sc, ey = py - Math.sin(a) * S.L * sc;
+  g.lineCap = "butt"; g.strokeStyle = "#1d2530"; g.lineWidth = Math.max(4, sc * 0.5); line(px, py, ex, ey);
+  g.strokeStyle = "#e7e9ea"; g.lineWidth = Math.max(1.6, sc * 0.22); g.setLineDash([Math.max(3, sc * 0.45), Math.max(3, sc * 0.45)]); line(px, py, ex, ey); g.setLineDash([]);
+  g.fillStyle = "#e9a23b"; g.strokeStyle = "#1d2530"; g.lineWidth = 1.2; g.beginPath(); g.arc(ex, ey, Math.max(3, sc * 0.38), 0, 6.3); g.fill(); g.stroke();
+  if(S.mode === "rescue" || S.mode === "done"){ const k = 1 - S.climb, qx = px + (ex - px) * k, qy = py + (ey - py) * k; person(qx, qy, S.t, false); }
+}
+function smoke(t, tm){
+  const al = S.smoke;
+  if(al > 0.01){
+    g.globalAlpha = al;
+    for(const b of BLOBS){ const bx = X(b.x + Math.sin(tm * 0.5 + b.p) * 0.25), by = Y(b.y + Math.cos(tm * 0.4 + b.p) * 0.3); if(bx < -40 || bx > W + 40) continue; const v = 196 + Math.round(b.c * 26); g.fillStyle = `rgb(${v},${v + 2},${v + 5})`; g.beginPath(); g.arc(bx, by, b.r * sc, 0, 6.3); g.fill(); }
+    g.globalAlpha = 1;
+  }
+  if(!t.clear){ /* kylantys dūmų kamuoliai ir liepsnų atšvaitai */
+    for(let i = 0; i < 9; i++){ const ph = (tm * 0.12 + i / 9) % 1, bx = X(1 + i * 2.3 + Math.sin(tm + i) * 0.8 - ph * 5), by = Y(5 + (i % 3) * 5 + ph * 14); g.fillStyle = `rgba(120,126,134,${0.20 * (1 - ph)})`; g.beginPath(); g.arc(bx, by, (1.6 + ph * 2.6) * sc, 0, 6.3); g.fill(); }
+    for(let i = 0; i < 4; i++){ const fx = X(2.2 + i * 3.1 + ((S.seed + i) % 3)), fy = Y(4.5 + ((S.seed * (i + 3)) % 9)); g.fillStyle = `rgba(240,120,30,${0.10 + 0.07 * Math.sin(tm * 8 + i * 2)})`; g.beginPath(); g.arc(fx, fy, 2.4 * sc, 0, 6.3); g.fill(); }
+  }
+}
+function markers(t){
+  if(!(S.mode === "reveal" || S.mode === "miss" || S.mode === "missed" || t.clear)) return;
+  if(S.mode === "reveal" && S.smoke > 0.4) return;
+  const tx = X(t.tx), ty = Y(t.ty); g.strokeStyle = "#1b7a43"; g.lineWidth = 2; g.beginPath(); g.arc(tx, ty, Math.max(6, K.TOL * sc * 1.6), 0, 6.3); g.stroke(); line(tx - 4, ty, tx + 4, ty); line(tx, ty - 4, tx, ty + 4);
+  if(S.mode === "miss" || S.mode === "missed"){ const tp = K.tip(-S.x, S.a, S.L), ex = X(tp.x), ey = Y(tp.y); g.strokeStyle = "#c8321f"; g.lineWidth = 2.5; line(ex - 6, ey - 6, ex + 6, ey + 6); line(ex - 6, ey + 6, ex + 6, ey - 6); }
+}
+
+/* prietaisų skydelis */
+let instKey = "";
+function inst(){
+  const t = S.task, I = K.instruments(t, -S.x), Hd = T.hud, odo = Math.abs(S.x - S.odo0);
+  const chip = (lab, val, on, cls, extra) => `<div class="chip${on ? "" : " off"}${cls ? " " + cls : ""}">${extra || ""}<small>${lab}</small><b>${on ? val : Hd.off}</b></div>`;
+  const aLim = t.p === 2, lLim = S.L >= t.lmax - 1e-6 && t.lmax < K.LMAX;
+  const h = chip(Hd.tol, f1(I.d) + " m", I.has.tol) + chip(Hd.kamp, n(I.beta.toFixed(2)) + "°", I.has.kamp) + chip(Hd.laz, f1(I.r) + " m", I.has.laz)
+    + chip(Hd.odo, f1(odo) + " m", true, "", `<button class="z" type="button" id="bZero" aria-label="${Hd.odo} 0">${T.ctl.zero}</button>`)
+    + chip(Hd.ang + (aLim ? " · " + Hd.lock : ""), Math.round(S.a) + "°", true, "lad" + (aLim ? " lim" : "")) + chip(Hd.len + (t.lmax < K.LMAX ? ` ≤ ${n(t.lmax)}` : ""), f1(S.L) + " m", true, "lad" + (lLim ? " lim" : ""));
+  if(h !== instKey){ instKey = h; $("inst").innerHTML = h; }
+}
+$("inst").addEventListener("click", e => { if(e.target.closest("#bZero") && S){ S.odo0 = S.x; MK.sfx.tap(); } });
+
+function loop(ts){
+  raf = requestAnimationFrame(loop); const dt = Math.min(0.05, (ts - lastT) / 1000 || 0); lastT = ts;
+  if(!S || $("play").hidden) return; update(dt); if(!S) return; draw(); inst();
+}
+
+/* ============================== paleidimas ============================== */
+$("app").prepend(MK.top({ title: T.title, grade: 9 }));
+$("kick").textContent = T.kicker; $("h1").textContent = T.h1; $("lead").textContent = T.lead; $("note").textContent = T.note;
+$("disT").textContent = T.districtsT; $("albT").textContent = T.albumT; $("manT").textContent = T.manualT;
+$("manual").innerHTML = T.manual.map(m => `<details class="man"><summary>${m.name}</summary>${m.html}</details>`).join("");
+$("bTask").textContent = T.ctl.task; $("bCalc").textContent = T.ctl.calc; $("bQuit").setAttribute("aria-label", T.ctl.quit);
+$("bLegs").textContent = T.ctl.legs; $("bStow").textContent = T.ctl.legsUp; $("bGo").textContent = T.ctl.go;
+$("lAd").textContent = T.ctl.ang; $("lAu").textContent = T.ctl.ang; $("lLd").textContent = T.ctl.len; $("lLu").textContent = T.ctl.len;
+document.querySelector('[data-h="back"]').setAttribute("aria-label", T.ctl.back); document.querySelector('[data-h="fwd"]').setAttribute("aria-label", T.ctl.fwd);
+document.querySelector('[data-h="aDn"]').setAttribute("aria-label", T.ctl.angDn); document.querySelector('[data-h="aUp"]').setAttribute("aria-label", T.ctl.angUp);
+document.querySelector('[data-h="lDn"]').setAttribute("aria-label", T.ctl.lenDn); document.querySelector('[data-h="lUp"]').setAttribute("aria-label", T.ctl.lenUp);
+$("keys").textContent = T.keys;
+window.__gk = { get S(){ return S; }, K, press, release, legsDown, stow, go, calcEval };
+showMenu(); raf = requestAnimationFrame(loop);
+</script>
+</body>
+</html>
