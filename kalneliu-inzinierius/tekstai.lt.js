@@ -89,7 +89,7 @@ window.MK_T = {
     signs: d => `Nustatyk išvestinės ${d} ženklą kiekviename intervale.`,
     kind: x => `Taškas <i>x</i> = ${x} yra…`,
     whichMax: "Kuris taškas yra funkcijos maksimumo taškas?",
-    incWhere: "Kur funkcija <i>f</i>(<i>x</i>) didėja?",
+    incWhere: "Nurodyk visus funkcijos <i>f</i>(<i>x</i>) reikšmių didėjimo intervalus.",
     maxPoint: "Rask funkcijos <i>f</i>(<i>x</i>) maksimumo tašką.",
     maxVal: "Apskaičiuok funkcijos reikšmę maksimumo taške (funkcijos maksimumą).",
     decInt: "Rask funkcijos reikšmių mažėjimo intervalą.",

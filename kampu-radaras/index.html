@@ -212,7 +212,7 @@ const G = {
       if(v.some((x, i) => v.some((y, j) => i < j && Math.abs(x - y) < .05))) continue;
       const big = Math.random() < .5, best = v.indexOf(big ? Math.max(...v) : Math.min(...v));
       return { dbg: { t: "cmp", fn, as, big }, kind: "ch", g2: 1, q: T.qCmp(big), opts: as.map(a => eH(fn, a)), ans: best, angles: [], reveal: { extra: as },
-        why: T.wCmp(fn, fn === "sin" ? T.ordinate : T.abscissa, as.map((a, i) => `${eH(fn, a)} ≈ ${v[i].toFixed(2).replace(".", ",").replace("-", "−")}`).join("; ")) };
+        why: T.wCmp(fn, fn === "sin" ? T.ordinate : T.abscissa, as.map((a, i) => `${eH(fn, a)} ≈ ${(Math.abs(v[i]) < .005 ? 0 : v[i]).toFixed(2).replace(".", ",").replace("-", "−")}`).join("; ")) };
     }
   },
   pyth(askTg){
@@ -271,6 +271,10 @@ const ROUNDS = {
   intervalai: () => [G.multi(), G.general(), G.multi(), G.count(), G.multi(), G.nosol(), G.general(), G.multi()],
   vbe: () => [G.val(2), G.eq(), G.multi(), G.pyth(true), G.arc(), G.general(), G.red(), G.count(), G.multi(), G.aim(3)]
 };
+
+/* raunde ta pati užduotis nesikartoja: jei pasitaikė vienodų klausimų, raundas generuojamas iš naujo */
+const qKey = t => t.q + (t.dbg.t === "cmp" || t.dbg.t === "nosol" ? "|" + t.opts.join("|") : "");
+function mkRound(id){ let r, n = 0; do r = ROUNDS[id](); while(new Set(r.map(qKey)).size < r.length && ++n < 200); return r; }
 
 /* ============================== radaro piešinys ============================== */
 const CX = 180, CY = 180, R = 118, f1 = x => Math.round(x * 10) / 10;
@@ -349,7 +353,7 @@ function showMenu(){
   window.scrollTo(0, 0);
 }
 function start(i){
-  MK.music.stop(); lvl = i; ti = 0; pts = 0; okN = 0; round = ROUNDS[LEVELS[i].id](); N = round.length;
+  MK.music.stop(); lvl = i; ti = 0; pts = 0; okN = 0; round = mkRound(LEVELS[i].id); N = round.length;
   menu.hidden = true; play.hidden = false; dots = MK.dots($("dots"), N); startTask(); window.scrollTo(0, 0);
 }
 function drawRadar(o){ radar.innerHTML = radarInner(o); }
@@ -399,7 +403,7 @@ function next(){
   MK.result({ stars, title: T.resTitle(okN, N), text: T.resText(pts, mastered().length), next: lvl < LEVELS.length - 1 ? () => start(lvl + 1) : null, again: () => start(lvl), menu: showMenu });
 }
 $("next").onclick = () => { MK.sfx.tap(); next(); }; $("quit").onclick = showMenu;
-window.__KR = { G, ROUNDS, exact, num, norm, STD, range, setRad: v => { RAD = v; }, state: () => ({ cur, done, ti, tries, okN, pts, N }) };
+window.__KR = { G, ROUNDS, mkRound, exact, num, norm, STD, range, setRad: v => { RAD = v; }, state: () => ({ cur, done, ti, tries, okN, pts, N }) };
 showMenu();
 </script>
 </body>

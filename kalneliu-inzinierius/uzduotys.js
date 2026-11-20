@@ -57,7 +57,7 @@ function choice(q, correct, wrongs, n){
 }
 const fixedChoice = (q, opts, ans) => ({ kind: "choice", q, opts, ans });
 function signStep(q, labels, ans, vals, axis){ return { kind: "signs", q, labels, ans, vals: vals || ["+", M], axis: axis || null }; }
-const sg = x => x > 1e-9 ? "+" : x < -1e-9 ? M : "0";
+const sg = x => x > 1e-3 ? "+" : x < -1e-3 ? M : "0";
 function intervals(pts){ const a = [-Infinity].concat(pts, [Infinity]); return a.slice(0, -1).map((x, i) => [x, a[i + 1]]); }
 const mid = ([a, b]) => a === -Infinity ? b - 1 : b === Infinity ? a + 1 : (a + b) / 2;
 
@@ -127,7 +127,7 @@ function polyH(P){ return poly(P.map(rnd)); }
 G.v_zero_quad = () => { const a = pick([1, -1, 2, -2, 3]), h = nz(-5, 5), P = quad(a, h, R(-6, 6)), d = deriv(P);
   return { type: "v_zero_quad", head: T.h.fn(`${fx()} = ${poly(P)}`), steps: [numStep(T.q.zeroDeriv, [F(V("x") + " =", h)])],
     sol: T.s.zero(`${dfx()} = ${poly(d)}`, `${poly(d)} = 0`, `${V("x")} = <b>${num(h)}</b>`), reveal: tanReveal(P, h), dbg: { P, x0: h, k: 0 } }; };
-G.v_par_quad = () => { const a = pick([1, -1, 2, -2]), b = nz(-6, 6), P = [R(-5, 5), b, a], x0 = nz(-4, 4), d = deriv(P), k = ev(d, x0), m = nz(-7, 7);
+G.v_par_quad = () => { const a = pick([1, -1, 2, -2]), b = nz(-6, 6), P = [R(-5, 5), b, a], x0 = nz(-4, 4), d = deriv(P), k = ev(d, x0); let m; do m = nz(-7, 7); while(m === ev(P, x0) - k * x0);
   return { type: "v_par_quad", head: T.h.parallel(`${fx()} = ${poly(P)}`, `${V("y")} = ${lin(k, m)}`), steps: [numStep(T.q.parallelX, [F(V("x") + " =", x0)])],
     sol: T.s.parallel(num(k), `${dfx()} = ${poly(d)}`, `${poly(d)} = ${num(k)}`, `${V("x")} = <b>${num(x0)}</b>`),
     reveal: gr(win(P, [x0], 3), [{ P, color: C2 }], { tan: { x0, k, y0: ev(P, x0) }, pts: [{ x: x0, y: ev(P, x0) }], lines: [{ k, b: m, color: "#8a93ad", dash: true }] }), dbg: { P, x0, k } }; };
@@ -148,7 +148,7 @@ G.v_stop = () => { const v0 = pick([10, 20, 30, 40, 50]), h0 = pick([0, 0, 2, 5,
   return { type: "v_stop", head: T.h.ball(`${fx("h", "t")} = ${poly(P, "t", true)}`), steps: [numStep(T.q.stop, [F(V("t") + " =", t, T.u.s)])],
     sol: T.s.stop(`${fx("v", "t")} = ${dfx("h", "t")} = ${poly(d, "t", true)}`, `${poly(d, "t", true)} = 0`, `${V("t")} = <b>${num(t)}</b>`),
     reveal: gr([0, Math.ceil(v0 / 5) + 1], [{ P, color: C2 }], { pts: [{ x: t, y: ev(P, t) }], tan: { x0: t, k: 0, y0: ev(P, t) }, ymin: 0, ax: ["t", "h"] }), dbg: { P, x0: t, k: 0 } }; };
-G.v_par_point = () => { const a = pick([1, -1, 2]), P = [R(-4, 4), nz(-4, 4), a], x0 = nz(-3, 3), d = deriv(P), k = ev(d, x0), y0 = ev(P, x0), m = nz(-6, 6);
+G.v_par_point = () => { const a = pick([1, -1, 2]), P = [R(-4, 4), nz(-4, 4), a], x0 = nz(-3, 3), d = deriv(P), k = ev(d, x0), y0 = ev(P, x0); let m; do m = nz(-6, 6); while(m === y0 - k * x0);
   return { type: "v_par_point", head: T.h.parallel(`${fx()} = ${poly(P)}`, `${V("y")} = ${lin(k, m)}`), steps: [numStep(T.q.parallelPt, [F("(", x0, ";"), F("", y0, ")")])],
     sol: T.s.parallelPt(num(k), `${dfx()} = ${poly(d)}`, `${poly(d)} = ${num(k)}`, `${V("x")} = ${num(x0)}`, `${fat("f", x0)} = ${num(y0)}`, `(${num(x0)}; ${num(y0)})`),
     reveal: gr(win(P, [x0], 3), [{ P, color: C2 }], { tan: { x0, k, y0 }, pts: [{ x: x0, y: y0 }], lines: [{ k, b: m, color: "#8a93ad", dash: true }] }), dbg: { P, x0, k, y0 } }; };
@@ -266,12 +266,12 @@ G.g_maxfromd = () => { const lineCase = R(0, 2) === 0; let d, x, why;
   else { const [p, q] = pq5(), k = pick([0.5, -0.5]); d = mul([-p * k, k], [-q, 1]); x = k > 0 ? p : q; why = T.s.gMaxPar(num(p), num(q), num(x)); }
   return { type: "g_maxfromd", head: T.h.dgraph, graph: gr(XS, [{ P: d, color: C1 }], { label: `${V("y")} = ${dfx()}` }), steps: [numStep(T.q.maxPoint, [F(V("x") + " =", x)])], sol: why, dbg: { d, xmax: x } }; };
 function fourPts(){ const a = pick([0.25, -0.25]), [p, q] = pq5(), P = cubic(a / 1.5, p, q, 0), d = deriv(P); return { P, d, p, q, a }; }
-G.g_steepest = () => { let o, xs, sl; do { o = fourPts(); xs = shuffle([o.p - 1.5, o.p - 0.5, o.p, (o.p + o.q) / 2, o.q, o.q + 0.5, o.q + 1.5]).slice(0, 4).sort((x, y) => x - y); sl = xs.map(x => rnd(ev(o.d, x))); } while(sl.filter(s => s === Math.max.apply(null, sl)).length > 1 || Math.max.apply(null, sl) <= 0 || xs[0] < -4.6 || xs[3] > 4.6);
+G.g_steepest = () => { let o, xs, sl; do { o = fourPts(); xs = shuffle([o.p - 1.5, o.p - 0.5, o.p, (o.p + o.q) / 2, o.q, o.q + 0.5, o.q + 1.5]).slice(0, 4).sort((x, y) => x - y); sl = xs.map(x => rnd(ev(o.d, x))); } while(sl.filter(s => s > Math.max.apply(null, sl) - 0.25).length > 1 || Math.max.apply(null, sl) <= 0 || xs[0] < -4.6 || xs[3] > 4.6);
   const names = ["A", "B", "C", "D"], best = sl.indexOf(Math.max.apply(null, sl));
   return { type: "g_steepest", head: T.h.points, graph: gr(XS, [{ P: o.P, color: C2 }], { pts: xs.map((x, i) => ({ x, y: ev(o.P, x), label: names[i], color: C1 })), plain: true }),
     steps: [fixedChoice(T.q.steepest, names, best)], sol: T.s.steepest(names[best]), dbg: { P: o.P, xs, best } }; };
-G.g_zero = () => { let o, xs; do { o = fourPts(); const z = pick([o.p, o.q]); xs = shuffle([o.p - 1.5, o.p - 1, (o.p + o.q) / 2, o.q + 1, o.q + 1.5].filter(x => x !== z)).slice(0, 3).concat([z]).sort((x, y) => x - y); } while(xs[0] < -4.6 || xs[3] > 4.6 || xs.filter(x => Math.abs(ev(o.d, x)) < 1e-9).length !== 1);
-  const names = ["A", "B", "C", "D"], zi = xs.findIndex(x => Math.abs(ev(o.d, x)) < 1e-9);
+G.g_zero = () => { let o, xs; do { o = fourPts(); const z = pick([o.p, o.q]); xs = shuffle([o.p - 1.5, o.p - 1, (o.p + o.q) / 2, o.q + 1, o.q + 1.5].filter(x => x !== z)).slice(0, 3).concat([z]).sort((x, y) => x - y); } while(xs[0] < -4.6 || xs[3] > 4.6 || xs.filter(x => Math.abs(ev(o.d, x)) < 1e-3).length !== 1);
+  const names = ["A", "B", "C", "D"], zi = xs.findIndex(x => Math.abs(ev(o.d, x)) < 1e-3);
   return { type: "g_zero", head: T.h.points, graph: gr(XS, [{ P: o.P, color: C2 }], { pts: xs.map((x, i) => ({ x, y: ev(o.P, x), label: names[i], color: C1 })), plain: true }),
     steps: [fixedChoice(T.q.zeroAt, names, zi)], sol: T.s.zeroAt(names[zi]), dbg: { P: o.P, xs, best: zi } }; };
 G.g_count = () => { const k = R(0, 3); let d, n;
@@ -311,7 +311,7 @@ G.o_openbox = () => { const x = pick([2, 4, 6, 8, 10]), S = 3 * x * x, P = [0, S
 };
 G.o_ball = () => { const v0 = pick([10, 20, 30, 40]), h0 = pick([0, 2, 5, 10]), t = v0 / 10;
   return opt("o_ball", { text: T.w6.ball, fnName: "h", v: "t", P: [h0, v0, -5], shown: poly([h0, v0, -5], "t", true), qx: T.q.optX.time, ux: T.u.s, qv: T.q.optV.height, uv: T.u.m, x: t, val: h0 + v0 * v0 / 20, dom: `${V("t")} ≥ 0`, domN: [0, v0 / 5], win: [0, Math.ceil(v0 / 5) + 1], ymin: 0 }); };
-G.o_profit = () => { const b = pick([8, 10, 12, 14, 16, 18, 20]), c = R(5, 30), x = b / 2;
+G.o_profit = () => { const b = pick([8, 10, 12, 14, 16, 18, 20]), x = b / 2, c = R(5, Math.min(30, x * x - 1));
   return opt("o_profit", { text: T.w6.profit, fnName: "P", P: [-c, b, -1], qx: T.q.optX.amount, ux: T.u.hund, qv: T.q.optV.profit, uv: T.u.keur, x, val: x * x - c, dom: `${V("x")} ≥ 0`, domN: [0, b], win: [0, b] }); };
 G.o_numbers = () => { const S = pick([3, 6, 9, 12, 15]), x = 2 * S / 3;
   return opt("o_numbers", { text: T.w6.numbers(S), fnName: "f", P: [0, 0, S, -1], shown: `${V("x")}<sup>2</sup>(${poly([S, -1], "x", true)})`, wrongs: [`${V("x")}(${poly([S, -1], "x", true)})<sup>2</sup>`, `${V("x")}<sup>2</sup> + (${poly([S, -1], "x", true)})`, `${V("x")}(${poly([S, -1], "x", true)})`],
