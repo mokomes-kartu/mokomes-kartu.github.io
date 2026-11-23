@@ -340,6 +340,19 @@ window.MK_ZAIDIMAI = [
   "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMxYzdlZDYiLz48cmVjdCB4PSIyNCIgeT0iOCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjQwIiByeD0iNSIgZmlsbD0iIzJiMmYzYSIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxjaXJjbGUgY3g9IjMyIiBjeT0iMTkiIHI9IjYiIGZpbGw9IiNmZjNiM2IiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjM3IiByPSI2IiBmaWxsPSIjM2VlMDZhIi8+PHJlY3QgeD0iMjkuNSIgeT0iNDgiIHdpZHRoPSI1IiBoZWlnaHQ9IjEwIiBmaWxsPSIjZTllY2VmIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMiIvPjxwYXRoIGQ9Ik04IDU4aDQ4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+"
  },
  {
+  "id": "balionu-per-lietuva",
+  "subject": "vis",
+  "grades": [
+   2,
+   3,
+   4
+  ],
+  "title": "Balionu per Lietuvą",
+  "desc": "Skrisk oro balionu virš Lietuvos žemėlapio ir nunešk atvirutes į miestus, prie upių ir ežerų, pas kaimynus ir į etnografinius regionus.",
+  "url": "/balionu-per-lietuva/",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiM0ZmIzZjYiLz48cGF0aCBkPSJNMCA0NnExNi04IDMyLTN0MzItNHY5cTAgMTYtMTYgMTZIMTZRMCA2NCAwIDQ4eiIgZmlsbD0iI2E4ZGM4NiIvPjxwYXRoIGQ9Ik00IDU0cTE0LTYgMjYtMnQzMC01IiBmaWxsPSJub25lIiBzdHJva2U9IiMyZjdmZDYiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHBhdGggZD0iTTMyIDZjMTQgMCAxOSAxMSAxNiAyMC0zIDgtMTAgMTMtMTMgMThoLTZjLTMtNS0xMC0xMC0xMy0xOC0zLTkgMi0yMCAxNi0yMHoiIGZpbGw9IiNmZjVkNWQiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzIgNmMtNSA3LTYgMjQtMyAzOE0zMiA2YzUgNyA2IDI0IDMgMzgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZDIzZiIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHJlY3QgeD0iMjYiIHk9IjQ3IiB3aWR0aD0iMTIiIGhlaWdodD0iOSIgcng9IjIiIGZpbGw9IiNiNzdhNDUiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48L3N2Zz4="
+ },
+ {
   "id": "grandines-dirbtuves",
   "subject": "fiz",
   "grades": [
