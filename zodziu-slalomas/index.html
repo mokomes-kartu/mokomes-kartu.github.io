@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="MokomėsKartu">
+<link rel="apple-touch-icon" href="/logo/mk-ikona-180.png">
+<title>Žodžių slalomas – MokomėsKartu.lt</title>
+<meta name="description" content="Lietuvių kalbos žaidimas 5–8 klasei: leiskis 3D kalno trasa ir važiuok pro vartus su reikiamos veiksmažodžio formos žodžiu – laikai, nuosakos, dalyvis, pusdalyvis, padalyvis.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#cfeaff">
+<link rel="icon" href="/logo/mk-ikona.svg">
+<script src="/bendra/mk.js"></script>
+<script src="tekstai.lt.js"></script>
+<script src="zodziai.js"></script>
+<style>
+body{--ink:#14213d;--soft:#5b6785;--red:#ef4a3c;--sky:#cfeaff;background:linear-gradient(#bfe3ff,#eef8ff 55%,#ffffff) fixed;background-size:auto;color:var(--ink);--kid:"Trebuchet MS","Segoe UI",system-ui,sans-serif;--body:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+.mk-app{max-width:760px}
+.mk-ico[data-k="music"]{display:none}
+.hero{position:relative;height:200px;border-radius:22px;overflow:hidden;border:3px solid var(--ink);box-shadow:0 6px 0 rgba(20,33,61,.18);margin-bottom:12px;background:linear-gradient(#8fd0ff,#e6f6ff)}
+.hero svg{position:absolute;inset:0;width:100%;height:100%}
+.hero .sk{animation:carve 3.2s ease-in-out infinite;transform-origin:280px 150px}
+@keyframes carve{0%,100%{transform:translateX(-26px) rotate(-7deg)}50%{transform:translateX(26px) rotate(7deg)}}
+.hero .fl{animation:fall 7s linear infinite}@keyframes fall{from{transform:translateY(-30px)}to{transform:translateY(220px)}}
+h1{margin:4px 0;font:900 clamp(31px,8.6vw,46px)/1 var(--kid);letter-spacing:-.02em;font-style:italic}
+.lead{margin:6px 0 4px;font:600 16px/1.45 var(--body);max-width:60ch}.note{margin:0 0 12px;font:600 13.5px/1.4 var(--body);color:var(--soft)}
+h2{margin:20px 0 8px;font:900 19px/1.2 var(--kid);font-style:italic;text-transform:uppercase;letter-spacing:.02em}
+.tl{display:grid;gap:9px}
+.tc{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;width:100%;padding:10px 12px;border:3px solid var(--ink);border-radius:16px;background:#fff;cursor:pointer;box-shadow:0 5px 0 rgba(20,33,61,.18)}
+.tc:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(20,33,61,.18)}
+.tc .dot{width:46px;height:46px;border-radius:50%;border:3px solid var(--ink);display:grid;place-items:center;color:#fff;font:900 20px/1 var(--kid)}
+.tc b{display:block;font:900 18px/1.15 var(--kid)}.tc .s{display:block;font:600 13px/1.3 var(--body);color:var(--soft)}
+.tc .g{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;background:#eef4ff;border:2px solid var(--ink);font:800 11px/1.5 var(--body);vertical-align:2px}
+.tc .st{display:flex;gap:1px}.tc .st svg{width:19px;height:19px}
+.of{display:flex;flex-wrap:wrap;gap:8px}
+.oc{position:relative;width:74px;padding:8px 4px 6px;border:3px solid var(--ink);border-radius:14px;background:#fff;text-align:center;font:800 11.5px/1.2 var(--body);cursor:pointer}
+.oc i{display:block;width:34px;height:34px;margin:0 auto 4px;border-radius:50%;border:3px solid var(--ink)}
+.oc.sel{box-shadow:0 0 0 4px #ffd23f}.oc.lock{opacity:.5;cursor:default}
+details.lr{border:3px solid var(--ink);border-radius:14px;background:#fff;margin-bottom:8px}
+details.lr summary{padding:10px 12px;font:800 15.5px/1.2 var(--kid);cursor:pointer}
+details.lr p{margin:0 12px 10px;font:500 15px/1.5 var(--body)}
+/* žaidimas */
+#game{position:fixed;inset:0;z-index:40;background:#cfeaff;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.top{position:absolute;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top));display:flex;gap:8px;align-items:flex-start;pointer-events:none}
+#goal{flex:1;min-width:0;max-width:520px;margin-right:auto;padding:8px 12px;border:3px solid var(--ink);border-radius:16px;background:#fff;box-shadow:0 5px 0 rgba(20,33,61,.2)}
+#goal small{display:block;font:800 11px/1.2 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+#goal b{display:block;font:900 clamp(17px,5.2vw,24px)/1.1 var(--kid);font-style:italic;color:var(--red)}
+#goal.pop{animation:pop .5s cubic-bezier(.3,1.7,.5,1)}@keyframes pop{from{transform:scale(.7);opacity:.2}to{transform:none;opacity:1}}
+.stat{pointer-events:auto;display:grid;gap:6px;justify-items:end}
+.pill{padding:6px 10px;border:3px solid var(--ink);border-radius:13px;background:#fff;font:900 14px/1 var(--kid);box-shadow:0 3px 0 rgba(20,33,61,.2);white-space:nowrap}
+.pill svg{width:14px;height:14px;vertical-align:-2px}
+#bExit{pointer-events:auto;width:42px;height:38px;border:3px solid var(--ink);border-radius:12px;background:#fff;font:900 15px/1 var(--kid);cursor:pointer}
+#msg{position:absolute;left:10px;right:10px;top:124px;text-align:center;pointer-events:none}
+#msg span{display:inline-block;max-width:460px;padding:8px 14px;border-radius:14px;border:3px solid var(--ink);background:#fff;font:800 15.5px/1.3 var(--body);box-shadow:0 4px 0 rgba(20,33,61,.2);animation:pop .35s cubic-bezier(.3,1.7,.5,1)}
+#msg span.bad{background:#ffe3df}#msg span.good{background:#dffbe6}#msg span.new{background:#fff3b8}
+.bot{position:absolute;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));display:grid;gap:8px}
+#cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.wc{height:74px;padding:2px 4px;border:3px solid var(--ink);border-radius:16px;background:#fff;font:900 clamp(14px,4.3vw,22px)/1.05 var(--kid);cursor:pointer;box-shadow:0 5px 0 rgba(20,33,61,.25);overflow-wrap:anywhere;touch-action:none;color:var(--ink)}
+.wc.cur{background:#fff3b8;box-shadow:0 5px 0 rgba(20,33,61,.25),0 0 0 4px #ffd23f}
+.wc.ok{background:#b8f5c8}.wc.no{background:#ffc9c2}.wc:disabled{opacity:.55}
+#bBrake{justify-self:center;width:min(100%,280px);height:50px;border:3px solid var(--ink);border-radius:16px;background:var(--red);color:#fff;font:900 17px/1 var(--kid);font-style:italic;letter-spacing:.05em;cursor:pointer;box-shadow:0 5px 0 rgba(20,33,61,.3);touch-action:none}
+#bBrake.dn{transform:translateY(3px);box-shadow:0 2px 0 rgba(20,33,61,.3);background:#c93428}
+#ov{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(20,33,61,.45);overflow:auto}
+#ov:empty{display:none}
+.rc{width:100%;max-width:430px;max-height:calc(100dvh - 28px);overflow:auto;padding:18px 16px 14px;border:3px solid var(--ink);border-radius:22px;background:#fff;box-shadow:0 8px 0 rgba(20,33,61,.3);text-align:center;animation:pop .45s cubic-bezier(.3,1.7,.5,1)}
+.rc h3{margin:0 0 6px;font:900 27px/1.1 var(--kid);font-style:italic}
+.rc p{margin:6px 0;font:600 15.5px/1.45 var(--body)}
+.rc .st{display:flex;justify-content:center;gap:6px;margin:8px 0}.rc .st svg{width:52px;height:52px}
+.rc ul{margin:6px 0 0;padding:8px 10px 8px 26px;text-align:left;border:2px solid #d8e2f2;border-radius:12px;font:600 14px/1.45 var(--body)}
+.rc h4{margin:12px 0 0;font:800 12px/1.2 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.rc .bt{display:grid;gap:8px;margin-top:12px}
+.rc button{height:50px;border:3px solid var(--ink);border-radius:15px;background:#fff;font:900 17px/1 var(--kid);cursor:pointer;box-shadow:0 4px 0 rgba(20,33,61,.22)}
+.rc button.pri{background:#2fbf71;color:#fff}
+@media (min-width:800px){.bot{left:50%;right:auto;width:720px;margin-left:-360px}.wc{height:84px}}
+</style>
+</head>
+<body>
+<div class="mk-app" id="app">
+  <main id="menu">
+    <div class="hero" aria-hidden="true">
+      <svg viewBox="0 0 560 200" preserveAspectRatio="xMidYMid slice">
+        <path d="M0 120l80-70 60 50 90-90 90 80 70-50 170 90v70H0z" fill="#9fb9dc"/><path d="M230 10l34 30-22 6-16-12-22 26-10-8zM80 50l22 18-20 4-14 12-10-8z" fill="#fff"/>
+        <path d="M0 110q140-30 280-10t280-16v116H0z" fill="#f4fbff"/><path d="M0 150q160-40 300-18t260-22v90H0z" fill="#fff"/>
+        <g fill="#2f9a6a" stroke="#14213d" stroke-width="2" stroke-linejoin="round"><path d="M60 150l16-40 16 40zM68 122l8-20 8 20z"/><path d="M470 136l20-50 20 50zM480 100l10-26 10 26z"/></g>
+        <g class="fl" fill="#fff"><circle cx="40" cy="10" r="3"/><circle cx="150" cy="-10" r="2.5"/><circle cx="260" cy="20" r="3"/><circle cx="380" cy="0" r="2.5"/><circle cx="500" cy="14" r="3"/><circle cx="100" cy="40" r="2"/><circle cx="430" cy="46" r="2"/></g>
+        <g stroke="#14213d" stroke-width="3" stroke-linejoin="round"><path d="M120 120v-34M190 120v-34" stroke-width="4"/><rect x="118" y="78" width="74" height="26" rx="6" fill="#ffd23f"/><path d="M370 120v-34M440 120v-34" stroke-width="4"/><rect x="368" y="78" width="74" height="26" rx="6" fill="#7fd6ff"/></g>
+        <g font-family="Trebuchet MS,sans-serif" font-weight="900" font-size="14" fill="#14213d" text-anchor="middle"><text x="155" y="96">bėgti</text><text x="405" y="96">bėgantis</text></g>
+        <g class="sk"><g transform="translate(280 150)" stroke="#14213d" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M-34 34h30M6 34h30" stroke="#ef4a3c" stroke-width="6"/><path d="M-18 30l6-26M20 30l-8-26" stroke-width="7" stroke="#2c4a9a"/>
+          <path d="M-20 -30q20-14 40 0l-4 36h-32z" fill="#ef4a3c"/><circle cx="0" cy="-46" r="15" fill="#ffd23f"/><path d="M-13 -50h26" stroke-width="6"/>
+          <path d="M-20 -20l-22 22M20 -20l22 22" stroke-width="5"/><path d="M-42 2v36M42 2v36" stroke="#5b6785" stroke-width="2.5"/></g></g>
+      </svg>
+    </div>
+    <h1 id="h1"></h1><p class="lead" id="lead"></p><p class="note" id="note"></p>
+    <h2 id="trT"></h2><div class="tl" id="tl"></div>
+    <h2 id="ofT"></h2><p class="note" id="crT"></p><div class="of" id="of"></div>
+    <h2 id="lrT"></h2><div id="lr"></div>
+  </main>
+</div>
+<div id="game" hidden>
+  <canvas id="gl"></canvas>
+  <div class="top"><div id="goal"><small id="goalS"></small><b id="goalB"></b></div><div class="stat"><button id="bExit" type="button">✕</button><div class="pill" id="pGate"></div><div class="pill" id="pCr"></div></div></div>
+  <div id="msg"></div>
+  <div class="bot"><button id="bBrake" type="button"></button><div id="cards"><button class="wc" type="button" data-l="0"></button><button class="wc" type="button" data-l="1"></button><button class="wc" type="button" data-l="2"></button></div></div>
+</div>
+<div id="ov"></div>
+<script type="module" src="zaidimas.js"></script>
+</body>
+</html>
