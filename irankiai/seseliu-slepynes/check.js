@@ -1,0 +1,7 @@
+/* Bandomųjų kambarių tikrinimas: node check.js [nr] */
+const S = require('./solver.js'), L = S.L, H = require('./hand.js');
+H.forEach((lv, i) => { if(process.argv[2] && +process.argv[2] !== i + 1) return; const P = L.parse(lv), dyn = S.isDyn(P); console.log('== b-' + (i + 1), dyn ? 'laikinis' : 'statinis');
+  if(dyn){ const a = S.solveDyn(lv, { noLight: true, LIM: 40 }), b = S.solveDyn(lv, { maxT: 900 }), c = S.solveDyn(lv, { LIM: 40, maxT: 900 }); const lv2 = Object.assign({}, lv, { cat: null }), d = P.cat ? S.solveDyn(lv2, { LIM: 40, maxT: 900 }) : null;
+    console.log('tiesiai', a.t.toFixed(1), '| su atsarga', b.ok ? b.t.toFixed(1) : 'NE', '| riba 40:', c.ok ? c.t.toFixed(1) : 'NE', d ? '| be katino(40): ' + (d.ok ? d.t.toFixed(1) + ' (blogai)' : 'NE (gerai)') : ''); console.log(S.map(lv, [0, 1.5, 3, 4.5])); }
+  else { const n = S.solveStatic(lv, { noAct: true, LIM: 40 }), r = S.solveStatic(lv, { plan: true }), r40 = S.solveStatic(lv, { LIM: 40 }); console.log('be veiksmų (40):', n.ok ? 'ĮVEIKIAMAS (blogai)' : 'ne (gerai)', '| su veiksmais:', r.ok ? 'gylis ' + r.depth + ', būsenų ' + r.states : 'NE', '| riba 40 gylis:', r40.ok ? r40.depth : 'NE', r.plan ? '| ' + r.plan.map(p => (p.act ? p.act.type : 'durys')).join(' → ') : '');
+    console.log(S.map(lv)); if(r.ok){ let w = L.world0(P); for(const p of r.plan) if(p.act) w = L.apply(P, w, p.act); console.log('-- po veiksmų:'); console.log(S.map(lv, [0], w)); } } });

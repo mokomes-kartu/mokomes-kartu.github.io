@@ -1,0 +1,3 @@
+const fs = require('fs'), S = require('./solver.js'), L = S.L; const floors = JSON.parse(fs.readFileSync('rooms.json', 'utf8')); const out = [];
+for(const [id, rooms] of floors) rooms.forEach((lv, i) => { const P = L.parse(lv); if(S.isDyn(P)){ const r = S.solveDyn(lv, { maxT: 900, path: true }); out.push({ id: id + '-' + (i + 1), dyn: true, path: r.path }); } else { const r = S.solveStatic(lv, { plan: true, maxStates: 4000 }); out.push({ id: id + '-' + (i + 1), dyn: false, plan: r.plan }); } });
+fs.writeFileSync('plans.json', JSON.stringify({ HT: S.HT, rooms: out })); console.log(out.map(o => o.id + (o.dyn ? ' t' + o.path.length : ' a' + (o.plan.length - 1))).join(', '));

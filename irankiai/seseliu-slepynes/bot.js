@@ -1,0 +1,22 @@
+/* Botas pereina kambarius tikru klaviatūros valdymu: node bot.js <aplankas> <nuo> <iki> [ts] */
+const { chromium } = require('playwright'); const PL = require('./plans.json');
+(async () => { const out = process.argv[2], from = +process.argv[3], to = +process.argv[4], TS = +(process.argv[5] || 0.3); require('fs').mkdirSync(out, { recursive: true });
+  const b = await chromium.launch({ args: ['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'] }); const ctx = await b.newContext({ viewport: { width: 1280, height: 800 } }); const p = await ctx.newPage();
+  const errs = []; p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); }); p.on('pageerror', e => errs.push('PAGEERR ' + e.message));
+  await p.goto('http://localhost:8201/seseliu-dirbtuve/'); await p.waitForTimeout(600); await p.click('[data-m="slepynes"]'); await p.waitForTimeout(500);
+  for (let i = from; i <= to; i++) { const R = PL.rooms[i];
+    await p.evaluate(({ R, i, HT, TS }) => { const M = MK_SD.MODES.slepynes, L = M.api.L, down = new Set(), log = window.__bot = { maxM: 0, fails: 0, done: false, note: [], lit: 0 }; __sd.ts = TS; document.getElementById('ov').innerHTML = ''; M.api.startRoom(i);
+      const set = (k, on) => { if(on === down.has(k)) return; if(on) down.add(k); else down.delete(k); dispatchEvent(new KeyboardEvent(on ? 'keydown' : 'keyup', { key: k, bubbles: true })); }, stop = () => { for(const k of [...down]) set(k, false); };
+      const go = (st, tx, tz) => { const dx = tx - st.x, dz = tz - st.z, E = 0.045; set('ArrowRight', dx > E); set('ArrowLeft', dx < -E); set('ArrowDown', dz > E); set('ArrowUp', dz < -E); return Math.hypot(dx, dz); };
+      let s = 0, k = 0, waitT = -1, acting = null; log.dbg = () => ({ s, k, acting: !!acting, x: +M.st.x.toFixed(2), z: +M.st.z.toFixed(2), q: R.plan && R.plan[s] && R.plan[s].path[k], act: R.plan && R.plan[s] && R.plan[s].act, avail: L.action(M.st.P, M.st.w, M.st.x, M.st.z), w: M.st.w, n: R.plan && R.plan[s].path.length });
+      (function loop(){ const st = M.st; if(log.done) return; if(!st || st.over || st.idx !== i){ stop(); log.done = true; return; } if(st.fails){ stop(); log.fails = st.fails; log.done = true; return; } log.maxM = Math.max(log.maxM, st.meter);
+        if(st.doneT > 0){ stop(); }
+        else if(R.dyn){ const idx = Math.floor(st.t / HT) + 1, q = idx >= R.path.length - 1 ? [0, -7.1] : R.path[idx]; go(st, q[0], q[1]); }
+        else { const seg = R.plan[s];
+          if(acting){ stop(); if(JSON.stringify(st.w) !== acting){ acting = null; s++; k = 0; } }
+          else if(k >= seg.path.length){ if(seg.act){ const a = L.action(st.P, st.w, st.x, st.z), A = seg.act, tg = A.type === 'push' ? [L.cx(st.w.boxes[A.i][0]), L.cz(st.w.boxes[A.i][1])] : A.type === 'cheese' ? [L.cx(st.P.cheese[A.i][0]), L.cz(st.P.cheese[A.i][1])] : A.type === 'rope' ? [L.cx(st.P.ropes[A.i][0]), L.cz(st.P.ropes[A.i][1])] : [L.cx(st.P.cables[A.i][0]), L.cz(st.P.cables[A.i][1])]; if(!a && (log.nudge = (log.nudge || 0) + 1) < 400){ go(st, tg[0], tg[1]); requestAnimationFrame(loop); return; } stop(); if(!a || a.type !== seg.act.type || a.i !== seg.act.i || (a.dc || 0) !== (seg.act.dc || 0) || (a.dr || 0) !== (seg.act.dr || 0)) log.note.push('veiksmas nesutampa ' + s + ': ' + JSON.stringify(a) + ' vs ' + JSON.stringify(seg.act)); acting = JSON.stringify(st.w); dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true })); dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true })); } else go(st, 0, -7.1); }
+          else { const q = seg.path[k], pq = k > 0 ? seg.path[k - 1] : null; if(pq && pq[0] === q[0] && pq[1] === q[1]){ stop(); if(waitT < 0) waitT = st.t; if(st.t - waitT >= 2 * HT){ waitT = -1; k++; } } else if(go(st, q[0], q[1]) < 0.07) k++; } }
+        requestAnimationFrame(loop); })(); }, { R, i, HT: PL.HT, TS });
+    let res = null; for (let w = 0; w < (+process.env.MAXW || 400); w++) { await p.waitForTimeout(500); res = await p.evaluate(() => __bot.done ? Object.assign({}, __bot, { ov: document.getElementById('ov').innerText.replace(/\n+/g, ' | ').slice(0, 90) }) : null); if (res) break; if (w === 8) await p.screenshot({ path: `${out}/${R.id}.png` }); }
+    if(!res) console.log(JSON.stringify(await p.evaluate(() => __bot.dbg()))); console.log(R.id, res ? (res.fails ? 'PAGAUTAS' : 'OK') + ' max juosta ' + res.maxM.toFixed(2) + (res.note.length ? ' PASTABOS: ' + res.note.join('; ') : '') + ' | ' + res.ov : 'NEBAIGĖ'); }
+  console.log('klaidos', JSON.stringify(errs)); await b.close(); })();
