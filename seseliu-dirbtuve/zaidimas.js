@@ -4,10 +4,10 @@ const T = window.MK_T, D = window.MK_DAIKTAI, MK = window.MK;
 const GAME = "seseliu-dirbtuve", CKEY = "mk-" + GAME + "-kelione", $ = id => document.getElementById(id);
 const rad = d => d * Math.PI / 180, TAU = Math.PI * 2, EL_MIN = rad(36), EL_MAX = rad(72), HALF = 3.6, LR = 2.9, PLASTER = "#efece5";
 const DMAP = {}; D.forEach(([id, parts]) => { DMAP[id] = parts; });
-/* „Lempos pamoka“ – trumpas įvadas (senosios užduotys); pagrindiniai režimai – atskiruose failuose (teatras.js, molbertas.js, slepynes.js) */
+/* „Lempos pamoka“ – trumpas įvadas (senosios užduotys); pagrindiniai režimai – atskiruose failuose (slepynes.js, teatras.js) */
 const LEVELS = [{ id: "ivadas", kinds: ["dir", "len", "lamp", "spot", "tone", "len"], n: 6, col: "#f5871f", paper: "#fff6e3", wall: ["#ffd9a8", "#f7b267"], fixed: true }];
-const MODES = {}, MODE_LIST = [["teatras", "#8b5cf6"], ["molbertas", "#2bb3a3"], ["slepynes", "#3b5bdb"], ["ivadas", "#f5871f"]];
-let MODE = null, ovAgain = null;
+const MODES = {}, MODE_LIST = [["slepynes", "#3b5bdb"], ["teatras", "#8b5cf6"], ["ivadas", "#f5871f"]];
+let MODE = null, ovAgain = null, ovMenu = null;
 const store = () => Object.assign({ seen: [] }, MK.get(CKEY, {}));
 const lightDir = (az, el, v) => (v || new THREE.Vector3()).set(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az));
 const angDiff = (a, b) => { let d = (a - b) % TAU; if(d > Math.PI) d -= TAU; if(d < -Math.PI) d += TAU; return d; };
@@ -31,8 +31,8 @@ function startMode(name){
 }
 /* bendras režimo pabaigos langas */
 function result(o){
-  MK.best(GAME, o.key, o.stars); if(o.stars >= 2) MK.sfx.win(); if(o.stars === 3 && MK.confetti) MK.confetti(60); ovAgain = o.again;
-  $("ov").innerHTML = `<div class="rc" role="dialog"><h3>${o.title}</h3><div class="st">${[0, 1, 2].map(k => STAR(k < o.stars)).join("")}</div>${o.lines.map(l => `<p>${l}</p>`).join("")}<div class="bt"><button class="pri" type="button" data-a="again">${T.rep.again}</button><button type="button" data-a="menu">${T.rep.menu}</button></div></div>`;
+  if(o.key) MK.best(GAME, o.key, o.stars); if(o.stars >= 2) MK.sfx.win(); if(o.stars === 3 && MK.confetti) MK.confetti(60); ovAgain = o.again; ovMenu = o.menu || null;
+  $("ov").innerHTML = `<div class="rc" role="dialog"><h3>${o.title}</h3><div class="st">${[0, 1, 2].map(k => STAR(k < o.stars)).join("")}</div>${o.lines.map(l => `<p>${l}</p>`).join("")}<div class="bt"><button class="pri" type="button" data-a="again">${o.againT || T.rep.again}</button><button type="button" data-a="menu">${o.menuT || T.rep.menu}</button></div></div>`;
 }
 function seenAdd(ids){ const C = store(); let n = 0; for(const id of ids) if(!C.seen.includes(id)){ C.seen.push(id); n++; } if(C.seen.length >= D.length) C.seen = ids.slice(); MK.set(CKEY, C); return n; }
 
@@ -340,7 +340,7 @@ function finish(){
   if(st >= 2) MK.sfx.win(); if(st === 3 && MK.confetti) MK.confetti(60);
   $("ov").innerHTML = `<div class="rc" role="dialog"><h3>${R.title}</h3><div class="st">${[0, 1, 2].map(k => STAR(k < st)).join("")}</div><p>${R.line[st - 1]}</p><p>${R.points(S.pts, max)}${S.fresh ? "<br>" + R.fresh(S.fresh) : ""}</p><div class="bt"><button class="pri" type="button" data-a="again">${R.again}</button><button type="button" data-a="menu">${R.menu}</button></div></div>`;
 }
-$("ov").addEventListener("click", e => { const b = e.target.closest("[data-a]"); if(!b) return; MK.sfx.tap(); $("ov").innerHTML = ""; if(b.dataset.a === "again"){ if(MODE && ovAgain) ovAgain(); else start(0); } else showMenu(); });
+$("ov").addEventListener("click", e => { const b = e.target.closest("[data-a]"); if(!b) return; MK.sfx.tap(); $("ov").innerHTML = ""; if(b.dataset.a === "again"){ if(MODE && ovAgain) ovAgain(); else start(0); } else if(MODE && ovMenu) ovMenu(); else showMenu(); });
 
 /* ============================== valdymas ============================== */
 /* lempa valdoma dviem atskirais slankikliais: apačioje – sukimas aplink, dešinėje – aukštis (judesiai nesimaišo) */
@@ -360,10 +360,10 @@ gl.addEventListener("pointermove", e => { const d = S && S.drag; if(!d || !S.tas
 const up = e => { const d = S && S.drag; if(!d) return; S.drag = null; if(d.moved < 10 && e.type === "pointerup") tap(e.clientX, e.clientY); };
 gl.addEventListener("pointerup", up); gl.addEventListener("pointercancel", up);
 $("bMain").addEventListener("click", () => { if(!S || !S.task) return; MK.sfx.tap(); if(S.task.done){ say(""); nextTask(); } else check(); });
-$("bExit").addEventListener("click", () => { MK.sfx.tap(); clearTask(); showMenu(); });
+$("bExit").addEventListener("click", () => { MK.sfx.tap(); if(MODE && MODE.back && MODE.back()) return; clearTask(); showMenu(); });
 addEventListener("keydown", e => {
   if($("game").hidden) return; if($("ov").innerHTML){ if(e.key === "Enter"){ const b = $("ov").querySelector(".pri"); b && b.click(); } return; }
-  if(MODE){ if(e.key === "Escape") showMenu(); else MODE.key && MODE.key(e); return; }
+  if(MODE){ if(e.key === "Escape"){ if(!(MODE.back && MODE.back())) showMenu(); } else MODE.key && MODE.key(e); return; }
   if(!S) return; const t = S.task; if(!t) return; const drag = !t.done && (t.kind === "dir" || t.kind === "len");
   if(e.key === "Escape"){ clearTask(); showMenu(); }
   else if(e.key === "Enter" || e.key === " "){ e.preventDefault(); $("bMain").hidden || $("bMain").click(); }

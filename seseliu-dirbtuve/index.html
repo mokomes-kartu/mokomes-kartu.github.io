@@ -10,12 +10,14 @@
 <meta name="apple-mobile-web-app-title" content="MokomėsKartu">
 <link rel="apple-touch-icon" href="/logo/mk-ikona-180.png">
 <title>Šešėlių dirbtuvė – MokomėsKartu.lt</title>
-<meta name="description" content="Dailės žaidimas 7–8 klasei: atpažink, kieno šešėlis, nutapyk daikto tonus ir slėpkis šešėliuose – taip mokaisi matyti šviesą, šešėlį ir apimtį.">
+<meta name="description" content="Žaidimas 4–8 klasei apie šviesą ir šešėlį: nuvesk pelytę per naktinę dirbtuvę slėpdamasis šešėliuose ir atpažink daiktus iš jų šešėlių.">
 <meta name="theme-color" content="#ffe9c9">
 <link rel="icon" href="/logo/mk-ikona.svg">
 <script src="/bendra/mk.js"></script>
 <script src="tekstai.lt.js"></script>
 <script src="daiktai.js"></script>
+<script src="slepynes-logika.js"></script>
+<script src="slepynes-kambariai.js"></script>
 <style>
 body{--ink:#2b2f3a;--soft:#6a6f80;--red:#e5484d;background:linear-gradient(#ffe9c9,#fff6e8 50%,#ffffff) fixed;color:var(--ink);--kid:"Trebuchet MS","Segoe UI",system-ui,sans-serif;--body:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
 .mk-app{max-width:760px}
@@ -44,7 +46,7 @@ details.lr p{margin:0 12px 10px;font:500 15px/1.5 var(--body)}
 /* žaidimas */
 #game{position:fixed;inset:0;z-index:40;background:#3a2a1e;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
 #gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
-.top{position:absolute;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top));display:flex;gap:8px;align-items:flex-start;pointer-events:none}
+.top{z-index:4;position:absolute;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top));display:flex;gap:8px;align-items:flex-start;pointer-events:none}
 #ins{flex:1;min-width:0;max-width:560px;margin-right:auto;padding:8px 12px;border:3px solid var(--ink);border-radius:16px;background:#fff;box-shadow:0 5px 0 rgba(43,47,58,.25)}
 #ins small{display:block;font:800 11px/1.2 var(--body);letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
 #ins b{display:block;margin-top:2px;font:800 clamp(15px,4.2vw,18px)/1.25 var(--kid)}
@@ -83,20 +85,31 @@ details.lr p{margin:0 12px 10px;font:500 15px/1.5 var(--body)}
 .mmsg{max-width:480px;padding:8px 14px;border-radius:14px;border:3px solid var(--ink);background:#fff;font:800 14.5px/1.3 var(--body);box-shadow:0 4px 0 rgba(43,47,58,.25);text-align:center}
 .mmsg.bad{background:#ffe3df}.mmsg.good{background:#dffbe6}.mmsg.new{background:#fff3b8}.mmsg:empty{display:none}
 /* teatras */
-.tgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:min(100%,460px)}
-.tb{display:grid;justify-items:center;padding:4px 4px 6px;border:3px solid var(--ink);border-radius:16px;background:#fff;cursor:pointer;box-shadow:0 5px 0 rgba(43,47,58,.3);font:900 13px/1.15 var(--kid);color:var(--ink)}
-.tb img{width:84px;height:84px;display:block}.tb.ok{background:#c9f7d6;border-color:#1f9d57}.tb.no{background:#ffd3cd;border-color:#c93428}
+.tgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;width:min(100%,460px)}
+.tb{display:grid;justify-items:center;padding:4px 4px 6px;border:3px solid var(--ink);border-radius:16px;background:#fff;cursor:pointer;box-shadow:0 5px 0 rgba(43,47,58,.3);font:900 12px/1.15 var(--kid);color:var(--ink);min-width:0;overflow-wrap:anywhere}
+.tb img{width:68px;height:68px;display:block}.tb.ok{background:#c9f7d6;border-color:#1f9d57}.tb.no{background:#ffd3cd;border-color:#c93428}
 .combo{width:58px;height:58px;border-radius:50%;border:3px solid var(--ink);background:#ffd23f;display:grid;place-items:center;font:900 20px/1 var(--kid);color:var(--red);box-shadow:0 3px 0 rgba(43,47,58,.25)}.combo.pop{animation:pop .3s cubic-bezier(.3,1.7,.5,1)}
-/* molbertas */
-.easel{display:grid;gap:8px;justify-items:center;padding:8px;border:3px solid var(--ink);border-radius:16px;background:#c99a6b;box-shadow:0 5px 0 rgba(43,47,58,.3)}
-.easel canvas{width:min(62vw,270px);height:min(62vw,270px);border:3px solid var(--ink);border-radius:8px;background:#fffdf6;touch-action:none;cursor:pointer;display:block}
-.pal{display:flex;gap:6px}.pal button{width:44px;height:44px;border:3px solid var(--ink);border-radius:10px;cursor:pointer;padding:0}.pal button.sel{box-shadow:0 0 0 4px #ffd23f;transform:translateY(-3px)}
-#game[data-mode="molbertas"] .sl.v{right:auto;left:16px;top:20%}#game[data-mode="molbertas"] .sl.v span{right:auto;left:-4px}#mSl .sl.h{width:min(62vw,270px);margin:22px 0 4px}#mPal[hidden]{display:none}
 /* slėpynės */
 .hearts{font:900 20px/1 var(--kid);color:var(--red);letter-spacing:2px;white-space:nowrap}
 .joy{position:absolute;width:104px;height:104px;margin:-52px 0 0 -52px;border-radius:50%;border:3px solid rgba(255,255,255,.75);background:rgba(255,255,255,.18);pointer-events:none!important}
 .joy i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:#fff;border:3px solid var(--ink)}
-@media (min-width:800px){.tgrid{grid-template-columns:repeat(4,minmax(0,1fr));width:min(100%,640px)}.mol{left:auto!important;right:18px!important;bottom:50%!important;transform:translateY(50%);justify-items:end!important;width:auto}.easel canvas{width:300px;height:300px}}
+.mtop #hR{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mtop .hearts{flex:none}
+.mrow{position:absolute;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));top:calc(max(8px,env(safe-area-inset-top)) + 54px);display:flex;gap:8px;align-items:center;pointer-events:none!important}.mrow .mcard{flex:none;padding:3px 10px;font-size:13px}.mrow [hidden]{display:none}
+.mmsg.top{position:absolute;left:50%;top:calc(max(8px,env(safe-area-inset-top)) + 90px);transform:translateX(-50%);width:max-content;max-width:min(92vw,480px);pointer-events:none!important}
+.hbtn{width:42px;height:38px;flex:none;border:3px solid var(--ink);border-radius:12px;background:#fff;font:900 19px/1 var(--kid);cursor:pointer;color:var(--ink);box-shadow:0 3px 0 rgba(43,47,58,.25);padding:0}
+.abtn{position:absolute;right:max(12px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));width:92px;height:92px;border-radius:50%;border:4px solid var(--ink);background:#ffd23f;color:var(--ink);cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.35);display:grid;place-content:center;gap:3px;touch-action:none;padding:0}
+.abtn b{font:900 17px/1 var(--kid)}.abtn small{font:700 10.5px/1 var(--body);opacity:.7}
+.abtn:disabled{background:rgba(255,255,255,.22);color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.6);box-shadow:none;cursor:default}
+.abtn:not(:disabled){animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.07)}}
+@media (hover:none){.abtn small{display:none}}
+.rooms{position:absolute;inset:0;overflow:auto;padding:58px 14px 24px;background:rgba(20,24,41,.8);color:#fff;text-align:center;touch-action:pan-y}
+.rooms h3{margin:0;font:900 26px/1.1 var(--kid)}.rooms p{margin:4px 0 10px;font:700 14px/1.3 var(--body);opacity:.85}
+.rooms h4{margin:16px auto 8px;max-width:420px;text-align:left;font:900 17px/1.2 var(--kid)}.rooms h4 small{font:700 13px/1 var(--body);opacity:.75;margin-left:6px}
+.rgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:420px;margin:0 auto}
+.rb{aspect-ratio:1;border:3px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink);cursor:pointer;display:grid;place-content:center;gap:3px;box-shadow:0 4px 0 rgba(0,0,0,.35);padding:0}
+.rb b{font:900 20px/1 var(--kid)}.rb i{font:normal 800 11px/1 var(--body);color:#c98a00;letter-spacing:1px}.rb.done{background:#dffbe6}.rb:disabled{opacity:.35;cursor:default}
+@media (min-width:800px){.tgrid{grid-template-columns:repeat(6,minmax(0,1fr));width:min(100%,760px)}.tb{font-size:13px}.tb img{width:84px;height:84px}#game[data-mode="slepynes"] .mtop,.mrow{right:auto;width:340px}#game[data-mode="slepynes"] .mmsg.top{left:max(8px,env(safe-area-inset-left));transform:none;max-width:340px;text-align:left;top:calc(max(8px,env(safe-area-inset-top)) + 96px)}}
 #ov{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(43,47,58,.5);overflow:auto}
 #ov:empty{display:none}
 .rc{width:100%;max-width:430px;max-height:calc(100dvh - 28px);overflow:auto;padding:18px 16px 14px;border:3px solid var(--ink);border-radius:22px;background:#fff;box-shadow:0 8px 0 rgba(43,47,58,.3);text-align:center;animation:pop .45s cubic-bezier(.3,1.7,.5,1)}
@@ -133,8 +146,7 @@ details.lr p{margin:0 12px 10px;font:500 15px/1.5 var(--body)}
 </div>
 <div id="ov"></div>
 <script type="module" src="zaidimas.js"></script>
-<script type="module" src="teatras.js"></script>
-<script type="module" src="molbertas.js"></script>
 <script type="module" src="slepynes.js"></script>
+<script type="module" src="teatras.js"></script>
 </body>
 </html>

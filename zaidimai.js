@@ -404,11 +404,14 @@ window.MK_ZAIDIMAI = [
   "id": "seseliu-dirbtuve",
   "subject": "dai",
   "grades": [
+   4,
+   5,
+   6,
    7,
    8
   ],
   "title": "Šešėlių dirbtuvė",
-  "desc": "Trys 3D žaidimai apie šviesą ir šešėlį: atpažink, kieno šešėlis, nutapyk daikto tonus ir nuvesk pelytę per naktinę dirbtuvę slėpdamasis šešėliuose.",
+  "desc": "3D nuotykis naktinėje dirbtuvėje: vesk pelytę iki durų slėpdamasis šešėliuose, stumdyk dėžes, graužk sūrį ir virves. Dar – šešėlių teatras „Kieno šešėlis?“.",
   "url": "/seseliu-dirbtuve/",
   "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiNmZmQ5YTgiLz48cGF0aCBkPSJNMCA0NGg2NHYyMEgweiIgZmlsbD0iI2M1OGY1YyIvPjxlbGxpcHNlIGN4PSIzMiIgY3k9IjQ4IiByeD0iMjgiIHJ5PSI4IiBmaWxsPSIjZmZmNmUzIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMiIvPjxlbGxpcHNlIGN4PSI0NCIgY3k9IjQ3IiByeD0iMTMiIHJ5PSI0IiBmaWxsPSIjMmIyZjNhIiBvcGFjaXR5PSIuMzUiLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjM4IiByPSIxMCIgZmlsbD0iI2U1NDg0ZCIgc3Ryb2tlPSIjMTIxYTMzIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwYXRoIGQ9Ik0yNCAzNGE3IDcgMCAwIDEgNi00IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii44Ii8+PHBhdGggZD0iTTMwIDI4YTEwIDEwIDAgMCAxIDEwIDEwIiBmaWxsPSJub25lIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMCIvPjxwYXRoIGQ9Ik0zMyA0N2ExMCAxMCAwIDAgMCA3LTEyIiBmaWxsPSJub25lIiBzdHJva2U9IiM4YTFmMjQiIHN0cm9rZS13aWR0aD0iMyIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNOCA0bDQgMTAiIHN0cm9rZT0iIzEyMWEzMyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNNCAyMmw2LTEwaDEwbDIgMTB6IiBmaWxsPSIjMWY2ZjhiIiBzdHJva2U9IiMxMjFhMzMiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTggMjJsLTIgNmgxOGwtMi02IiBmaWxsPSIjZmZmM2IwIiBvcGFjaXR5PSIuNyIvPjwvc3ZnPg=="
  },

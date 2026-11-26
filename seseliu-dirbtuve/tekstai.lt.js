@@ -1,21 +1,21 @@
 /* Šešėlių dirbtuvė – visi mokiniui rodomi tekstai (lietuvių k.). Verčiant užtenka išversti šį failą.
-   Tema – Dailės bendroji programa, 7–8 kl.: „Šviesa ir šešėliai“, „Apimtinių trimačių formų vaizdavimas plokštumoje“, „toninė įvairovė“.
+   Tema – šviesa ir šešėlis. Dailės bendrojoje programoje „Šviesa ir šešėliai“, „Apimtinių trimačių formų vaizdavimas plokštumoje“, „toninė įvairovė“ – 7–8 kl. turinys;
+   pelytės žaidimas („Šešėlių slėpynės“) tinka ir jaunesniems, todėl žaidimas rodomas 4–8 kl.
    „Savasis šešėlis“ ir „krintantis šešėlis“ – įprasti piešimo mokymo terminai (programoje jie atskirai neįvardyti). */
 window.MK_T = {
   title: "Šešėlių dirbtuvė",
   h1: "Šešėlių dirbtuvė",
-  lead: "Atpažink šešėlius, tapyk tonais ir slėpkis nuo šviesos – taip mokaisi matyti, kaip šviesa ir šešėliai parodo daikto apimtį.",
+  lead: "Nuvesk pelytę per naktinę dirbtuvę slėpdamasis šešėliuose ir atpažink daiktus iš jų šešėlių – taip mokaisi suprasti, kaip krinta šviesa ir kur atsiranda šešėlis.",
   note: n => `Dirbtuvės lentynose – daiktų: ${n}. Kiekvieną kartą ant stalo atsiduria vis kiti.`,
   seen: (a, n) => `Tavo jau matyti daiktai: ${a} iš ${n}`,
   levelsT: "Žaidimai",
   modes: {
+    slepynes: { name: "Šešėlių slėpynės", sub: "Naktis dirbtuvėje: vesk pelytę iki durų – slėpkis šešėliuose, stumdyk dėžes, graužk sūrį ir virves" },
     teatras: { name: "Kieno šešėlis?", sub: "Šešėlių teatras: kuo greičiau atpažink, kurio daikto šešėlis ant širmos" },
-    molbertas: { name: "Tapytojo molbertas", sub: "Nuspalvink piešinio zonas tinkamais tonais – taip, kaip krinta šviesa" },
-    slepynes: { name: "Šešėlių slėpynės", sub: "Naktis dirbtuvėje: nuvesk pelytę iki durų slepdamasis nuo lempų šešėliuose" },
     ivadas: { name: "Lempos pamoka", sub: "Trumpas įvadas: šešėlio kryptis, ilgis, šviesiausia ir tamsiausia vieta" }
   },
   sl: { az: "◄ sukti lempą ►", el: "aukštis" },
-  grade: "7–8 kl.",
+  grade: "4–8 kl.",
   levels: {
     l1: { name: "Šešėlio kryptis", sub: "Suk lempą aplink daiktą, kad šešėlis kristų į pažymėtą vietą" },
     l2: { name: "Šešėlio ilgis", sub: "Kelk ir leisk lempą: žemai – šešėlis ilgas, aukštai – trumpas" },
@@ -73,19 +73,18 @@ window.MK_T = {
     { name: "Šviesa ir šešėlis", html: "<p>Kai į daiktą šviečia lempa, viena jo pusė būna <b>apšviesta</b>, o kita lieka <b>šešėlyje</b>. Kur šviesa nepasiekia paties daikto paviršiaus, matome <b>savąjį šešėlį</b>. Šešėlis, kurį daiktas meta ant stalo ar ant kitų daiktų, vadinamas <b>krintančiu šešėliu</b>.</p><p>Būtent šviesa ir šešėliai leidžia suprasti, kad daiktas yra trimatis, o ne plokščias.</p>" },
     { name: "Šešėlio kryptis ir ilgis", html: "<p>Šešėlis visada krinta į <b>priešingą pusę</b> nei šviesa: lempa kairėje – šešėlis dešinėje.</p><p>Kuo <b>žemiau</b> šviesos šaltinis, tuo šešėlis <b>ilgesnis</b>; kuo <b>aukščiau</b> – tuo <b>trumpesnis</b>. Taip būna ir lauke: vidurdienį šešėliai trumpi, o vakare ilgi.</p>" },
     { name: "Tonai ir apimtis", html: "<p>Piešdami apimtį dailininkai naudoja <b>tonus</b> – nuo šviesiausio iki tamsiausio. Šviesiausia ten, kur paviršius atsuktas tiesiai į šviesą. Kuo labiau paviršius nuo šviesos nusisuka, tuo tonas tamsesnis.</p><p>Laipsniški tonų perėjimai padeda plokščiame lape pavaizduoti apimtinę, trimatę formą. Todėl mokantis piešti dažnai piešiami balti gipsiniai modeliai – ant jų tonai matyti geriausiai.</p>" },
-    { name: "Kaip nutapyti šešėlį", html: "<p>Dailininkai daiktą dalija į tonų zonas. <b>Šviesa</b> – ten, kur paviršius atsuktas į lempą: šviesiausias tonas. <b>Pustonis</b> – kur šviesa krinta įstrižai: šiek tiek tamsiau. <b>Savasis šešėlis</b> – nuo lempos nusukta pusė: tamsu. <b>Atspindys</b> – šešėlio pusės apačia, kurią truputį apšviečia nuo stalo atsimušusi šviesa: šviesiau nei savasis šešėlis. <b>Krintantis šešėlis</b> ant stalo – tamsiausias.</p>" },
-    { name: "Kaip žaisti", html: "<p><b>Kieno šešėlis?</b> Ant širmos – paslėpto daikto šešėlis. Kuo greičiau paliesk daiktą, kuriam jis priklauso. Teisingi atsakymai iš eilės didina taškų daugiklį, klaida atima laiko.</p><p><b>Tapytojo molbertas.</b> Pasirink toną paletėje ir paliesk piešinio zoną. Kai nuspalvinsi visas, spausk „Tikrinti“. Kartais reikia atvirkščiai – pagal gatavą piešinį nustatyti lempą dviem slankikliais.</p><p><b>Šešėlių slėpynės.</b> Vesk pelytę vairalazde arba rodyklėmis. Šviesoje pildosi pastebėjimo juosta – spėk pasislėpti šešėlyje. Rink dažų tūbeles ir pasiek duris.</p>" }
+    { name: "Kaip žaisti", html: "<p><b>Šešėlių slėpynės.</b> Vesk pelytę pirštu (vairalazdė atsiranda ten, kur palieti ekraną) arba rodyklėmis. Šviesoje pildosi pastebėjimo juosta – spėk pasislėpti šešėlyje, kol ji neprisipildė. Priėjęs prie mėlynos dėžės, sūrio, virvės kuoliuko ar kabelio, spausk veiksmo mygtuką (kompiuteryje – tarpo klavišą): pelytė stums arba grauš. Jei lempa pastebi, kambarys prasideda iš naujo.</p><p><b>Kieno šešėlis?</b> Ant širmos – paslėpto daikto šešėlis. Kuo greičiau paliesk daiktą, kuriam jis priklauso. Teisingi atsakymai iš eilės didina taškų daugiklį, klaida atima laiko.</p>" }
   ],
-  teatras: { time: "Laikas", score: n => `${n} tšk.`, go: "Kieno šešėlis?", stage: ["Daiktas sukasi", "Daiktas vartosi", "Šešėlis ištemptas"], stageUp: "Sunkiau!", ok: ["Taip!", "Tiksliai!", "Greita akis!"], no: n => `Ne – tai ${n}.`,
+  teatras: { time: "Laikas", score: n => `${n} tšk.`, go: "Kieno šešėlis?", stage: ["Daiktas vartosi", "Šešėlis suspaustas", "Matyti tik dalis šešėlio", "Viskas kartu"], stageUp: "Sunkiau!", ok: ["Taip!", "Tiksliai!", "Greita akis!"], no: n => `Ne – tai ${n}.`,
     title: "Laikas baigėsi!", res: (ok, n) => `Atpažinti šešėliai: ${ok} iš ${n}`, best: n => `Ilgiausia serija: ${n}`, lines: ["Šešėliai apgaulingi – pabandyk dar kartą.", "Gera akis!", "Šešėlių teatro žvaigždė!"] },
-  molbertas: { task: (i, n) => `Piešinys ${i} / ${n}`, paint: "Nuspalvink zonas tonais – pagal tai, iš kur šviečia lempa.", paintOff: "Lempa dar išjungta. Numatyk, kur bus šviesa ir šešėliai, ir nuspalvink zonas.", match: "Nustatyk lempą taip, kad daiktas atrodytų kaip piešinyje.",
-    tones: ["šviesa", "pustonis", "atspindys", "savasis šešėlis", "krintantis šešėlis"], check: "Tikrinti", next: "Toliau", finish: "Baigti",
-    okPaint: "Puiku! Šviesa – į lempą atsuktoje pusėje, tamsiausia – krintantis šešėlis.", noPaint: n => `Dar ne: netinkamai nuspalvintų zonų – ${n}. Pažiūrėk, iš kur šviečia lempa.`, reveal: "Štai kaip tai nutapytų dailininkas.",
-    okMatch: "Sutampa! Šešėlis krinta į priešingą pusę nei lempa.", noSide: "Šešėlis krinta ne į tą pusę – pasuk lempą.", noHigh: "Šešėlis per trumpas – nuleisk lempą.", noLow: "Šešėlis per ilgas – pakelk lempą.", near: "Beveik! Dar truputį.",
-    title: "Piešiniai baigti!", points: (a, b) => `Taškai: ${a} iš ${b}`, lines: ["Tonai dar painiojasi – pabandyk dar kartą.", "Gražūs piešiniai!", "Tikras tonų meistras!"] },
-  slepynes: { room: (i, n) => `Kambarys ${i} / ${n}`, tips: ["Vesk pelytę pirštu arba rodyklėmis. Šešėlis krinta tolyn nuo lempos – slėpkis už daiktų ir bėk prie durų.", "Lempa sukiojasi – kartu juda ir šešėliai. Lauk tinkamos akimirkos.", "Dvi lempos šviečia iš skirtingų pusių – ir šešėliai krinta į skirtingas puses.", "Lempa kyla ir leidžiasi: kai ji žemai, šešėliai ilgi, kai aukštai – trumpi.", "Paskutinis kambarys: viena lempa sukasi ratu, kita kilnojasi."],
-    seen: "Pastebėjo! Grįžti į pradžią.", tube: "Dažų tūbelė!", tubes: n => `Tūbelės: ${n}`, door: "Kambarys įveiktas!", lost: "Širdelių nebeliko – kambarį pradedi iš naujo.", next: "Kitas kambarys", joy: "Vesk pelytę: vilk pirštu arba spausk rodykles.",
-    title: "Dirbtuvė perbėgta!", res: (t, n) => `Dažų tūbelės: ${t} iš ${n}`, hearts: n => `Prarasta širdelių: ${n}`, hint: n => `Trims žvaigždutėms surink bent ${n} tūbelių ir prarask ne daugiau kaip 2 širdeles.`, lines: ["Lempos buvo budrios – pabandyk dar kartą.", "Gerai slapstaisi!", "Šešėlių meistras – lempos tavęs beveik nematė!"] },
+  slepynes: {
+    floors: [{ name: "1 aukštas", sub: "Šešėliai ir lempos" }, { name: "2 aukštas", sub: "Stumdomos dėžės" }, { name: "Bandomieji kambariai", sub: "Sūris, virvė, kabelis ir katinas" }],
+    pickT: "Pasirink kambarį", pickS: (d, n) => `Įveikta kambarių: ${d} iš ${n}`, soon: "Kiti aukštai – netrukus.",
+    room: n => `${n} kambarys`, tubes: (a, n) => `Tūbelės ${a}/${n}`, act: { push: "Stumti", gnaw: "Graužti", none: "Veiksmas" }, keyHint: "tarpas", restart: "Pradėti kambarį iš naujo",
+    kinds: { one: "Šešėlis krinta tolyn nuo lempos. Slėpkis už daiktų ir bėk prie durų.", two: "Dvi lempos: saugu tik ten, kur nepasiekia nė viena.", sw: "Lempa sukiojasi – kartu juda ir šešėliai. Lauk tinkamos akimirkos.", hv: "Lempa kyla ir leidžiasi: kai ji žemai, šešėliai ilgi, kai aukštai – trumpi.", rot: "Lempa sukasi ratu. Bėk, kai šviesa nusisuka, ir slėpkis už daiktų." },
+    tips: { "1-1": "Vesk pelytę pirštu arba rodyklėmis. Šešėlis krinta tolyn nuo lempos – slėpkis už daiktų ir bėk prie durų.", "2-1": "Mėlyną dėžę galima pastumti: prieik prie jos ir spausk „Stumti“. Pastumta dėžė mes šešėlį kitur.", "b-1": "Sūrį galima pragraužti: prieik prie jo ir spausk „Graužti“.", "b-2": "Virvė laiko pakabintą maišą. Nugraužk ją prie kuoliuko – maišas nukris ir mes šešėlį.", "b-3": "Ieškok raudono kištuko ant grindų: nugraužus kabelį lempa užges.", "b-4": "Katinas vaikšto pirmyn ir atgal. Eik jo šešėlyje, bet neprisiliesk!" },
+    seen: "Lempa pastebėjo! Kambarys prasideda iš naujo.", cat: "Katinas pagavo! Kambarys prasideda iš naujo.", stuck: "Į tą pusę dėžė nepasistumia.", tube: "Dažų tūbelė!", door: "Pavyko!", next: "Kitas kambarys", rooms: "Kambarių sąrašas",
+    won: "Kambarys įveiktas!", wonL: ["Pavyko! Kitą kartą pabandyk nepakliūti lempoms.", "Gerai slapstaisi!", "Tobula – nė karto nepastebėta ir visos tūbelės surinktos!"], res: (t, n, f) => `Dažų tūbelės: ${t} iš ${n} · pastebėta kartų: ${f}`, hint3: "Trims žvaigždutėms: nė karto nepakliūk ir surink visas tūbeles." },
   daiktai: {
     kubas: "Kubas", gretasienis: "Stačiakampis gretasienis", rutulys: "Rutulys", ritinys: "Ritinys", kugis: "Kūgis", piramide: "Piramidė", prizme3: "Trikampė prizmė", prizme6: "Šešiakampė prizmė", pusrutulis: "Pusrutulis", toras: "Žiedas",
     oktaedras: "Oktaedras", nupjautinis: "Nupjautinis kūgis", tetraedras: "Trikampė piramidė", vamzdis: "Vamzdis", laiptuota: "Laiptuota piramidė", obeliskas: "Obeliskas", zvaigzde: "Žvaigždė", sirdis: "Širdis", menulis: "Mėnulio pjautuvas", krumpliaratis: "Krumpliaratis",
