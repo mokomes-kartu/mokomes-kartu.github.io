@@ -39,6 +39,10 @@ h2{margin:20px 0 8px;font:900 19px/1.2 var(--kid);font-style:italic;text-transfo
 .oc{position:relative;width:74px;padding:8px 4px 6px;border:3px solid var(--ink);border-radius:14px;background:#fff;text-align:center;font:800 11.5px/1.2 var(--body);cursor:pointer}
 .oc i{display:block;width:34px;height:34px;margin:0 auto 4px;border-radius:50%;border:3px solid var(--ink)}
 .oc.sel{box-shadow:0 0 0 4px #ffd23f}.oc.lock{opacity:.5;cursor:default}
+.ct{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cb{padding:10px 10px;border:3px solid var(--ink);border-radius:14px;background:#fff;text-align:left;cursor:pointer;color:var(--ink)}
+.cb b{display:block;font:900 16px/1.2 var(--kid)}.cb span{display:block;margin-top:3px;font:600 12.5px/1.3 var(--body);color:var(--soft)}
+.cb.sel{background:#fff3b8;box-shadow:0 0 0 4px #ffd23f}
 details.lr{border:3px solid var(--ink);border-radius:14px;background:#fff;margin-bottom:8px}
 details.lr summary{padding:10px 12px;font:800 15.5px/1.2 var(--kid);cursor:pointer}
 details.lr p{margin:0 12px 10px;font:500 15px/1.5 var(--body)}
@@ -62,8 +66,8 @@ details.lr p{margin:0 12px 10px;font:500 15px/1.5 var(--body)}
 .wc{height:74px;padding:2px 4px;border:3px solid var(--ink);border-radius:16px;background:#fff;font:900 clamp(14px,4.3vw,22px)/1.05 var(--kid);cursor:pointer;box-shadow:0 5px 0 rgba(20,33,61,.25);overflow-wrap:anywhere;touch-action:none;color:var(--ink)}
 .wc.cur{background:#fff3b8;box-shadow:0 5px 0 rgba(20,33,61,.25),0 0 0 4px #ffd23f}
 .wc.ok{background:#b8f5c8}.wc.no{background:#ffc9c2}.wc:disabled{opacity:.55}
-#bBrake{justify-self:center;width:min(100%,280px);height:50px;border:3px solid var(--ink);border-radius:16px;background:var(--red);color:#fff;font:900 17px/1 var(--kid);font-style:italic;letter-spacing:.05em;cursor:pointer;box-shadow:0 5px 0 rgba(20,33,61,.3);touch-action:none}
-#bBrake.dn{transform:translateY(3px);box-shadow:0 2px 0 rgba(20,33,61,.3);background:#c93428}
+.free .wc{pointer-events:none;height:58px;box-shadow:0 3px 0 rgba(20,33,61,.25)}
+.free .wc.cur{box-shadow:0 3px 0 rgba(20,33,61,.25),0 0 0 4px #ffd23f}
 #ov{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(20,33,61,.45);overflow:auto}
 #ov:empty{display:none}
 .rc{width:100%;max-width:430px;max-height:calc(100dvh - 28px);overflow:auto;padding:18px 16px 14px;border:3px solid var(--ink);border-radius:22px;background:#fff;box-shadow:0 8px 0 rgba(20,33,61,.3);text-align:center;animation:pop .45s cubic-bezier(.3,1.7,.5,1)}
@@ -75,7 +79,7 @@ details.lr p{margin:0 12px 10px;font:500 15px/1.5 var(--body)}
 .rc .bt{display:grid;gap:8px;margin-top:12px}
 .rc button{height:50px;border:3px solid var(--ink);border-radius:15px;background:#fff;font:900 17px/1 var(--kid);cursor:pointer;box-shadow:0 4px 0 rgba(20,33,61,.22)}
 .rc button.pri{background:#2fbf71;color:#fff}
-@media (min-width:800px){.bot{left:50%;right:auto;width:720px;margin-left:-360px}.wc{height:84px}}
+@media (min-width:800px){.bot{left:50%;right:auto;width:720px;margin-left:-360px}.wc{height:84px}.free .wc{height:64px}}
 </style>
 </head>
 <body>
@@ -97,6 +101,7 @@ details.lr p{margin:0 12px 10px;font:500 15px/1.5 var(--body)}
     </div>
     <h1 id="h1"></h1><p class="lead" id="lead"></p><p class="note" id="note"></p>
     <h2 id="trT"></h2><div class="tl" id="tl"></div>
+    <h2 id="ctT"></h2><div class="ct" id="ct"></div>
     <h2 id="ofT"></h2><p class="note" id="crT"></p><div class="of" id="of"></div>
     <h2 id="lrT"></h2><div id="lr"></div>
   </main>
@@ -105,7 +110,7 @@ details.lr p{margin:0 12px 10px;font:500 15px/1.5 var(--body)}
   <canvas id="gl"></canvas>
   <div class="top"><div id="goal"><small id="goalS"></small><b id="goalB"></b></div><div class="stat"><button id="bExit" type="button">✕</button><div class="pill" id="pGate"></div><div class="pill" id="pCr"></div></div></div>
   <div id="msg"></div>
-  <div class="bot"><button id="bBrake" type="button"></button><div id="cards"><button class="wc" type="button" data-l="0"></button><button class="wc" type="button" data-l="1"></button><button class="wc" type="button" data-l="2"></button></div></div>
+  <div class="bot"><div id="cards"><button class="wc" type="button" data-l="0"></button><button class="wc" type="button" data-l="1"></button><button class="wc" type="button" data-l="2"></button></div></div>
 </div>
 <div id="ov"></div>
 <script type="module" src="zaidimas.js"></script>

@@ -30,7 +30,8 @@ window.MK_T = {
     VE: "veikiamasis esamojo laiko dalyvis", VB: "veikiamasis būtojo laiko dalyvis", NE: "neveikiamasis esamojo laiko dalyvis", NB: "neveikiamasis būtojo laiko dalyvis", P: "pusdalyvis", A: "padalyvis"
   },
   hud: {
-    go: "Važiuok pro", brake: "STABDYTI", exit: "Baigti", start: "Paliesk kortelę su tinkamu žodžiu – ir pirmyn!", startKeys: "Rodyklės ← → keičia vėžę, tarpas – stabdyti.",
+go: "Važiuok pro", exit: "Baigti", start: "Paliesk kortelę su tinkamu žodžiu – ir pirmyn!", startKeys: "Rodyklės ← → keičia vėžę.",
+    startFree: "Vairuoji pats: vilk pirštu į šonus. Paliesk ekraną – ir pirmyn!", startFreeKeys: "Vairuoji pats: laikyk rodykles ← → arba vilk pele. Spausk rodyklę – ir pirmyn!",
     newTarget: "Naujas tikslas!", gate: (i, n) => `${i} / ${n}`, finish: "FINIŠAS", startArch: "STARTAS"
   },
   fb: {
@@ -43,6 +44,8 @@ window.MK_T = {
     line: ["Trasa klastinga – pabandyk dar kartą ir drąsiau stabdyk.", "Geras važiavimas!", "Tobula trasa – nė vienos klaidos!"],
     outfit: n => `Atrakinta nauja apranga: ${n}!`
   },
+  ctrlT: "Valdymas",
+  ctrl: { cards: ["Kortelėmis", "Paliesk kortelę su žodžiu – slidininkas pats nuvažiuos į tą vėžę."], free: ["Vairuoju pats", "Vilk pirštu į šonus arba laikyk rodykles – slidininką vairuoji pats."] },
   outfitsT: "Apranga", crystalsT: n => `Tavo kristalai: ${n}`, outfitLock: n => `nuo ${n}`,
   outfits: ["Raudona", "Mėlyna", "Žalia", "Violetinė", "Oranžinė", "Auksinė"],
   learnT: "Trenerio užrašai",
@@ -51,6 +54,6 @@ window.MK_T = {
     { name: "Nuosakos (6 kl.)", html: "<p><b>Tiesioginė nuosaka</b> sako, kas vyksta, vyko ar vyks: <i>skaitau, skaičiau, skaitysiu</i>.</p><p><b>Tariamoji nuosaka</b> reiškia galimą ar norimą veiksmą: <i>skaityčiau, skaitytum, skaitytų, skaitytume, skaitytumėte</i>.</p><p><b>Liepiamoji nuosaka</b> reiškia liepimą, raginimą, prašymą: <i>skaityk, skaitykime, skaitykite</i> (priesaga <b>-k-</b>).</p>" },
     { name: "Dalyvis (7 kl.)", html: "<p><b>Dalyvis</b> – neasmenuojamoji veiksmažodžio forma, turinti ir veiksmažodžio, ir būdvardžio ypatybių: jis linksniuojamas ir atsako į klausimus <i>koks? kokia? ką darantis? ką padarytas?</i></p><p><b>Veikiamieji dalyviai</b> reiškia paties veikėjo veiksmą: esamojo laiko – <i>bėgantis, rašanti</i>; būtojo laiko – <i>bėgęs, rašiusi</i>.</p><p><b>Neveikiamieji dalyviai</b> reiškia ypatybę, atsiradusią dėl kito veikėjo veiksmo: esamojo laiko – <i>rašomas, nešama</i>; būtojo laiko – <i>rašytas, nešta</i>.</p>" },
     { name: "Pusdalyvis ir padalyvis (7 kl.)", html: "<p><b>Pusdalyvis</b> reiškia šalutinį to paties veikėjo veiksmą ir turi priesagą <b>-dam-</b>: <i>eidamas dainavo, skaitydama šypsojosi</i>. Jis kaitomas tik gimine ir skaičiumi.</p><p><b>Padalyvis</b> reiškia šalutinį veiksmą, kurį atlieka kitas veikėjas arba kuris veikėjo neturi; jis nekaitomas: <i>saulei tekant, lietui nustojus</i>. Esamojo laiko – <b>-ant, -int</b>, būtojo – <b>-us</b>.</p>" },
-    { name: "Kaip važiuoti", html: "<p>Apačioje – trys kortelės su žodžiais, tokie patys žodžiai – ant artėjančių vartų. Paliesk kortelę su tinkamos formos žodžiu (arba spausk rodykles ← →) – slidininkas persirikiuos į tą vėžę.</p><p>Jei reikia pagalvoti – laikyk nuspaudęs <b>STABDYTI</b> (arba tarpo klavišą). Pakeliui rink kristalus: už juos atrakinama nauja apranga.</p>" }
+    { name: "Kaip važiuoti", html: "<p>Ant artėjančių vartų – trys žodžiai, tie patys žodžiai rodomi ir kortelėse apačioje. Važiuok pro vartus su tinkamos formos žodžiu.</p><p><b>Kortelėmis:</b> paliesk kortelę su tinkamu žodžiu (arba spausk rodykles ← →) – slidininkas persirikiuos į tą vėžę. <b>Vairuoju pats:</b> vilk pirštu į šonus arba laikyk rodykles – slidininkas važiuoja ten, kur jį vedi.</p><p>Kol tikslas tas pats, tempas vis didėja. Prieš naują tikslą trasa pasuka – rodyklių skydai įspėja, kad užduotis keisis, o tempas trumpam sulėtėja. Pakeliui rink kristalus: už juos atrakinama nauja apranga.</p>" }
   ]
 };
