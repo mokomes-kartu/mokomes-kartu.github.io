@@ -4,14 +4,10 @@ const T = window.MK_T, D = window.MK_DAIKTAI, MK = window.MK;
 const GAME = "seseliu-dirbtuve", CKEY = "mk-" + GAME + "-kelione", $ = id => document.getElementById(id);
 const rad = d => d * Math.PI / 180, TAU = Math.PI * 2, EL_MIN = rad(36), EL_MAX = rad(72), HALF = 3.6, LR = 2.9, PLASTER = "#efece5";
 const DMAP = {}; D.forEach(([id, parts]) => { DMAP[id] = parts; });
-const LEVELS = [
-  { id: "l1", kinds: ["dir"], n: 6, col: "#f5871f", paper: "#fff6e3", wall: ["#ffd9a8", "#f7b267"] },
-  { id: "l2", kinds: ["len"], n: 6, col: "#3b82f6", paper: "#edf5ff", wall: ["#bfe0ff", "#7fb5f0"] },
-  { id: "l3", kinds: ["lamp"], n: 6, col: "#8b5cf6", paper: "#f4efff", wall: ["#dccbff", "#a98be8"] },
-  { id: "l4", kinds: ["spot"], n: 6, col: "#2bb3a3", paper: "#eafaf4", wall: ["#bdeee2", "#63c7b5"] },
-  { id: "l5", kinds: ["tone"], n: 6, col: "#4b5563", paper: PLASTER, wall: ["#dfe3ea", "#a7b0bf"], plaster: true },
-  { id: "l6", kinds: ["len", "lamp", "spot", "tone"], n: 8, col: "#e5484d", paper: "#fff0ec", wall: ["#ffc9c2", "#f08a80"], combo: true }
-];
+/* „Lempos pamoka“ – trumpas įvadas (senosios užduotys); pagrindiniai režimai – atskiruose failuose (teatras.js, molbertas.js, slepynes.js) */
+const LEVELS = [{ id: "ivadas", kinds: ["dir", "len", "lamp", "spot", "tone", "len"], n: 6, col: "#f5871f", paper: "#fff6e3", wall: ["#ffd9a8", "#f7b267"], fixed: true }];
+const MODES = {}, MODE_LIST = [["teatras", "#8b5cf6"], ["molbertas", "#2bb3a3"], ["slepynes", "#3b5bdb"], ["ivadas", "#f5871f"]];
+let MODE = null, ovAgain = null;
 const store = () => Object.assign({ seen: [] }, MK.get(CKEY, {}));
 const lightDir = (az, el, v) => (v || new THREE.Vector3()).set(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az));
 const angDiff = (a, b) => { let d = (a - b) % TAU; if(d > Math.PI) d -= TAU; if(d < -Math.PI) d += TAU; return d; };
@@ -20,13 +16,25 @@ const rnd = (a, b) => a + Math.random() * (b - a);
 /* ============================== meniu ============================== */
 const STAR = on => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4l3 6.1 6.7 1-4.9 4.7 1.2 6.7L12 17.7l-6 3.2 1.2-6.7L2.3 9.5l6.7-1z" fill="${on ? "#ffd23f" : "#fff"}" stroke="#2b2f3a" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
 function showMenu(){
-  S = null; $("game").hidden = true; $("app").hidden = false; $("ov").innerHTML = "";
+  if(MODE){ MODE.stop && MODE.stop(); MODE = null; } S = null; $("game").hidden = true; $("game").dataset.mode = ""; $("mh").innerHTML = ""; $("app").hidden = false; $("ov").innerHTML = "";
   const best = MK.best(GAME), C = store();
-  $("ll").innerHTML = LEVELS.map((lv, i) => { const t = T.levels[lv.id], st = +best[lv.id] || 0;
-    return `<button class="lc" type="button" data-l="${i}"><span class="dot" style="background:${lv.col}">${i + 1}</span><span><b>${t.name}</b><span class="s">${t.sub}</span></span><span class="st">${[0, 1, 2].map(k => STAR(k < st)).join("")}</span></button>`; }).join("");
+  $("ll").innerHTML = MODE_LIST.map(([id, col], i) => { const t = T.modes[id], st = +best[id] || 0;
+    return `<button class="lc" type="button" data-m="${id}"><span class="dot" style="background:${col}">${i + 1}</span><span><b>${t.name}</b><span class="s">${t.sub}</span></span><span class="st">${[0, 1, 2].map(k => STAR(k < st)).join("")}</span></button>`; }).join("");
   $("seen").textContent = T.seen(C.seen.filter(id => DMAP[id]).length, D.length); window.scrollTo(0, 0);
 }
-$("ll").addEventListener("click", e => { const b = e.target.closest("[data-l]"); if(!b) return; MK.sfx.tap(); start(+b.dataset.l); });
+$("ll").addEventListener("click", e => { const b = e.target.closest("[data-m]"); if(!b) return; MK.sfx.tap(); if(b.dataset.m === "ivadas") start(0); else startMode(b.dataset.m); });
+function startMode(name){
+  if(!MODES[name]) return; $("app").hidden = true; $("game").hidden = false;
+  if(!initWorld()){ $("game").hidden = true; $("app").hidden = false; alert("WebGL"); return; }
+  clearTask(); S = null; MODE = MODES[name]; $("game").dataset.mode = name; $("ov").innerHTML = ""; say(""); $("hint").textContent = ""; $("ord").textContent = ""; $("bMain").hidden = true; sliders(false, false);
+  lampG.visible = lampArm.visible = lampBase.visible = true; outline.visible = false; lastT = performance.now(); MODE.name = name; MODE.start();
+}
+/* bendras režimo pabaigos langas */
+function result(o){
+  MK.best(GAME, o.key, o.stars); if(o.stars >= 2) MK.sfx.win(); if(o.stars === 3 && MK.confetti) MK.confetti(60); ovAgain = o.again;
+  $("ov").innerHTML = `<div class="rc" role="dialog"><h3>${o.title}</h3><div class="st">${[0, 1, 2].map(k => STAR(k < o.stars)).join("")}</div>${o.lines.map(l => `<p>${l}</p>`).join("")}<div class="bt"><button class="pri" type="button" data-a="again">${T.rep.again}</button><button type="button" data-a="menu">${T.rep.menu}</button></div></div>`;
+}
+function seenAdd(ids){ const C = store(); let n = 0; for(const id of ids) if(!C.seen.includes(id)){ C.seen.push(id); n++; } if(C.seen.length >= D.length) C.seen = ids.slice(); MK.set(CKEY, C); return n; }
 
 /* ============================== 3D pasaulis ============================== */
 let renderer, scene, camera, camT, amb, sun, ready = false, paper, outline, wall, rug, lampG, lampArm, lampBase, beam, glow, dust, objs = [], cands = [], marks = [], pins = [], stars = [];
@@ -143,7 +151,7 @@ function initWorld(){
   for(let i = 0; i < 22; i++){ const s = new THREE.Sprite(sm); s.visible = false; s.userData = { t: 9 }; s.renderOrder = 5; scene.add(s); stars.push(s); }
   resize(); ready = true; return true;
 }
-function resize(){ if(!renderer) return; const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = camT.aspect = w / h; camera.updateProjectionMatrix(); camT.updateProjectionMatrix(); if(S) frameCam(true); }
+function resize(){ if(!renderer) return; const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = camT.aspect = w / h; camera.updateProjectionMatrix(); camT.updateProjectionMatrix(); if(S) frameCam(true); if(MODE && MODE.resize) MODE.resize(); }
 addEventListener("resize", resize);
 /* kameros vieta: toli – matyti visas stalas ir lempa; arti – daiktas ir jo šešėlis */
 function camPose(near, out){
@@ -151,22 +159,26 @@ function camPose(near, out){
   const ty = asp < 1 ? (near ? 0.75 : 0.5) : (near ? 0.3 : 0.9); out.position.set(0, ty + d * Math.sin(pitch), d * Math.cos(pitch)); out.lookAt(0, ty, 0); out.updateMatrixWorld(); return out;
 }
 function frameCam(snap){ camPose(S && S.task && S.task.near, camT); if(snap){ camera.position.copy(camT.position); camera.quaternion.copy(camT.quaternion); } }
-function setLamp(az, el){
-  S.az = az; S.el = Math.max(EL_MIN, Math.min(EL_MAX, el)); const l = lightDir(S.az, S.el, v1);
+let LAZ = 1, LEL = 1;
+function setLamp(az, el, free){
+  LAZ = az; LEL = free ? el : Math.max(EL_MIN, Math.min(EL_MAX, el)); if(S){ S.az = LAZ; S.el = LEL; } const l = lightDir(LAZ, LEL, v1); syncSliders();
   sun.position.copy(l).multiplyScalar(14); sun.target.position.set(0, 0, 0);
   lampG.position.copy(l).multiplyScalar(LR).setY(l.y * LR + 0.9); lampG.lookAt(0, 0.9, 0);
-  const bx = Math.cos(S.az) * 3.72, bz = Math.sin(S.az) * 3.72; lampBase.position.set(bx, 0.11, bz);
+  const bx = Math.cos(LAZ) * 3.72, bz = Math.sin(LAZ) * 3.72; lampBase.position.set(bx, 0.11, bz);
   const p = lampG.position, curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(bx, 0.2, bz), new THREE.Vector3(bx * 1.12, p.y + 0.9, bz * 1.12), new THREE.Vector3(p.x - l.x * 0.3 + 0, p.y - l.y * 0.3 + 0.02, p.z - l.z * 0.3));
   lampArm.geometry.dispose(); lampArm.geometry = new THREE.TubeGeometry(curve, 18, 0.055, 7);
 }
 /* punktyru pažymėtas plotas: daiktų šešėlis, kai lempa tikslo vietoje */
-function outlineTex(az, el){
-  const N = 1024, [c, g] = cnv(N, N), l = lightDir(az, el), kx = l.x / l.y, kz = l.z / l.y, sc = N / (2 * HALF), P = [0, 0, 0, 0, 0, 0];
+function shadowMask(list, az, el, N){
+  const [c, g] = cnv(N, N), l = lightDir(az, el), kx = l.x / l.y, kz = l.z / l.y, sc = N / (2 * HALF), P = [0, 0, 0, 0, 0, 0];
   g.fillStyle = g.strokeStyle = "#000"; g.lineWidth = 2; g.lineJoin = "round"; g.beginPath();
-  for(const o of objs) o.traverse(m => { if(!m.isMesh) return; const a = m.geometry.attributes.position, ix = m.geometry.index, n = ix ? ix.count : a.count;
+  for(const o of list) o.traverse(m => { if(!m.isMesh) return; const a = m.geometry.attributes.position, ix = m.geometry.index, n = ix ? ix.count : a.count;
     for(let i = 0; i < n; i += 3){ for(let k = 0; k < 3; k++){ const j = ix ? ix.getX(i + k) : i + k; v1.fromBufferAttribute(a, j).applyMatrix4(m.matrixWorld); P[k * 2] = (v1.x - v1.y * kx) * sc + N / 2; P[k * 2 + 1] = (v1.z - v1.y * kz) * sc + N / 2; }
       if((P[2] - P[0]) * (P[5] - P[1]) - (P[3] - P[1]) * (P[4] - P[0]) < 0){ g.moveTo(P[0], P[1]); g.lineTo(P[4], P[5]); g.lineTo(P[2], P[3]); } else { g.moveTo(P[0], P[1]); g.lineTo(P[2], P[3]); g.lineTo(P[4], P[5]); } g.closePath(); } });
-  g.fill(); g.stroke();
+  g.fill(); g.stroke(); return c;
+}
+function outlineTex(az, el){
+  const N = 1024, c = shadowMask(objs, az, el, N), g = c.getContext("2d");
   const d = g.getImageData(0, 0, N, N).data, [oc, og] = cnv(N, N), od = og.createImageData(N, N), q = od.data, edge = [];
   for(let y = 1; y < N - 1; y++) for(let x = 1; x < N - 1; x++){ const i = (y * N + x) * 4 + 3; if(d[i] < 128) continue; q[i - 3] = 255; q[i - 2] = 140; q[i - 1] = 30; q[i] = 64;
     if(d[i - 4] < 128 || d[i + 4] < 128 || d[i - N * 4] < 128 || d[i + N * 4] < 128) edge.push(x, y); }
@@ -195,6 +207,7 @@ function start(li){
   $("app").hidden = true; $("game").hidden = false;
   if(!initWorld()){ $("game").hidden = true; $("app").hidden = false; alert("WebGL"); return; }
   const lv = LEVELS[li]; let seq = []; while(seq.length < lv.n) seq = seq.concat(MK.shuffle(lv.kinds)); seq = seq.slice(0, lv.n);
+  if(lv.fixed) seq = lv.kinds.slice(); $("game").dataset.mode = "ivadas"; $("mh").innerHTML = "";
   S = { li, lv, seq, ti: -1, pts: 0, fresh: 0, used: [], az: 1, el: 1, t: 0, task: null, drag: null };
   paper.material.color.set(lv.paper); if(wall.material.map) wall.material.map.dispose(); wall.material.map = wallTex(lv.wall[0], lv.wall[1]); wall.material.needsUpdate = true;
   if(rug.material.map) rug.material.map.dispose(); rug.material.map = rugTex(lv.col); rug.material.needsUpdate = true;
@@ -268,7 +281,7 @@ function prepTone(t, want){
 }
 function hud(){
   const t = S.task, lv = S.lv, coarse = matchMedia("(pointer:coarse)").matches, many = objs.length > 1;
-  $("insL").textContent = T.levels[lv.id].name + " · " + T.hud.task(S.ti + 1, lv.n);
+  $("insL").textContent = T.modes.ivadas.name + " · " + T.hud.task(S.ti + 1, lv.n); sliders(drag0(t), !t.done && t.kind === "len", () => { const f = $("msg").firstChild; if(f && f.className !== "good") say(""); });
   $("insB").textContent = t.kind === "spot" ? T.ins[(t.step ? "spot2" : "spot1") + (many ? "m" : "")] : T.ins[t.kind];
   $("objN").textContent = objs.map(o => T.daiktai[o.userData.id]).join(" · ");
   $("pPts").innerHTML = STAR(true) + " " + S.pts; $("bExit").setAttribute("aria-label", T.btn.exit);
@@ -277,6 +290,7 @@ function hud(){
   $("hint").textContent = t.done ? "" : drag ? T.hint[t.kind + (coarse ? "T" : "K")] : T.hint[t.kind];
   $("ord").textContent = t.kind === "tone" && t.marks && t.marks.some(m => m.done) ? T.hud.order + " " + t.marks.filter(m => m.done).sort((a, b) => a.n - b.n).map(m => m.name).join(" → ") : "";
 }
+const drag0 = t => !t.done && (t.kind === "dir" || t.kind === "len");
 function say(text, cls){ $("msg").innerHTML = text ? `<span class="${cls || ""}">${text}</span>` : ""; }
 function burst(p){ stars.forEach((s, i) => { const a = i / stars.length * TAU; s.position.copy(p); s.userData = { t: 0, vx: Math.cos(a) * rnd(1, 2.6), vy: rnd(2.5, 5), vz: Math.sin(a) * rnd(1, 2.6) }; s.visible = true; }); }
 function done(msg, revealed){
@@ -322,24 +336,35 @@ function tap(x, y){
   else if(t.kind === "tone"){ const i = nearest(t.marks.map(m => m.s), x, y, 50); if(i >= 0) tapMark(t.marks[i].name); }
 }
 function finish(){
-  const max = S.lv.n * 3, st = S.pts >= max * 0.85 ? 3 : S.pts >= max * 0.55 ? 2 : 1, R = T.rep; MK.best(GAME, S.lv.id, st); S.task = null; say("");
+  const max = S.lv.n * 3, st = S.pts >= max * 0.85 ? 3 : S.pts >= max * 0.55 ? 2 : 1, R = T.rep; MK.best(GAME, S.lv.id, st); S.task = null; say(""); sliders(false, false);
   if(st >= 2) MK.sfx.win(); if(st === 3 && MK.confetti) MK.confetti(60);
-  $("ov").innerHTML = `<div class="rc" role="dialog"><h3>${R.title}</h3><div class="st">${[0, 1, 2].map(k => STAR(k < st)).join("")}</div><p>${R.line[st - 1]}</p><p>${R.points(S.pts, max)}${S.fresh ? "<br>" + R.fresh(S.fresh) : ""}</p><div class="bt"><button class="pri" type="button" data-a="again">${R.again}</button>${S.li < LEVELS.length - 1 ? `<button type="button" data-a="next">${R.next}</button>` : ""}<button type="button" data-a="menu">${R.menu}</button></div></div>`;
+  $("ov").innerHTML = `<div class="rc" role="dialog"><h3>${R.title}</h3><div class="st">${[0, 1, 2].map(k => STAR(k < st)).join("")}</div><p>${R.line[st - 1]}</p><p>${R.points(S.pts, max)}${S.fresh ? "<br>" + R.fresh(S.fresh) : ""}</p><div class="bt"><button class="pri" type="button" data-a="again">${R.again}</button><button type="button" data-a="menu">${R.menu}</button></div></div>`;
 }
-$("ov").addEventListener("click", e => { const b = e.target.closest("[data-a]"); if(!b) return; MK.sfx.tap(); const li = S ? S.li : 0; $("ov").innerHTML = ""; if(b.dataset.a === "again") start(li); else if(b.dataset.a === "next") start(li + 1); else showMenu(); });
+$("ov").addEventListener("click", e => { const b = e.target.closest("[data-a]"); if(!b) return; MK.sfx.tap(); $("ov").innerHTML = ""; if(b.dataset.a === "again"){ if(MODE && ovAgain) ovAgain(); else start(0); } else showMenu(); });
 
 /* ============================== valdymas ============================== */
+/* lempa valdoma dviem atskirais slankikliais: apačioje – sukimas aplink, dešinėje – aukštis (judesiai nesimaišo) */
+let onLamp = null;
+function sliders(az, el, cb){ $("slAz").hidden = !az; $("slEl").hidden = !el; onLamp = cb || null; syncSliders(); }
+function syncSliders(){ const a = ((LAZ - Math.PI / 2) / TAU % 1 + 1.5) % 1, e = (LEL - EL_MIN) / (EL_MAX - EL_MIN); $("slAz").firstElementChild.style.left = (1 - a) * 100 + "%"; $("slEl").firstElementChild.style.top = (1 - Math.max(0, Math.min(1, e))) * 100 + "%"; }
+function bindSlider(el, vert){
+  const set = e => { const r = el.getBoundingClientRect(), k = Math.max(0, Math.min(1, vert ? (e.clientY - r.top) / r.height : (e.clientX - r.left) / r.width));
+    if(vert) setLamp(LAZ, EL_MIN + (1 - k) * (EL_MAX - EL_MIN)); else setLamp(Math.PI / 2 + (0.5 - k) * TAU, LEL); if(S) S.goto = null; onLamp && onLamp(); };
+  let on = false; el.addEventListener("pointerdown", e => { on = true; try { el.setPointerCapture(e.pointerId); } catch(_){} set(e); e.preventDefault(); });
+  el.addEventListener("pointermove", e => { if(on) set(e); }); ["pointerup", "pointercancel"].forEach(ev => el.addEventListener(ev, () => { on = false; }));
+}
+bindSlider($("slAz"), false); bindSlider($("slEl"), true);
 const gl = $("gl");
 gl.addEventListener("pointerdown", e => { if(!S || !S.task) return; S.drag = { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, moved: 0 }; try { gl.setPointerCapture(e.pointerId); } catch(_){} });
-gl.addEventListener("pointermove", e => { const d = S && S.drag; if(!d || !S.task) return; const dx = e.clientX - d.x, dy = e.clientY - d.y; d.x = e.clientX; d.y = e.clientY; d.moved += Math.abs(dx) + Math.abs(dy);
-  const t = S.task; if(t.done || (t.kind !== "dir" && t.kind !== "len")) return; S.goto = null; const k = 3.2 / Math.min(innerWidth, 700); setLamp(S.az - dx * k * 1.6, t.kind === "len" ? S.el - dy * k * 0.9 : S.el); if(d.moved > 6 && $("msg").firstChild && $("msg").firstChild.className !== "good") say(""); });
+gl.addEventListener("pointermove", e => { const d = S && S.drag; if(!d || !S.task) return; d.moved += Math.abs(e.clientX - d.x) + Math.abs(e.clientY - d.y); d.x = e.clientX; d.y = e.clientY; });
 const up = e => { const d = S && S.drag; if(!d) return; S.drag = null; if(d.moved < 10 && e.type === "pointerup") tap(e.clientX, e.clientY); };
 gl.addEventListener("pointerup", up); gl.addEventListener("pointercancel", up);
 $("bMain").addEventListener("click", () => { if(!S || !S.task) return; MK.sfx.tap(); if(S.task.done){ say(""); nextTask(); } else check(); });
 $("bExit").addEventListener("click", () => { MK.sfx.tap(); clearTask(); showMenu(); });
 addEventListener("keydown", e => {
-  if(!S) return; if($("ov").innerHTML){ if(e.key === "Enter"){ const b = $("ov").querySelector(".pri"); b && b.click(); } return; }
-  const t = S.task; if(!t) return; const drag = !t.done && (t.kind === "dir" || t.kind === "len");
+  if($("game").hidden) return; if($("ov").innerHTML){ if(e.key === "Enter"){ const b = $("ov").querySelector(".pri"); b && b.click(); } return; }
+  if(MODE){ if(e.key === "Escape") showMenu(); else MODE.key && MODE.key(e); return; }
+  if(!S) return; const t = S.task; if(!t) return; const drag = !t.done && (t.kind === "dir" || t.kind === "len");
   if(e.key === "Escape"){ clearTask(); showMenu(); }
   else if(e.key === "Enter" || e.key === " "){ e.preventDefault(); $("bMain").hidden || $("bMain").click(); }
   else if(drag && (e.key === "ArrowLeft" || e.key === "ArrowRight")){ e.preventDefault(); S.goto = null; setLamp(S.az + (e.key === "ArrowLeft" ? 1 : -1) * rad(4), S.el); }
@@ -350,27 +375,36 @@ addEventListener("keydown", e => {
 document.addEventListener("visibilitychange", () => { lastT = performance.now(); });
 
 /* ============================== kadras ============================== */
+let TIME = 0;
+function ambient(dt){
+  glow.material.opacity = 0.85 + Math.sin(TIME * 3) * 0.1; beam.material.opacity = 0.07 + Math.sin(TIME * 1.7) * 0.012;
+  const da = dust.geometry.attributes.position; for(let i = 0; i < da.count; i++){ let y = da.getY(i) + dt * (0.05 + (i % 5) * 0.02); if(y > 4.2) y = 0.3; da.setY(i, y); da.setX(i, da.getX(i) + Math.sin(TIME * 0.6 + i) * dt * 0.05); } da.needsUpdate = true;
+  for(const s of stars){ const q = s.userData; if(q.t > 1){ s.visible = false; continue; } q.t += dt; q.vy -= 9 * dt; s.position.x += q.vx * dt; s.position.y += q.vy * dt; s.position.z += q.vz * dt; const z = 0.42 * (1 - q.t * 0.6); s.scale.set(z, z, 1); }
+}
 function frame(now){
-  requestAnimationFrame(frame); if(!S || !ready) return;
-  const dt = Math.min(0.05, (now - lastT) / 1000 || 0); lastT = now; S.t += dt;
+  requestAnimationFrame(frame); if(!ready || (!S && !MODE)) return;
+  const dt = Math.min(0.05, (now - lastT) / 1000 || 0) * (window.__sd.ts || 1); lastT = now; TIME += dt;
+  if(MODE){ MODE.frame(dt); if(!MODE) return; const k = Math.min(1, dt * 4.5); camera.position.lerp(camT.position, k); camera.quaternion.slerp(camT.quaternion, k); ambient(dt); if(MODE.render) MODE.render(); else renderer.render(scene, camera); return; }
+  S.t += dt;
   if(S.goto){ const da = angDiff(S.goto.az, S.az), de = S.goto.el - S.el, k = Math.min(1, dt * 5); setLamp(S.az + da * k, S.el + de * k); if(Math.abs(da) + Math.abs(de) < 0.004) S.goto = null; }
   for(const o of objs){ const u = o.userData; if(u.in < 1){ u.in = Math.min(1, u.in + dt / 0.55); const k = u.in, e = 1 - Math.pow(1 - k, 3), b = 1 + Math.sin(k * Math.PI) * 0.18; o.scale.set(e * (2 - b), e * b, e * (2 - b)); o.position.y = (1 - e) * 1.6; } }
   const k = Math.min(1, dt * 4.5); camera.position.lerp(camT.position, k); camera.quaternion.slerp(camT.quaternion, k);
-  glow.material.opacity = 0.85 + Math.sin(S.t * 3) * 0.1; beam.material.opacity = 0.07 + Math.sin(S.t * 1.7) * 0.012;
-  const da = dust.geometry.attributes.position; for(let i = 0; i < da.count; i++){ let y = da.getY(i) + dt * (0.05 + (i % 5) * 0.02); if(y > 4.2) y = 0.3; da.setY(i, y); da.setX(i, da.getX(i) + Math.sin(S.t * 0.6 + i) * dt * 0.05); } da.needsUpdate = true;
+  ambient(dt);
   for(const m of marks) if(m.visible){ const s = 0.74 * (1 + Math.sin(S.t * 4 + m.position.x * 3) * 0.05); m.scale.set(s * 0.8, s, 1); }
   for(const g of cands){ const z = 1 + Math.sin(S.t * 3 + g.position.x) * 0.06; g.scale.setScalar(z); }
   if(outline.visible && !(S.task && S.task.done)) outline.material.opacity = 0.82 + Math.sin(S.t * 3.2) * 0.18; else outline.material.opacity = 1;
-  for(const s of stars){ const q = s.userData; if(q.t > 1){ s.visible = false; continue; } q.t += dt; q.vy -= 9 * dt; s.position.x += q.vx * dt; s.position.y += q.vy * dt; s.position.z += q.vz * dt; const z = 0.42 * (1 - q.t * 0.6); s.scale.set(z, z, 1); }
   renderer.render(scene, camera);
 }
 
 /* ============================== paleidimas ============================== */
 $("app").prepend(MK.top({ title: T.title, grade: 7 }));
-$("h1").textContent = T.h1; $("lead").textContent = T.lead; $("note").textContent = T.note(D.length); $("llT").textContent = T.levelsT; $("lrT").textContent = T.learnT; $("gr").textContent = T.grade;
+$("h1").textContent = T.h1; $("lead").textContent = T.lead; $("note").textContent = T.note(D.length); $("llT").textContent = T.levelsT; $("slAzT").textContent = T.sl.az; $("slElT").textContent = T.sl.el; $("lrT").textContent = T.learnT; $("gr").textContent = T.grade;
 $("lr").innerHTML = T.learn.map(m => `<details class="lr"><summary>${m.name}</summary>${m.html}</details>`).join("");
 /* derinimui: daiktų apžiūra tinkleliu ir užduoties sprendimas */
-window.__sd = { get S(){ return S; }, D, LEVELS, check, tap, setLamp, pickCand, tapMark, get objs(){ return objs; }, get camera(){ return camera; }, get camT(){ return camT; },
+window.MK_SD = { THREE, T, D, DMAP, MK, $, GAME, rad, rnd, TAU, HALF, PLASTER, EL_MIN, EL_MAX, STAR, MODES, hs, cnv, tex, std, mesh, lightDir, angDiff, buildObj, disposeObj, labelTex, shadowMask, setLamp, sliders, say, burst, result, seenAdd, showMenu,
+  get renderer(){ return renderer; }, get scene(){ return scene; }, get camera(){ return camera; }, get camT(){ return camT; }, get sun(){ return sun; }, get amb(){ return amb; }, get paper(){ return paper; }, get lamp(){ return [lampG, lampArm, lampBase]; }, get laz(){ return LAZ; }, get lel(){ return LEL; }, get time(){ return TIME; },
+  theme(paperCol, w0, w1, rugCol){ paper.material.color.set(paperCol); if(wall.material.map) wall.material.map.dispose(); wall.material.map = wallTex(w0, w1); wall.material.needsUpdate = true; if(rug.material.map) rug.material.map.dispose(); rug.material.map = rugTex(rugCol); rug.material.needsUpdate = true; } };
+window.__sd = { ts: 1, get mode(){ return MODE; }, startMode, get S(){ return S; }, D, LEVELS, check, tap, setLamp, pickCand, tapMark, get objs(){ return objs; }, get camera(){ return camera; }, get camT(){ return camT; },
   grid(from, n, plaster){ clearTask(); S.task = null; lampG.visible = lampArm.visible = lampBase.visible = false; paper.visible = false; const cols = 6; const pl = mesh(new THREE.PlaneGeometry(40, 40), std("#f4f1ea"), 0, 0.001, 0); pl.rotation.x = -Math.PI / 2; pl.receiveShadow = true; scene.add(pl); objs.push(pl);
     for(let i = 0; i < n && from + i < D.length; i++){ const o = buildObj(D[from + i][0], plaster, { h: 1.8, w: 2.2 }); o.position.set((i % cols - (cols - 1) / 2) * 2.7, 0, (Math.floor(i / cols) - 1.5) * 3.3); scene.add(o); objs.push(o); }
     sc0(); setLamp(rad(60), rad(52)); camT.position.set(0, 15, 19); camT.lookAt(0, 0, -0.5); camera.position.copy(camT.position); camera.quaternion.copy(camT.quaternion); } };
