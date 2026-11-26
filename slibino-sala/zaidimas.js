@@ -165,7 +165,7 @@ function init3D(){
   clock = new THREE.Clock();
   addEventListener("resize", onResize);
   initInput(); buildHud(); initMap();
-  if(TEST) window.__sala = { adv, bike: toggleBike, st: () => ({ riding, gliding, nk: nightK() }), gnome: () => GP, P, S, world, setMode: m => mode = m, tp: (x, z) => { P.x = x; P.z = z; P.y = world.groundAt(x, z, 999, 999); P.vy = 0; }, quiz: () => quiz, fight: () => F, act: () => doAct(), dig: () => doDig(), render: () => renderer.render(scene, camera), cam: camera, solve: () => quizSolve(), vault: () => vaultApi, enterVault, rescue, safe: () => safeList, trapped: () => isTrapped(), inter: () => curInter,
+  if(TEST) window.__sala = { adv, bike: toggleBike, st: () => ({ riding, gliding, nk: nightK() }), gnome: () => GP, P, S, world, setMode: m => mode = m, tp: (x, z) => { P.x = x; P.z = z; P.y = world.groundAt(x, z, 999, 999); P.vy = 0; }, quiz: () => quiz, openQuiz, fight: () => F, act: () => doAct(), dig: () => doDig(), render: () => renderer.render(scene, camera), cam: camera, solve: () => quizSolve(), vault: () => vaultApi, enterVault, rescue, safe: () => safeList, trapped: () => isTrapped(), inter: () => curInter,
     sim: (keys, sec, jump) => { const old = mode; mode = "walk"; keys.forEach(k => K[k] = true); if(jump) wantJump = true; for(let t = 0; t < sec; t += 1 / 60) movePlayer(1 / 60); keys.forEach(k => K[k] = false); mode = old; return [P.x, P.y, P.z]; } };
 }
 function onResize(){ if(!renderer) return; renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }

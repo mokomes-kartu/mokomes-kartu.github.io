@@ -6,6 +6,8 @@
 const U = window.MK_T.U, R = MK.rnd, P = MK.pick, SH = MK.shuffle;
 const gcd = (a, b) => b ? gcd(b, a % b) : a, lcm = (a, b) => a / gcd(a, b) * b;
 const fmt = x => { const r = Math.round(x * 1e6) / 1e6; return String(r).replace(".", ","); };
+const eur = x => (Math.round(x * 100) / 100).toFixed(2).replace(".", ",");
+const Q = (window.MK_T_B || {}).Q || {};
 const fr = (a, b) => MK.frac(a, b);
 const mixed = (w, n, d) => n === 0 ? String(w) : (w ? `${w}&#8239;` : "") + fr(n, d);
 const divisors = n => { const r = []; for(let i = 1; i <= n; i++) if(n % i === 0) r.push(i); return r; };
@@ -109,7 +111,24 @@ const DIV = [
     let a, b; do { a = R(12, 60); b = R(12, 72); } while(a === b || gcd(a, b) < 4 || a % b === 0 || b % a === 0);
     const G = gcd(a, b);
     return num("div", U.basketGcd(a, U.fruitA, b, U.fruitB), G, U.gcdWhy(a, divisors(a).join(", "), b, divisors(b).join(", "), G));
-  }
+  },
+  function multQ(){
+    const a = R(6, 19), k = R(3, 12), n = a * k; const bad = distinct(SH([n - 1, n + 1, n - 2, n + 2, n + 3, n - 3, n + a - 1, n + 5]), 3, c => c % a === 0 || c <= 0);
+    return opt("div", Q.mult(a), String(n), bad.map(String), Q.multWhy(n, a, k));
+  },
+  function divisorQ(){
+    const n = P([24, 30, 36, 40, 42, 48, 54, 56, 60, 63, 64, 72, 80, 84, 90, 96, 100, 105, 108, 112, 120]);
+    const ds = divisors(n), mid = ds.filter(d => d > 2 && d < n / 2 + 1), ok = P(mid);
+    const bad = distinct(SH(Array.from({ length: Math.floor(n / 2) - 2 }, (_, i) => i + 3)), 3, c => n % c === 0);
+    return opt("div", Q.divisor(n), String(ok), bad.map(String), Q.divisorWhy(n, ds.join(", ")));
+  },
+  function remQ(){ const d = R(3, 12), q = R(4, 25), r = R(1, d - 1), n = d * q + r; return num("div", Q.rem(n, d), r, Q.remWhy(n, d, q, r)); },
+  function edgeQ(){
+    const d = P([3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17]);
+    if(R(0, 1)){ const r = Math.ceil(100 / d) * d; return num("div", Q.small3(d), r, Q.edgeWhy(d, [r - d, r, r + d].join(", "))); }
+    const r = Math.floor(99 / d) * d; return num("div", Q.big2(d), r, Q.edgeWhy(d, [r - d, r, r + d].join(", ")));
+  },
+  function primeCountQ(){ const a = R(1, 8) * 10, b = a + P([10, 20]); const ps = []; for(let i = a + 1; i < b; i++) if(isPrime(i)) ps.push(i); return num("div", Q.primeCount(a, b), ps.length, Q.primeCountWhy(ps.join(", "))); }
 ];
 
 /* ================= 2. Trupmenos (Lapo kristalas) ================= */
@@ -184,7 +203,15 @@ const FRAC = [
     const eq = Number.isInteger(10 / b) ? fr(a * 10 / b, 10) : fr(a * k, 100);
     const wrong = distinct([fmt(a / 10), fmt(b / 100 + a / 10), "0," + a + b, fmt(v * 10), fmt(v / 10), fmt(1 - v)], 3, c => c === fmt(v) || c === "0");
     return opt("frac", U.frToDec(fr(a, b)), fmt(v), wrong, U.frToDecWhy(fr(a, b), eq, fmt(v)));
-  }
+  },
+  function equivQ(){ let a, b; do { b = R(2, 9); a = R(1, b - 1); } while(gcd(a, b) !== 1); const k = R(2, 9); return num("frac", Q.equiv(fr(a, b), b * k), a * k, Q.equivWhy(k, `${fr(a, b)} = ${fr(a * k, b * k)}`)); },
+  function subSameQ(){ const d = R(5, 15), a = R(3, d - 1), c = R(1, a - 1); return num("frac", Q.subSame(`${fr(a, d)} − ${fr(c, d)}`, d), a - c, Q.subSameWhy(`${fr(a, d)} − ${fr(c, d)} = ${fr(a - c, d)}`)); },
+  function wholeQ(){ let a, b; do { b = R(3, 10); a = R(1, b - 1); } while(gcd(a, b) !== 1); const m = R(2, 9); return num("frac", Q.whole(fr(a, b), a * m), b * m, Q.wholeWhy(a * m, a, b, b * m)); },
+  function partUnitQ(){
+    const n = P([60, 100, 1000]), list = { 60: [[1, 2], [1, 3], [2, 3], [1, 4], [3, 4], [1, 5], [2, 5], [1, 6], [5, 6], [1, 10], [3, 10], [1, 12], [5, 12]], 100: [[1, 2], [1, 4], [3, 4], [1, 5], [2, 5], [3, 5], [1, 10], [7, 10], [1, 20], [3, 25]], 1000: [[1, 2], [1, 4], [3, 4], [1, 5], [3, 5], [1, 8], [3, 8], [1, 10], [9, 10]] }[n];
+    const [a, b] = P(list), r = n / b * a; return num("frac", Q.partUnit(fr(a, b), Q.unitsBig[n], Q.unitsSmall[n]), r, Q.partUnitWhy(Q.unitsOne[n], n, Q.unitsSmall[n], b, a, r));
+  },
+  function cmpNumQ(){ const a = R(1, 5); const ds = SH(Array.from({ length: 12 }, (_, i) => a + 1 + i)).slice(0, 4); const mn = Math.min(...ds); return opt("frac", Q.cmpNum, fr(a, mn), ds.filter(d => d !== mn).map(d => fr(a, d)), Q.cmpNumWhy(a)); }
 ];
 
 /* ================= 3. Dešimtainiai ir procentai (Grybo kristalas) ================= */
@@ -212,7 +239,20 @@ const DEC = [
   function pctWhatQ(){ const p = P([10, 20, 25, 50, 75, 5, 40, 60, 80]); let n; do { n = R(2, 30) * 4; } while((n * p) % 100); const a = n * p / 100; return num("dec", U.pctWhat(a, n), p, U.pctWhatWhy(a, n, p)); },
   function pctWholeQ(){ const p = P([10, 20, 25, 50, 5, 40]); let w; do { w = R(2, 40) * 10; } while((w * p) % 100); const a = w * p / 100; return num("dec", U.pctWhole(p, a), w, U.pctWholeWhy(p, a, w)); },
   function saleQ(){ const p = P([10, 20, 25, 50, 30, 15]); let price; do { price = R(2, 30) * 4; } while((price * p) % 100); const d = price * p / 100; const item = P(U.items); return num("dec", U.sale(item, price, p), price - d, U.saleWhy(price, p, d, price - d)); },
-  function riseQ(){ const p = P([10, 20, 25, 50, 30]); let n; do { n = R(2, 30) * 4; } while((n * p) % 100); const d = n * p / 100; return num("dec", U.rise(n, p), n + d, U.riseWhy(n, p, d, n + d)); }
+  function riseQ(){ const p = P([10, 20, 25, 50, 30]); let n; do { n = R(2, 30) * 4; } while((n * p) % 100); const d = n * p / 100; return num("dec", U.rise(n, p), n + d, U.riseWhy(n, p, d, n + d)); },
+  function placeQ(){ const ds = SH([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, 4), x = `${ds[0]},${ds[1]}${ds[2]}${ds[3]}`, k = R(0, 2);
+    return num("dec", Q.place(x, Q.placeNames[k]), ds[k + 1], Q.placeWhy(x, Q.placeNames.map((p, i) => `${p} – ${ds[i + 1]}`).join(", "))); },
+  function decDivNQ(){ const r = P([d1, d2])(), n = R(2, 9), a = Math.round(r * n * 100) / 100; return num("dec", Q.decDivN(fmt(a), n), r, Q.decDivNWhy(fmt(a), n, fmt(r))); },
+  function changeQ(){ const a = R(50, 450) / 100, b = R(50, 600) / 100, s = Math.round((a + b) * 100) / 100, p = s < 5 ? P([5, 10]) : s < 10 ? P([10, 20]) : 20; const r = Math.round((p - s) * 100) / 100;
+    return num("dec", Q.change(eur(a), eur(b), p), r, Q.changeWhy(eur(a), eur(b), eur(s), p, eur(r))); },
+  function pctFrQ(){ const L = [[50, [1, 2]], [25, [1, 4]], [75, [3, 4]], [20, [1, 5]], [10, [1, 10]], [40, [2, 5]], [60, [3, 5]], [80, [4, 5]], [5, [1, 20]], [30, [3, 10]], [70, [7, 10]]]; const [p, f] = P(L);
+    const bad = [fr(1, p)].concat(SH(L.filter(q => q[0] !== p)).map(q => fr(q[1][0], q[1][1]))); return opt("dec", Q.pctFr(p), fr(f[0], f[1]), distinct(bad, 3, c => c === fr(f[0], f[1])), Q.pctFrWhy(p, fr(f[0], f[1]))); },
+  function minQ(){
+    const w = R(1, 6), x = R(1, 8), y = R(1, 8);
+    const c = [w + x / 10, w + x / 100 + y / 1000 + 0.1, w + (x + 1) / 10 - 0.01 * y, w + x / 10 + 0.001 * R(1, 9)].map(v => Math.round(v * 1000) / 1000);
+    const mn = Math.min(...c); if(new Set(c).size < 4 || c.filter(v => v === mn).length > 1) return minQ();
+    return opt("dec", Q.decMin, fmt(mn), c.filter(v => v !== mn).map(fmt), Q.decMinWhy + ` ${c.slice().sort((p, q) => p - q).map(fmt).join(" < ")}.`);
+  }
 ];
 
 /* ================= 4. Geometrija (Erelio uola, žaliasis slibinas) ================= */
@@ -229,7 +269,13 @@ const GEO = [
   function vert(){ const a = R(30, 150); return num("geo", U.vert(a), a, U.vertWhy(a), F.vert(a)); },
   function vert2(){ const a = R(30, 150); return num("geo", U.vert2(a), 180 - a, U.adjWhy(a, 180 - a), F.vert(a)); },
   function tri(){ let a, b; do { a = R(25, 100); b = R(20, 100); } while(a + b >= 165); return num("geo", U.tri(a, b), 180 - a - b, U.triWhy(a, b, 180 - a - b)); },
-  function unit(){ const [u1, u2, k] = P(UNITS); const v = k === 60 ? R(2, 5) : P([R(2, 9), R(2, 9) + 0.5, R(11, 30)]); return num("geo", U.unit(fmt(v), u1, u2), v * k, U.unitWhy(k, u1, u2) + ` ${fmt(v)} · ${k} = ${fmt(v * k)}.`); }
+  function unit(){ const [u1, u2, k] = P(UNITS); const v = k === 60 ? R(2, 5) : P([R(2, 9), R(2, 9) + 0.5, R(11, 30)]); return num("geo", U.unit(fmt(v), u1, u2), v * k, U.unitWhy(k, u1, u2) + ` ${fmt(v)} · ${k} = ${fmt(v * k)}.`); },
+  function angleT(){ const k = R(0, 3), a = [R(10, 85), 90, R(95, 175), 180][k]; return opt("geo", Q.angleT(a), Q.angleNames[k], Q.angleNames.filter((_, i) => i !== k), Q.angleWhy); },
+  function rectSide(){ const a = R(5, 15), b = R(2, a - 1); return num("geo", Q.rectSide(a * b, a), b, Q.rectSideWhy(a * b, a, b), F.rect(a, "?", "cm")); },
+  function triP(){ let a, b, c; do { a = R(3, 20); b = R(3, 20); c = R(3, 20); } while(a + b <= c || a + c <= b || b + c <= a); return num("geo", Q.triP(a, b, c), a + b + c, Q.triPWhy(a, b, c, a + b + c)); },
+  function eqTri(){ const a = R(3, 30); return num("geo", Q.eqTri(3 * a), a, Q.eqTriWhy(3 * a, a)); },
+  function diam(){ const r = R(2, 25); return R(0, 1) ? num("geo", Q.diam(r), 2 * r, Q.diamWhy(r, 2 * r)) : num("geo", Q.rad(2 * r), r, Q.diamWhy(r, 2 * r)); },
+  function floorQ(){ const a = R(3, 9), b = R(2, a); return num("geo", Q.floor(a, b), a * b, U.rectSWhy(a, b, a * b), F.rect(a, b, "m")); }
 ];
 
 /* ================= 5. Lygtys ir judėjimas (Žuvies kristalas, tiltas) ================= */
@@ -253,7 +299,15 @@ const EQ = [
   function pathS(){ const [who, v] = mover(), t = R(2, 6); return num("eq", U.pathS(who, v, t), v * t, U.pathWhy(`s = ${v} · ${t}`, v * t + " km")); },
   function pathV(){ const [who, v] = mover(), t = R(2, 6); return num("eq", U.pathV(who, v * t, t), v, U.pathWhy(`v = s : t = ${v * t} : ${t}`, v + " km/h")); },
   function pathT(){ const [who, v] = mover(), t = R(2, 6); return num("eq", U.pathT(who, v * t, v), t, U.pathWhy(`t = s : v = ${v * t} : ${v}`, t + " h")); },
-  function meet(){ const v1 = R(8, 18), v2 = R(10, 22), t = R(2, 4); return num("eq", U.meet(v1, v2, (v1 + v2) * t), t, U.meetWhy(v1, v2, (v1 + v2) * t, t)); }
+  function meet(){ const v1 = R(8, 18), v2 = R(10, 22), t = R(2, 4); return num("eq", U.meet(v1, v2, (v1 + v2) * t), t, U.meetWhy(v1, v2, (v1 + v2) * t, t)); },
+  function think(){ const x = R(3, 25), a = R(2, 9), b = R(2, 40); return num("eq", Q.think(a, b, a * x + b), x, Q.thinkWhy(a, b, a * x + b, x)); },
+  function orderQ(){ const a = R(5, 60), b = R(2, 9), c = R(2, 12), k = R(0, 2);
+    const [e, r] = k === 0 ? [`${a} + ${b} · ${c}`, a + b * c] : k === 1 ? [`(${a} + ${b}) · ${c}`, (a + b) * c] : [`${b * c * 2} : ${b} − ${c}`, c * 2 - c];
+    return num("eq", Q.order(e), r, Q.orderWhy + ` ${e} = ${r}.`); },
+  function exprQ(){ const k = R(2, 9), m = R(1, 30), v = R(2, 12), sub = R(0, 1) && k * v > m; const e = `${k}a ${sub ? "−" : "+"} ${m}`, r = sub ? k * v - m : k * v + m;
+    return num("eq", Q.expr(e, v), r, Q.exprWhy(`${k} · ${v} ${sub ? "−" : "+"} ${m}`, r)); },
+  function costQ(){ const n = R(2, 9), one = R(15, 180) / 10 * (R(0, 1) ? 1 : 0.5), p = Math.round(one * n * 100) / 100; const o = Math.round(one * 100) / 100;
+    return num("eq", Q.cost(n, P(Q.costItems), eur(p)), o, Q.costWhy(eur(p), n, eur(o))); }
 ];
 
 /* ================= 6. Tikimybė ir romėniški skaitmenys (tik raudonajam slibinui) ================= */
@@ -270,35 +324,59 @@ const PROB = [
     const wrong = distinct([fr(6 - m, 6), fr(1, m), fr(m, 5), fr(1, 6), fr(m + 1, 6)], 3, c => c === fr(m, 6));
     return opt("prob", U.die(k), fr(m, 6), wrong, U.dieWhy(list.join(", "), m));
   },
-  function roman(){ const v = R(14, 2999); const { s, parts } = toRoman(v); return num("prob", U.roman(s), v, U.romanWhy(s, parts.join(" + "), v)); }
+  function roman(){ const v = R(14, 2999); const { s, parts } = toRoman(v); return num("prob", U.roman(s), v, U.romanWhy(s, parts.join(" + "), v)); },
+  function letterQ(){ const w = P(Q.letterWords), ls = [...new Set(w)], l = P(ls), m = w.split(l).length - 1, n = w.length;
+    const seenV = [m / n], wrong = []; for(const [p, q] of [[1, n], [m, ls.length], [m + 1, n], [n - m, n], [1, m + 1], [m, n - m], [m, n + 1]]){ const v = p / q; if(wrong.length < 3 && v < 1 && !seenV.some(x => Math.abs(x - v) < 1e-9)){ seenV.push(v); wrong.push(fr(p, q)); } }
+    return opt("prob", Q.letter(w, l), fr(m, n), wrong, Q.letterWhy(l, m, n)); },
+  function toRomanQ(){ const v = R(14, 1999), o = toRoman(v); const bad = distinct([v + 1, v - 1, v + 10, v - 10, v + 5, v + 100].map(x => toRoman(x).s), 3, c => c === o.s);
+    return opt("prob", Q.toRoman(v), o.s, bad, Q.toRomanWhy(v, o.parts.join(" + "), o.s)); },
+  function combosQ(){ const a = R(2, 9), b = R(2, 9); return num("prob", P(Q.combos)(a, b), a * b, Q.combosWhy(a, b, a * b)); }
 ];
 
-/* ================= 7. Kiti mokomieji dalykai (tekstai-dalykai.lt.js) ================= */
-const D = window.MK_T_D;
+/* ================= 7. Kiti mokomieji dalykai (tekstai-dalykai.lt.js + uzduociu-bankas.lt.js) ================= */
+const D = window.MK_T_D, B = window.MK_T_B || {}, ZW = window.MK_ZODZIAI || [];
 const rowGen = (topic, row) => function(){ return opt(topic, row[0], row[1], SH(row[2]), row[3]); };
-const IST = D.ist.map(r => rowGen("ist", r)), LT = D.lt.map(r => rowGen("lt", r)), GAM = D.gam.map(r => rowGen("gam", r));
-const EN = D.en.map(r => rowGen("en", r))
-  .concat(D.enVerbs.map(v => function(){ const reg = v[0].endsWith("e") ? v[0] + "d" : v[0] + "ed"; return opt("en", D.enPastQ(v[0]), v[1], SH([reg, v[2], v[3]]), D.enPastWhy(v[0], v[1], v[2])); }))
-  .concat(D.enPlurals.map(w => function(){ return opt("en", D.enPluralQ(w[0]), w[1], SH(w[2]), D.enPluralWhy(w[0], w[1])); }));
+const rowsOf = k => (D[k] || []).concat(B[k] || []);
+const IST = rowsOf("ist").map(r => rowGen("ist", r)), GAM = rowsOf("gam").map(r => rowGen("gam", r));
+/* nematytų elementų kaladė (įsimenama naršyklėje): kol neparodyti visi, tas pats nesikartoja */
+const SEEN_KEY = "mk-slibino-sala-matyta", SEEN = MK.get(SEEN_KEY, {});
+function deck(key, n){ let s = SEEN[key] || []; if(s.length >= n) s = []; const free = []; for(let i = 0; i < n; i++) if(!s.includes(i)) free.push(i); const i = P(free); s.push(i); SEEN[key] = s; MK.set(SEEN_KEY, SEEN); return i; }
+const times = (n, f) => Array.from({ length: n }, () => f);
+/* lietuvių kalba: veiksmažodžių laikai iš patikrinto „Žodžių slalomo“ sąrašo */
+const VF = { E: [], K: [], D: [], S: [] }; ZW.forEach(([inf, f]) => { for(const c in VF) if(f[c]) f[c].split(" ").forEach(w => VF[c].push([w, inf, f])); });
+function tenseQ(){ const c = P(Object.keys(VF)), [w, inf] = P(VF[c]); return opt("lt", Q.tense(w), Q.tenseNames[c], Object.keys(VF).filter(k => k !== c).map(k => Q.tenseNames[k]), Q.tenseWhy[c](w, inf)); }
+function infQ(){ const [inf, f] = P(ZW), bad = SH(["E", "K", "D", "S"].filter(c => f[c])).slice(0, 3).map(c => P(f[c].split(" "))); return opt("lt", Q.inf, inf, bad, Q.infWhy(inf)); }
+function posQ(){ const [w, p] = B.ltPos[deck("ltPos", B.ltPos.length)], names = Object.keys(Q.posNames); return opt("lt", Q.pos(w), Q.posNames[p], SH(names.filter(n => n !== p)).slice(0, 3).map(n => Q.posNames[n]), Q.posWhy[p]); }
+function synQ(){ const [w, s2, bad] = B.ltSyn[deck("ltSyn", B.ltSyn.length)]; return opt("lt", Q.syn(w), s2, SH(bad), Q.synWhy(w, s2)); }
+function antQ(){ const [w, s2, bad] = B.ltAnt[deck("ltAnt", B.ltAnt.length)]; return opt("lt", Q.ant(w), s2, SH(bad), Q.antWhy(w, s2)); }
+const LT = rowsOf("lt").map(r => rowGen("lt", r)).concat(ZW.length ? times(40, tenseQ).concat(times(10, infQ)) : [], B.ltPos ? times(40, posQ).concat(times(15, synQ), times(15, antQ)) : []);
+/* anglų kalba */
+const VERBS = B.enVerbs || D.enVerbs, PLUR = B.enPlurals || D.enPlurals;
+const verbGen = v => function(){ const reg = v[0].endsWith("e") ? v[0] + "d" : v[0] + "ed"; const bad = distinct([reg, v[2], v[3], v[0], v[0] + "s"], 3, c => c === v[1]); return opt("en", D.enPastQ(v[0]), v[1], SH(bad), D.enPastWhy(v[0], v[1], v[2])); };
+function vocabQ(){ const V = B.enVocab, [en, lt, cat] = V[deck("enVocab", V.length)], same = SH(V.filter(x => x[2] === cat && x[0] !== en && x[1] !== lt));
+  if(R(0, 1)) return opt("en", Q.enToLt(en), lt, distinct(same.map(x => x[1]), 3, c => c === lt), Q.vocabWhy(en, lt));
+  return opt("en", Q.ltToEn(lt), en, distinct(same.map(x => x[0]), 3, c => c === en), Q.vocabWhy(en, lt)); }
+const EN = rowsOf("en").map(r => rowGen("en", r)).concat(VERBS.map(verbGen), PLUR.map(w => function(){ return opt("en", D.enPluralQ(w[0]), w[1], SH(w[2]), D.enPluralWhy(w[0], w[1])); }), B.enVocab ? times(110, vocabQ) : []);
 
 const SETS = { div: DIV, frac: FRAC, dec: DEC, geo: GEO, eq: EQ, prob: PROB, ist: IST, lt: LT, en: EN, gam: GAM };
 const SUBJ = { div: "mat", frac: "mat", dec: "mat", geo: "mat", eq: "mat", prob: "mat", ist: "ist", lt: "lt", en: "en", gam: "gam" };
 /* sunkesni generatoriai raudonajam slibinui */
-const HARD = [DIV[3], DIV[4], DIV[7], DIV[8], FRAC[5], FRAC[6], FRAC[7], FRAC[9], DEC[5], DEC[9], DEC[10], DEC[11], GEO[3], GEO[5], GEO[9], GEO[10], EQ[6], EQ[7], EQ[11], EQ[12], PROB[0], PROB[1], PROB[2]];
+const HARD = [DIV[3], DIV[4], DIV[7], DIV[8], FRAC[5], FRAC[6], FRAC[7], FRAC[9], DEC[5], DEC[9], DEC[10], DEC[11], GEO[3], GEO[5], GEO[9], GEO[10], EQ[6], EQ[7], EQ[11], EQ[12], PROB[0], PROB[1], PROB[2],
+  DIV[13], FRAC[13], DEC[14], GEO[13], EQ[13], EQ[16], PROB[5]];
 /* raudonojo slibino kova: dalykai keičiasi ratu, kad būtų visi */
 const MIXSEQ = ["mat", "lt", "gam", "mat", "ist", "en"];
 let mixI = Math.floor(Math.random() * MIXSEQ.length);
 
-/* neseniai matytų generatorių vengimas (atskirai kiekvienam rinkiniui) */
-const recent = new Map();
+/* užduočių parinkimas: kaladė per visą rinkinį + neseniai matytų klausimų tekstų vengimas */
+const recentQ = [];
 function gen(topic){
-  let pool;
-  if(topic === "mix"){ const k = MIXSEQ[mixI++ % MIXSEQ.length]; pool = k === "mat" ? HARD : SETS[k]; }
+  let key = topic, pool;
+  if(topic === "mix"){ const k = MIXSEQ[mixI++ % MIXSEQ.length]; key = k === "mat" ? "hard" : k; pool = k === "mat" ? HARD : SETS[k]; }
   else pool = SETS[topic];
-  let rc = recent.get(pool); if(!rc){ rc = []; recent.set(pool, rc); }
-  let f, k = 0; do { f = P(pool); k++; } while(rc.includes(f) && k < 30);
-  rc.push(f); if(rc.length > Math.min(12, pool.length - 1)) rc.shift();
-  const t = f(); t.gen = f.name; t.subj = SUBJ[t.topic] || "mat"; return t;
+  let t;
+  for(let k = 0; k < 8; k++){ t = pool[deck("g:" + key, pool.length)](); if(!recentQ.includes(t.q)) break; }
+  recentQ.push(t.q); if(recentQ.length > 60) recentQ.shift();
+  t.subj = SUBJ[t.topic] || "mat"; return t;
 }
 /* atsakymo tikrinimas: „4,15“, „4.15“, „ 4,150 “ */
 function check(t, input){
