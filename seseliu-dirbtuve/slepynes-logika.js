@@ -3,8 +3,10 @@
    Kambarys – 9 × 15 langelių (langelis 1 × 1). Žemėlapio ženklai:
      .  grindys      #  dėžė           O  vaza (kolona)     =  žemas darbastalis (šviesos neužstoja)
      X  siena        B  stumiama dėžė  S  sūris (galima pragraužti)
-     M  pelytės pradžia               T  dažų tūbelė
-   Durys visada viršuje per vidurį. Kiti dalykai aprašomi atskirai: lamps (lempos), ropes ([kuoliuko c, r, maišo c, r]),
+     M  pelytės pradžia               T  dažų tūbelė        g  grotelės grindyse (pelytė pereina, dėžės ant jų užstumti negalima)
+   Durys visada viršuje per vidurį. Kiti dalykai aprašomi atskirai: lamps (lempos; blink: [dega s, nedega s] – žybsi; off – iš pradžių išjungta),
+   switches ([c, r, [lempų nr.]] – jungiklis perjungia lempas), buttons ([c, r, [lempų nr.]] – grindų mygtukas: lempos nedega, kol ant jo stovi dėžė ar pelytė),
+   timers ([c, r, [lempų nr.], sekundės] – jungiklis su laikmačiu: lempos užgęsta tik nurodytam laikui), ropes ([kuoliuko c, r, maišo c, r]),
    cables ([c, r, lempos nr.]), cat ({ p: kelio taškai, v: greitis, wait: kiek stovi apsisukdamas, range ir fov: kaip toli ir kokiu kampu mato }). */
 (function(root){
 "use strict";
@@ -16,14 +18,20 @@ const SHAPE = { "#": ["b", 0.92, 0.92, 1.7], X: ["b", 1, 1, 2.6], "=": ["b", 1, 
 /* kliūtis: ["b", x, z, plotis, gylis, aukštis, rūšis, nr.] arba ["c", x, z, spindulys, aukštis, rūšis, nr.] */
 function ob(kind, x, z, id){ const s = SHAPE[kind]; return s[0] === "b" ? ["b", x, z, s[1], s[2], s[3], kind, id] : ["c", x, z, s[1], s[2], kind, id]; }
 function parse(lv){
-  const P = { fixed: [], boxes: [], cheese: [], tubes: [], start: [0, 6.5], ropes: lv.ropes || [], cables: lv.cables || [], lamps: lv.lamps || [], cat: lv.cat || null };
+  const P = { fixed: [], boxes: [], cheese: [], tubes: [], grates: [], start: [0, 6.5], ropes: lv.ropes || [], cables: lv.cables || [], switches: lv.switches || [], buttons: lv.buttons || [], timers: lv.timers || [], lamps: lv.lamps || [], cat: lv.cat || null };
   lv.map.forEach((row, r) => { for(let c = 0; c < COLS; c++){ const ch = row[c];
     if(ch === "#" || ch === "X" || ch === "=" || ch === "O") P.fixed.push(ob(ch, cx(c), cz(r))); else if(ch === "B") P.boxes.push([c, r]); else if(ch === "S") P.cheese.push([c, r]);
-    else if(ch === "T") P.tubes.push([cx(c), cz(r)]); else if(ch === "M") P.start = [cx(c), cz(r)]; } });
+    else if(ch === "T") P.tubes.push([cx(c), cz(r)]); else if(ch === "M") P.start = [cx(c), cz(r)]; else if(ch === "g") P.grates.push([c, r]); } });
   return P;
 }
-/* kambario būsena: kur stumiamos dėžės, kuris sūris dar sveikas, kurios virvės nugraužtos, kurios lempos dega */
-const world0 = P => ({ boxes: P.boxes.map(b => b.slice()), cheese: P.cheese.map(() => true), ropes: P.ropes.map(() => false), on: P.lamps.map(L => !L.off) });
+/* kambario būsena: kur stumiamos dėžės, kuris sūris dar sveikas, kurios virvės nugraužtos, kurios lempos įjungtos (on) ir kurių kabelis nugraužtas (dead) */
+const world0 = P => ({ boxes: P.boxes.map(b => b.slice()), cheese: P.cheese.map(() => true), ropes: P.ropes.map(() => false), on: P.lamps.map(L => !L.off), dead: P.lamps.map(() => false), tmr: P.timers.map(() => -1) });
+/* ar mygtukas nuspaustas: ant jo stovi dėžė arba pelytė (x, z) */
+const pressed = (P, w, i, x, z) => { const b = P.buttons[i]; return w.boxes.some(q => q[0] === b[0] && q[1] === b[1]) || (x !== undefined && Math.abs(x - cx(b[0])) < 0.5 && Math.abs(z - cz(b[1])) < 0.5); };
+/* kurios lempos iš tikrųjų šviečia, kai pelytė stovi taške (x, z) laiku t (t === null – žybsinti lempa laikoma degančia) */
+function onAt(P, w, x, z, t){ const on = P.lamps.map((L, i) => w.on[i] && !w.dead[i] && !(L.blink && t !== null && t !== undefined && (t + (L.blink[2] || 0)) % (L.blink[0] + L.blink[1]) >= L.blink[0]));
+  P.buttons.forEach((b, i) => { if(pressed(P, w, i, x, z)) for(const k of b[2]) on[k] = false; });
+  if(t !== null && t !== undefined) P.timers.forEach((b, i) => { if(t < w.tmr[i]) for(const k of b[2]) on[k] = false; }); return on; }
 function obstacles(P, w){
   const o = P.fixed.slice(); w.boxes.forEach((b, i) => o.push(ob("B", cx(b[0]), cz(b[1]), i))); P.cheese.forEach((s, i) => { if(w.cheese[i]) o.push(ob("S", cx(s[0]), cz(s[1]), i)); });
   P.ropes.forEach((q, i) => { if(w.ropes[i]) o.push(ob("sack", cx(q[2]), cz(q[3]), i)); }); return o;
@@ -73,7 +81,7 @@ function cellFree(P, w, c, r){
   if(c < 0 || r < 0 || c >= COLS || r >= ROWS || (r === 0 && c >= 3 && c <= 5)) return false; const x = cx(c), z = cz(r);
   for(const o of obstacles(P, w)) if(Math.abs(o[1] - x) < 0.5 && Math.abs(o[2] - z) < 0.5) return false;
   for(const L of P.lamps) if(Math.abs(L.x - x) < 0.5 && Math.abs(L.z - z) < 0.5) return false;
-  for(const q of P.ropes) if((q[0] === c && q[1] === r) || (q[2] === c && q[3] === r)) return false; for(const k of P.cables) if(k[0] === c && k[1] === r) return false; return true;
+  for(const q of P.ropes) if((q[0] === c && q[1] === r) || (q[2] === c && q[3] === r)) return false; for(const k of P.cables.concat(P.switches, P.timers, P.grates)) if(k[0] === c && k[1] === r) return false; return true;
 }
 /* ar pelytė stovi prie pat daikto šono: grąžina kryptį ir atstumą */
 function facing(x, z, ox, oz){ const dx = ox - x, dz = oz - z;
@@ -84,14 +92,17 @@ function action(P, w, x, z){
   w.boxes.forEach((b, i) => { const f = facing(x, z, cx(b[0]), cz(b[1])); if(f) take({ type: "push", i, dc: f[0], dr: f[1], ok: cellFree(P, w, b[0] + f[0], b[1] + f[1]) }, f[2]); });
   P.cheese.forEach((s, i) => { if(!w.cheese[i]) return; const f = facing(x, z, cx(s[0]), cz(s[1])); if(f) take({ type: "cheese", i, ok: true }, f[2]); });
   P.ropes.forEach((q, i) => { if(w.ropes[i]) return; const d = Math.hypot(cx(q[0]) - x, cz(q[1]) - z); if(d <= NEAR) take({ type: "rope", i, ok: true }, d); });
-  P.cables.forEach((k, i) => { if(!w.on[k[2]]) return; const d = Math.hypot(cx(k[0]) - x, cz(k[1]) - z); if(d <= NEAR) take({ type: "cable", i, ok: true }, d); });
+  P.cables.forEach((k, i) => { if(w.dead[k[2]]) return; const d = Math.hypot(cx(k[0]) - x, cz(k[1]) - z); if(d <= NEAR) take({ type: "cable", i, ok: true }, d); });
+  P.switches.forEach((k, i) => { const d = Math.hypot(cx(k[0]) - x, cz(k[1]) - z); if(d <= NEAR) take({ type: "switch", i, ok: true }, d); });
+  P.timers.forEach((k, i) => { const d = Math.hypot(cx(k[0]) - x, cz(k[1]) - z); if(d <= NEAR) take({ type: "timer", i, ok: true }, d); });
   return best;
 }
-function apply(P, w, a){
-  const n = { boxes: w.boxes.map(b => b.slice()), cheese: w.cheese.slice(), ropes: w.ropes.slice(), on: w.on.slice() };
-  if(a.type === "push"){ n.boxes[a.i][0] += a.dc; n.boxes[a.i][1] += a.dr; } else if(a.type === "cheese") n.cheese[a.i] = false; else if(a.type === "rope") n.ropes[a.i] = true; else if(a.type === "cable") n.on[P.cables[a.i][2]] = false;
+function apply(P, w, a, t){
+  const n = { boxes: w.boxes.map(b => b.slice()), cheese: w.cheese.slice(), ropes: w.ropes.slice(), on: w.on.slice(), dead: w.dead.slice(), tmr: w.tmr.slice() };
+  if(a.type === "push"){ n.boxes[a.i][0] += a.dc; n.boxes[a.i][1] += a.dr; } else if(a.type === "cheese") n.cheese[a.i] = false; else if(a.type === "rope") n.ropes[a.i] = true; else if(a.type === "cable") n.dead[P.cables[a.i][2]] = true;
+  else if(a.type === "switch") for(const k of P.switches[a.i][2]) n.on[k] = !n.on[k]; else if(a.type === "timer") n.tmr[a.i] = (t || 0) + P.timers[a.i][3];
   return n;
 }
-const API = { RW, RL, COLS, ROWS, MR, SPEED, EYE, T_SEE, T_HIDE, T_GNAW, T_CAT, CAT_EYE, NEAR, CAT_R, CAT_TOUCH, SHAPE, cx, cz, parse, world0, obstacles, lampAngle, lampH, catPos, catSees, withCat, blocked, lit, solid, atDoor, cellFree, action, apply };
+const API = { RW, RL, COLS, ROWS, MR, SPEED, EYE, T_SEE, T_HIDE, T_GNAW, T_CAT, CAT_EYE, NEAR, CAT_R, CAT_TOUCH, SHAPE, cx, cz, parse, world0, obstacles, lampAngle, lampH, catPos, catSees, withCat, blocked, pressed, onAt, lit, solid, atDoor, cellFree, action, apply };
 if(typeof module !== "undefined" && module.exports) module.exports = API; else root.MK_SL = API;
 })(typeof window !== "undefined" ? window : this);

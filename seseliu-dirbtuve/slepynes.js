@@ -1,5 +1,5 @@
 /* Šešėlių dirbtuvė – „Šešėlių slėpynės“: naktis dirbtuvėje, pelytė turi pasiekti duris nepakliūdama į lempų šviesą.
-   Ji slepiasi daiktų šešėliuose, stumdo dėžes, graužia sūrį, virves ir kabelius. Taisyklės (šviesa, kliūtys, veiksmai) – faile slepynes-logika.js,
+   Ji slepiasi daiktų šešėliuose, stumdo dėžes, graužia sūrį, virves ir kabelius, junginėja jungiklius ir mygtukus. Taisyklės (šviesa, kliūtys, veiksmai) – faile slepynes-logika.js,
    kambariai – slepynes-kambariai.js (visi patikrinti programa: įveikiami, o be šešėlių ar be veiksmų – ne). */
 const SD = window.MK_SD, { THREE, T, MK, $, rad } = SD, X = T.slepynes, L = window.MK_SL, K = window.MK_SLK;
 const { RW, RL, MR, SPEED, cx, cz } = L, CKEY = "mk-seseliu-dirbtuve-kelione", GAME = "seseliu-dirbtuve";
@@ -27,6 +27,7 @@ function init(){
     crate: mk(128, 128, g => { g.fillStyle = "#b9824f"; g.fillRect(0, 0, 128, 128); g.strokeStyle = "#7a5230"; g.lineWidth = 10; g.strokeRect(5, 5, 118, 118); g.lineWidth = 4; for(const x of [44, 84]){ g.beginPath(); g.moveTo(x, 8); g.lineTo(x, 120); g.stroke(); } }),
     push: mk(128, 128, g => { g.fillStyle = "#4f8fe8"; g.fillRect(0, 0, 128, 128); g.strokeStyle = "#1f4fa8"; g.lineWidth = 12; g.strokeRect(6, 6, 116, 116); g.fillStyle = "#fff"; for(let k = 0; k < 4; k++){ g.save(); g.translate(64, 64); g.rotate(k * Math.PI / 2); g.beginPath(); g.moveTo(44, 0); g.lineTo(26, -13); g.lineTo(26, 13); g.fill(); g.fillRect(8, -5, 20, 10); g.restore(); } }),
     cheese: mk(128, 128, g => { g.fillStyle = "#f7c948"; g.fillRect(0, 0, 128, 128); g.fillStyle = "#d9a520"; for(const [x, y, r] of [[30, 34, 14], [88, 26, 9], [66, 72, 17], [104, 96, 11], [24, 100, 9], [112, 54, 6]]){ g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); } }),
+    grate: mk(64, 64, g => { g.fillStyle = "#2b2f3a"; g.fillRect(0, 0, 64, 64); g.strokeStyle = "#8a93a8"; g.lineWidth = 3; for(let k = 8; k < 64; k += 12){ g.beginPath(); g.moveTo(k, 4); g.lineTo(k, 60); g.stroke(); } g.lineWidth = 5; g.strokeRect(3, 3, 58, 58); }),
     wall: mk(128, 128, g => { g.fillStyle = "#59608c"; g.fillRect(0, 0, 128, 128); g.strokeStyle = "#3b4162"; g.lineWidth = 4; for(let y = 0; y <= 128; y += 32){ g.beginPath(); g.moveTo(0, y); g.lineTo(128, y); g.stroke(); for(let x = (y / 32) % 2 ? 32 : 0; x <= 128; x += 64){ g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 32); g.stroke(); } } })
   };
   /* pelytė su berete */
@@ -71,6 +72,12 @@ function buildRoom(){
   st.mk = P.cables.map(k => { const Lm = P.lamps[k[2]], g = new THREE.Group(), cm = SD.std("#15171f"), seg = (x1, z1, x2, z2) => { const len = Math.hypot(x2 - x1, z2 - z1); if(len < 0.01) return; const m = SD.mesh(new THREE.BoxGeometry(len + 0.07, 0.035, 0.07), cm, (x1 + x2) / 2, 0.02, (z1 + z2) / 2, g); m.rotation.y = -Math.atan2(z2 - z1, x2 - x1); };
     const x = cx(k[0]), z = cz(k[1]), wx = x < 0 ? -RW : RW; seg(Lm.x, Lm.z, x, Lm.z); seg(x, Lm.z, x, z); seg(x, z, wx, z);
     const plug = SD.mesh(new THREE.BoxGeometry(0.22, 0.1, 0.16), SD.std("#e5484d", { emissive: 0x4a1012 }), x, 0.05, z, g); room.add(g); return { g, plug }; });
+  const wire = (k, col) => { const g = new THREE.Group(), cm = SD.std(col), x = cx(k[0]), z = cz(k[1]), seg = (x1, z1, x2, z2) => { const len = Math.hypot(x2 - x1, z2 - z1); if(len < 0.01) return; const m = SD.mesh(new THREE.BoxGeometry(len + 0.06, 0.03, 0.06), cm, (x1 + x2) / 2, 0.018, (z1 + z2) / 2, g); m.rotation.y = -Math.atan2(z2 - z1, x2 - x1); }; for(const i of k[2]){ const Lm = P.lamps[i]; seg(x, z, Lm.x, z); seg(Lm.x, z, Lm.x, Lm.z); } room.add(g); };
+  for(const q of P.grates){ const m = SD.mesh(new THREE.PlaneGeometry(0.98, 0.98), new THREE.MeshStandardMaterial({ map: tx.grate, roughness: 0.6, metalness: 0.3 }), cx(q[0]), 0.014, cz(q[1]), room); m.rotation.x = -Math.PI / 2; m.receiveShadow = true; }
+  st.mbt = P.buttons.map(k => { wire(k, "#b8651a"); SD.mesh(new THREE.CylinderGeometry(0.46, 0.48, 0.05, 28), SD.std("#5a3a1a"), cx(k[0]), 0.025, cz(k[1]), room); const cap = SD.mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.1, 28), SD.std("#f5871f", { emissive: 0x5a2a05 }), cx(k[0]), 0.09, cz(k[1]), room); return { cap, down: false }; });
+  const post = (k, col) => { const g = new THREE.Group(); SD.mesh(new THREE.BoxGeometry(0.14, 0.95, 0.14), SD.std("#2b2f3a"), 0, 0.475, 0, g).castShadow = true; SD.mesh(new THREE.BoxGeometry(0.4, 0.46, 0.12), SD.std("#f4f1e8", { emissive: 0x3a382f }), 0, 0.95, 0.02, g); const knob = SD.mesh(new THREE.SphereGeometry(0.1, 12, 8), new THREE.MeshBasicMaterial({ color: col }), 0, 0.95, 0.12, g); g.position.set(cx(k[0]), 0, cz(k[1])); g.rotation.x = -0.35; g.scale.setScalar(1.35); room.add(g); return { g, knob }; };
+  st.msw = P.switches.map(k => { wire(k, "#3b6fd6"); return post(k, 0x3b82f6); });
+  st.mtm = P.timers.map(k => { wire(k, "#8b5cf6"); const o = post(k, 0x8b5cf6); const face = SD.mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.05, 20), new THREE.MeshBasicMaterial({ color: 0xffffff }), 0, 1.38, 0.02, o.g); face.rotation.x = Math.PI / 2; o.hand = SD.mesh(new THREE.BoxGeometry(0.04, 0.17, 0.02), new THREE.MeshBasicMaterial({ color: 0xe5484d }), 0, 1.38, 0.06, o.g); o.hand.geometry.translate(0, 0.07, 0); return o; });
   for(const Lm of P.lamps){ const sl = new THREE.SpotLight(0xfff0c4, 4.2, 0, Lm.cone, 0.14, 0); sl.castShadow = true; sl.shadow.mapSize.set(1024, 1024); sl.shadow.camera.near = 0.6; sl.shadow.camera.far = 22; sl.shadow.bias = -0.0008; room.add(sl); room.add(sl.target);
     const pole = SD.mesh(new THREE.CylinderGeometry(0.07, 0.09, 1, 8), SD.std("#2b2f3a"), Lm.x, 0.5, Lm.z, room); SD.mesh(new THREE.CylinderGeometry(0.34, 0.4, 0.14, 16), SD.std("#2b2f3a"), Lm.x, 0.07, Lm.z, room);
     const head = new THREE.Group(), shade = SD.mesh(new THREE.CylinderGeometry(0.42, 0.14, 0.5, 20, 1, true), SD.std("#1f6f8b", { side: THREE.DoubleSide, emissive: 0x0a2a36 }), 0, 0, 0, head); shade.geometry.rotateX(Math.PI / 2);
@@ -85,27 +92,29 @@ function buildRoom(){
     st.gaze = new THREE.Mesh(gz, new THREE.MeshBasicMaterial({ color: 0xc8ff5a, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide })); st.gaze.frustumCulled = false; st.gaze.renderOrder = 2; room.add(st.gaze); }
   syncLamps();
 }
-function syncLamps(){ st.lampObjs.forEach((o, i) => { const on = st.w.on[i]; o.sl.intensity = on ? 4.2 : 0; o.cone.visible = on; o.bulb.material.color.set(on ? 0xfff6c9 : 0x565b6e); }); }
+/* lempų ir valdiklių vaizdas pagal tai, kurios lempos dabar iš tikrųjų šviečia (st.on) */
+function syncLamps(){ const P = st.P; st.lampObjs.forEach((o, i) => { const on = st.on[i]; o.sl.intensity = on ? 4.2 : 0; o.cone.visible = on; o.bulb.material.color.set(on ? 0xfff6c9 : 0x565b6e); });
+  st.msw.forEach((o, i) => { const on = P.switches[i][2].some(k => st.w.on[k]); o.knob.position.y = on ? 1.02 : 0.88; o.knob.material.color.set(on ? 0xffd23f : 0x3b82f6); }); }
 
 /* ---------- kambarių sąrašas ---------- */
 function showPicker(){
   picking = true; st = null; keys.clear(); joy = null; if(room){ hs.remove(room); room = null; } mouse.visible = glow.visible = bang.visible = ring.visible = false; const P = prog(), done = ROOMS.filter(r => P[r.id]).length;
-  $("mh").innerHTML = `<div class="rooms"><h3>${X.pickT}</h3><p>${X.pickS(done, ROOMS.length)}</p>${K.floors.map((f, fi) => `<h4>${X.floors[fi].name} <small>${X.floors[fi].sub}</small></h4><div class="rgrid">${ROOMS.filter(r => r.fi === fi).map(r => { const s = P[r.id] || 0, ok = open(r, P);
+  $("mh").innerHTML = `<div class="rooms"><h3>${X.pickT}</h3><p>${X.pickS(done, ROOMS.length)}</p>${K.floors.map((f, fi) => `<h4>${X.floor[f.id].name} <small>${X.floor[f.id].sub}</small></h4><div class="rgrid">${ROOMS.filter(r => r.fi === fi).map(r => { const s = P[r.id] || 0, ok = open(r, P);
     return `<button type="button" class="rb${s ? " done" : ""}" data-r="${ROOMS.indexOf(r)}"${ok ? "" : " disabled"}><b>${r.ri + 1}</b><i>${"★".repeat(s)}${"☆".repeat(3 - s)}</i></button>`; }).join("")}</div>`).join("")}<p class="soon">${X.soon}</p></div>`;
   $("mh").firstChild.onclick = e => { const b = e.target.closest("[data-r]"); if(b && !b.disabled){ MK.sfx.tap(); startRoom(+b.dataset.r); } };
 }
 function startRoom(idx){
   const R = ROOMS[idx]; picking = false; mouse.visible = glow.visible = true;
-  $("mh").innerHTML = `<div class="mtop"><div class="mcard" id="hR"></div><div class="mcard hearts" id="hH"></div><button type="button" class="hbtn" id="hRe" aria-label="${X.restart}" title="${X.restart}">↺</button></div><div class="mrow"><div class="mbar low" id="hBar"><i style="width:0"></i></div><div class="mcard" id="hT"></div></div><div class="mmsg top" id="hMsg"></div><button type="button" class="abtn" id="hAct" disabled><b></b>${navigator.maxTouchPoints > 0 ? "" : `<small>${X.keyHint}</small>`}</button>`;
+  $("mh").innerHTML = `<div class="mtop"><div class="mcard" id="hR"></div><div class="mcard hearts" id="hH"></div><button type="button" class="hbtn" id="hRe" aria-label="${X.restart}" title="${X.restart}">↺</button></div><div class="mrow"><div class="mbar low" id="hBar"><i style="width:0"></i></div><div class="mcard" id="hT"></div><div class="mcard tmr" id="hC" hidden></div></div><div class="mmsg top" id="hMsg"></div><button type="button" class="abtn" id="hAct" disabled><b></b>${navigator.maxTouchPoints > 0 ? "" : `<small>${X.keyHint}</small>`}</button>`;
   $("hRe").onclick = () => { MK.sfx.tap(); reset(); }; $("hAct").addEventListener("pointerdown", e => { e.preventDefault(); press(); });
   st = { idx, R, P: L.parse(R.lv), fails: 0, over: false, t: 0, doneT: 0, msgT: 0, actKey: "?" }; reset(true); say(tipFor(R), "new"); st.msgT = 7; MK.sfx.whoosh();
 }
-function tipFor(R){ if(X.tips[R.id]) return X.tips[R.id]; const ls = R.lv.lamps; return ls.some(l => l.rot) ? X.kinds.rot : ls.some(l => l.hv) ? X.kinds.hv : ls.some(l => l.sw) ? X.kinds.sw : ls.length > 1 ? X.kinds.two : X.kinds.one; }
-function reset(first){ st.w = L.world0(st.P); st.obs = L.obstacles(st.P, st.w); st.x = st.P.start[0]; st.z = st.P.start[1]; st.face = Math.PI; st.meter = 0; st.safe = 0.2; st.got = 0; st.gn = null; st.doneT = 0; st.isLit = false; ring.visible = false; buildRoom(); hud(); if(!first) say(""); }
+const tipFor = R => X.tips[R.id] || "";   /* tik naujo dalyko paaiškinimas, ne sprendimo užuomina */
+function reset(first){ st.w = L.world0(st.P); st.obs = L.obstacles(st.P, st.w); st.on = L.onAt(st.P, st.w, st.P.start[0], st.P.start[1], st.t); st.onKey = st.on.join(); st.tmrS = -1; st.x = st.P.start[0]; st.z = st.P.start[1]; st.face = Math.PI; st.meter = 0; st.safe = 0.2; st.got = 0; st.gn = null; st.doneT = 0; st.isLit = false; ring.visible = false; buildRoom(); hud(); if(!first) say(""); }
 function start(){ init(); pose(); showPicker(); }
 function stop(){ st = null; picking = false; keys.clear(); joy = null; if(joyEl){ joyEl.remove(); joyEl = null; } }
 function back(){ if(picking || !st) return false; $("ov").innerHTML = ""; showPicker(); return true; }
-function hud(){ const R = st.R, n = st.P.tubes.length; $("hR").innerHTML = `<small>${X.floors[R.fi].name}</small>${X.room(R.ri + 1)}`; $("hT").textContent = X.tubes(st.got, n); $("hT").hidden = !n; const h = Math.max(0, 3 - st.fails); $("hH").textContent = "♥".repeat(h) + "♡".repeat(3 - h); }
+function hud(){ const R = st.R, n = st.P.tubes.length; $("hR").innerHTML = `<small>${X.floor[K.floors[R.fi].id].name}</small>${X.room(R.ri + 1)}`; $("hT").textContent = X.tubes(st.got, n); $("hT").hidden = !n; const h = Math.max(0, 3 - st.fails); $("hH").textContent = "♥".repeat(h) + "♡".repeat(3 - h); }
 function say(m, cls){ const e = $("hMsg"); if(!e) return; e.textContent = m || ""; e.className = "mmsg top " + (cls || ""); }
 function fail(msg){ st.fails++; MK.sfx.bad(); reset(); say(msg, "bad"); st.msgT = 3; }
 function win(){
@@ -115,14 +124,14 @@ function win(){
 /* ---------- veiksmai ---------- */
 function unstuck(){ if(!L.solid(st.obs, st.P.lamps, st.x, st.z, MR)) return; for(let r = 0.1; r < 2; r += 0.1) for(let k = 0; k < 16; k++){ const x = st.x + Math.cos(k * 0.3927) * r, z = st.z + Math.sin(k * 0.3927) * r; if(!L.solid(st.obs, st.P.lamps, x, z, MR)){ st.x = x; st.z = z; return; } } }
 function doAct(a){
-  st.w = L.apply(st.P, st.w, a); st.obs = L.obstacles(st.P, st.w);
+  st.w = L.apply(st.P, st.w, a, st.t); st.obs = L.obstacles(st.P, st.w);
   if(a.type === "push") MK.sfx.whoosh(); else if(a.type === "cheese"){ st.mc[a.i].userData.gone = 1; MK.sfx.good(); } else if(a.type === "rope"){ const s = st.ms[a.i]; s.fall = true; s.line.visible = false; s.mark.visible = false; MK.sfx.whoosh(); }
-  else if(a.type === "cable"){ const p = st.mk[a.i].plug.material; p.color.set("#565b6e"); p.emissive.set(0x000000); syncLamps(); MK.sfx.good(); }
+  else if(a.type === "cable"){ const p = st.mk[a.i].plug.material; p.color.set("#565b6e"); p.emissive.set(0x000000); MK.sfx.good(); } else if(a.type === "switch") MK.sfx.tap(); else if(a.type === "timer") MK.sfx.whoosh();
   unstuck();
 }
 function press(){
   if(!st || st.over || st.doneT > 0) return; const a = L.action(st.P, st.w, st.x, st.z); if(!a) return;
-  if(a.type === "push"){ if(a.ok) doAct(a); else { MK.sfx.bad(); say(X.stuck, "bad"); st.msgT = 1.6; } } else if(!st.gn){ st.gn = { type: a.type, i: a.i, t: 0 }; MK.sfx.tap(); }
+  if(a.type === "push"){ if(a.ok) doAct(a); else { MK.sfx.bad(); say(X.stuck, "bad"); st.msgT = 1.6; } } else if(a.type === "switch" || a.type === "timer") doAct(a); else if(!st.gn){ st.gn = { type: a.type, i: a.i, t: 0 }; MK.sfx.tap(); }
 }
 function gnawSpot(g){ const P = st.P; if(g.type === "cheese") return [cx(P.cheese[g.i][0]), 2.3, cz(P.cheese[g.i][1])]; if(g.type === "rope") return [cx(P.ropes[g.i][0]), 1.2, cz(P.ropes[g.i][1])]; return [cx(P.cables[g.i][0]), 1.0, cz(P.cables[g.i][1])]; }
 function frame(dt){
@@ -139,10 +148,14 @@ function frame(dt){
     if(vl > 0.08){ const k = Math.min(1, vl) / vl * SPEED * dt, nx = st.x + vx * k, nz = st.z + vz * k; if(!L.solid(st.obs, P.lamps, nx, st.z, MR)) st.x = nx; if(!L.solid(st.obs, P.lamps, st.x, nz, MR)) st.z = nz; st.face = Math.atan2(vx, vz); st.hop = (st.hop || 0) + dt * 13; }
     for(const g of st.tubeObjs) if(g.visible && Math.hypot(g.position.x - st.x, g.position.z - st.z) < 0.6){ g.visible = false; st.got++; MK.sfx.star(st.got); say(X.tube, "good"); st.msgT = 1.2; hud(); }
     /* veiksmo mygtukas ir graužimas */
-    const a = L.action(P, st.w, st.x, st.z), ak = a ? (a.type === "push" ? "push" : "gnaw") : ""; if(ak !== st.actKey){ st.actKey = ak; const b = $("hAct"); b.disabled = !ak; b.firstChild.textContent = ak ? X.act[ak] : X.act.none; }
+    const a = L.action(P, st.w, st.x, st.z), ak = a ? (a.type === "push" ? "push" : a.type === "switch" || a.type === "timer" ? "sw" : "gnaw") : ""; if(ak !== st.actKey){ st.actKey = ak; const b = $("hAct"); b.disabled = !ak; b.firstChild.textContent = ak ? X.act[ak] : X.act.none; }
     if(st.gn){ if(!a || a.type !== st.gn.type || a.i !== st.gn.i){ st.gn = null; ring.visible = false; } else { const p = gnawSpot(st.gn); st.gn.t += dt; st.face = Math.atan2(p[0] - st.x, p[2] - st.z); st.hop = (st.hop || 0) + dt * 30; ring.position.set(p[0], p[1], p[2]); ring.visible = true; drawRing(Math.min(1, st.gn.t / L.T_GNAW)); if(st.gn.t >= L.T_GNAW){ st.gn = null; ring.visible = false; doAct(a); } } }
+    /* kurios lempos dabar šviečia: jungikliai, mygtukai (dėžė ar pati pelytė), laikmačiai, žybsėjimas */
+    const on = L.onAt(P, st.w, st.x, st.z, t), ok2 = on.join(); if(ok2 !== st.onKey){ st.on = on; st.onKey = ok2; syncLamps(); }
+    st.mbt.forEach((o, i) => { const d = L.pressed(P, st.w, i, st.x, st.z); if(d !== o.down){ o.down = d; MK.sfx.tap(); } o.cap.position.y += ((d ? 0.035 : 0.09) - o.cap.position.y) * Math.min(1, dt * 18); });
+    let left = -1; P.timers.forEach((k, i) => { const r = st.w.tmr[i] - t; if(r > 0) left = Math.max(left, r); st.mtm[i].hand.rotation.z = r > 0 ? -r / k[3] * Math.PI * 2 : 0; }); const ls = left > 0 ? Math.ceil(left) : -1; if(ls !== st.tmrS){ st.tmrS = ls; const e = $("hC"); e.hidden = ls < 0; if(ls >= 0){ e.textContent = X.timer(ls); MK.sfx.tap(); } }
     /* šviesa ir katinas */
-    const lamp = st.safe > 0 ? false : L.lit(cat ? L.withCat(st.obs, P.cat, t) : st.obs, P.lamps, st.w.on, st.x, st.z, t), eyes = !!cat && st.safe <= 0 && L.catSees(st.obs, P.cat, cat, st.x, st.z); st.isLit = lamp || eyes; if(st.safe > 0) st.safe -= dt;
+    const lamp = st.safe > 0 ? false : L.lit(cat ? L.withCat(st.obs, P.cat, t) : st.obs, P.lamps, st.on, st.x, st.z, t), eyes = !!cat && st.safe <= 0 && L.catSees(st.obs, P.cat, cat, st.x, st.z); st.isLit = lamp || eyes; if(st.safe > 0) st.safe -= dt;
     st.meter = Math.max(0, Math.min(1, st.meter + (eyes ? dt / L.T_CAT : lamp ? dt / L.T_SEE : -dt / L.T_HIDE)));
     if(st.meter >= 1) fail(eyes ? X.catSaw : X.seen); else if(cat && st.safe <= 0 && Math.hypot(cat[0] - st.x, cat[1] - st.z) < L.CAT_TOUCH) fail(X.cat);
     else if(L.atDoor(st.x, st.z)){ st.doneT = 1.0; say(X.door, "good"); st.msgT = 1.2; MK.sfx.good(); }

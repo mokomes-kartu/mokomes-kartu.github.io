@@ -1,20 +1,20 @@
 /* Surenka kambarius į slepynes-kambariai.js ir kiekvieną dar kartą patikrina. node pick.js [WRITE=1] */
-const fs = require('fs'), S = require('./solver.js'), L = S.L, H = require('./hand.js');
+const fs = require('fs'), S = require('./solver.js'), L = S.L, H = require('./hand.js'), H3 = require('./hand3.js');
 const F1 = ['over:1', 'side:1', 'end:0', 'over:0', 'side:0', 'over2:0', 'two:0', 'hv:1', 'sweep:2', 'rothv:0'];
 const F2 = ['out3/b-side1:3', 'b-over1:0', 'out3/b-end1:3', 'b-side1:1', 'b-two1:2', 'b-over2:0', 'b-side1:0', 'out3/b-side-2b:0', 'out3/b-end1:1', 'out3/b-two-2b:0'];
 const get = a => { const [f, i] = a.split(':'); const ls = fs.readFileSync((f.includes('/') ? f : 'out2/' + f) + '.txt', 'utf8').split('\n').filter(l => l.startsWith('{"tpl"')); return JSON.parse(ls[+i]).lv; };
-const r4 = v => Math.round(v * 1e4) / 1e4, lampS = l => '{ ' + Object.entries(l).map(([k, v]) => k + ': ' + (Array.isArray(v) ? '[' + v.join(', ') + ']' : r4(v))).join(', ') + ' }';
+const r4 = v => Math.round(v * 1e4) / 1e4, lampS = l => '{ ' + Object.entries(l).map(([k, v]) => k + ': ' + (Array.isArray(v) ? '[' + v.join(', ') + ']' : typeof v === 'boolean' ? v : r4(v))).join(', ') + ' }';
 function fmt(lv){ let s = '    { map: [' + lv.map.map(r => JSON.stringify(r)).join(', ') + '],\n      lamps: [' + lv.lamps.map(lampS).join(', ') + ']';
-  if(lv.ropes) s += ', ropes: ' + JSON.stringify(lv.ropes); if(lv.cables) s += ', cables: ' + JSON.stringify(lv.cables); if(lv.cat) s += ', cat: ' + JSON.stringify(lv.cat); return s + ' }'; }
+  for(const k of ['ropes', 'cables', 'switches', 'buttons', 'timers']) if(lv[k]) s += ', ' + k + ': ' + JSON.stringify(lv[k]); if(lv.cat) s += ', cat: ' + JSON.stringify(lv.cat); return s + ' }'; }
 /* griežta patikra: įveikiamas su atsarga; palankiausiu vertinimu neįveikiamas be šešėlių, be katino ir be KIEKVIENO atskiro daikto (dėžės, sūrio, virvės, kabelio) */
 function verify(lv, name){ const P = L.parse(lv), dyn = S.isDyn(P); let ok, info; const safe = S.startSafe(lv);
   if(dyn){ const b = S.solveDyn(lv, { maxT: 1400 }), ns = S.solveDyn(Object.assign({}, lv, { cat: null }), { noShadow: !P.cat, opt: true, maxT: 900 }); ok = b.ok && !ns.ok; info = 'laikinis: su atsarga ' + (b.ok ? b.t.toFixed(1) + ' s' : 'NE') + ', be šešėlių/katino ' + (ns.ok ? 'ĮVEIKIAMAS' : 'ne'); }
-  else { const items = [].concat(P.boxes.map((_, i) => ['push', i]), P.cheese.map((_, i) => ['cheese', i]), P.ropes.map((_, i) => ['rope', i]), P.cables.map((_, i) => ['cable', i]));
-    const ns = S.solveStatic(lv, { noAct: true, noShadow: true, opt: true }), r = S.solveStatic(lv, { maxStates: 4000 }), need = items.map(([t, i]) => { const q = S.solveStatic(lv, { opt: true, skip: a => a.type === t && a.i === i, maxStates: 4000 }); return q.ok || q.over ? t + i + ':NEBŪTINAS' : null; }).filter(Boolean);
+  else { const items = [].concat(P.boxes.map((_, i) => ['push', i]), P.cheese.map((_, i) => ['cheese', i]), P.ropes.map((_, i) => ['rope', i]), P.cables.map((_, i) => ['cable', i]), P.switches.map((_, i) => ['switch', i]), P.timers.map((_, i) => ['timer', i]));
+    const ns = S.solveStatic(lv, { noAct: true, noShadow: true, opt: true }), r = S.solveStatic(lv, { maxStates: 8000, maxDepth: 30 }), need = items.map(([t, i]) => { const q = S.solveStatic(lv, { opt: true, skip: a => a.type === t && a.i === i, maxStates: 8000, maxDepth: 30 }); return q.ok || q.over ? t + i + ':NEBŪTINAS' : null; }).concat(P.buttons.map((_, i) => { const q = S.solveStatic(Object.assign({}, lv, { buttons: lv.buttons.filter((_, j) => j !== i) }), { opt: true, maxStates: 8000, maxDepth: 30 }); return q.ok || q.over ? 'mygtukas' + i + ':NEBŪTINAS' : null; })).filter(Boolean); if(P.buttons.length) items.push(...P.buttons);
     ok = r.ok && !ns.ok && !need.length; info = 'statinis: ' + (r.ok ? 'veiksmų ' + r.depth : 'NE') + ', be šešėlių ' + (ns.ok ? 'ĮVEIKIAMAS' : 'ne') + (items.length ? ', daiktų ' + items.length + (need.length ? ' – ' + need.join(' ') : ' – visi būtini') : ''); }
   if(!safe){ ok = false; info += ', PRADŽIA NESAUGI'; }
   console.log((ok ? 'OK  ' : 'BLOGAI ') + name + ' – ' + info + ' – tūbelių ' + P.tubes.length); return ok; }
-const floors = [['1', F1.map(get)], ['2', process.env.NOF2 ? [] : F2.map(get)], ['b', H]]; let all = true;
+const floors = [['1', F1.map(get)], ['2', F2.map(get)], ['3', H3], ['b', H]]; let all = true;
 for(const [id, rooms] of floors) rooms.forEach((lv, i) => { if(!verify(lv, id + '-' + (i + 1))) all = false; });
 const out = '/* Šešėlių slėpynės – kambariai. Ženklų reikšmės aprašytos faile slepynes-logika.js.\n   Kiekvienas kambarys patikrintas programa: įveikiamas paliekant atsargą, o be daiktų šešėlių (ar be veiksmų – stūmimo, graužimo) durų pasiekti neįmanoma. */\nwindow.MK_SLK = { floors: [\n' +
   floors.map(([id, rooms]) => '  { id: "' + id + '", rooms: [\n' + rooms.map(fmt).join(',\n') + '\n  ] }').join(',\n') + '\n] };\n';

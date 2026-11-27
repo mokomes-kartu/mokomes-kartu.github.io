@@ -1,0 +1,4 @@
+/* Žemėlapis po nurodytų pakeitimų: node w.js <rinkinys> <nr.> '<JSON: {"boxes":[[c,r]],"on":[...]} >' */
+const S = require('./solver.js'), L = S.L, H = require(process.argv[2] === 'b' ? './hand.js' : './hand' + process.argv[2] + '.js'), lv = H[+process.argv[3] - 1], P = L.parse(lv), w = Object.assign(L.world0(P), JSON.parse(process.argv[4] || '{}'));
+console.log(S.map(lv, [0], w)); const OPT = !!process.env.OPT, F = S.fields(P, w, { opt: OPT }), R = { m: S.reachT(F, F, [{ c: S.cellOf(process.argv[5] ? JSON.parse(process.argv[5]) : P.start), m: 0, left: 0 }], S.blinkLIM(P, OPT), 0).m[0] }; const rows = [];
+for(let j = 0; j < S.NZ; j += 2){ let s = ''; for(let i = 0; i < S.NX; i++){ const c = j * S.NX + i; s += !F.free[c] ? '#' : R.m[c] > 30000 ? (F.lit[c] ? ':' : ' ') : R.m[c] === 0 ? 'o' : '+'; } rows.push('|' + s + '|'); } console.log('-- pasiekiama (o – tamsoje, + – per šviesą; : – apšviesta ir nepasiekiama):\n' + rows.join('\n'));

@@ -1,0 +1,97 @@
+/* 3 aukštas „Jungikliai ir mygtukai“ – ranka sudėlioti kambariai (tikrinami check.js su parametru 3) */
+const rad = d => d * Math.PI / 180;
+const SIDE = (z, cone, extra) => Object.assign({ x: -4, z, h: 2.8, a: 0, reach: 6, cone }, extra || {}), SIDE_R = (z, cone, extra) => Object.assign({ x: 4, z, h: 2.8, a: Math.PI, reach: 6, cone }, extra || {});
+const OVER = (x, z, cone, h, extra) => Object.assign({ x, z, h: h || 3.2, a: 0, reach: 0.01, cone }, extra || {});
+module.exports = [
+  /* 3-1 Jungiklis: durų lempą išjungia jungiklis dešinėje; iki jo – dėžių šešėliais per šoninės lempos šviesą */
+  { map: [
+    "X.......X",
+    ".........",
+    ".........",
+    "......#..",
+    ".........",
+    "......#..",
+    "===......",
+    "===...#..",
+    "===......",
+    "......#..",
+    ".........",
+    "......#..",
+    ".........",
+    "T.......T",
+    "M........"],
+    lamps: [SIDE(0, 0.62), OVER(0, -6, 1.0)], switches: [[8, 4, [1]]] },
+  /* 3-2 Grindų mygtukas: didelė lempa viduryje nedega tik kol ant mygtuko stovi dėžė. Dėžė – tunelyje apačioje: ją galima tik stumti tolyn, tad pastūmus per toli tenka pradėti iš naujo */
+  { map: [
+    "T........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    "XXXXXXX..",
+    "....B..M."],
+    lamps: [OVER(0, 0, 1.05, 3.4)], buttons: [[1, 14, [0]]] },
+  /* 3-3 Perjungiklis: jungiklis apačioje išjungia durų lempą, bet įjungia šoninę – kelią atgal reikia pasiruošti iš anksto (dėžė tarp dviejų dėžių šešėlių).
+     Grotelės neleidžia dėžės nustumti prie durų lempos ir prisidengti ja kaip skydu. */
+  { map: [
+    "X.......X",
+    ".........",
+    ".........",
+    ".........",
+    "M........",
+    ".........",
+    "ggggggggg",
+    "...#.....",
+    "===......",
+    "===......",
+    "===......",
+    "...#.....",
+    "....B....",
+    "........T",
+    "........."],
+    lamps: [SIDE(2, 0.62, { off: true }), OVER(0, -6, 1.0)], switches: [[4, 14, [0, 1]]] },
+  /* 3-4 Jungiklis su laikmačiu: lempa už sienos užgęsta tik 5 sekundėms; vienintelį sienos tarpą užkimšusi dėžė – ją reikia išstumti ir spėti prabėgti */
+  { map: [
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    "XXXXBXXXX",
+    ".........",
+    ".........",
+    ".........",
+    ".........",
+    "T........",
+    ".........",
+    "M........"],
+    lamps: [OVER(0, -3, 1.05, 3.4)], timers: [[6, 8, [0], 5]] },
+  /* 3-5 Viena dėžė – du darbai: ant mygtuko (užgęsta lempa virš jungiklio), paskui – šešėliui prie šoninės lempos; jungiklis išjungia durų lempą */
+  { map: [
+    "X.......X",
+    ".........",
+    ".T.......",
+    ".........",
+    ".........",
+    "===......",
+    "===......",
+    "===......",
+    ".........",
+    "T........",
+    ".....B...",
+    ".........",
+    ".........",
+    ".........",
+    "M........"],
+    lamps: [SIDE(-1, 0.47), OVER(3, 6, 0.7, 3.0), OVER(0, -6, 1.0)], buttons: [[3, 10, [1]]], switches: [[8, 14, [2]]] }
+];

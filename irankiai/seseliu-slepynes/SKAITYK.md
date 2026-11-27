@@ -13,3 +13,8 @@ Visos naudoja tą pačią logiką kaip žaidimas (`/seseliu-dirbtuve/slepynes-lo
 - Ar įveikiamas – vertinama atsargiai (šešėlio kraštai laikomi apšviestais, juosta iki ~65 %).
 - Ar NEįveikiamas kitaip – vertinama palankiausiai žaidėjui (`opt`): visa juosta, be atsargų. Taip tikrinama: be šešėlių, be katino ir be kiekvieno atskiro daikto (kiekvienos dėžės, sūrio, virvės, kabelio) kambarys turi būti neįveikiamas.
 - `gazemap.js <nr.>` – parodo, kur katinas kada nors mato (slėptuvėms dėlioti).
+
+## 3 aukštas (2026-11-27)
+- `hand3.js` – ranka sudėlioti 3 aukšto kambariai; tikrinami `node check.js <nr.> 3`. `w.js` – žemėlapis ir pasiekiamumas pasirinktoje kambario būsenoje.
+- Tikrintuvas moka: jungiklius (akimirksniu), grindų mygtukus (lempa nedega, kol ant mygtuko dėžė ar pati pelytė), groteles (dėžės neužstumiamos), jungiklį su laikmačiu (`reachT` – „langas“, kol lempa užgesusi).
+- Žybsinčios lempos (`blink`) logikoje yra, bet tikrintuvas jas vertina tik apytiksliai (`blinkLIM`) – patikimai tinka tik ilgiems kambariams; 9 × 15 kambaryje dėžė beveik niekada nebūna būtina.
