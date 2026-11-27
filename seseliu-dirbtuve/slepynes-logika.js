@@ -5,11 +5,11 @@
      X  siena        B  stumiama dėžė  S  sūris (galima pragraužti)
      M  pelytės pradžia               T  dažų tūbelė
    Durys visada viršuje per vidurį. Kiti dalykai aprašomi atskirai: lamps (lempos), ropes ([kuoliuko c, r, maišo c, r]),
-   cables ([c, r, lempos nr.]), cat ({ p: kelio taškai, v: greitis }). */
+   cables ([c, r, lempos nr.]), cat ({ p: kelio taškai, v: greitis, wait: kiek stovi apsisukdamas, range ir fov: kaip toli ir kokiu kampu mato }). */
 (function(root){
 "use strict";
 const RW = 4.5, RL = 7.5, COLS = 9, ROWS = 15, MR = 0.32, SPEED = 3.4, EYE = 0.3;
-const T_SEE = 0.75, T_HIDE = 0.5, T_GNAW = 1.0;          /* per kiek laiko lempa pastebi, per kiek juosta ištuštėja, kiek trunka graužimas */
+const T_SEE = 0.75, T_HIDE = 0.5, T_GNAW = 1.0, T_CAT = 0.45, CAT_EYE = 1.0;          /* per kiek laiko lempa pastebi, per kiek juosta ištuštėja, kiek trunka graužimas */
 const REACH = 1.12, SIDE = 0.46, NEAR = 0.85, CAT_R = 0.45, CAT_TOUCH = CAT_R + MR + 0.08;
 const cx = c => c - 4, cz = r => r - 7;
 const SHAPE = { "#": ["b", 0.92, 0.92, 1.7], X: ["b", 1, 1, 2.6], "=": ["b", 1, 1, 0.6], O: ["c", 0.42, 1.8], B: ["b", 0.9, 0.9, 1.5], S: ["b", 1, 1, 1.7], sack: ["c", 0.45, 1.4], cat: ["c", CAT_R, 1.3] };
@@ -29,13 +29,20 @@ function obstacles(P, w){
   P.ropes.forEach((q, i) => { if(w.ropes[i]) o.push(ob("sack", cx(q[2]), cz(q[3]), i)); }); return o;
 }
 const lampAngle = (L, t) => L.a + (L.rot || 0) * t + (L.sw ? L.sw[0] * Math.sin(L.sw[1] * t) : 0), lampH = (L, t) => L.h + (L.hv ? L.hv[0] * Math.sin(L.hv[1] * t) : 0);
-/* katino vieta laiku t: eina keliu pirmyn ir atgal */
+/* katinas laiku t: eina keliu pirmyn, gale sustoja ir apsisuka (tuo metu nežiūri), grįžta atgal. Grąžina [x, z, kryptis x, kryptis z, ar žiūri] */
 function catPos(cat, t){
   const p = cat.p, seg = []; let len = 0; for(let i = 1; i < p.length; i++){ const d = Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]); seg.push(d); len += d; }
-  let s = (t * cat.v) % (2 * len), back = false; if(s > len){ s = 2 * len - s; back = true; }
-  for(let i = 0; i < seg.length; i++){ if(s <= seg[i] || i === seg.length - 1){ const k = seg[i] ? Math.min(1, s / seg[i]) : 0, dx = (p[i + 1][0] - p[i][0]) / (seg[i] || 1), dz = (p[i + 1][1] - p[i][1]) / (seg[i] || 1);
-    return [p[i][0] + (p[i + 1][0] - p[i][0]) * k, p[i][1] + (p[i + 1][1] - p[i][1]) * k, back ? -dx : dx, back ? -dz : dz]; } s -= seg[i]; }
-  return [p[0][0], p[0][1], 0, -1];
+  const T1 = len / cat.v, W = cat.wait === undefined ? 0.8 : cat.wait, n = seg.length, dir = i => [(p[i + 1][0] - p[i][0]) / (seg[i] || 1), (p[i + 1][1] - p[i][1]) / (seg[i] || 1)];
+  let u = t % (2 * (T1 + W)), back = false; if(u >= T1 + W){ u -= T1 + W; back = true; }
+  if(u >= T1){ const k = W ? (u - T1) / W : 1, e = back ? p[0] : p[n], d = dir(back ? 0 : n - 1), a = Math.atan2(back ? -d[1] : d[1], back ? -d[0] : d[0]) + Math.PI * k; return [e[0], e[1], Math.cos(a), Math.sin(a), false]; }
+  let s = u * cat.v; if(back) s = len - s;
+  for(let i = 0; i < n; i++){ if(s <= seg[i] || i === n - 1){ const k = seg[i] ? Math.min(1, s / seg[i]) : 0, d = dir(i); return [p[i][0] + (p[i + 1][0] - p[i][0]) * k, p[i][1] + (p[i + 1][1] - p[i][1]) * k, back ? -d[0] : d[0], back ? -d[1] : d[1], true]; } s -= seg[i]; }
+  return [p[0][0], p[0][1], 0, -1, true];
+}
+/* ar katinas (būsena c iš catPos) mato tašką (x, z): žiūri, taškas regos kūgyje ir jo neužstoja kliūtis */
+function catSees(obs, cat, c, x, z){
+  if(!c[4]) return false; const dx = x - c[0], dz = z - c[1], d = Math.hypot(dx, dz), R = cat.range || 6, F = cat.fov || 0.7; if(d > R) return false; if(d < 0.05) return true;
+  if((dx * c[2] + dz * c[3]) / d < Math.cos(F)) return false; return !blocked(obs, c[0], CAT_EYE, c[1], x, z);
 }
 const withCat = (obs, cat, t) => { if(!cat) return obs; const c = catPos(cat, t); return obs.concat([ob("cat", c[0], c[1])]); };
 /* ar spindulį nuo lempos (px, py, pz) iki pelytės akių (x, EYE, z) užstoja kliūtis */
@@ -85,6 +92,6 @@ function apply(P, w, a){
   if(a.type === "push"){ n.boxes[a.i][0] += a.dc; n.boxes[a.i][1] += a.dr; } else if(a.type === "cheese") n.cheese[a.i] = false; else if(a.type === "rope") n.ropes[a.i] = true; else if(a.type === "cable") n.on[P.cables[a.i][2]] = false;
   return n;
 }
-const API = { RW, RL, COLS, ROWS, MR, SPEED, EYE, T_SEE, T_HIDE, T_GNAW, NEAR, CAT_R, CAT_TOUCH, SHAPE, cx, cz, parse, world0, obstacles, lampAngle, lampH, catPos, withCat, lit, solid, atDoor, cellFree, action, apply };
+const API = { RW, RL, COLS, ROWS, MR, SPEED, EYE, T_SEE, T_HIDE, T_GNAW, T_CAT, CAT_EYE, NEAR, CAT_R, CAT_TOUCH, SHAPE, cx, cz, parse, world0, obstacles, lampAngle, lampH, catPos, catSees, withCat, blocked, lit, solid, atDoor, cellFree, action, apply };
 if(typeof module !== "undefined" && module.exports) module.exports = API; else root.MK_SL = API;
 })(typeof window !== "undefined" ? window : this);

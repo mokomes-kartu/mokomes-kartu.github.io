@@ -1,14 +1,18 @@
 /* Surenka kambarius į slepynes-kambariai.js ir kiekvieną dar kartą patikrina. node pick.js [WRITE=1] */
 const fs = require('fs'), S = require('./solver.js'), L = S.L, H = require('./hand.js');
 const F1 = ['over:1', 'side:1', 'end:0', 'over:0', 'side:0', 'over2:0', 'two:0', 'hv:1', 'sweep:2', 'rothv:0'];
-const F2 = ['b-side1:2', 'b-over1:0', 'b-end1:2', 'b-side1:1', 'b-two1:2', 'b-over2:0', 'b-side1:0', 'b-end-2b:2', 'b-end1:0', 'b-over-2b:1'];
-const get = a => { const [f, i] = a.split(':'); const ls = fs.readFileSync('out2/' + f + '.txt', 'utf8').split('\n').filter(l => l.startsWith('{"tpl"')); return JSON.parse(ls[+i]).lv; };
+const F2 = ['out3/b-side1:3', 'b-over1:0', 'out3/b-end1:3', 'b-side1:1', 'b-two1:2', 'b-over2:0', 'b-side1:0', 'out3/b-side-2b:0', 'out3/b-end1:1', 'out3/b-two-2b:0'];
+const get = a => { const [f, i] = a.split(':'); const ls = fs.readFileSync((f.includes('/') ? f : 'out2/' + f) + '.txt', 'utf8').split('\n').filter(l => l.startsWith('{"tpl"')); return JSON.parse(ls[+i]).lv; };
 const r4 = v => Math.round(v * 1e4) / 1e4, lampS = l => '{ ' + Object.entries(l).map(([k, v]) => k + ': ' + (Array.isArray(v) ? '[' + v.join(', ') + ']' : r4(v))).join(', ') + ' }';
 function fmt(lv){ let s = '    { map: [' + lv.map.map(r => JSON.stringify(r)).join(', ') + '],\n      lamps: [' + lv.lamps.map(lampS).join(', ') + ']';
   if(lv.ropes) s += ', ropes: ' + JSON.stringify(lv.ropes); if(lv.cables) s += ', cables: ' + JSON.stringify(lv.cables); if(lv.cat) s += ', cat: ' + JSON.stringify(lv.cat); return s + ' }'; }
-function verify(lv, name){ const P = L.parse(lv), dyn = S.isDyn(P); let ok, info;
-  if(dyn){ const b = S.solveDyn(lv, { maxT: 900 }), ns = S.solveDyn(Object.assign({}, lv, { cat: null }), { noShadow: !P.cat, LIM: 40, maxT: 800 }); ok = b.ok && !ns.ok; info = 'laikinis: su atsarga ' + (b.ok ? b.t.toFixed(1) + ' s' : 'NE') + ', be šešėlių/katino ' + (ns.ok ? 'ĮVEIKIAMAS' : 'ne'); }
-  else { const acts = P.boxes.length + P.cheese.length + P.ropes.length + P.cables.length, ns = S.solveStatic(lv, { noAct: true, noShadow: true, LIM: 40 }), na = acts ? S.solveStatic(lv, { noAct: true, LIM: 40 }) : { ok: false }, r = S.solveStatic(lv, { maxStates: 4000 }); ok = r.ok && !ns.ok && !na.ok; info = 'statinis: ' + (r.ok ? 'veiksmų ' + r.depth : 'NE') + ', be šešėlių ' + (ns.ok ? 'ĮVEIKIAMAS' : 'ne') + (acts ? ', be veiksmų ' + (na.ok ? 'ĮVEIKIAMAS' : 'ne') : ''); }
+/* griežta patikra: įveikiamas su atsarga; palankiausiu vertinimu neįveikiamas be šešėlių, be katino ir be KIEKVIENO atskiro daikto (dėžės, sūrio, virvės, kabelio) */
+function verify(lv, name){ const P = L.parse(lv), dyn = S.isDyn(P); let ok, info; const safe = S.startSafe(lv);
+  if(dyn){ const b = S.solveDyn(lv, { maxT: 1400 }), ns = S.solveDyn(Object.assign({}, lv, { cat: null }), { noShadow: !P.cat, opt: true, maxT: 900 }); ok = b.ok && !ns.ok; info = 'laikinis: su atsarga ' + (b.ok ? b.t.toFixed(1) + ' s' : 'NE') + ', be šešėlių/katino ' + (ns.ok ? 'ĮVEIKIAMAS' : 'ne'); }
+  else { const items = [].concat(P.boxes.map((_, i) => ['push', i]), P.cheese.map((_, i) => ['cheese', i]), P.ropes.map((_, i) => ['rope', i]), P.cables.map((_, i) => ['cable', i]));
+    const ns = S.solveStatic(lv, { noAct: true, noShadow: true, opt: true }), r = S.solveStatic(lv, { maxStates: 4000 }), need = items.map(([t, i]) => { const q = S.solveStatic(lv, { opt: true, skip: a => a.type === t && a.i === i, maxStates: 4000 }); return q.ok || q.over ? t + i + ':NEBŪTINAS' : null; }).filter(Boolean);
+    ok = r.ok && !ns.ok && !need.length; info = 'statinis: ' + (r.ok ? 'veiksmų ' + r.depth : 'NE') + ', be šešėlių ' + (ns.ok ? 'ĮVEIKIAMAS' : 'ne') + (items.length ? ', daiktų ' + items.length + (need.length ? ' – ' + need.join(' ') : ' – visi būtini') : ''); }
+  if(!safe){ ok = false; info += ', PRADŽIA NESAUGI'; }
   console.log((ok ? 'OK  ' : 'BLOGAI ') + name + ' – ' + info + ' – tūbelių ' + P.tubes.length); return ok; }
 const floors = [['1', F1.map(get)], ['2', process.env.NOF2 ? [] : F2.map(get)], ['b', H]]; let all = true;
 for(const [id, rooms] of floors) rooms.forEach((lv, i) => { if(!verify(lv, id + '-' + (i + 1))) all = false; });

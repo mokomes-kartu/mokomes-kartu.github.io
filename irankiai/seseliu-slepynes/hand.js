@@ -55,7 +55,7 @@ module.exports = [
     ".........",
     "....M...."],
     lamps: [{ x: 0, z: -6, h: 3.2, a: 0, reach: 0.01, cone: 1.0 }], cables: [[7, 10, 0]] },
-  /* b-4 katinas */
+  /* b-4 katinas: mato priešais save; pelytė laukia už dėžės, kol jis apsisuks, ir eina jo šešėlyje */
   { map: [
     "........T",
     ".........",
@@ -69,8 +69,8 @@ module.exports = [
     ".........",
     ".........",
     ".........",
-    "..T......",
     ".........",
-    "M........"],
-    lamps: [{ x: -4, z: 0, h: 2.8, a: 0, reach: 6, cone: 0.62 }], cat: { p: [[1, 5.5], [1, -5.5]], v: 1.4 } }
+    "....T..#.",
+    ".......#M"],
+    lamps: [{ x: -4, z: 0, h: 2.8, a: 0, reach: 6, cone: 0.62 }], cat: { p: [[1, -5.5], [1, 5.5]], v: 1.4, wait: 0.8, range: 6.5, fov: 0.7 } }
 ];

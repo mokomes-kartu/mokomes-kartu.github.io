@@ -1,0 +1,4 @@
+/* Kur per visą katino ciklą nė karto nepamatoma ir neapšviečiama: node gazemap.js <hand nr.> */
+const S = require('./solver.js'), L = S.L, H = require('./hand.js'), lv = H[+process.argv[2] - 1], P = L.parse(lv), w = L.world0(P), obs = L.obstacles(P, w);
+const rows = []; for(let z = -7.25; z <= 7.26; z += 0.5){ let s = ''; for(let x = -4.25; x <= 4.26; x += 0.25){ let ch = L.solid(obs, P.lamps, x, z, 0.01) ? '#' : ' '; if(ch === ' '){ let seen = false, lit = false; for(let t = 0; t < 20 && !seen; t += 0.1){ const c = L.catPos(P.cat, t); if(L.catSees(obs, P.cat, c, x, z)) seen = true; } lit = L.lit(obs, P.lamps, w.on, x, z, 0); ch = seen ? (lit ? '*' : 'o') : lit ? '.' : ' '; } if(Math.hypot(P.start[0] - x, P.start[1] - z) < 0.3) ch = 'M'; s += ch; } rows.push('|' + s + '|'); }
+console.log("o – kada nors mato katinas, . – šviesa, * – abu, tuščia – visada saugu\n" + rows.join('\n'));

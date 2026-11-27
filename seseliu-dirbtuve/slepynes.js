@@ -46,7 +46,11 @@ function drawRing(k){ const g = ringG; g.clearRect(0, 0, 64, 64); g.lineWidth = 
 function pose(){ if(!hcam) return; const asp = innerWidth / innerHeight, th = Math.tan(rad(23)), wide = asp > 1, d = Math.max((RW + 0.5) / (th * asp), (RL + 1.4) / th * (wide ? 1.04 : 0.93)), p = rad(64), z0 = wide ? 1.3 : 0.4; hcam.aspect = asp; hcam.position.set(0, d * Math.sin(p), d * Math.cos(p) + z0); hcam.lookAt(0, 0, z0); hcam.updateProjectionMatrix(); }
 
 /* ---------- kambario vaizdas ---------- */
-const CYL = ["#e8e2d4", "#2bb3a3", "#f7c948", "#e58fb1"];
+const CYL = ["#e8e2d4", "#2bb3a3", "#f7c948", "#e58fb1"], GAZE_N = 28;
+/* katino žvilgsnio vėduoklė ant grindų: kiekvienas spindulys sustoja ties kliūtimi */
+function drawGaze(c){ const cat = st.P.cat, R = cat.range || 6, F = cat.fov || 0.7, a0 = Math.atan2(c[3], c[2]), pos = st.gaze.geometry.attributes.position; st.gaze.visible = c[4]; if(!c[4]) return; pos.setXYZ(0, c[0], 0.035, c[1]);
+  for(let i = 0; i <= GAZE_N; i++){ const a = a0 - F + 2 * F * i / GAZE_N, dx = Math.cos(a), dz = Math.sin(a); let d = 0.5; while(d < R && !L.blocked(st.obs, c[0], L.CAT_EYE, c[1], c[0] + dx * (d + 0.25), c[1] + dz * (d + 0.25)) && Math.abs(c[0] + dx * (d + 0.25)) < RW && Math.abs(c[1] + dz * (d + 0.25)) < RL) d += 0.25; pos.setXYZ(i + 1, c[0] + dx * d, 0.035, c[1] + dz * d); }
+  pos.needsUpdate = true; }
 function solidMesh(o, par){
   const sh = m => { m.castShadow = m.receiveShadow = true; return m; };
   if(o[0] === "c"){ const k = o[5], col = k === "sack" ? "#c9a36b" : CYL[Math.floor(SD.hs(o[1] * 7.3 + o[2] * 3.7) * CYL.length)]; return sh(SD.mesh(new THREE.CylinderGeometry(o[3], o[3] * (k === "sack" ? 0.86 : 1.04), o[4], 24), SD.std(col), o[1], o[4] / 2, o[2], par)); }
@@ -76,7 +80,9 @@ function buildRoom(){
   st.tubeObjs = P.tubes.map(([x, z], i) => { const g = new THREE.Group(); SD.mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.5, 12), new THREE.MeshBasicMaterial({ color: [0xe5484d, 0x3b82f6, 0xf7c948][i % 3] }), 0, 0, 0, g); SD.mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.14, 10), new THREE.MeshBasicMaterial({ color: 0xffffff }), 0, 0.3, 0, g); g.position.set(x, 0.45, z); g.rotation.z = 0.5; room.add(g); return g; });
   st.cat = null; if(P.cat){ const g = new THREE.Group(), om = SD.std("#f5871f", { emissive: 0x4a2606 }), part = (geo, x, y, z, sx, sy, sz) => { const m = SD.mesh(geo, om, x, y, z, g); if(sx) m.scale.set(sx, sy, sz); m.castShadow = true; return m; };
     part(new THREE.SphereGeometry(0.45, 16, 12), 0, 0.5, -0.1, 0.95, 1.05, 1.35); part(new THREE.SphereGeometry(0.3, 14, 10), 0, 1.0, 0.42); part(new THREE.ConeGeometry(0.1, 0.2, 6), -0.16, 1.32, 0.42); part(new THREE.ConeGeometry(0.1, 0.2, 6), 0.16, 1.32, 0.42);
-    const tl = part(new THREE.CylinderGeometry(0.06, 0.04, 0.9, 6), 0, 0.75, -0.75); tl.rotation.x = -0.6; for(const sx of [-0.11, 0.11]) SD.mesh(new THREE.SphereGeometry(0.045, 8, 6), new THREE.MeshBasicMaterial({ color: 0xd8ff7a }), sx, 1.05, 0.69, g); room.add(g); st.cat = g; }
+    const tl = part(new THREE.CylinderGeometry(0.06, 0.04, 0.9, 6), 0, 0.75, -0.75); tl.rotation.x = -0.6; for(const sx of [-0.11, 0.11]) SD.mesh(new THREE.SphereGeometry(0.045, 8, 6), new THREE.MeshBasicMaterial({ color: 0xd8ff7a }), sx, 1.05, 0.69, g); room.add(g); st.cat = g;
+    const gz = new THREE.BufferGeometry(); gz.setAttribute("position", new THREE.BufferAttribute(new Float32Array((GAZE_N + 2) * 3), 3)); const ix = []; for(let i = 1; i <= GAZE_N; i++) ix.push(0, i + 1, i); gz.setIndex(ix);
+    st.gaze = new THREE.Mesh(gz, new THREE.MeshBasicMaterial({ color: 0xc8ff5a, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide })); st.gaze.frustumCulled = false; st.gaze.renderOrder = 2; room.add(st.gaze); }
   syncLamps();
 }
 function syncLamps(){ st.lampObjs.forEach((o, i) => { const on = st.w.on[i]; o.sl.intensity = on ? 4.2 : 0; o.cone.visible = on; o.bulb.material.color.set(on ? 0xfff6c9 : 0x565b6e); }); }
@@ -95,7 +101,7 @@ function startRoom(idx){
   st = { idx, R, P: L.parse(R.lv), fails: 0, over: false, t: 0, doneT: 0, msgT: 0, actKey: "?" }; reset(true); say(tipFor(R), "new"); st.msgT = 7; MK.sfx.whoosh();
 }
 function tipFor(R){ if(X.tips[R.id]) return X.tips[R.id]; const ls = R.lv.lamps; return ls.some(l => l.rot) ? X.kinds.rot : ls.some(l => l.hv) ? X.kinds.hv : ls.some(l => l.sw) ? X.kinds.sw : ls.length > 1 ? X.kinds.two : X.kinds.one; }
-function reset(first){ st.w = L.world0(st.P); st.obs = L.obstacles(st.P, st.w); st.x = st.P.start[0]; st.z = st.P.start[1]; st.face = Math.PI; st.meter = 0; st.safe = 1.2; st.got = 0; st.gn = null; st.doneT = 0; st.isLit = false; ring.visible = false; buildRoom(); hud(); if(!first) say(""); }
+function reset(first){ st.w = L.world0(st.P); st.obs = L.obstacles(st.P, st.w); st.x = st.P.start[0]; st.z = st.P.start[1]; st.face = Math.PI; st.meter = 0; st.safe = 0.2; st.got = 0; st.gn = null; st.doneT = 0; st.isLit = false; ring.visible = false; buildRoom(); hud(); if(!first) say(""); }
 function start(){ init(); pose(); showPicker(); }
 function stop(){ st = null; picking = false; keys.clear(); joy = null; if(joyEl){ joyEl.remove(); joyEl = null; } }
 function back(){ if(picking || !st) return false; $("ov").innerHTML = ""; showPicker(); return true; }
@@ -126,7 +132,7 @@ function frame(dt){
   st.mb.forEach((m, i) => { const b = st.w.boxes[i], k = Math.min(1, dt * 14); m.position.x += (cx(b[0]) - m.position.x) * k; m.position.z += (cz(b[1]) - m.position.z) * k; });
   for(const m of st.mc) if(m.userData.gone && m.visible){ m.userData.gone += dt * 5; const k = Math.max(0, 2 - m.userData.gone); m.scale.set(k, k, k); m.position.y = 0.85 * k; if(k <= 0) m.visible = false; }
   for(const s of st.ms) if(s.fall && s.y > 0){ s.v += dt * 30; s.y = Math.max(0, s.y - s.v * dt); s.g.position.y = s.y; if(s.y === 0){ s.sack.castShadow = true; MK.sfx.bad(); } }
-  let cat = null; if(P.cat){ cat = L.catPos(P.cat, t); st.cat.position.set(cat[0], Math.abs(Math.sin(t * 6)) * 0.05, cat[1]); st.cat.rotation.y = Math.atan2(cat[2], cat[3]); }
+  let cat = null; if(P.cat){ cat = L.catPos(P.cat, t); st.cat.position.set(cat[0], cat[4] ? Math.abs(Math.sin(t * 6)) * 0.05 : 0, cat[1]); st.cat.rotation.y = Math.atan2(cat[2], cat[3]); drawGaze(cat); }
   if(st.doneT > 0){ st.doneT -= dt; if(st.doneT <= 0) return win(); }
   else {
     let vx = (keys.has("R") ? 1 : 0) - (keys.has("L") ? 1 : 0), vz = (keys.has("D") ? 1 : 0) - (keys.has("U") ? 1 : 0); if(joy){ vx += joy.vx; vz += joy.vz; } const vl = Math.hypot(vx, vz);
@@ -136,9 +142,9 @@ function frame(dt){
     const a = L.action(P, st.w, st.x, st.z), ak = a ? (a.type === "push" ? "push" : "gnaw") : ""; if(ak !== st.actKey){ st.actKey = ak; const b = $("hAct"); b.disabled = !ak; b.firstChild.textContent = ak ? X.act[ak] : X.act.none; }
     if(st.gn){ if(!a || a.type !== st.gn.type || a.i !== st.gn.i){ st.gn = null; ring.visible = false; } else { const p = gnawSpot(st.gn); st.gn.t += dt; st.face = Math.atan2(p[0] - st.x, p[2] - st.z); st.hop = (st.hop || 0) + dt * 30; ring.position.set(p[0], p[1], p[2]); ring.visible = true; drawRing(Math.min(1, st.gn.t / L.T_GNAW)); if(st.gn.t >= L.T_GNAW){ st.gn = null; ring.visible = false; doAct(a); } } }
     /* šviesa ir katinas */
-    const isLit = st.safe > 0 ? false : L.lit(cat ? L.withCat(st.obs, P.cat, t) : st.obs, P.lamps, st.w.on, st.x, st.z, t); st.isLit = isLit; if(st.safe > 0) st.safe -= dt;
-    st.meter = Math.max(0, Math.min(1, st.meter + (isLit ? dt / L.T_SEE : -dt / L.T_HIDE)));
-    if(st.meter >= 1) fail(X.seen); else if(cat && st.safe <= 0 && Math.hypot(cat[0] - st.x, cat[1] - st.z) < L.CAT_TOUCH) fail(X.cat);
+    const lamp = st.safe > 0 ? false : L.lit(cat ? L.withCat(st.obs, P.cat, t) : st.obs, P.lamps, st.w.on, st.x, st.z, t), eyes = !!cat && st.safe <= 0 && L.catSees(st.obs, P.cat, cat, st.x, st.z); st.isLit = lamp || eyes; if(st.safe > 0) st.safe -= dt;
+    st.meter = Math.max(0, Math.min(1, st.meter + (eyes ? dt / L.T_CAT : lamp ? dt / L.T_SEE : -dt / L.T_HIDE)));
+    if(st.meter >= 1) fail(eyes ? X.catSaw : X.seen); else if(cat && st.safe <= 0 && Math.hypot(cat[0] - st.x, cat[1] - st.z) < L.CAT_TOUCH) fail(X.cat);
     else if(L.atDoor(st.x, st.z)){ st.doneT = 1.0; say(X.door, "good"); st.msgT = 1.2; MK.sfx.good(); }
   }
   const bar = $("hBar"); if(bar) bar.firstChild.style.width = st.meter * 100 + "%";

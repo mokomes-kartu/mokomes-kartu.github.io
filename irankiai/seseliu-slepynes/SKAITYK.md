@@ -8,3 +8,8 @@ Visos naudoja tą pačią logiką kaip žaidimas (`/seseliu-dirbtuve/slepynes-lo
 - `hand.js` + `check.js` – ranka sudėlioti kambariai (sūris, virvė, kabelis, katinas) ir jų tikrinimas.
 - `pick.js` – surenka pasirinktus kambarius iš `out2/` ir `hand.js`, visus dar kartą patikrina; su `WRITE=1` įrašo `slepynes-kambariai.js`.
 - `plans.js` + `bot.js` – sprendimo keliai ir botas, kuris kambarius pereina naršyklėje tikru klaviatūros valdymu (reikia `python3 -m http.server 8201` svetainės šaknyje).
+
+## Kaip tikrinama (nuo 2026-11-27)
+- Ar įveikiamas – vertinama atsargiai (šešėlio kraštai laikomi apšviestais, juosta iki ~65 %).
+- Ar NEįveikiamas kitaip – vertinama palankiausiai žaidėjui (`opt`): visa juosta, be atsargų. Taip tikrinama: be šešėlių, be katino ir be kiekvieno atskiro daikto (kiekvienos dėžės, sūrio, virvės, kabelio) kambarys turi būti neįveikiamas.
+- `gazemap.js <nr.>` – parodo, kur katinas kada nors mato (slėptuvėms dėlioti).
