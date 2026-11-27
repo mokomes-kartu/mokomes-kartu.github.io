@@ -18,3 +18,5 @@ Visos naudoja tą pačią logiką kaip žaidimas (`/seseliu-dirbtuve/slepynes-lo
 - `hand3.js` – ranka sudėlioti 3 aukšto kambariai; tikrinami `node check.js <nr.> 3`. `w.js` – žemėlapis ir pasiekiamumas pasirinktoje kambario būsenoje.
 - Tikrintuvas moka: jungiklius (akimirksniu), grindų mygtukus (lempa nedega, kol ant mygtuko dėžė ar pati pelytė), groteles (dėžės neužstumiamos), jungiklį su laikmačiu (`reachT` – „langas“, kol lempa užgesusi).
 - Žybsinčios lempos (`blink`) logikoje yra, bet tikrintuvas jas vertina tik apytiksliai (`blinkLIM`) – patikimai tinka tik ilgiems kambariams; 9 × 15 kambaryje dėžė beveik niekada nebūna būtina.
+- `sok.js` – mažų dėžių galvosūkių paieška 3 eilučių arenoje (naudota 3-6 kambariui); `alt.js <rinkinys> <nr.> <tipas> <i>` – parodo, kaip kambarį galima įveikti be nurodyto veiksmo (kai tikrintuvas sako „nebūtinas“).
+- Dėžė kaip skydas: stumiant dėžę link lempos pelytė lieka jos šešėlyje. 3-8 kambaryje tai sprendimas; kitur, kad nesugadintų sumanymo, dėžės ribojamos grotelėmis ar tuneliais.
