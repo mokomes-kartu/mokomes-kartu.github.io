@@ -85,7 +85,9 @@ window.MK_T = {
       "b-1": "Sūrį galima pragraužti: prieik prie jo ir spausk „Graužti“.", "b-2": "Virvė laiko pakabintą maišą. Ją galima nugraužti prie kuoliuko.", "b-3": "Kabelį galima nugraužti ten, kur raudonas kištukas.", "b-4": "Katinas mato, kas priešais jį (žalsvas žvilgsnis). Prisilietus – pagauna." },
     seen: "Lempa pastebėjo! Kambarys prasideda iš naujo.", cat: "Katinas pagavo! Kambarys prasideda iš naujo.", catSaw: "Katinas pamatė! Kambarys prasideda iš naujo.", stuck: "Į tą pusę dėžė nepasistumia.", tube: "Dažų tūbelė!", door: "Pavyko!", next: "Kitas kambarys", rooms: "Kambarių sąrašas",
     /* pinigėliai, namelis, parduotuvė */
-    nm: { out: "Lauke", in: "Viduje", wear: "Rūbai", shop: "Parduotuvė", back: "← Kambariai", title: "Parduotuvė", coins: "Pinigėliai", have: "✓ Turiu", on: "✓ Dėviu", put: "Apsirengti", how: "Pinigėlių gausi už įveiktus kambarius, žvaigždutes ir dažų tūbeles." },
+    nm: { play: "Žaisti", goIn: "Į vidų", goOut: "Į lauką", shop: "Parduotuvė", wear: "Rūbai", home: "← Namelis", close: "Uždaryti", coins: "Pinigėliai", have: "✓ Turiu", on: "✓ Dėviu", put: "Apsirengti",
+      shopT: { l: "Parduotuvė: kiemui", v: "Parduotuvė: kambariui" }, wearT: "Rūbai", look: "Paliesk daiktą – pamatysi, kaip jis atrodys. Patiko? Pirk.", lookW: "Paliesk rūbą – herojus jį pasimatuos.",
+      buy: n => `Pirkti už ${n}`, poor: n => `Trūksta ${n}` },
     /* herojus: peliukas arba pelytė */
     hero: { title: "Pasirink herojų", sub: "Vėliau herojų galėsi pakeisti parduotuvėje, skiltyje „Rūbai“.", b: "Peliukas", g: "Pelytė", change: "Keisti herojų" },
     who: { b: { acc: "peliuką" }, g: { acc: "pelytę" } },
@@ -95,7 +97,8 @@ window.MK_T = {
       b0: "Raudoni sportbačiai", b1: "Mėlyni sportbačiai", b2: "Geltoni sportbačiai", b3: "Žali sportbačiai", b4: "Violetiniai sportbačiai", b5: "Balti sportbačiai",
       k0: "Be šaliko", k1: "Raudonas šalikas", k2: "Geltonas šalikas", k3: "Mėlynas šalikas", k4: "Žalias šalikas",
       h0: "Raudona beretė", h1: "Mėlyna beretė", h2: "Mėlyna kepurė su snapeliu", h3: "Geltona kepurė su snapeliu", h4: "Žalia megzta kepurė", h5: "Rožinė megzta kepurė" },
-    items: { kilimelis: "Kilimėlis prie durų", vazonas: "Gėlės antpirštyje", pastas: "Pašto dėžutė", suoliukas: "Suoliukas", zibintas: "Žibintas", tvorele: "Degtukų tvorelė", girlianda: "Lempučių girlianda", masina: "Peliamobilis",
+    items: { takelis: "Sagų takelis", lysve: "Gėlių lysvė", medis: "Medelis vazone", supynes: "Sūpynės iš pieštukų", baseinas: "Baseinas iš skardinės", augalas: "Kambarinė gėlė", uzuolaidos: "Užuolaidos", laikrodis: "Sieninis laikrodis", komoda: "Komoda", akvariumas: "Akvariumas", televizorius: "Televizorius", saldytuvas: "Šaldytuvas",
+      kilimelis: "Kilimėlis prie durų", vazonas: "Gėlės antpirštyje", pastas: "Pašto dėžutė", suoliukas: "Suoliukas", zibintas: "Žibintas", tvorele: "Degtukų tvorelė", girlianda: "Lempučių girlianda", masina: "Peliamobilis",
       lova: "Lova iš degtukų dėžutės", kilimas: "Apvalus kilimas", stalas: "Stalas iš siūlų ritės", lentyna: "Knygų lentyna", paveikslas: "Paveikslas", lempa: "Toršeras", fotelis: "Fotelis", molbertas: "Molbertas" },
     tubeCoin: v => `Dažų tūbelė! +${v}`, tubeEmpty: "Tuščia tūbelė – dažų joje vėl bus po valandos.",
     earn: (e, cn) => `Uždirbta: <b>+${e.total}</b> ${cn}` + ((e.bonus || e.tubes) ? ` <small>(${[e.room ? "kambarys " + e.room : "", e.bonus ? "aukšto premija " + e.bonus : "", e.tubes ? "tūbelės " + e.tubes : ""].filter(Boolean).join(", ")})</small>` : ""),

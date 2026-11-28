@@ -6,7 +6,7 @@ const PELE = window.MK_PELE, MS = 1.35;
 /* pinigėliai ir namelis (namelis.js): saugoma – papildomos pajamos (tūbelės), išlaidos, turimi daiktai, tūbelių surinkimo laikai */
 const NM = window.MK_NAMAS, NKEY = "mk-seseliu-dirbtuve-namas", FL = K.floors.map(f => ({ id: f.id, n: f.rooms.length }));
 const nst = () => Object.assign({ extra: 0, spent: 0, own: [], tb: {}, view: "l" }, MK.get(NKEY, {})), nsave = S => MK.set(NKEY, S), coins = () => NM.balance(FL, prog(), nst()), CN = '<i class="cn"></i>';
-const ICOL = { kilimelis: "#e5484d", vazonas: "#ff7eb6", pastas: "#e5484d", suoliukas: "#c58a4e", zibintas: "#ffe9a8", tvorele: "#f4f1ea", girlianda: "#4dd0e1", masina: "#3b82e6", lova: "#3b82e6", kilimas: "#ffd23f", stalas: "#e86a92", lentyna: "#8a5a34", paveikslas: "#8fd3ff", lempa: "#ffe2a0", fotelis: "#8b5cf6", molbertas: "#c58a4e" };
+const ICOL = { kilimelis: "#e5484d", vazonas: "#ff7eb6", pastas: "#e5484d", suoliukas: "#c58a4e", zibintas: "#ffe9a8", tvorele: "#f4f1ea", girlianda: "#4dd0e1", masina: "#3b82e6", lova: "#3b82e6", kilimas: "#ffd23f", stalas: "#e86a92", lentyna: "#8a5a34", paveikslas: "#8fd3ff", lempa: "#ffe2a0", fotelis: "#8b5cf6", molbertas: "#c58a4e", takelis: "#3b82e6", lysve: "#ff7eb6", medis: "#4caf50", supynes: "#ffd23f", baseinas: "#49c6f0", augalas: "#4caf50", uzuolaidos: "#ff8fa3", laikrodis: "#f4f1ea", komoda: "#c58a4e", akvariumas: "#9fe3ff", televizorius: "#2b2f3a", saldytuvas: "#f4f1ea" };
 const { RW, RL, MR, SPEED, cx, cz } = L, CKEY = "mk-seseliu-dirbtuve-kelione", GAME = "seseliu-dirbtuve";
 const ROOMS = []; K.floors.forEach((f, fi) => f.rooms.forEach((lv, ri) => ROOMS.push({ lv, fi, ri, id: f.id + "-" + (ri + 1) })));
 const prog = () => MK.get(CKEY, {}).rooms || {};
@@ -14,7 +14,7 @@ function saveRoom(id, stars){ const C = Object.assign({ seen: [] }, MK.get(CKEY,
   const done = ROOMS.filter(r => C.rooms[r.id]).length, all3 = ROOMS.every(r => C.rooms[r.id] === 3), s = all3 ? 3 : done >= ROOMS.length ? 2 : done >= 5 ? 1 : 0; if(s) MK.best(GAME, "slepynes", s); }
 const open = (R, P) => R.ri === 0 || !!P[ROOMS[ROOMS.indexOf(R) - 1].id];
 
-let st = null, hs, hcam, ds, dcam, dmouse, dance = null, nm = null, shopOpen = false, shopTab = "l", heroKey = "", room, mouse, bang, glow, ring, ringG, tx, ready = false, picking = false, keys = new Set(), joy = null, joyEl = null;
+let st = null, hs, hcam, ds, dcam, dmouse, dance = null, heroKey = "", room, mouse, bang, glow, ring, ringG, tx, ready = false, picking = false, keys = new Set(), joy = null, joyEl = null;
 function init(){
   if(ready) return; ready = true;
   hs = new THREE.Scene(); hs.background = new THREE.Color("#141829"); hs.add(new THREE.HemisphereLight(0x9fb4ff, 0x20243a, 0.62));
@@ -57,50 +57,82 @@ const who = () => nst().hero || "b", wipe = g => g.traverse(o => { if(o.geometry
 function mkHero(S, w){ return PELE.make(THREE, NM.outfit(S, w)); }
 function dress(){ const S = nst(), w = S.hero || "b", key = w + JSON.stringify(S.wear || {}); if(key === heroKey) return; heroKey = key;
   for(const [old, sc, k] of [[mouse, hs, MS], [dmouse, ds, 1]]){ const vis = old.visible; sc.remove(old); wipe(old); const m = mkHero(S, w); m.scale.setScalar(k); m.visible = vis; sc.add(m); if(sc === hs) mouse = m; else dmouse = m; } }
-/* namelio vaizdas: viena nuolatinė drobė, perkeliama į kambarių, parduotuvės ar herojaus pasirinkimo ekraną.
-   Rodinys: l – namelis lauke, v – viduje, r – herojus iš arti (rūbų skiltis), h – abu herojai (pasirinkimas) */
-function nmInit(){
-  if(nm) return nm; const cv = document.createElement("canvas"); cv.className = "nmcv"; let r = null; try { r = new THREE.WebGLRenderer({ canvas: cv, antialias: true }); } catch(e){ return (nm = { cv: null }); }
-  r.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); r.outputColorSpace = THREE.SRGBColorSpace; r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
-  const sc = new THREE.Scene(); sc.add(new THREE.HemisphereLight(0xdfe6ff, 0x30283a, 1.1)); const d = new THREE.DirectionalLight(0xfff0d0, 2.0); d.position.set(2.5, 5, 4); d.castShadow = true; d.shadow.mapSize.set(1024, 1024); Object.assign(d.shadow.camera, { left: -6, right: 6, top: 4, bottom: -4 }); sc.add(d);
-  const gr = SD.mesh(new THREE.PlaneGeometry(40, 40), SD.std("#7a6248"), 0, 0, 0); gr.rotation.x = -Math.PI / 2; gr.receiveShadow = true; sc.add(gr);
-  return (nm = { cv, r, sc, gr, cam: new THREE.PerspectiveCamera(30, 1.6, 0.1, 100), g: null, heroes: [], mode: "l", key: "", w: 0, t: 0 });
+/* ---------- namelis per visą ekraną (pagrindinė drobė) ----------
+   hv.place: l – kiemas, v – kambarys; hv.mode: home | shop | wear | rooms | hero; hv.prev – peržiūrimas (dar nenupirktas) daiktas ar rūbas */
+let home = null; const hv = { place: "l", mode: "home", prev: null };
+function homeInit(){
+  if(home) return; const sc = new THREE.Scene(); sc.background = new THREE.Color("#1a1f33"); sc.add(new THREE.HemisphereLight(0xdfe6ff, 0x30283a, 1.05)); const d = new THREE.DirectionalLight(0xfff0d0, 1.9); d.position.set(3, 7, 6); d.castShadow = true; d.shadow.mapSize.set(2048, 2048); Object.assign(d.shadow.camera, { left: -5, right: 5, top: 6, bottom: -4, far: 30 }); sc.add(d);
+  const mark = SD.mesh(new THREE.ConeGeometry(0.16, 0.34, 4), new THREE.MeshBasicMaterial({ color: 0xffd23f }), 0, 0, 0); mark.rotation.x = Math.PI; mark.visible = false; sc.add(mark);
+  const fade = document.createElement("div"); fade.id = "nfade"; $("mh").parentNode.appendChild(fade);
+  home = { sc, cam: new THREE.PerspectiveCamera(32, 1, 0.1, 200), root: null, heroes: [], key: "", t: 0, mark, markY: 0, box: null, pitch: [0.4, 0.4], tr: null, fade }; hv.place = nst().view === "v" ? "v" : "l";
 }
-function nmSync(){
-  if(!nm || !nm.cv) return; const S = nst(), m = nm.mode, w = S.hero || "b", house = m === "l" || m === "v", key = m + "|" + w + JSON.stringify(S.wear || {}) + (house ? S.own.join() : "");
-  if(key !== nm.key){ nm.key = key; if(nm.g){ nm.sc.remove(nm.g); wipe(nm.g); } const g = nm.g = new THREE.Group(); nm.sc.add(g); nm.heroes = [];
-    const put = (hw, x, z, ry, k) => { const h = mkHero(S, hw); h.position.set(x, 0, z); h.rotation.y = ry; h.scale.setScalar(k); g.add(h); nm.heroes.push(h); }, ins = m === "v", bg = ins ? "#2a2233" : house ? "#1a1f33" : "#232a4a";
-    nm.sc.background = new THREE.Color(bg); nm.gr.material.color.set(ins ? "#2a2233" : house ? "#7a6248" : "#3d3570"); nm.gr.position.y = ins ? -0.11 : 0;
-    if(house){ g.add(NM.build(THREE, new Set(S.own), ins)); put(w, ins ? 0.85 : 1.95, ins ? 1.9 : 1.3, -0.3, 0.75); if(ins){ nm.cam.position.set(0, 2.4, 8.3); nm.cam.lookAt(0, 0.9, 0.6); } else { nm.cam.position.set(0.35, 1.75, 6.6); nm.cam.lookAt(0.35, 0.8, 0); } }
-    else if(m === "r"){ put(w, 0, 0, 0, 1); nm.cam.position.set(0, 0.9, 2.75); nm.cam.lookAt(0, 0.62, 0); }
-    else { put("b", -0.55, 0, 0.25, 1); put("g", 0.55, 0, -0.25, 1); nm.cam.position.set(0, 0.9, 2.95); nm.cam.lookAt(0, 0.62, 0); } }
-  const cw = nm.cv.clientWidth; if(cw && cw !== nm.w){ nm.w = cw; nm.r.setSize(cw, Math.round(cw / 1.6), false); }
+/* scenos turinys pagal būseną: daiktai (su peržiūrimu), herojus su rūbais (su peržiūrimu), rodyklė virš peržiūrimo daikto */
+function homeSync(){
+  const S = nst(), w = S.hero || "b", m = hv.mode, pvW = m === "wear" && hv.prev ? NM.wearOf(hv.prev) : null, S2 = pvW ? Object.assign({}, S, { wear: Object.assign({}, S.wear, { [w]: Object.assign({}, (S.wear || {})[w], { [pvW[1]]: pvW[0] }) }) }) : S;
+  const own = new Set(S.own); if(m === "shop" && hv.prev) own.add(hv.prev); const key = [m === "hero" ? "h" : hv.place, [...own].join(), w, JSON.stringify(S2.wear || {})].join("|");
+  if(key !== home.key){ home.key = key; if(home.root){ home.sc.remove(home.root); wipe(home.root); } home.heroes = [];
+    const put = (hw, x, z, ry, k) => { const h = mkHero(S2, hw); h.position.set(x, 0, z); h.rotation.y = ry; h.scale.setScalar(k); home.root.add(h); home.heroes.push(h); h.userData.home = [x, z, ry]; };
+    if(m === "hero"){ home.root = new THREE.Group(); const st2 = SD.mesh(new THREE.CircleGeometry(2.2, 48), SD.std("#3d3570"), 0, 0, 0); st2.rotation.x = -Math.PI / 2; st2.receiveShadow = true; home.root.add(st2); put("b", -0.55, 0, 0.25, 1); put("g", 0.55, 0, -0.25, 1); home.root.userData = { box: [-1.15, 0, -0.4, 1.15, 1.3, 0.4] }; home.sc.background.set("#232a4a"); }
+    else { home.root = NM.build(THREE, hv.place, own); const sp = home.root.userData.spot; put(w, sp[0], sp[1], sp[2], 0.8); home.sc.background.set(hv.place === "v" ? "#16121f" : "#1a1f33"); }
+    home.sc.add(home.root); }
+  const pv = m === "shop" && hv.prev ? home.root.getObjectByName(hv.prev) : null; home.mark.visible = !!pv; if(pv){ const bx = new THREE.Box3().setFromObject(pv), c = bx.getCenter(new THREE.Vector3()); home.mark.position.set(c.x, bx.max.y + 0.4, c.z); home.markY = bx.max.y + 0.4; }
+  const h0 = home.heroes[0]; home.box = m === "wear" ? [h0.position.x - 0.6, 0, h0.position.z - 0.4, h0.position.x + 0.6, 1.05, h0.position.z + 0.4] : home.root.userData.box; home.pitch = m === "hero" || m === "wear" ? [0.16, 0.16] : hv.place === "v" ? [0.5, 1.0] : [0.36, 0.8];
+  homeFit();
 }
-function nmFrame(dt){ if(!nm || !nm.cv || !nm.cv.isConnected) return; nm.t += dt; nmSync(); nm.heroes.forEach((h, i) => PELE.animate(h, "idle", nm.t + i * 1.7)); if(nm.mode === "r") nm.heroes[0].rotation.y = Math.sin(nm.t * 0.8) * 0.7; nm.r.render(nm.sc, nm.cam); }
-function nmMount(mode){ nmInit(); nm.mode = mode; if(nm.cv) $("nmc").appendChild(nm.cv); else $("nmc").remove(); nmSync(); }
-/* namelio kortelė: vaizdas, pinigėliai ir mygtukų eilė */
-function nmCard(btns){ return `<div class="nm"><div class="nmc" id="nmc"></div><span class="coin" title="${X.nm.coins}">${CN}<b>${coins()}</b></span><div class="nmt">${btns}</div></div>`; }
-const tabB = (v, on, t) => `<button type="button" data-v="${v}"${on ? ' class="on"' : ""}>${t}</button>`;
+/* kamera: visa scena (ar herojus) telpa laisvoje ekrano dalyje – tarp viršutinės juostos ir apatinio skydelio */
+function homeFit(){
+  if(!home || !home.box) return; const W = innerWidth, H = innerHeight, bot = $("hmB"), top = 58, bh = bot ? bot.offsetHeight + 8 : 0, free = Math.max(120, H - top - bh), cam = home.cam, B = home.box, tg = new THREE.Vector3((B[0] + B[3]) / 2, (B[1] + B[4]) / 2, (B[2] + B[5]) / 2), dir = new THREE.Vector3(), v = new THREE.Vector3();
+  cam.aspect = W / H; cam.clearViewOffset(); cam.updateProjectionMatrix(); let cy = 0, mx = 0, vf = 0;
+  const test = d => { cam.position.copy(tg).addScaledVector(dir, d); cam.lookAt(tg); cam.updateMatrixWorld(); let y0 = 9, y1 = -9; mx = 0; for(let k = 0; k < 8; k++){ v.set(B[k & 1 ? 3 : 0], B[k & 2 ? 4 : 1], B[k & 4 ? 5 : 2]).project(cam); mx = Math.max(mx, Math.abs(v.x)); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); } cy = (y0 + y1) / 2; vf = (y1 - y0) / (2 * free / H * 0.94); return mx <= 0.95 && vf <= 1; };
+  const fit = p => { dir.set(0, Math.sin(p), Math.cos(p)); let lo = 2, hi = 120; for(let k = 0; k < 18; k++){ const mid = (lo + hi) / 2; if(test(mid)) hi = mid; else lo = mid; } test(hi); return hi; };
+  /* žiūrėjimo kampas parenkamas taip, kad scena kuo geriau užpildytų laisvą plotą: aukštame (telefono) ekrane žiūrima labiau iš viršaus */
+  let best = home.pitch[0], score = -1; for(let p = home.pitch[0]; p <= home.pitch[1] + 1e-6; p += 0.05){ fit(p); const sc = mx + Math.min(1, vf); if(sc > score + 0.01){ score = sc; best = p; } } fit(best);
+  const want = 1 - 2 * (top + free / 2) / H; cam.setViewOffset(W, H, 0, Math.round((want - cy) / 2 * H), W, H); cam.updateProjectionMatrix();
+}
+function homeFrame(dt){
+  if(!home || !home.root) return; home.t += dt; const t = home.t, h = home.heroes[0], tr = home.tr; home.heroes.forEach((q, i) => { if(!(tr && i === 0)) PELE.animate(q, "idle", t + i * 1.7); });
+  if(hv.mode === "wear" && !tr) h.rotation.y = h.userData.home[2] + Math.sin(t * 0.8) * 0.7; if(home.mark.visible){ home.mark.position.y = home.markY + Math.abs(Math.sin(t * 5)) * 0.18; home.mark.rotation.y = t * 3; }
+  /* įėjimas ar išėjimas: herojus nubėga prie durų, ekranas pritemsta, kita vieta, herojus ateina į savo vietą */
+  if(tr){ tr.t += dt; const T1 = 0.75, T2 = 0.7, mv = (a, b, k) => { h.position.x = a[0] + (b[0] - a[0]) * k; h.position.z = a[1] + (b[1] - a[1]) * k; h.rotation.y = Math.atan2(b[0] - a[0], b[1] - a[1]); PELE.animate(h, "run", t); };
+    if(tr.ph === 0){ const k = Math.min(1, tr.t / T1); mv(tr.from, tr.door, k); home.fade.style.opacity = Math.max(0, (tr.t - T1 * 0.5) / (T1 * 0.5)); if(k >= 1){ hv.place = tr.to; setView(tr.to); tr.ph = 1; tr.t = 0; homeSync(); const q = home.heroes[0], d2 = home.root.userData.door; tr.from = [d2[0], d2[1]]; tr.door = [q.userData.home[0], q.userData.home[1]]; q.position.set(d2[0], 0, d2[1]); showHome(true); } }
+    else { const k = Math.min(1, tr.t / T2); mv(tr.from, tr.door, k); home.fade.style.opacity = Math.max(0, 1 - tr.t / (T2 * 0.6)); if(k >= 1){ h.rotation.y = h.userData.home[2]; home.fade.style.opacity = 0; home.tr = null; } } }
+}
+function homeGo(){ if(home.tr) return; const h = home.heroes[0], d = home.root.userData.door; home.tr = { ph: 0, t: 0, to: hv.place === "l" ? "v" : "l", from: [h.position.x, h.position.z], door: [d[0], d[1]] }; MK.sfx.whoosh(); }
+const coinP = () => `<span class="coin" title="${X.nm.coins}">${CN}<b>${coins()}</b></span>`;
 function setView(v){ const S = nst(); S.view = v; nsave(S); }
-/* laukiamasis: kambarių sąrašas, parduotuvė ar herojaus pasirinkimas – kambario nėra, herojus scenoje nerodomas */
-function lobby(){ stopDance(); picking = true; st = null; keys.clear(); joy = null; if(room){ hs.remove(room); room = null; } mouse.visible = glow.visible = bang.visible = ring.visible = false; }
-function showHero(){
-  lobby(); $("mh").innerHTML = `<div class="rooms"><h3>${X.hero.title}</h3><p>${X.hero.sub}</p><div class="nm"><div class="nmc" id="nmc"></div><div class="nmt two"><button type="button" class="nms" data-h="b">${X.hero.b}</button><button type="button" class="nms" data-h="g">${X.hero.g}</button></div></div></div>`;
-  nmMount("h"); $("mh").firstChild.onclick = e => { const b = e.target.closest("[data-h]"); if(!b) return; MK.sfx.star(2); const S = nst(); S.hero = b.dataset.h; nsave(S); dress(); showPicker(); };
+/* laukiamasis: namelis, parduotuvė, rūbai, kambarių sąrašas ar herojaus pasirinkimas – kambario nėra */
+function lobby(){ stopDance(); homeInit(); picking = true; st = null; keys.clear(); joy = null; if(room){ hs.remove(room); room = null; } mouse.visible = glow.visible = bang.visible = ring.visible = false; }
+function homeUI(mode, html, click){ hv.mode = mode; const old = document.querySelector("#mh .sheet .shop"), y = old && homeUI.keep ? old.scrollTop : 0; homeUI.keep = false; $("mh").innerHTML = `<div class="hm">${html}</div>`; const nw = document.querySelector("#mh .sheet .shop"); if(nw) nw.scrollTop = y; homeSync(); $("mh").firstChild.onclick = e => { if(home.tr) return; click(e); }; }
+function showHome(keepTr){
+  lobby(); hv.prev = null; if(!keepTr){ home.tr = null; home.fade.style.opacity = 0; }
+  homeUI("home", `${coinP()}<div class="hbar" id="hmB"><button type="button" class="play" data-a="play">${X.nm.play}</button><button type="button" data-a="go">${hv.place === "l" ? X.nm.goIn : X.nm.goOut}</button><button type="button" data-a="shop">${X.nm.shop}</button><button type="button" data-a="wear">${X.nm.wear}</button></div>`,
+    e => { const b = e.target.closest("[data-a]"); if(!b) return; const a = b.dataset.a; if(a === "go") return homeGo(); MK.sfx.tap(); if(a === "play") showPicker(); else if(a === "shop") showShop(); else showWear(); });
 }
-function showShop(tab){
-  lobby(); shopOpen = true; if(tab) shopTab = tab; const S = nst(), bal = coins(), w = S.hero || "b", t = shopTab; if(t !== "r" && S.view !== t) setView(t);
-  const row = (id, pr, name, col, own, on) => `<div class="it${own ? " own" : pr > bal ? " poor" : ""}"><i class="ic" style="background:${col}"></i><b>${name}</b>${on ? `<span class="ok">${X.nm.on}</span>` : own ? (t === "r" ? `<button type="button" class="alt" data-wear="${id}">${X.nm.put}</button>` : `<span class="ok">${X.nm.have}</span>`) : `<button type="button" data-${t === "r" ? "wear" : "buy"}="${id}"${pr > bal ? " disabled" : ""}>${pr} ${CN}</button>`}</div>`;
-  const list = t === "r" ? NM.SLOTS.map(slot => `<h5>${typeof X.slots[slot] === "string" ? X.slots[slot] : X.slots[slot][w]}</h5>` + NM.WEAR.filter(q => q[1] === slot && (q[3] === "*" || q[3] === w)).map(q => row(q[0], q[2], X.wear[q[0]], q[4].shirt || q[4].shoe || q[4].hatC || q[4].scarf || "#fff", NM.hasWear(S, w, q[0]), NM.worn(S, w, slot) === q[0])).join("")).join("") + `<button type="button" class="chg" data-hero>${X.hero.change}</button>`
-    : NM.ITEMS.filter(q => q[2] === t).map(([id, pr]) => row(id, pr, X.items[id], ICOL[id] || "#ccc", S.own.includes(id), false)).join("");
-  $("mh").innerHTML = `<div class="rooms">${nmCard(tabB("l", t === "l", X.nm.out) + tabB("v", t === "v", X.nm.in) + tabB("r", t === "r", X.nm.wear) + `<button type="button" class="nms" data-back>${X.nm.back}</button>`)}<h3>${X.nm.title}</h3><p>${X.nm.how}</p><div class="shop">${list}</div></div>`;
-  const sc = $("mh").firstChild, keep = showShop.y || 0; nmMount(t); sc.scrollTop = keep; showShop.y = 0;
-  sc.onclick = e => { const v = e.target.closest("[data-v]"), b = e.target.closest("[data-buy]"), wr = e.target.closest("[data-wear]"); if(e.target.closest("[data-back]")){ MK.sfx.tap(); showPicker(); } else if(e.target.closest("[data-hero]")){ MK.sfx.tap(); showHero(); } else if(v){ MK.sfx.tap(); showShop(v.dataset.v); }
-    else if(b && !b.disabled){ const id = b.dataset.buy, S2 = nst(), pr = NM.price(id); if(S2.own.includes(id) || pr > coins()) return; S2.own.push(id); S2.spent += pr; nsave(S2); MK.sfx.star(3); if(MK.confetti) MK.confetti(24); showShop.y = sc.scrollTop; showShop(); }
-    else if(wr && !wr.disabled){ const id = wr.dataset.wear, S2 = nst(), q = NM.wearOf(id); if(!q) return; if(!NM.hasWear(S2, w, id)){ if(q[2] > coins()) return; S2.own.push(id); S2.spent += q[2]; MK.sfx.star(3); if(MK.confetti) MK.confetti(24); } else MK.sfx.tap(); S2.wear = S2.wear || {}; (S2.wear[w] = S2.wear[w] || {})[q[1]] = id; nsave(S2); dress(); showShop.y = sc.scrollTop; showShop(); } };
+const sheet = (title, hint, list) => `${coinP()}<div class="sheet" id="hmB"><div class="shd"><b>${title}</b><button type="button" data-close aria-label="${X.nm.close}">✕</button></div><p>${hint}</p><div class="shop">${list}</div></div>`;
+/* eilutė: turimas – žymė; pasirinktas peržiūrai – mygtukas „Pirkti“; kitaip – kaina (palietus eilutę daiktas parodomas) */
+const rowH = (id, pr, name, col, state, bal) => `<div class="it${state === "sel" ? " sel" : ""}${state === "on" || state === "own" ? " own" : ""}" data-id="${id}"><i class="ic" style="background:${col}"></i><b>${name}</b>${state === "on" ? `<span class="ok">${X.nm.on}</span>` : state === "own" ? `<span class="ok">${X.nm.have}</span>` : state === "put" ? `<span class="tag">${X.nm.put}</span>` : state === "sel" ? `<button type="button" data-buy="${id}"${pr > bal ? " disabled" : ""}>${pr > bal ? X.nm.poor(pr - bal) : X.nm.buy(pr)} ${CN}</button>` : `<span class="pr">${pr} ${CN}</span>`}</div>`;
+function buy(id, pr, S){ if(pr > coins()) return false; S.own.push(id); S.spent += pr; MK.sfx.star(3); if(MK.confetti) MK.confetti(24); return true; }
+function showShop(){
+  lobby(); const S = nst(), bal = coins();
+  homeUI("shop", sheet(X.nm.shopT[hv.place], X.nm.look, NM.ITEMS.filter(q => q[2] === hv.place).map(([id, pr]) => rowH(id, pr, X.items[id], ICOL[id] || "#ccc", S.own.includes(id) ? "own" : hv.prev === id ? "sel" : "", bal)).join("")),
+    e => { const b = e.target.closest("[data-buy]"), r = e.target.closest("[data-id]"); homeUI.keep = true; if(e.target.closest("[data-close]")){ MK.sfx.tap(); showHome(); }
+      else if(b){ if(b.disabled) return; const S2 = nst(), id = b.dataset.buy; if(!S2.own.includes(id) && buy(id, NM.price(id), S2)){ nsave(S2); hv.prev = null; showShop(); } }
+      else if(r && !nst().own.includes(r.dataset.id)){ MK.sfx.tap(); hv.prev = hv.prev === r.dataset.id ? null : r.dataset.id; showShop(); } });
+}
+function showWear(){
+  lobby(); const S = nst(), bal = coins(), w = S.hero || "b";
+  const list = NM.SLOTS.map(slot => `<h5>${typeof X.slots[slot] === "string" ? X.slots[slot] : X.slots[slot][w]}</h5>` + NM.WEAR.filter(q => q[1] === slot && (q[3] === "*" || q[3] === w)).map(q => rowH(q[0], q[2], X.wear[q[0]], q[4].shirt || q[4].shoe || q[4].hatC || q[4].scarf || "#fff", NM.worn(S, w, slot) === q[0] ? "on" : NM.hasWear(S, w, q[0]) ? "put" : hv.prev === q[0] ? "sel" : "", bal)).join("")).join("") + `<button type="button" class="chg" data-hero>${X.hero.change}</button>`;
+  homeUI("wear", sheet(X.nm.wearT, X.nm.lookW, list), e => { const b = e.target.closest("[data-buy]"), r = e.target.closest("[data-id]"); homeUI.keep = true; if(e.target.closest("[data-close]")){ MK.sfx.tap(); showHome(); } else if(e.target.closest("[data-hero]")){ MK.sfx.tap(); showHero(); }
+    else if(b || r){ const id = (b || r).dataset.buy || (b || r).dataset.id, S2 = nst(), q = NM.wearOf(id); if(!q) return; const has = NM.hasWear(S2, w, id);
+      if(!has && !b){ MK.sfx.tap(); hv.prev = hv.prev === id ? null : id; return showWear(); } if(!has){ if(b.disabled || !buy(id, q[2], S2)) return; } else MK.sfx.tap();
+      S2.wear = S2.wear || {}; (S2.wear[w] = S2.wear[w] || {})[q[1]] = id; nsave(S2); hv.prev = null; dress(); showWear(); } });
+}
+function showHero(){
+  lobby(); hv.prev = null; homeUI("hero", `<div class="htitle"><h3>${X.hero.title}</h3><p>${X.hero.sub}</p></div><div class="hbar two" id="hmB"><button type="button" class="play" data-h="b">${X.hero.b}</button><button type="button" class="play" data-h="g">${X.hero.g}</button></div>`,
+    e => { const b = e.target.closest("[data-h]"); if(!b) return; MK.sfx.star(2); const S = nst(); S.hero = b.dataset.h; nsave(S); dress(); showHome(); });
 }
 function startDance(){ dance = { t: 0 }; $("mh").innerHTML = ""; $("ov").classList.add("dance"); poseDance(); }
-function stopDance(){ dance = null; shopOpen = false; $("ov").classList.remove("dance"); }
+function stopDance(){ dance = null; $("ov").classList.remove("dance"); }
 
 /* ---------- kambario vaizdas ---------- */
 const CYL = ["#e8e2d4", "#2bb3a3", "#f7c948", "#e58fb1"], GAZE_N = 28;
@@ -156,11 +188,10 @@ function syncLamps(){ const P = st.P; st.lampObjs.forEach((o, i) => { const on =
 
 /* ---------- kambarių sąrašas ---------- */
 function showPicker(){
-  lobby(); const P = prog(), done = ROOMS.filter(r => P[r.id]).length;
-  const S0 = nst();
-  $("mh").innerHTML = `<div class="rooms">${nmCard(tabB("l", S0.view !== "v", X.nm.out) + tabB("v", S0.view === "v", X.nm.in) + `<button type="button" class="nms" data-shop>${X.nm.shop}</button>`)}<h3>${X.pickT}</h3><p>${X.pickS(done, ROOMS.length)}</p>${K.floors.map((f, fi) => `<h4>${X.floor[f.id].name} <small>${X.floor[f.id].sub}</small></h4><div class="rgrid">${ROOMS.filter(r => r.fi === fi).map(r => { const s = P[r.id] || 0, ok = open(r, P);
+  lobby(); hv.mode = "rooms"; hv.prev = null; home.tr = null; home.fade.style.opacity = 0; homeSync(); const P = prog(), done = ROOMS.filter(r => P[r.id]).length;
+  $("mh").innerHTML = `<div class="rooms"><div class="rtop"><button type="button" data-home>${X.nm.home}</button>${coinP()}</div><h3>${X.pickT}</h3><p>${X.pickS(done, ROOMS.length)}</p>${K.floors.map((f, fi) => `<h4>${X.floor[f.id].name} <small>${X.floor[f.id].sub}</small></h4><div class="rgrid">${ROOMS.filter(r => r.fi === fi).map(r => { const s = P[r.id] || 0, ok = open(r, P);
     return `<button type="button" class="rb${s ? " done" : ""}" data-r="${ROOMS.indexOf(r)}"${ok ? "" : " disabled"}><b>${r.ri + 1}</b><i>${"★".repeat(s)}${"☆".repeat(3 - s)}</i></button>`; }).join("")}</div>`).join("")}<p class="soon">${X.soon}</p></div>`;
-  nmMount(S0.view === "v" ? "v" : "l"); $("mh").firstChild.onclick = e => { const b = e.target.closest("[data-r]"), v = e.target.closest("[data-v]"); if(e.target.closest("[data-shop]")){ MK.sfx.tap(); showShop(S0.view === "v" ? "v" : "l"); } else if(v){ MK.sfx.tap(); setView(v.dataset.v); showPicker(); } else if(b && !b.disabled){ MK.sfx.tap(); startRoom(+b.dataset.r); } };
+  $("mh").firstChild.onclick = e => { const b = e.target.closest("[data-r]"); if(e.target.closest("[data-home]")){ MK.sfx.tap(); showHome(); } else if(b && !b.disabled){ MK.sfx.tap(); startRoom(+b.dataset.r); } };
 }
 function startRoom(idx){
   stopDance(); dress(); const R = ROOMS[idx]; picking = false; mouse.visible = glow.visible = true;
@@ -170,9 +201,9 @@ function startRoom(idx){
 }
 const tipFor = R => { const t = X.tips[R.id]; return typeof t === "function" ? t(X.who[who()]) : t || ""; };   /* tik naujo dalyko paaiškinimas, ne sprendimo užuomina */
 function reset(first){ st.w = L.world0(st.P); st.obs = L.obstacles(st.P, st.w); st.on = L.onAt(st.P, st.w, st.P.start[0], st.P.start[1], st.t); st.onKey = st.on.join(); st.tmrS = -1; st.x = st.P.start[0]; st.z = st.P.start[1]; st.face = Math.PI; st.meter = 0; st.safe = 0.2; st.got = 0; st.gn = null; st.doneT = 0; st.isLit = false; ring.visible = false; buildRoom(); hud(); if(!first) say(""); }
-function start(){ init(); pose(); dress(); if(nst().hero) showPicker(); else showHero(); }
+function start(){ init(); pose(); dress(); homeInit(); if(nst().hero) showHome(); else showHero(); }
 function stop(){ stopDance(); st = null; picking = false; keys.clear(); joy = null; if(joyEl){ joyEl.remove(); joyEl = null; } }
-function back(){ if(shopOpen){ showPicker(); return true; } if(picking || !st) return false; $("ov").innerHTML = ""; showPicker(); return true; }
+function back(){ if(picking && hv.mode !== "home" && hv.mode !== "hero" && nst().hero){ showHome(); return true; } if(picking || !st) return false; $("ov").innerHTML = ""; showPicker(); return true; }
 function hud(){ const R = st.R, n = st.P.tubes.length; $("hR").innerHTML = `<small>${X.floor[K.floors[R.fi].id].name}</small>${X.room(R.ri + 1)}`; $("hT").textContent = X.tubes(st.got, n); $("hT").hidden = !n; const h = Math.max(0, 3 - st.fails); $("hH").textContent = "♥".repeat(h) + "♡".repeat(3 - h); }
 function say(m, cls){ const e = $("hMsg"); if(!e) return; e.textContent = m || ""; e.className = "mmsg top " + (cls || ""); }
 function fail(msg){ st.fails++; MK.sfx.bad(); reset(); say(msg, "bad"); st.msgT = 3; }
@@ -197,7 +228,7 @@ function press(){
 }
 function gnawSpot(g){ const P = st.P; if(g.type === "cheese") return [cx(P.cheese[g.i][0]), 2.3, cz(P.cheese[g.i][1])]; if(g.type === "rope") return [cx(P.ropes[g.i][0]), 1.2, cz(P.ropes[g.i][1])]; return [cx(P.cables[g.i][0]), 1.0, cz(P.cables[g.i][1])]; }
 function frame(dt){
-  if(picking) nmFrame(dt);
+  if(picking) homeFrame(dt);
   if(dance){ dance.t += dt; PELE.animate(dmouse, "dance", dance.t); dmouse.rotation.y = Math.sin(dance.t * 0.9) * 0.25; return; }
   if(!st || st.over) return; st.t += dt; const P = st.P, t = st.t; st.moving = false; if(st.pushT > 0) st.pushT -= dt;
   for(const o of st.lampObjs){ const Lm = o.L, a = L.lampAngle(Lm, t), h = L.lampH(Lm, t); o.sl.position.set(Lm.x, h, Lm.z); o.sl.target.position.set(Lm.x + Math.cos(a) * Lm.reach, 0, Lm.z + Math.sin(a) * Lm.reach); o.pole.scale.y = h; o.pole.position.y = h / 2; o.head.position.set(Lm.x, h, Lm.z); o.head.lookAt(o.sl.target.position); }
@@ -230,7 +261,7 @@ function frame(dt){
   PELE.animate(mouse, st.doneT > 0 ? "cheer" : st.gn ? "gnaw" : st.pushT > 0 ? "push" : st.moving ? "run" : "idle", t);
   bang.visible = !!st.isLit; bang.position.set(st.x, 1.25 + Math.sin(t * 16) * 0.05, st.z);
 }
-function render(){ if(dance) SD.renderer.render(ds, dcam); else SD.renderer.render(hs, hcam); }
+function render(){ if(dance) SD.renderer.render(ds, dcam); else if(picking && home && home.root) SD.renderer.render(home.sc, home.cam); else SD.renderer.render(hs, hcam); }
 function key(e, up){
   if(!st) return; if(!up && (e.key === " " || e.key === "Enter" || e.key === "e")){ if(e.preventDefault) e.preventDefault(); if(!e.repeat) press(); return; } if(!up && e.key === "r"){ reset(); return; }
   const k = { ArrowLeft: "L", a: "L", ArrowRight: "R", d: "R", ArrowUp: "U", w: "U", ArrowDown: "D", s: "D" }[e.key]; if(!k) return; if(e.preventDefault) e.preventDefault(); if(up) keys.delete(k); else keys.add(k);
@@ -241,4 +272,4 @@ const gl = $("gl");
 gl.addEventListener("pointerdown", e => { if(!st || st.over) return; joy = { x: e.clientX, y: e.clientY, vx: 0, vz: 0, id: e.pointerId }; if(!joyEl || !joyEl.isConnected){ joyEl = document.createElement("div"); joyEl.className = "joy"; joyEl.innerHTML = "<i></i>"; $("mh").appendChild(joyEl); } joyEl.style.left = e.clientX + "px"; joyEl.style.top = e.clientY + "px"; joyEl.hidden = false; joyEl.firstChild.style.transform = ""; try { gl.setPointerCapture(e.pointerId); } catch(_){} });
 gl.addEventListener("pointermove", e => { if(!st || !joy || e.pointerId !== joy.id) return; let dx = (e.clientX - joy.x) / 44, dy = (e.clientY - joy.y) / 44; const l = Math.hypot(dx, dy); if(l > 1){ dx /= l; dy /= l; } joy.vx = dx; joy.vz = dy; if(joyEl) joyEl.firstChild.style.transform = `translate(${dx * 30}px,${dy * 30}px)`; });
 const jend = e => { if(joy && e.pointerId !== joy.id) return; joy = null; if(joyEl) joyEl.hidden = true; }; gl.addEventListener("pointerup", jend); gl.addEventListener("pointercancel", jend);
-SD.MODES.slepynes = { start, stop, frame, render, key, back, resize: () => { pose(); if(dance) poseDance(); }, get st(){ return st; }, get dance(){ return dance; }, api: { L, ROOMS, startRoom, press, reset, showPicker } };
+SD.MODES.slepynes = { start, stop, frame, render, key, back, resize: () => { pose(); if(dance) poseDance(); if(picking) homeFit(); }, get st(){ return st; }, get dance(){ return dance; }, api: { L, ROOMS, startRoom, press, reset, showPicker, showHome, hv } };
