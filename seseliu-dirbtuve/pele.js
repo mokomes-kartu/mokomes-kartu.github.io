@@ -1,6 +1,8 @@
-/* Naujas peliukas – dvikojis, su marškinėliais ir berete. Bandomasis modelis eskizui (vėliau keliamas į žaidimą).
-   makeMouse(THREE, { shirt, shorts }) → Group (aukštis ~1, kojos ant y = 0, žiūri +z);  animate(m, mode, t, k) – mode: idle | run | dance */
-export function makeMouse(THREE, o = {}){
+/* Šešėlių dirbtuvė – peliukas: dvikojis, lieknas, su berete, marškinėliais ir sportbačiais (naudoja „Šešėlių slėpynės“).
+   MK_PELE.make(THREE, { shirt, stripe, shorts, shoe, sole, girl }) → Group (aukštis ~1,15; kojos ant y = 0; žiūri +z)
+   MK_PELE.animate(m, mode, t, k) – mode: idle | run | cheer | gnaw | push | dance (šokio judesys keičiasi kas DANCE_T s arba nurodomas k) */
+(function(){
+function make(THREE, o){ o = o || {};
   const std = (c, e) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.8, metalness: 0, emissive: e || 0x000000 });
   const fur = std("#c9cfdb", 0x3a4152), pink = std("#f4a6b7", 0x4a2530), dark = std("#23262f"), white = std("#ffffff", 0x666666), dim = c => new THREE.Color(c).multiplyScalar(0.28).getHex(), shirt = std(o.shirt || "#19b5a5", dim(o.shirt || "#19b5a5")), stripe = std(o.stripe || "#ffd23f", dim(o.stripe || "#ffd23f")), shorts = std(o.shorts || "#3b5bdb", dim(o.shorts || "#3b5bdb")), red = std("#e5484d", 0x5a1518);
   const sp = (r, w, h) => new THREE.SphereGeometry(r, w || 18, h || 12), cyl = (a, b, h, s) => new THREE.CylinderGeometry(a, b, h, s || 12);
@@ -12,6 +14,7 @@ export function makeMouse(THREE, o = {}){
     M(sp(0.06), shoe, kn, 0, -0.195, 0.03, 0.8, 0.55, 1.45); M(cyl(0.05, 0.052, 0.022, 12), sole, kn, 0, -0.228, 0.03, 0.82, 1, 1.5); M(sp(0.02, 8, 6), sole, kn, 0, -0.17, 0.085); R.knees.push(kn); return leg; });
   /* liemuo: siauras, marškinėliai šiek tiek platėja į apačią */
   const torso = R.torso = G(hips); M(sp(0.115), shorts, torso, 0, 0.0, 0, 1, 0.75, 0.8); M(cyl(0.105, 0.128, 0.27, 20), shirt, torso, 0, 0.165, 0, 1, 1, 0.78); M(sp(0.107), shirt, torso, 0, 0.3, 0, 1.12, 0.5, 0.8); M(cyl(0.126, 0.129, 0.04, 24), stripe, torso, 0, 0.13, 0, 1, 1, 0.78); M(cyl(0.04, 0.05, 0.07, 12), fur, torso, 0, 0.345, 0);
+  if(o.girl){ /* suknelės sijonas (platėja į apačią) ir apvadas */ M(cyl(0.118, 0.215, 0.2, 24), shirt, torso, 0, -0.045, 0, 1, 1, 0.86); M(cyl(0.215, 0.22, 0.025, 24), stripe, torso, 0, -0.15, 0, 1, 1, 0.86); }
   /* rankos: petys → alkūnė → plaštaka */
   R.arms = [-1, 1].map(s => { const sh = G(torso); sh.position.set(0.128 * s, 0.285, 0); M(sp(0.048), shirt, sh, 0, 0, 0); M(cyl(0.04, 0.038, 0.08), shirt, sh, 0, -0.045, 0); M(cyl(0.029, 0.027, 0.1), fur, sh, 0, -0.12, 0); const el = G(sh); el.position.y = -0.17; M(sp(0.029, 10, 8), fur, el, 0, 0, 0); M(cyl(0.027, 0.024, 0.15), fur, el, 0, -0.075, 0); const hand = G(el); hand.position.y = -0.165; M(sp(0.04), pink, hand, 0, 0, 0, 1, 1, 0.8);
     const fingers = G(hand); for(const f of [-1, 1]){ const fg = M(cyl(0.012, 0.012, 0.09, 6), pink, fingers, 0.019 * f, -0.06, 0); fg.rotation.z = 0.2 * f; M(sp(0.014, 8, 6), pink, fingers, 0.028 * f, -0.105, 0); } fingers.visible = false; return { sh, el, hand, fingers, s }; });
@@ -20,6 +23,8 @@ export function makeMouse(THREE, o = {}){
   for(const s of [-1, 1]){ M(sp(0.045), white, head, 0.085 * s, 0.04, 0.165, 1, 1.15, 0.6); M(sp(0.027), dark, head, 0.088 * s, 0.035, 0.19, 1, 1.15, 0.6); M(sp(0.009, 6, 4), white, head, 0.096 * s, 0.05, 0.205);
     const ear = G(head); ear.position.set(0.18 * s, 0.16, -0.02); M(sp(0.125), fur, ear, 0, 0, 0, 1, 1, 0.35); M(sp(0.082), pink, ear, 0, 0, 0.024, 1, 1, 0.3); (R.ears = R.ears || []).push(ear);
     for(const k of [-1, 0, 1]){ const w = M(cyl(0.004, 0.004, 0.16, 4), dark, head, 0.13 * s, -0.04 + k * 0.012, 0.2); w.rotation.z = Math.PI / 2 + k * 0.22 * s; w.rotation.y = -0.5 * s; } }
+  if(o.girl){ /* blakstienos ir kaspinas prie beretės */ for(const s2 of [-1, 1]) for(const k of [0, 1, 2]){ const l = M(cyl(0.004, 0.003, 0.045, 4), dark, head, (0.105 + k * 0.014) * s2, 0.085 - k * 0.012, 0.185 - k * 0.008); l.rotation.z = -(0.5 + k * 0.35) * s2; }
+    const bow = G(head); bow.position.set(-0.15, 0.2, 0.06); bow.rotation.z = 0.35; for(const s2 of [-1, 1]){ const w = M(new THREE.ConeGeometry(0.06, 0.1, 10), stripe, bow, 0.055 * s2, 0, 0); w.rotation.z = Math.PI / 2 * s2; } M(sp(0.028, 8, 6), stripe, bow, 0, 0, 0); }
   const sm = M(new THREE.TorusGeometry(0.035, 0.008, 6, 12, Math.PI), dark, head, 0, -0.065, 0.235); sm.rotation.z = Math.PI; sm.rotation.x = -0.35;
   M(sp(0.17), red, head, 0.03, 0.17, 0.0, 1.15, 0.36, 1.15).rotation.z = -0.18; M(sp(0.028, 8, 6), red, head, 0.045, 0.235, 0);
   /* uodega iš grandžių */
@@ -29,13 +34,16 @@ export function makeMouse(THREE, o = {}){
 const lerp = (a, b, k) => a + (b - a) * k, sm = k => k * k * (3 - 2 * k);
 /* rankos poza: [peties x, peties z, alkūnės x, alkūnės z] kairei ir dešinei */
 function arm(a, sx, sz, ex, ez, V){ a.sh.rotation.set(sx, 0, sz * a.s); a.el.rotation.set(ex, 0, (ez || 0) * a.s); a.fingers.visible = !!V; a.hand.rotation.set(0, 0, 0); }
-export const DANCE = ["6-7", "pergalė", "malūnėlis", "klubai"], DANCE_T = 1.8;
-export function animate(m, mode, t, k){
+const DANCE = ["6-7", "pergalė", "malūnėlis", "klubai"], DANCE_T = 1.8;
+function animate(m, mode, t, k){
   const R = m.userData.rig, [L, Rr] = R.arms, S = Math.sin, C = Math.cos; R.root.rotation.z = 0; const HY = R.hy; R.hips.position.set(0, HY, 0); R.knees.forEach(k => k.rotation.set(0, 0, 0)); R.hips.rotation.set(0, 0, 0); R.torso.rotation.set(0, 0, 0); R.head.rotation.set(0, 0, 0); R.legs.forEach(l => l.rotation.set(0, 0, 0));
   R.tail.forEach((g, i) => { if(i) g.rotation.set(0.28, 0, 0); });
   if(mode === "run"){ const w = t * 14, a = S(w); R.legs[0].rotation.x = a * 0.95; R.legs[1].rotation.x = -a * 0.95; R.hips.position.y = HY - 0.02 + Math.abs(C(w)) * 0.035; R.knees[0].rotation.x = 0.15 + Math.max(0, -C(w)) * 1.3; R.knees[1].rotation.x = 0.15 + Math.max(0, C(w)) * 1.3; R.torso.rotation.x = 0.22; R.head.rotation.x = -0.12;
     arm(L, -a * 0.9, 0.18, -0.9, 0); arm(Rr, a * 0.9, 0.18, -0.9, 0); R.tail.forEach((g, i) => { if(i) g.rotation.z = S(w * 0.5 - i * 0.6) * 0.16; }); R.ears.forEach((e, i) => e.rotation.x = -0.25); return; }
   R.ears.forEach(e => e.rotation.x = 0);
+  if(mode === "cheer"){ /* džiaugsmo šuoliukai iškėlus rankas */ const h = Math.abs(S(t * 9)); R.hips.position.y = HY + h * 0.16; R.knees[0].rotation.x = R.knees[1].rotation.x = (1 - h) * 0.5; R.legs[0].rotation.x = R.legs[1].rotation.x = -(1 - h) * 0.25; arm(L, -0.2, 2.5 + S(t * 9) * 0.15, 0, 0.2); arm(Rr, -0.2, 2.5 - S(t * 9) * 0.15, 0, 0.2); R.head.rotation.x = -0.25; R.tail.forEach((g, i) => { if(i) g.rotation.z = S(t * 9 - i * 0.7) * 0.3; }); return; }
+  if(mode === "gnaw"){ /* graužia: palinkęs, rankos prie burnos, galva kruta */ const n = S(t * 30); R.torso.rotation.x = 0.3; R.head.rotation.x = 0.1 + n * 0.1; arm(L, -1.0, -0.25, -1.5, 0); arm(Rr, -1.0, -0.25, -1.5, 0); R.hips.position.y = HY - 0.02; R.knees[0].rotation.x = R.knees[1].rotation.x = 0.25; R.legs[0].rotation.x = R.legs[1].rotation.x = -0.12; R.tail.forEach((g, i) => { if(i) g.rotation.z = S(t * 15 - i) * 0.12; }); return; }
+  if(mode === "push"){ /* stumia: abi rankos tiesiai pirmyn, žingsnis */ R.torso.rotation.x = 0.35; arm(L, -1.45, 0.1, -0.15, 0); arm(Rr, -1.45, 0.1, -0.15, 0); R.legs[0].rotation.x = 0.55; R.legs[1].rotation.x = -0.45; R.knees[1].rotation.x = 0.5; R.hips.position.y = HY - 0.03; return; }
   if(mode === "idle"){ const b = S(t * 2.2); R.torso.rotation.x = b * 0.015; R.hips.position.y = HY + b * 0.006; arm(L, b * 0.05, 0.16, -0.15, 0); arm(Rr, -b * 0.05, 0.16, -0.15, 0); R.head.rotation.y = S(t * 0.7) * 0.25; R.head.rotation.z = S(t * 1.1) * 0.04;
     R.tail.forEach((g, i) => { if(i) g.rotation.z = S(t * 2.4 - i * 0.7) * 0.22; }); return; }
   /* šokis: klubai linguoja visą laiką, rankų judesiai keičiasi kas DANCE_T s */
@@ -47,3 +55,6 @@ export function animate(m, mode, t, k){
   else if(i === 2){ /* malūnėlis: plaštakos sukasi viena aplink kitą priešais krūtinę */ const w = t * 13; arm(L, -1.25 + S(w) * 0.32, -0.55, -1.5 + C(w) * 0.45, 0); arm(Rr, -1.25 - S(w) * 0.32, -0.55, -1.5 - C(w) * 0.45, 0); }
   else { /* klubai į vieną pusę, tiesios rankos – į kitą */ const a = sway; arm(L, -a * 0.5, 0.35 - a * 0.25, -0.1, 0); arm(Rr, a * 0.5, 0.35 + a * 0.25, -0.1, 0); R.hips.rotation.z = sway * 0.22; R.hips.position.x = sway * 0.08; }
 }
+
+window.MK_PELE = { make, animate, DANCE, DANCE_T };
+})();
