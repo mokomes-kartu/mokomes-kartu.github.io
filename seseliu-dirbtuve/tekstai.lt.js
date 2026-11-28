@@ -5,12 +5,12 @@
 window.MK_T = {
   title: "Šešėlių dirbtuvė",
   h1: "Šešėlių dirbtuvė",
-  lead: "Nuvesk pelytę per naktinę dirbtuvę slėpdamasis šešėliuose ir atpažink daiktus iš jų šešėlių – taip mokaisi suprasti, kaip krinta šviesa ir kur atsiranda šešėlis.",
+  lead: "Nuvesk peliuką ar pelytę per naktinę dirbtuvę slėpdamasis šešėliuose ir atpažink daiktus iš jų šešėlių – taip mokaisi suprasti, kaip krinta šviesa ir kur atsiranda šešėlis.",
   note: n => `Dirbtuvės lentynose – daiktų: ${n}. Kiekvieną kartą ant stalo atsiduria vis kiti.`,
   seen: (a, n) => `Tavo jau matyti daiktai: ${a} iš ${n}`,
   levelsT: "Žaidimai",
   modes: {
-    slepynes: { name: "Šešėlių slėpynės", sub: "Naktis dirbtuvėje: vesk pelytę iki durų – slėpkis šešėliuose, stumdyk dėžes, graužk sūrį ir virves" },
+    slepynes: { name: "Šešėlių slėpynės", sub: "Naktis dirbtuvėje: vesk peliuką ar pelytę iki durų – slėpkis šešėliuose, stumdyk dėžes, graužk sūrį ir virves" },
     teatras: { name: "Kieno šešėlis?", sub: "Šešėlių teatras: kuo greičiau atpažink, kurio daikto šešėlis ant širmos" },
     ivadas: { name: "Lempos pamoka", sub: "Trumpas įvadas: šešėlio kryptis, ilgis, šviesiausia ir tamsiausia vieta" }
   },
@@ -73,7 +73,7 @@ window.MK_T = {
     { name: "Šviesa ir šešėlis", html: "<p>Kai į daiktą šviečia lempa, viena jo pusė būna <b>apšviesta</b>, o kita lieka <b>šešėlyje</b>. Kur šviesa nepasiekia paties daikto paviršiaus, matome <b>savąjį šešėlį</b>. Šešėlis, kurį daiktas meta ant stalo ar ant kitų daiktų, vadinamas <b>krintančiu šešėliu</b>.</p><p>Būtent šviesa ir šešėliai leidžia suprasti, kad daiktas yra trimatis, o ne plokščias.</p>" },
     { name: "Šešėlio kryptis ir ilgis", html: "<p>Šešėlis visada krinta į <b>priešingą pusę</b> nei šviesa: lempa kairėje – šešėlis dešinėje.</p><p>Kuo <b>žemiau</b> šviesos šaltinis, tuo šešėlis <b>ilgesnis</b>; kuo <b>aukščiau</b> – tuo <b>trumpesnis</b>. Taip būna ir lauke: vidurdienį šešėliai trumpi, o vakare ilgi.</p>" },
     { name: "Tonai ir apimtis", html: "<p>Piešdami apimtį dailininkai naudoja <b>tonus</b> – nuo šviesiausio iki tamsiausio. Šviesiausia ten, kur paviršius atsuktas tiesiai į šviesą. Kuo labiau paviršius nuo šviesos nusisuka, tuo tonas tamsesnis.</p><p>Laipsniški tonų perėjimai padeda plokščiame lape pavaizduoti apimtinę, trimatę formą. Todėl mokantis piešti dažnai piešiami balti gipsiniai modeliai – ant jų tonai matyti geriausiai.</p>" },
-    { name: "Kaip žaisti", html: "<p><b>Šešėlių slėpynės.</b> Vesk pelytę pirštu (vairalazdė atsiranda ten, kur palieti ekraną) arba rodyklėmis. Šviesoje pildosi pastebėjimo juosta – spėk pasislėpti šešėlyje, kol ji neprisipildė. Priėjęs prie mėlynos dėžės, sūrio, virvės kuoliuko, kabelio ar jungiklio, spausk veiksmo mygtuką (kompiuteryje – tarpo klavišą): pelytė stums, grauš arba perjungs. Oranžinis mygtukas grindyse veikia, kol ant jo stovi pelytė arba dėžė; ant grotelių dėžės užstumti negalima. Jei lempa pastebi, kambarys prasideda iš naujo.</p><p><b>Kieno šešėlis?</b> Ant širmos – paslėpto daikto šešėlis. Kuo greičiau paliesk daiktą, kuriam jis priklauso. Teisingi atsakymai iš eilės didina taškų daugiklį, klaida atima laiko.</p>" }
+    { name: "Kaip žaisti", html: "<p><b>Šešėlių slėpynės.</b> Vesk savo herojų pirštu (vairalazdė atsiranda ten, kur palieti ekraną) arba rodyklėmis. Šviesoje pildosi pastebėjimo juosta – spėk pasislėpti šešėlyje, kol ji neprisipildė. Priėjęs prie mėlynos dėžės, sūrio, virvės kuoliuko, kabelio ar jungiklio, spausk veiksmo mygtuką (kompiuteryje – tarpo klavišą): herojus stums, grauš arba perjungs. Oranžinis mygtukas grindyse veikia, kol ant jo stovi herojus arba dėžė; ant grotelių dėžės užstumti negalima. Jei lempa pastebi, kambarys prasideda iš naujo.</p><p><b>Kieno šešėlis?</b> Ant širmos – paslėpto daikto šešėlis. Kuo greičiau paliesk daiktą, kuriam jis priklauso. Teisingi atsakymai iš eilės didina taškų daugiklį, klaida atima laiko.</p>" }
   ],
   teatras: { time: "Laikas", score: n => `${n} tšk.`, go: "Kieno šešėlis?", stage: ["Daiktas vartosi", "Šešėlis suspaustas", "Matyti tik dalis šešėlio", "Viskas kartu"], stageUp: "Sunkiau!", ok: ["Taip!", "Tiksliai!", "Greita akis!"], no: n => `Ne – tai ${n}.`,
     title: "Laikas baigėsi!", res: (ok, n) => `Atpažinti šešėliai: ${ok} iš ${n}`, best: n => `Ilgiausia serija: ${n}`, lines: ["Šešėliai apgaulingi – pabandyk dar kartą.", "Gera akis!", "Šešėlių teatro žvaigždė!"] },
@@ -81,11 +81,20 @@ window.MK_T = {
     floor: { "1": { name: "1 aukštas", sub: "Šešėliai ir lempos" }, "2": { name: "2 aukštas", sub: "Stumdomos dėžės" }, "3": { name: "3 aukštas", sub: "Jungikliai ir mygtukai" }, b: { name: "Bandomieji kambariai", sub: "Sūris, virvė, kabelis ir katinas" } },
     pickT: "Pasirink kambarį", pickS: (d, n) => `Įveikta kambarių: ${d} iš ${n}`, soon: "Kiti aukštai – netrukus.",
     room: n => `${n} kambarys`, tubes: (a, n) => `Tūbelės ${a}/${n}`, act: { push: "Stumti", gnaw: "Graužti", sw: "Jungti", none: "Veiksmas" }, timer: s => `Laikmatis: ${s} s`, keyHint: "tarpas", restart: "Pradėti kambarį iš naujo",
-    tips: { "1-1": "Vesk pelytę pirštu arba rodyklėmis. Šviesoje pildosi pastebėjimo juosta – slėpkis šešėliuose ir pasiek duris.", "2-1": "Mėlyną dėžę galima pastumti: prieik prie jos ir spausk „Stumti“.", "3-1": "Jungiklį galima perjungti: prieik prie jo ir spausk „Jungti“.", "3-2": "Oranžinis mygtukas grindyse veikia tik tol, kol ant jo kas nors stovi.", "3-4": "Jungiklis su laikrodžiu lempą užgesina tik kelioms sekundėms.",
+    tips: { "1-1": w => `Vesk ${w.acc} pirštu arba rodyklėmis. Šviesoje pildosi pastebėjimo juosta – slėpkis šešėliuose ir pasiek duris.`, "2-1": "Mėlyną dėžę galima pastumti: prieik prie jos ir spausk „Stumti“.", "3-1": "Jungiklį galima perjungti: prieik prie jo ir spausk „Jungti“.", "3-2": "Oranžinis mygtukas grindyse veikia tik tol, kol ant jo kas nors stovi.", "3-4": "Jungiklis su laikrodžiu lempą užgesina tik kelioms sekundėms.",
       "b-1": "Sūrį galima pragraužti: prieik prie jo ir spausk „Graužti“.", "b-2": "Virvė laiko pakabintą maišą. Ją galima nugraužti prie kuoliuko.", "b-3": "Kabelį galima nugraužti ten, kur raudonas kištukas.", "b-4": "Katinas mato, kas priešais jį (žalsvas žvilgsnis). Prisilietus – pagauna." },
     seen: "Lempa pastebėjo! Kambarys prasideda iš naujo.", cat: "Katinas pagavo! Kambarys prasideda iš naujo.", catSaw: "Katinas pamatė! Kambarys prasideda iš naujo.", stuck: "Į tą pusę dėžė nepasistumia.", tube: "Dažų tūbelė!", door: "Pavyko!", next: "Kitas kambarys", rooms: "Kambarių sąrašas",
     /* pinigėliai, namelis, parduotuvė */
-    nm: { out: "Lauke", in: "Viduje", shop: "Parduotuvė", back: "← Kambariai", title: "Parduotuvė", coins: "Pinigėliai", have: "✓ Turiu", how: "Pinigėlių gausi už įveiktus kambarius, žvaigždutes ir dažų tūbeles." },
+    nm: { out: "Lauke", in: "Viduje", wear: "Rūbai", shop: "Parduotuvė", back: "← Kambariai", title: "Parduotuvė", coins: "Pinigėliai", have: "✓ Turiu", on: "✓ Dėviu", put: "Apsirengti", how: "Pinigėlių gausi už įveiktus kambarius, žvaigždutes ir dažų tūbeles." },
+    /* herojus: peliukas arba pelytė */
+    hero: { title: "Pasirink herojų", sub: "Vėliau herojų galėsi pakeisti parduotuvėje, skiltyje „Rūbai“.", b: "Peliukas", g: "Pelytė", change: "Keisti herojų" },
+    who: { b: { acc: "peliuką" }, g: { acc: "pelytę" } },
+    slots: { top: { b: "Marškinėliai", g: "Suknelės" }, shoes: "Batai", scarf: "Šalikai", hat: "Kepurės" },
+    wear: { m0: "Žalsvi su geltona juosta", m1: "Oranžiniai", m2: "Violetiniai", m3: "Raudoni", m4: "Geltoni", m5: "Juodi su geltona juosta",
+      s0: "Rožinė suknelė", s1: "Violetinė suknelė", s2: "Žalsva suknelė", s3: "Geltona suknelė", s4: "Mėlyna suknelė", s5: "Raudona suknelė",
+      b0: "Raudoni sportbačiai", b1: "Mėlyni sportbačiai", b2: "Geltoni sportbačiai", b3: "Žali sportbačiai", b4: "Violetiniai sportbačiai", b5: "Balti sportbačiai",
+      k0: "Be šaliko", k1: "Raudonas šalikas", k2: "Geltonas šalikas", k3: "Mėlynas šalikas", k4: "Žalias šalikas",
+      h0: "Raudona beretė", h1: "Mėlyna beretė", h2: "Mėlyna kepurė su snapeliu", h3: "Geltona kepurė su snapeliu", h4: "Žalia megzta kepurė", h5: "Rožinė megzta kepurė" },
     items: { kilimelis: "Kilimėlis prie durų", vazonas: "Gėlės antpirštyje", pastas: "Pašto dėžutė", suoliukas: "Suoliukas", zibintas: "Žibintas", tvorele: "Degtukų tvorelė", girlianda: "Lempučių girlianda", masina: "Peliamobilis",
       lova: "Lova iš degtukų dėžutės", kilimas: "Apvalus kilimas", stalas: "Stalas iš siūlų ritės", lentyna: "Knygų lentyna", paveikslas: "Paveikslas", lempa: "Toršeras", fotelis: "Fotelis", molbertas: "Molbertas" },
     tubeCoin: v => `Dažų tūbelė! +${v}`, tubeEmpty: "Tuščia tūbelė – dažų joje vėl bus po valandos.",

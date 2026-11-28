@@ -1,5 +1,5 @@
 /* Šešėlių dirbtuvė – peliukas: dvikojis, lieknas, su berete, marškinėliais ir sportbačiais (naudoja „Šešėlių slėpynės“).
-   MK_PELE.make(THREE, { shirt, stripe, shorts, shoe, sole, girl }) → Group (aukštis ~1,15; kojos ant y = 0; žiūri +z)
+   MK_PELE.make(THREE, { shirt, stripe, shorts, shoe, sole, girl, hat: beret | cap | beanie, hatC, scarf }) → Group (aukštis ~1,15; kojos ant y = 0; žiūri +z)
    MK_PELE.animate(m, mode, t, k) – mode: idle | run | cheer | gnaw | push | dance (šokio judesys keičiasi kas DANCE_T s arba nurodomas k) */
 (function(){
 function make(THREE, o){ o = o || {};
@@ -26,7 +26,12 @@ function make(THREE, o){ o = o || {};
   if(o.girl){ /* blakstienos ir kaspinas prie beretės */ for(const s2 of [-1, 1]) for(const k of [0, 1, 2]){ const l = M(cyl(0.004, 0.003, 0.045, 4), dark, head, (0.105 + k * 0.014) * s2, 0.085 - k * 0.012, 0.185 - k * 0.008); l.rotation.z = -(0.5 + k * 0.35) * s2; }
     const bow = G(head); bow.position.set(-0.15, 0.2, 0.06); bow.rotation.z = 0.35; for(const s2 of [-1, 1]){ const w = M(new THREE.ConeGeometry(0.06, 0.1, 10), stripe, bow, 0.055 * s2, 0, 0); w.rotation.z = Math.PI / 2 * s2; } M(sp(0.028, 8, 6), stripe, bow, 0, 0, 0); }
   const sm = M(new THREE.TorusGeometry(0.035, 0.008, 6, 12, Math.PI), dark, head, 0, -0.065, 0.235); sm.rotation.z = Math.PI; sm.rotation.x = -0.35;
-  M(sp(0.17), red, head, 0.03, 0.17, 0.0, 1.15, 0.36, 1.15).rotation.z = -0.18; M(sp(0.028, 8, 6), red, head, 0.045, 0.235, 0);
+  /* galvos apdangalas: beretė, kepurė su snapeliu arba megzta kepurė su bumbulu */
+  const hatM = std(o.hatC || "#e5484d", dim(o.hatC || "#e5484d")), dome = r => new THREE.SphereGeometry(r, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2);
+  if(o.hat === "cap"){ M(dome(0.2), hatM, head, 0, 0.105, 0, 1.06, 0.8, 1.02); const v = M(cyl(0.125, 0.125, 0.02, 20), hatM, head, 0, 0.118, 0.19, 1, 1, 0.9); v.rotation.x = 0.1; M(sp(0.022, 8, 6), stripe, head, 0, 0.27, 0); }
+  else if(o.hat === "beanie"){ M(dome(0.2), hatM, head, 0, 0.11, 0, 1.06, 0.95, 1.02); M(cyl(0.207, 0.207, 0.05, 24), stripe, head, 0, 0.128, 0, 1.06, 1, 1.02); M(sp(0.055, 10, 8), stripe, head, 0, 0.33, 0); }
+  else { M(sp(0.17), hatM, head, 0.03, 0.17, 0.0, 1.15, 0.36, 1.15).rotation.z = -0.18; M(sp(0.028, 8, 6), hatM, head, 0.045, 0.235, 0); }
+  if(o.scarf){ const scM = std(o.scarf, dim(o.scarf)), ring = M(new THREE.TorusGeometry(0.078, 0.032, 8, 18), scM, torso, 0, 0.36, 0, 1, 1, 1); ring.rotation.x = Math.PI / 2; ring.scale.set(1, 0.9, 1); const e = M(new THREE.BoxGeometry(0.06, 0.16, 0.025), scM, torso, 0.055, 0.27, 0.1); e.rotation.z = -0.12; }
   /* uodega iš grandžių */
   R.tail = []; let p = G(hips); p.position.set(0, 0.0, -0.085); p.rotation.x = -1.9; for(let k = 0; k < 6; k++){ const r0 = 0.024 - k * 0.003; M(cyl(r0 - 0.003, r0, 0.11, 6), pink, p, 0, 0.055, 0); R.tail.push(p); const n = G(p); n.position.y = 0.11; p = n; }
   root.userData.rig = R; return root;

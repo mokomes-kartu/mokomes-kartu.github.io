@@ -14,7 +14,7 @@ function saveRoom(id, stars){ const C = Object.assign({ seen: [] }, MK.get(CKEY,
   const done = ROOMS.filter(r => C.rooms[r.id]).length, all3 = ROOMS.every(r => C.rooms[r.id] === 3), s = all3 ? 3 : done >= ROOMS.length ? 2 : done >= 5 ? 1 : 0; if(s) MK.best(GAME, "slepynes", s); }
 const open = (R, P) => R.ri === 0 || !!P[ROOMS[ROOMS.indexOf(R) - 1].id];
 
-let st = null, hs, hcam, ds, dcam, dmouse, dance = null, nm = null, shopOpen = false, room, mouse, bang, glow, ring, ringG, tx, ready = false, picking = false, keys = new Set(), joy = null, joyEl = null;
+let st = null, hs, hcam, ds, dcam, dmouse, dance = null, nm = null, shopOpen = false, shopTab = "l", heroKey = "", room, mouse, bang, glow, ring, ringG, tx, ready = false, picking = false, keys = new Set(), joy = null, joyEl = null;
 function init(){
   if(ready) return; ready = true;
   hs = new THREE.Scene(); hs.background = new THREE.Color("#141829"); hs.add(new THREE.HemisphereLight(0x9fb4ff, 0x20243a, 0.62));
@@ -36,11 +36,11 @@ function init(){
     wall: mk(128, 128, g => { g.fillStyle = "#59608c"; g.fillRect(0, 0, 128, 128); g.strokeStyle = "#3b4162"; g.lineWidth = 4; for(let y = 0; y <= 128; y += 32){ g.beginPath(); g.moveTo(0, y); g.lineTo(128, y); g.stroke(); for(let x = (y / 32) % 2 ? 32 : 0; x <= 128; x += 64){ g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 32); g.stroke(); } } })
   };
   /* peliukas (pele.js): žaidime šiek tiek sumažintas; susidūrimo dydis (MR) nuo išvaizdos nepriklauso */
-  mouse = PELE.make(THREE); mouse.scale.setScalar(MS); hs.add(mouse);
+  mouse = new THREE.Group(); hs.add(mouse);
   /* šokio scena: įveikus kambarį trimis žvaigždutėmis peliukas šoka per visą ekraną */
   ds = new THREE.Scene(); ds.background = new THREE.Color("#232a4a"); ds.add(new THREE.HemisphereLight(0xdfe6ff, 0x3a2f55, 1.15)); const dl = new THREE.DirectionalLight(0xfff0d0, 2.0); dl.position.set(2.2, 5, 4); dl.castShadow = true; dl.shadow.mapSize.set(1024, 1024); Object.assign(dl.shadow.camera, { left: -2, right: 2, top: 2.5, bottom: -1 }); ds.add(dl);
   const stage = SD.mesh(new THREE.CircleGeometry(1.9, 48), SD.std("#3d3570"), 0, 0, 0); stage.rotation.x = -Math.PI / 2; stage.receiveShadow = true; ds.add(stage); const rim = SD.mesh(new THREE.RingGeometry(1.9, 2.02, 48), new THREE.MeshBasicMaterial({ color: 0xffd23f }), 0, 0.002, 0); rim.rotation.x = -Math.PI / 2; ds.add(rim);
-  dmouse = PELE.make(THREE); ds.add(dmouse); dcam = new THREE.PerspectiveCamera(30, 1, 0.1, 60);
+  dmouse = new THREE.Group(); ds.add(dmouse); dcam = new THREE.PerspectiveCamera(30, 1, 0.1, 60);
   const [gc, gg] = SD.cnv(128, 128), rg = gg.createRadialGradient(64, 64, 8, 64, 64, 62); rg.addColorStop(0, "rgba(170,200,255,0.55)"); rg.addColorStop(0.6, "rgba(150,180,255,0.22)"); rg.addColorStop(1, "rgba(150,180,255,0)"); gg.fillStyle = rg; gg.fillRect(0, 0, 128, 128);
   glow = SD.mesh(new THREE.PlaneGeometry(2.1, 2.1), new THREE.MeshBasicMaterial({ map: SD.tex(gc), transparent: true, depthWrite: false }), 0, 0.02, 0); glow.rotation.x = -Math.PI / 2; hs.add(glow);
   const [bc, bg] = SD.cnv(64, 64); bg.fillStyle = "#e5484d"; bg.beginPath(); bg.arc(32, 32, 28, 0, 7); bg.fill(); bg.fillStyle = "#fff"; bg.font = "900 44px sans-serif"; bg.textAlign = "center"; bg.textBaseline = "middle"; bg.fillText("!", 32, 35);
@@ -52,32 +52,52 @@ function drawRing(k){ const g = ringG; g.clearRect(0, 0, 64, 64); g.lineWidth = 
 function pose(){ if(!hcam) return; const asp = innerWidth / innerHeight, th = Math.tan(rad(23)), wide = asp > 1, d = Math.max((RW + 0.5) / (th * asp), (RL + 1.4) / th * (wide ? 1.04 : 0.93)), p = rad(64), z0 = wide ? 1.3 : 0.4; hcam.aspect = asp; hcam.position.set(0, d * Math.sin(p), d * Math.cos(p) + z0); hcam.lookAt(0, 0, z0); hcam.updateProjectionMatrix(); }
 /* šokio kamera: peliukas – laisvoje ekrano dalyje virš rezultato kortelės */
 function poseDance(){ if(!dcam) return; const asp = innerWidth / innerHeight, c = document.querySelector("#ov .rc"), cf = c ? Math.min(0.62, (c.offsetHeight + 28) / innerHeight) : 0.4, f = 1 - cf, Hv = Math.max(1.5 / (0.86 * f), 1.45 / asp), d = Hv / (2 * Math.tan(rad(15))); dcam.aspect = asp; dcam.position.set(0, 0.66 - cf / 2 * Hv + 0.5, d); dcam.lookAt(0, 0.66 - cf / 2 * Hv, 0); dcam.updateProjectionMatrix(); }
-/* namelio vaizdas: viena nuolatinė drobė, perkeliama į kambarių ar parduotuvės ekraną */
+/* herojus: peliukas (b) arba pelytė (g) su pasirinktais rūbais; pasikeitus – perkuriami žaidimo ir šokio modeliai */
+const who = () => nst().hero || "b", wipe = g => g.traverse(o => { if(o.geometry) o.geometry.dispose(); if(o.material) o.material.dispose(); });
+function mkHero(S, w){ return PELE.make(THREE, NM.outfit(S, w)); }
+function dress(){ const S = nst(), w = S.hero || "b", key = w + JSON.stringify(S.wear || {}); if(key === heroKey) return; heroKey = key;
+  for(const [old, sc, k] of [[mouse, hs, MS], [dmouse, ds, 1]]){ const vis = old.visible; sc.remove(old); wipe(old); const m = mkHero(S, w); m.scale.setScalar(k); m.visible = vis; sc.add(m); if(sc === hs) mouse = m; else dmouse = m; } }
+/* namelio vaizdas: viena nuolatinė drobė, perkeliama į kambarių, parduotuvės ar herojaus pasirinkimo ekraną.
+   Rodinys: l – namelis lauke, v – viduje, r – herojus iš arti (rūbų skiltis), h – abu herojai (pasirinkimas) */
 function nmInit(){
   if(nm) return nm; const cv = document.createElement("canvas"); cv.className = "nmcv"; let r = null; try { r = new THREE.WebGLRenderer({ canvas: cv, antialias: true }); } catch(e){ return (nm = { cv: null }); }
   r.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); r.outputColorSpace = THREE.SRGBColorSpace; r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
   const sc = new THREE.Scene(); sc.add(new THREE.HemisphereLight(0xdfe6ff, 0x30283a, 1.1)); const d = new THREE.DirectionalLight(0xfff0d0, 2.0); d.position.set(2.5, 5, 4); d.castShadow = true; d.shadow.mapSize.set(1024, 1024); Object.assign(d.shadow.camera, { left: -6, right: 6, top: 4, bottom: -4 }); sc.add(d);
-  const gr = SD.mesh(new THREE.PlaneGeometry(40, 40), SD.std("#7a6248"), 0, 0, 0); gr.rotation.x = -Math.PI / 2; gr.receiveShadow = true; sc.add(gr); const hero = PELE.make(THREE); hero.scale.setScalar(0.75); sc.add(hero);
-  return (nm = { cv, r, sc, gr, hero, cam: new THREE.PerspectiveCamera(30, 1.6, 0.1, 100), g: null, key: "", w: 0, t: 0 });
+  const gr = SD.mesh(new THREE.PlaneGeometry(40, 40), SD.std("#7a6248"), 0, 0, 0); gr.rotation.x = -Math.PI / 2; gr.receiveShadow = true; sc.add(gr);
+  return (nm = { cv, r, sc, gr, cam: new THREE.PerspectiveCamera(30, 1.6, 0.1, 100), g: null, heroes: [], mode: "l", key: "", w: 0, t: 0 });
 }
 function nmSync(){
-  if(!nm || !nm.cv) return; const S = nst(), ins = S.view === "v", key = S.view + "|" + S.own.join();
-  if(key !== nm.key){ nm.key = key; if(nm.g){ nm.sc.remove(nm.g); nm.g.traverse(o => { if(o.geometry) o.geometry.dispose(); if(o.material) o.material.dispose(); }); } nm.g = NM.build(THREE, new Set(S.own), ins); nm.sc.add(nm.g);
-    nm.sc.background = new THREE.Color(ins ? "#2a2233" : "#1a1f33"); nm.gr.material.color.set(ins ? "#2a2233" : "#7a6248"); nm.gr.position.y = ins ? -0.11 : 0; nm.hero.position.set(ins ? 0.85 : 1.95, 0, ins ? 1.9 : 1.3); nm.hero.rotation.y = -0.3;
-    if(ins){ nm.cam.position.set(0, 2.4, 8.3); nm.cam.lookAt(0, 0.9, 0.6); } else { nm.cam.position.set(0.35, 1.75, 6.6); nm.cam.lookAt(0.35, 0.8, 0); } }
-  const w = nm.cv.clientWidth; if(w && w !== nm.w){ nm.w = w; nm.r.setSize(w, Math.round(w / 1.6), false); }
+  if(!nm || !nm.cv) return; const S = nst(), m = nm.mode, w = S.hero || "b", house = m === "l" || m === "v", key = m + "|" + w + JSON.stringify(S.wear || {}) + (house ? S.own.join() : "");
+  if(key !== nm.key){ nm.key = key; if(nm.g){ nm.sc.remove(nm.g); wipe(nm.g); } const g = nm.g = new THREE.Group(); nm.sc.add(g); nm.heroes = [];
+    const put = (hw, x, z, ry, k) => { const h = mkHero(S, hw); h.position.set(x, 0, z); h.rotation.y = ry; h.scale.setScalar(k); g.add(h); nm.heroes.push(h); }, ins = m === "v", bg = ins ? "#2a2233" : house ? "#1a1f33" : "#232a4a";
+    nm.sc.background = new THREE.Color(bg); nm.gr.material.color.set(ins ? "#2a2233" : house ? "#7a6248" : "#3d3570"); nm.gr.position.y = ins ? -0.11 : 0;
+    if(house){ g.add(NM.build(THREE, new Set(S.own), ins)); put(w, ins ? 0.85 : 1.95, ins ? 1.9 : 1.3, -0.3, 0.75); if(ins){ nm.cam.position.set(0, 2.4, 8.3); nm.cam.lookAt(0, 0.9, 0.6); } else { nm.cam.position.set(0.35, 1.75, 6.6); nm.cam.lookAt(0.35, 0.8, 0); } }
+    else if(m === "r"){ put(w, 0, 0, 0, 1); nm.cam.position.set(0, 0.9, 2.75); nm.cam.lookAt(0, 0.62, 0); }
+    else { put("b", -0.55, 0, 0.25, 1); put("g", 0.55, 0, -0.25, 1); nm.cam.position.set(0, 0.9, 2.95); nm.cam.lookAt(0, 0.62, 0); } }
+  const cw = nm.cv.clientWidth; if(cw && cw !== nm.w){ nm.w = cw; nm.r.setSize(cw, Math.round(cw / 1.6), false); }
 }
-function nmFrame(dt){ if(!nm || !nm.cv || !nm.cv.isConnected) return; nm.t += dt; nmSync(); PELE.animate(nm.hero, "idle", nm.t); nm.r.render(nm.sc, nm.cam); }
-/* namelio kortelė: vaizdas, pinigėliai, skirtukai „Lauke“ / „Viduje“ ir mygtukas (į parduotuvę arba atgal) */
-function nmCard(btn){ const S = nst(); return `<div class="nm"><div class="nmc" id="nmc"></div><span class="coin" title="${X.nm.coins}">${CN}<b>${coins()}</b></span><div class="nmt"><button type="button" data-v="l"${S.view === "l" ? ' class="on"' : ""}>${X.nm.out}</button><button type="button" data-v="v"${S.view === "v" ? ' class="on"' : ""}>${X.nm.in}</button>${btn}</div></div>`; }
-function nmMount(){ nmInit(); if(nm.cv) $("nmc").appendChild(nm.cv); else $("nmc").remove(); nmSync(); }
+function nmFrame(dt){ if(!nm || !nm.cv || !nm.cv.isConnected) return; nm.t += dt; nmSync(); nm.heroes.forEach((h, i) => PELE.animate(h, "idle", nm.t + i * 1.7)); if(nm.mode === "r") nm.heroes[0].rotation.y = Math.sin(nm.t * 0.8) * 0.7; nm.r.render(nm.sc, nm.cam); }
+function nmMount(mode){ nmInit(); nm.mode = mode; if(nm.cv) $("nmc").appendChild(nm.cv); else $("nmc").remove(); nmSync(); }
+/* namelio kortelė: vaizdas, pinigėliai ir mygtukų eilė */
+function nmCard(btns){ return `<div class="nm"><div class="nmc" id="nmc"></div><span class="coin" title="${X.nm.coins}">${CN}<b>${coins()}</b></span><div class="nmt">${btns}</div></div>`; }
+const tabB = (v, on, t) => `<button type="button" data-v="${v}"${on ? ' class="on"' : ""}>${t}</button>`;
 function setView(v){ const S = nst(); S.view = v; nsave(S); }
-function showShop(){
-  stopDance(); shopOpen = picking = true; st = null; const S = nst(), bal = coins(), where = S.view === "v" ? "v" : "l";
-  $("mh").innerHTML = `<div class="rooms">${nmCard(`<button type="button" class="nms" data-back>${X.nm.back}</button>`)}<h3>${X.nm.title}</h3><p>${X.nm.how}</p><div class="shop">${NM.ITEMS.filter(q => q[2] === where).map(([id, pr]) => { const own = S.own.includes(id);
-    return `<div class="it${own ? " own" : pr > bal ? " poor" : ""}"><i class="ic" style="background:${ICOL[id] || "#ccc"}"></i><b>${X.items[id]}</b>${own ? `<span class="ok">${X.nm.have}</span>` : `<button type="button" data-buy="${id}"${pr > bal ? " disabled" : ""}>${pr} ${CN}</button>`}</div>`; }).join("")}</div></div>`;
-  nmMount(); $("mh").firstChild.onclick = e => { const v = e.target.closest("[data-v]"), b = e.target.closest("[data-buy]"); if(e.target.closest("[data-back]")){ MK.sfx.tap(); showPicker(); } else if(v){ MK.sfx.tap(); setView(v.dataset.v); showShop(); }
-    else if(b && !b.disabled){ const id = b.dataset.buy, S2 = nst(), pr = NM.price(id); if(S2.own.includes(id) || pr > coins()) return; S2.own.push(id); S2.spent += pr; nsave(S2); MK.sfx.star(3); if(MK.confetti) MK.confetti(24); showShop(); } };
+/* laukiamasis: kambarių sąrašas, parduotuvė ar herojaus pasirinkimas – kambario nėra, herojus scenoje nerodomas */
+function lobby(){ stopDance(); picking = true; st = null; keys.clear(); joy = null; if(room){ hs.remove(room); room = null; } mouse.visible = glow.visible = bang.visible = ring.visible = false; }
+function showHero(){
+  lobby(); $("mh").innerHTML = `<div class="rooms"><h3>${X.hero.title}</h3><p>${X.hero.sub}</p><div class="nm"><div class="nmc" id="nmc"></div><div class="nmt two"><button type="button" class="nms" data-h="b">${X.hero.b}</button><button type="button" class="nms" data-h="g">${X.hero.g}</button></div></div></div>`;
+  nmMount("h"); $("mh").firstChild.onclick = e => { const b = e.target.closest("[data-h]"); if(!b) return; MK.sfx.star(2); const S = nst(); S.hero = b.dataset.h; nsave(S); dress(); showPicker(); };
+}
+function showShop(tab){
+  lobby(); shopOpen = true; if(tab) shopTab = tab; const S = nst(), bal = coins(), w = S.hero || "b", t = shopTab; if(t !== "r" && S.view !== t) setView(t);
+  const row = (id, pr, name, col, own, on) => `<div class="it${own ? " own" : pr > bal ? " poor" : ""}"><i class="ic" style="background:${col}"></i><b>${name}</b>${on ? `<span class="ok">${X.nm.on}</span>` : own ? (t === "r" ? `<button type="button" class="alt" data-wear="${id}">${X.nm.put}</button>` : `<span class="ok">${X.nm.have}</span>`) : `<button type="button" data-${t === "r" ? "wear" : "buy"}="${id}"${pr > bal ? " disabled" : ""}>${pr} ${CN}</button>`}</div>`;
+  const list = t === "r" ? NM.SLOTS.map(slot => `<h5>${typeof X.slots[slot] === "string" ? X.slots[slot] : X.slots[slot][w]}</h5>` + NM.WEAR.filter(q => q[1] === slot && (q[3] === "*" || q[3] === w)).map(q => row(q[0], q[2], X.wear[q[0]], q[4].shirt || q[4].shoe || q[4].hatC || q[4].scarf || "#fff", NM.hasWear(S, w, q[0]), NM.worn(S, w, slot) === q[0])).join("")).join("") + `<button type="button" class="chg" data-hero>${X.hero.change}</button>`
+    : NM.ITEMS.filter(q => q[2] === t).map(([id, pr]) => row(id, pr, X.items[id], ICOL[id] || "#ccc", S.own.includes(id), false)).join("");
+  $("mh").innerHTML = `<div class="rooms">${nmCard(tabB("l", t === "l", X.nm.out) + tabB("v", t === "v", X.nm.in) + tabB("r", t === "r", X.nm.wear) + `<button type="button" class="nms" data-back>${X.nm.back}</button>`)}<h3>${X.nm.title}</h3><p>${X.nm.how}</p><div class="shop">${list}</div></div>`;
+  const sc = $("mh").firstChild, keep = showShop.y || 0; nmMount(t); sc.scrollTop = keep; showShop.y = 0;
+  sc.onclick = e => { const v = e.target.closest("[data-v]"), b = e.target.closest("[data-buy]"), wr = e.target.closest("[data-wear]"); if(e.target.closest("[data-back]")){ MK.sfx.tap(); showPicker(); } else if(e.target.closest("[data-hero]")){ MK.sfx.tap(); showHero(); } else if(v){ MK.sfx.tap(); showShop(v.dataset.v); }
+    else if(b && !b.disabled){ const id = b.dataset.buy, S2 = nst(), pr = NM.price(id); if(S2.own.includes(id) || pr > coins()) return; S2.own.push(id); S2.spent += pr; nsave(S2); MK.sfx.star(3); if(MK.confetti) MK.confetti(24); showShop.y = sc.scrollTop; showShop(); }
+    else if(wr && !wr.disabled){ const id = wr.dataset.wear, S2 = nst(), q = NM.wearOf(id); if(!q) return; if(!NM.hasWear(S2, w, id)){ if(q[2] > coins()) return; S2.own.push(id); S2.spent += q[2]; MK.sfx.star(3); if(MK.confetti) MK.confetti(24); } else MK.sfx.tap(); S2.wear = S2.wear || {}; (S2.wear[w] = S2.wear[w] || {})[q[1]] = id; nsave(S2); dress(); showShop.y = sc.scrollTop; showShop(); } };
 }
 function startDance(){ dance = { t: 0 }; $("mh").innerHTML = ""; $("ov").classList.add("dance"); poseDance(); }
 function stopDance(){ dance = null; shopOpen = false; $("ov").classList.remove("dance"); }
@@ -136,20 +156,21 @@ function syncLamps(){ const P = st.P; st.lampObjs.forEach((o, i) => { const on =
 
 /* ---------- kambarių sąrašas ---------- */
 function showPicker(){
-  stopDance(); picking = true; st = null; keys.clear(); joy = null; if(room){ hs.remove(room); room = null; } mouse.visible = glow.visible = bang.visible = ring.visible = false; const P = prog(), done = ROOMS.filter(r => P[r.id]).length;
-  $("mh").innerHTML = `<div class="rooms">${nmCard(`<button type="button" class="nms" data-shop>${X.nm.shop}</button>`)}<h3>${X.pickT}</h3><p>${X.pickS(done, ROOMS.length)}</p>${K.floors.map((f, fi) => `<h4>${X.floor[f.id].name} <small>${X.floor[f.id].sub}</small></h4><div class="rgrid">${ROOMS.filter(r => r.fi === fi).map(r => { const s = P[r.id] || 0, ok = open(r, P);
+  lobby(); const P = prog(), done = ROOMS.filter(r => P[r.id]).length;
+  const S0 = nst();
+  $("mh").innerHTML = `<div class="rooms">${nmCard(tabB("l", S0.view !== "v", X.nm.out) + tabB("v", S0.view === "v", X.nm.in) + `<button type="button" class="nms" data-shop>${X.nm.shop}</button>`)}<h3>${X.pickT}</h3><p>${X.pickS(done, ROOMS.length)}</p>${K.floors.map((f, fi) => `<h4>${X.floor[f.id].name} <small>${X.floor[f.id].sub}</small></h4><div class="rgrid">${ROOMS.filter(r => r.fi === fi).map(r => { const s = P[r.id] || 0, ok = open(r, P);
     return `<button type="button" class="rb${s ? " done" : ""}" data-r="${ROOMS.indexOf(r)}"${ok ? "" : " disabled"}><b>${r.ri + 1}</b><i>${"★".repeat(s)}${"☆".repeat(3 - s)}</i></button>`; }).join("")}</div>`).join("")}<p class="soon">${X.soon}</p></div>`;
-  nmMount(); $("mh").firstChild.onclick = e => { const b = e.target.closest("[data-r]"), v = e.target.closest("[data-v]"); if(e.target.closest("[data-shop]")){ MK.sfx.tap(); showShop(); } else if(v){ MK.sfx.tap(); setView(v.dataset.v); showPicker(); } else if(b && !b.disabled){ MK.sfx.tap(); startRoom(+b.dataset.r); } };
+  nmMount(S0.view === "v" ? "v" : "l"); $("mh").firstChild.onclick = e => { const b = e.target.closest("[data-r]"), v = e.target.closest("[data-v]"); if(e.target.closest("[data-shop]")){ MK.sfx.tap(); showShop(S0.view === "v" ? "v" : "l"); } else if(v){ MK.sfx.tap(); setView(v.dataset.v); showPicker(); } else if(b && !b.disabled){ MK.sfx.tap(); startRoom(+b.dataset.r); } };
 }
 function startRoom(idx){
-  stopDance(); const R = ROOMS[idx]; picking = false; mouse.visible = glow.visible = true;
+  stopDance(); dress(); const R = ROOMS[idx]; picking = false; mouse.visible = glow.visible = true;
   $("mh").innerHTML = `<div class="mtop"><div class="mcard" id="hR"></div><div class="mcard hearts" id="hH"></div><button type="button" class="hbtn" id="hRe" aria-label="${X.restart}" title="${X.restart}">↺</button></div><div class="mrow"><div class="mbar low" id="hBar"><i style="width:0"></i></div><div class="mcard" id="hT"></div><div class="mcard tmr" id="hC" hidden></div></div><div class="mmsg top" id="hMsg"></div><button type="button" class="abtn" id="hAct" disabled><b></b>${navigator.maxTouchPoints > 0 ? "" : `<small>${X.keyHint}</small>`}</button>`;
   $("hRe").onclick = () => { MK.sfx.tap(); reset(); }; $("hAct").addEventListener("pointerdown", e => { e.preventDefault(); press(); });
   st = { idx, R, P: L.parse(R.lv), fails: 0, over: false, t: 0, doneT: 0, msgT: 0, actKey: "?", tubeCoins: 0 }; reset(true); say(tipFor(R), "new"); st.msgT = 7; MK.sfx.whoosh();
 }
-const tipFor = R => X.tips[R.id] || "";   /* tik naujo dalyko paaiškinimas, ne sprendimo užuomina */
+const tipFor = R => { const t = X.tips[R.id]; return typeof t === "function" ? t(X.who[who()]) : t || ""; };   /* tik naujo dalyko paaiškinimas, ne sprendimo užuomina */
 function reset(first){ st.w = L.world0(st.P); st.obs = L.obstacles(st.P, st.w); st.on = L.onAt(st.P, st.w, st.P.start[0], st.P.start[1], st.t); st.onKey = st.on.join(); st.tmrS = -1; st.x = st.P.start[0]; st.z = st.P.start[1]; st.face = Math.PI; st.meter = 0; st.safe = 0.2; st.got = 0; st.gn = null; st.doneT = 0; st.isLit = false; ring.visible = false; buildRoom(); hud(); if(!first) say(""); }
-function start(){ init(); pose(); showPicker(); }
+function start(){ init(); pose(); dress(); if(nst().hero) showPicker(); else showHero(); }
 function stop(){ stopDance(); st = null; picking = false; keys.clear(); joy = null; if(joyEl){ joyEl.remove(); joyEl = null; } }
 function back(){ if(shopOpen){ showPicker(); return true; } if(picking || !st) return false; $("ov").innerHTML = ""; showPicker(); return true; }
 function hud(){ const R = st.R, n = st.P.tubes.length; $("hR").innerHTML = `<small>${X.floor[K.floors[R.fi].id].name}</small>${X.room(R.ri + 1)}`; $("hT").textContent = X.tubes(st.got, n); $("hT").hidden = !n; const h = Math.max(0, 3 - st.fails); $("hH").textContent = "♥".repeat(h) + "♡".repeat(3 - h); }

@@ -12,7 +12,22 @@ function earned(floors, rooms){ let s = 0; for(const f of floors){ let done = 0,
 const balance = (floors, rooms, S) => earned(floors, rooms) + (S.extra || 0) - (S.spent || 0);
 const tubeValue = fid => fid === "b" ? 2 * TUBE : TUBE * (+fid || 1);
 const ripe = (S, rid, i, now) => !(S.tb && S.tb[rid] && S.tb[rid][i] > now - TUBE_MS);
-const price = id => { const it = ITEMS.find(q => q[0] === id); return it ? it[1] : 0; };
+/* rūbai: [id, vieta (top – marškinėliai ar suknelė, shoes, scarf, hat), kaina, kam (b – peliukui, g – pelytei, * – abiem), išvaizda] */
+const WEAR = [
+  ["m0", "top", 0, "b", { shirt: "#19b5a5", stripe: "#ffd23f", shorts: "#3b5bdb" }], ["m1", "top", 30, "b", { shirt: "#f5871f", stripe: "#ffffff", shorts: "#2b2f3a" }], ["m2", "top", 30, "b", { shirt: "#8b5cf6", stripe: "#ffd23f", shorts: "#1f6f8b" }],
+  ["m3", "top", 30, "b", { shirt: "#e5484d", stripe: "#ffffff", shorts: "#3b5bdb" }], ["m4", "top", 30, "b", { shirt: "#ffd23f", stripe: "#e5484d", shorts: "#2f8f4e" }], ["m5", "top", 40, "b", { shirt: "#2b2f3a", stripe: "#ffd23f", shorts: "#e5484d" }],
+  ["s0", "top", 0, "g", { shirt: "#ff5fa2", stripe: "#ffffff" }], ["s1", "top", 30, "g", { shirt: "#8b5cf6", stripe: "#ffd23f" }], ["s2", "top", 30, "g", { shirt: "#19b5a5", stripe: "#ffffff" }],
+  ["s3", "top", 30, "g", { shirt: "#ffd23f", stripe: "#ff5fa2" }], ["s4", "top", 30, "g", { shirt: "#3b82e6", stripe: "#ffffff" }], ["s5", "top", 40, "g", { shirt: "#e5484d", stripe: "#ffffff" }],
+  ["b0", "shoes", 20, "*", { shoe: "#e5484d" }], ["b1", "shoes", 20, "*", { shoe: "#3b82e6" }], ["b2", "shoes", 20, "*", { shoe: "#ffd23f" }], ["b3", "shoes", 20, "*", { shoe: "#2f8f4e" }], ["b4", "shoes", 20, "*", { shoe: "#8b5cf6" }], ["b5", "shoes", 20, "*", { shoe: "#f4f1ea" }],
+  ["k0", "scarf", 0, "*", { scarf: null }], ["k1", "scarf", 25, "*", { scarf: "#e5484d" }], ["k2", "scarf", 25, "*", { scarf: "#ffd23f" }], ["k3", "scarf", 25, "*", { scarf: "#3b82e6" }], ["k4", "scarf", 25, "*", { scarf: "#2f8f4e" }],
+  ["h0", "hat", 0, "*", { hat: "beret", hatC: "#e5484d" }], ["h1", "hat", 25, "*", { hat: "beret", hatC: "#3b82e6" }], ["h2", "hat", 35, "*", { hat: "cap", hatC: "#3b82e6" }], ["h3", "hat", 35, "*", { hat: "cap", hatC: "#ffd23f" }], ["h4", "hat", 35, "*", { hat: "beanie", hatC: "#2f8f4e" }], ["h5", "hat", 35, "*", { hat: "beanie", hatC: "#ff5fa2" }]
+], SLOTS = ["top", "shoes", "scarf", "hat"], DEF = { b: { top: "m0", shoes: "b0", scarf: "k0", hat: "h0" }, g: { top: "s0", shoes: "b4", scarf: "k0", hat: "h0" } };
+const wearOf = id => WEAR.find(q => q[0] === id), worn = (S, who, slot) => (S.wear && S.wear[who] && S.wear[who][slot]) || DEF[who][slot];
+/* ar daiktą herojus turi: nupirktas arba pradinis (nemokamas arba šio herojaus pradinių rūbų dalis) */
+const hasWear = (S, who, id) => { const w = wearOf(id); return !!w && (w[2] === 0 || DEF[who][w[1]] === id || (S.own || []).includes(id)); };
+/* herojaus išvaizda pagal dėvimus rūbus – parinktys MK_PELE.make */
+function outfit(S, who){ const o = { girl: who === "g" }; for(const slot of SLOTS){ const w = wearOf(worn(S, who, slot)); if(w) Object.assign(o, w[4]); } if(o.girl) o.shorts = o.shirt; return o; }
+const price = id => { const it = ITEMS.find(q => q[0] === id) || wearOf(id); return it ? (it.length > 3 ? it[2] : it[1]) : 0; };
 function build(THREE, own, inside){
   const std = (c, e, o) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.85, emissive: e || 0x000000 }, o || {})), g = new THREE.Group();
   const M = (geo, mat, x, y, z, p) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; (p || g).add(m); return m; }, box = (w, h, d) => new THREE.BoxGeometry(w, h, d), cyl = (a, b, h, s) => new THREE.CylinderGeometry(a, b, h, s || 16), sp = r => new THREE.SphereGeometry(r, 14, 10), has = id => own.has(id);
@@ -48,5 +63,5 @@ function build(THREE, own, inside){
   }
   return g;
 }
-window.MK_NAMAS = { ITEMS, REWARD, FLOOR_DONE, FLOOR_STARS, TUBE_MS, earned, balance, tubeValue, ripe, price, build };
+window.MK_NAMAS = { ITEMS, WEAR, SLOTS, DEF, wearOf, worn, hasWear, outfit, REWARD, FLOOR_DONE, FLOOR_STARS, TUBE_MS, earned, balance, tubeValue, ripe, price, build };
 })();
