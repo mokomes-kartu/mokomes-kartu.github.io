@@ -88,7 +88,8 @@ function facing(x, z, ox, oz){ const dx = ox - x, dz = oz - z;
   if(Math.abs(dx) >= Math.abs(dz)) return Math.abs(dx) <= REACH && Math.abs(dz) <= SIDE ? [Math.sign(dx), 0, Math.abs(dx)] : null; return Math.abs(dz) <= REACH && Math.abs(dx) <= SIDE ? [0, Math.sign(dz), Math.abs(dz)] : null; }
 /* ką pelytė gali padaryti stovėdama taške (x, z): arčiausias daiktas, su kuriuo galima ką nors veikti */
 function action(P, w, x, z){
-  let best = null; const take = (a, d) => { if(!best || d < best.d){ best = a; best.d = d; } };
+  /* pirmenybė veiksmui, kurį galima atlikti: jei arčiausia dėžė įremta, o šalia yra kita, kurią galima pastumti – stumiama ši */
+  let best = null; const take = (a, d) => { if(!best || (a.ok && !best.ok) || (a.ok === best.ok && d < best.d)){ best = a; best.d = d; } };
   w.boxes.forEach((b, i) => { const f = facing(x, z, cx(b[0]), cz(b[1])); if(f) take({ type: "push", i, dc: f[0], dr: f[1], ok: cellFree(P, w, b[0] + f[0], b[1] + f[1]) }, f[2]); });
   P.cheese.forEach((s, i) => { if(!w.cheese[i]) return; const f = facing(x, z, cx(s[0]), cz(s[1])); if(f) take({ type: "cheese", i, ok: true }, f[2]); });
   P.ropes.forEach((q, i) => { if(w.ropes[i]) return; const d = Math.hypot(cx(q[0]) - x, cz(q[1]) - z); if(d <= NEAR) take({ type: "rope", i, ok: true }, d); });

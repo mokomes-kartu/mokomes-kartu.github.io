@@ -9,6 +9,8 @@ const MG = 0.1, litC = (obs, lamps, on, x, z, t) => L.lit(obs, lamps, on, x - MG
 const litO = (obs, lamps, on, x, z, t) => L.lit(obs, lamps, on, x - MG, z - MG, t) && L.lit(obs, lamps, on, x + MG, z - MG, t) && L.lit(obs, lamps, on, x - MG, z + MG, t) && L.lit(obs, lamps, on, x + MG, z + MG, t);
 const NB = [[1, 0, 2], [-1, 0, 2], [0, 1, 2], [0, -1, 2], [1, 1, 3], [1, -1, 3], [-1, 1, 3], [-1, -1, 3]];
 const isDyn = P => P.lamps.some(l => l.rot || l.sw || l.hv) || !!P.cat;
+/* judančios lempos ir veiksmai kartu – tikrinama solveTime */
+const isTimeAct = P => !P.cat && P.lamps.some(l => l.rot || l.sw || l.hv) && (P.boxes.length + P.cheese.length + P.ropes.length + P.cables.length + P.switches.length) > 0;
 /* žybsinti lempa statiniame tikrintuve: per tamsos tarpą galima nueiti toliau, todėl leidžiamas ilgesnis „šuolis“ tarp šešėlių.
    Atsargiai: (tamsos trukmė − 0,2 s reakcijai) × greitis + 1,6; palankiai: visa juosta prieš ir po + visa tamsos trukmė. Vienetai: 16 juostos vienetų vienam ilgio vienetui. */
 const blinkLIM = (P, opt) => { const b = P.lamps.filter(l => l.blink); if(!b.length) return opt ? 40 : 26; const off = Math.min(...b.map(l => l.blink[1])); return Math.round(16 * (opt ? 5.1 + off * L.SPEED + 0.5 : (off - 0.2) * L.SPEED + 1.6)); };
@@ -90,6 +92,49 @@ function solveDyn(lv, o = {}){
     if(!got) throw new Error('nėra pirmtako ' + step); [c, m, wt] = got; }
   out.push([X(c), Z(c)]); return { ok: true, t: T, path: out.reverse() };
 }
+/* judančios lempos IR veiksmai (stūmimas, jungikliai, graužimas; be laikmačių ir katino): paieška laike per visas kambario būsenas.
+   Lempų judėjimas periodinis (periodas – sveikas pustakčių skaičius), todėl būsena – (kambario būsena, langelis, fazė) su mažiausia juosta; paieška baigiasi pati, kai nebelieka pagerinimų.
+   o.opt – palankus vertinimas, o.skip(a), o.noAct, o.noShadow, o.noLight, o.path – grąžinti kelią kas pustaktį ir veiksmų laikus, o.AC – veiksmo trukmė pustakčiais,
+   o.goal(x, z) – kitas tikslas (pvz., tūbelė), o.from, o.world, o.s0 – pradėti iš kitos vietos, būsenos ir laiko */
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+function periodOf(P){ let PT = 1; const add = p => { const n = Math.round(p / HT); if(Math.abs(n * HT - p) > 2e-4 * p) throw new Error('lempos periodas ne sveikas pustakčių skaičius: ' + p + ' (artimiausias ' + n * HT + ')'); PT = PT * n / gcd(PT, n); };
+  for(const l of P.lamps){ if(l.sw) add(2 * Math.PI / l.sw[1]); if(l.rot) add(2 * Math.PI / Math.abs(l.rot)); if(l.hv) add(2 * Math.PI / l.hv[1]); if(l.blink) add(l.blink[0] + l.blink[1]); } return PT; }
+/* lempos greitis, kad periodas būtų lygiai n pustakčių */
+const speedFor = n => 2 * Math.PI / (n * HT);
+function solveTime(lv, o = {}){
+  const P = L.parse(lv); if(P.cat || P.timers.length) throw new Error('solveTime: katinas ir laikmačiai nepalaikomi');
+  const LIM = o.LIM || (o.opt ? 40 : 26), PT = periodOf(P), lf = o.opt ? litO : litC, AC = o.AC || (o.opt ? 1 : 6), maxT = o.maxT || 40000, maxW = o.maxWorlds || 400, RING = 32;
+  const worlds = [], widx = new Map(), wkey = w => JSON.stringify([w.boxes, w.cheese, w.ropes, w.on, w.dead]);
+  const getW = w => { const k = wkey(w); let i = widx.get(k); if(i === undefined){ if(worlds.length >= maxW) return -1; const obs = L.obstacles(P, w); i = worlds.length; worlds.push({ w, obs, lobs: o.noShadow ? [] : obs, free: freeMap(P, obs, o.opt ? 0.005 : PAD), lit: new Uint8Array(PT * N).fill(255), best: new Uint8Array(PT * N).fill(255), act: new Array(N) }); widx.set(k, i); } return i; };
+  const lit = (W, c, s) => { const p = s % PT, k = p * N + c; let v = W.lit[k]; if(v === 255){ const x = X(c), z = Z(c), t = p * HT; v = W.lit[k] = !o.noLight && lf(W.lobs, P.lamps, L.onAt(P, W.w, x, z, t), x, z, t) ? 1 : 0; } return v; };
+  const actOf = (W, c) => { let a = W.act[c]; if(a === undefined){ a = L.action(P, W.w, X(c), Z(c)); if(!a || !a.ok || (o.skip && o.skip(a))) a = null; else { a = { a, wi: getW(L.apply(P, W.w, a, 0)) }; } W.act[c] = a; } return a; };
+  const layers = Array.from({ length: RING }, () => new Map()), pool = [], alloc = () => pool.pop() || { m: new Uint8Array(N).fill(255), par: o.path ? new Int32Array(N) : null, list: [] };
+  let pending = 0, over = false;
+  const put = (s, wi, c, m, par) => { const Lr = layers[s % RING]; let e = Lr.get(wi); if(!e){ e = alloc(); Lr.set(wi, e); pending++; } if(m < e.m[c]){ if(e.m[c] === 255) e.list.push(c); e.m[c] = m; if(e.par) e.par[c] = par; } };
+  /* mazgai keliui atkurti */
+  let nW = new Uint16Array(1 << 16), nC = new Uint16Array(1 << 16), nS = new Int32Array(1 << 16), nP = new Int32Array(1 << 16), nn = 0;
+  const node = (wi, c, s, par) => { if(nn === nW.length){ const g = (A, B) => { B.set(A); return B; }; nW = g(nW, new Uint16Array(nn * 2)); nC = g(nC, new Uint16Array(nn * 2)); nS = g(nS, new Int32Array(nn * 2)); nP = g(nP, new Int32Array(nn * 2)); } nW[nn] = wi; nC[nn] = c; nS[nn] = s; nP[nn] = par; return nn++; };
+  const goal = o.goal || L.atDoor, s0 = o.s0 || 0; put(s0, getW(o.world || L.world0(P)), cellOf(o.from || P.start), 0, -1); let end = -1, endS = -1, count = 0;
+  for(let s = s0; pending > 0 && end < 0; s++){ if(s > s0 + maxT){ over = true; break; } const Lr = layers[s % RING]; if(!Lr.size) continue; const p = s % PT;
+    for(const [wi, e] of Lr){ const W = worlds[wi];
+      for(const c of e.list){ const m = e.m[c]; e.m[c] = 255; const slot = p * N + c; if(end >= 0 || m >= W.best[slot]) continue; W.best[slot] = m; count++; const id = o.path ? node(wi, c, s, e.par[c]) : 0, pid = id * 2;
+        if(goal(X(c), Z(c))){ end = id; endS = s; continue; }
+        { const nm = lit(W, c, s + 1) ? m + 2 : Math.max(0, m - 3); if(nm < LIM) put(s + 1, wi, c, nm, pid); }
+        const i = c % NX, j = (c / NX) | 0;
+        for(const [di, dj, k] of NB){ const ni = i + di, nj = j + dj; if(ni < 0 || nj < 0 || ni >= NX || nj >= NZ) continue; const n = nj * NX + ni; if(!W.free[n]) continue; if(k === 3 && (!W.free[j * NX + ni] || !W.free[nj * NX + i])) continue;
+          let nm = m; for(let q = 1; q <= k && nm < LIM; q++) nm = lit(W, n, s + q) ? nm + 2 : Math.max(0, nm - 3); if(nm < LIM) put(s + k, wi, n, nm, pid); }
+        if(o.noAct) continue; const A = actOf(W, c); if(!A) continue; if(A.wi < 0){ over = true; continue; } const W2 = worlds[A.wi]; if(!W2.free[c]) continue;
+        if(INSTANT[A.a.type]){ let nm = m; for(let q = 1; q <= AC && nm < LIM; q++) nm = lit(W2, c, s + q) ? nm + 2 : Math.max(0, nm - 3); if(nm < LIM) put(s + AC, A.wi, c, nm, pid + 1); }
+        else { let nm = m; for(let q = 1; q <= GNAW_T && nm < LIM; q++) nm = lit(W, c, s + q) ? nm + 2 : Math.max(0, nm - 3); if(nm < LIM) put(s + GNAW_T, A.wi, c, nm, pid + 1); } }
+      e.list.length = 0; pool.push(e); pending--; }
+    Lr.clear(); }
+  if(end < 0) return { ok: false, over, worlds: worlds.length, states: count, PT };
+  const res = { ok: true, t: (endS - s0) * HT, steps: endS, worlds: worlds.length, states: count, PT }; if(!o.path) return res;
+  const chain = []; for(let k = end; k >= 0; k = nP[k] >> 1){ chain.push(k); if(nP[k] < 0) break; } chain.reverse();
+  const path = [[X(nC[chain[0]]), Z(nC[chain[0]])]], acts = [];
+  for(let q = 1; q < chain.length; q++){ const a = chain[q - 1], b = chain[q], pt = [X(nC[b]), Z(nC[b])]; if(nP[b] & 1){ const A = worlds[nW[a]].act[nC[a]].a; acts.push({ s: nS[a], type: A.type, i: A.i, dc: A.dc || 0, dr: A.dr || 0 }); } for(let k = nS[a]; k < nS[b]; k++) path.push(pt); }
+  res.path = path; res.acts = acts; res.finalW = worlds[nW[end]].w; return res;
+}
 function map(lv, times, w){ const P = L.parse(lv); w = w || L.world0(P); const obs0 = L.obstacles(P, w);
   const one = t => { const obs = L.withCat(obs0, P.cat, t), rows = []; for(let j = 0; j < NZ; j += 2){ let s = ''; for(let i = 0; i < NX; i++){ const x = gx(i), z = gz(j); let ch = L.solid(obs, [], x, z, 0.01) ? '#' : L.lit(obs, P.lamps, L.onAt(P, w, x, z, null), x, z, t) ? '.' : ' ';
       for(const o of obs) if(Math.abs(o[1] - x) < 0.3 && Math.abs(o[2] - z) < 0.3 && ch === '#') ch = o[6] === 'B' ? 'B' : o[6] === 'S' ? 'S' : o[6] === '=' ? '=' : o[6] === 'cat' ? 'C' : o[6] === 'X' ? 'X' : '#';
@@ -98,4 +143,4 @@ function map(lv, times, w){ const P = L.parse(lv); w = w || L.world0(P); const o
   const ms = (times || [0]).map(one); return ms[0].map((r, k) => ms.map(m => m[k]).join('  ')).join('\n'); }
 /* ar pradžios vieta visada saugi (nei lempos, nei katino žvilgsnio) */
 function startSafe(lv){ const P = L.parse(lv), w = L.world0(P), obs = L.obstacles(P, w), dyn = isDyn(P); for(let t = 0; t < (dyn ? 60 : 0.1); t += 0.15){ const cat = P.cat ? L.catPos(P.cat, t) : null, ob2 = L.withCat(obs, P.cat, t); for(const [dx, dz] of [[0, 0], [0.4, 0], [-0.4, 0], [0, 0.4], [0, -0.4]]){ const x = P.start[0] + dx, z = P.start[1] + dz; if(Math.abs(x) > 4.2 || Math.abs(z) > 7.2) continue; if(L.lit(ob2, P.lamps, L.onAt(P, w, x, z, dyn ? t : null), x, z, t) || (cat && L.catSees(obs, P.cat, cat, x, z))) return false; } } return true; }
-module.exports = { L, startSafe, blinkLIM, pathBFS, reachT, solveStatic, solveDyn, fields, reach, goalOf, map, isDyn, cellOf, X, Z, N, NX, NZ, HT, gx, gz };
+module.exports = { L, solveTime, periodOf, speedFor, isTimeAct, startSafe, blinkLIM, pathBFS, reachT, solveStatic, solveDyn, fields, reach, goalOf, map, isDyn, cellOf, X, Z, N, NX, NZ, HT, gx, gz };

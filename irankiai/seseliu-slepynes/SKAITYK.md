@@ -19,4 +19,10 @@ Visos naudoja tą pačią logiką kaip žaidimas (`/seseliu-dirbtuve/slepynes-lo
 - Tikrintuvas moka: jungiklius (akimirksniu), grindų mygtukus (lempa nedega, kol ant mygtuko dėžė ar pati pelytė), groteles (dėžės neužstumiamos), jungiklį su laikmačiu (`reachT` – „langas“, kol lempa užgesusi).
 - Žybsinčios lempos (`blink`) logikoje yra, bet tikrintuvas jas vertina tik apytiksliai (`blinkLIM`) – patikimai tinka tik ilgiems kambariams; 9 × 15 kambaryje dėžė beveik niekada nebūna būtina.
 - `sok.js` – mažų dėžių galvosūkių paieška 3 eilučių arenoje (naudota 3-6 kambariui); `alt.js <rinkinys> <nr.> <tipas> <i>` – parodo, kaip kambarį galima įveikti be nurodyto veiksmo (kai tikrintuvas sako „nebūtinas“).
-- Dėžė kaip skydas: stumiant dėžę link lempos pelytė lieka jos šešėlyje. 3-8 kambaryje tai sprendimas; kitur, kad nesugadintų sumanymo, dėžės ribojamos grotelėmis ar tuneliais.
+- Dėžė kaip skydas: stumiant dėžę link lempos pelytė lieka jos šešėlyje. 3-8 kambaryje tai sprendimo dalis; kitur, kad nesugadintų sumanymo, dėžės ribojamos grotelėmis ar tuneliais.
+
+## Judančios lempos kartu su veiksmais (2026-11-28)
+- `solver.js` → `solveTime(lv, o)`: paieška laike per visas kambario būsenas (stūmimas, jungikliai, graužimas; be laikmačių ir katino). Lempų judėjimas turi būti periodinis, o periodas – sveikas pustakčių skaičius (`speedFor(n)`; pvz., 12,5 s = 340 pustakčių). Parinktys kaip `solveStatic` (`opt`, `skip`, `noAct`, `noShadow`), dar `path` (kelias kas pustaktį + veiksmų laikai), `goal`, `from`, `world`, `s0` (pvz., ar pasiekiama tūbelė).
+- `check.js`, `pick.js`, `plans.js`, `bot.js` tokius kambarius atpažįsta patys (`isTimeAct`). Botas eina pagal laiką, o veiksmą spaudžia atėjus jo laikui.
+- 3-8 „Slėptuvė iš dviejų dėžių“: durų lempa + iš šono šluojantis prožektorius. Derinant paaiškėjo: jei prožektoriaus mostas daug platesnis už spindulį, užtenka vienos dėžės (prabėgama); jei siauresnis – nebeįveikiama net su slėptuve. Tinka tik siaura juosta (mostas ≈ spindulio pusplotis + 0,15); patikrinta (0,5; 0,65), (0,55; 0,7), (0,6; 0,75).
+- Dėl šio kambario pakeista `action` (slepynes-logika.js): jei arčiausia dėžė įremta, o greta yra kita, kurią galima pastumti, – stumiama ši. Visi 34 kambariai po pakeitimo patikrinti iš naujo.

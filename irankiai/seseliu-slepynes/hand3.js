@@ -131,24 +131,27 @@ module.exports = [
     ".........",
     "M........"],
     lamps: [OVER(3, 6, 0.7, 3.0), OVER(0, -1, 1.05, 3.4), OVER(0, -6, 1.0)], switches: [[1, 13, [0, 1]], [8, 14, [1, 2]]] },
-  /* 3-8 Dėžė – skydas: lempa prie durų šviečia per visą kambarį; stumiant dėžę link lempos pelytė eina jos šešėlyje */
+  /* 3-8 Slėptuvė iš dviejų dėžių: durų lempa šviečia išilgai koridoriaus, prožektorius nuo stalo šluoja jį iš šono (periodas 12,5 s).
+     Už vienos dėžės pasislėpsi tik nuo durų lempos; nuo prožektoriaus dengia tik greta (vakaruose) stovinti antra dėžė.
+     Slėptuvė – už dešiniosios dėžės, kai kairioji stovi šalia jos ar viena eile arčiau: jas reikia stumti pakaitomis, o prožektoriui slenkant pro šalį – palaukti slėptuvėje.
+     Dėžės juda tik pirmyn ir atgal (šonuose stalas ir siena, apačioje grotelės). Tikrinama solveTime: be bet kurios dėžės neįveikiama net palankiausiu vertinimu */
   { map: [
     ".........",
     ".........",
     ".........",
-    "........T",
-    ".........",
-    ".........",
-    ".........",
-    ".........",
-    ".........",
-    ".........",
-    ".........",
-    "XXXXBXXXX",
-    ".........",
+    "====..X.T",
+    "====..X..",
+    "====..X..",
+    "====..X..",
+    "====..X..",
+    "====..X..",
+    "====..X..",
+    "====..X..",
+    "XXXXBBXXX",
+    "....gg...",
     "T........",
     "M........"],
-    lamps: [{ x: 0, z: -6, h: 2.0, a: rad(90), reach: 7, cone: 0.6 }] },
+    lamps: [{ x: 0, z: -6, h: 2.0, a: rad(90), reach: 7, cone: 0.6 }, SIDE(-1, 0.55, { h: 4.5, sw: [0.7, 2 * Math.PI / 12.5] })] },
   /* 3-9 Laikmačių estafetė: per vieną langą visos šviesos neperbėgsi – pusiaukelėje, dėžės šešėlyje, laukia antras laikmatis */
   { map: [
     ".........",
