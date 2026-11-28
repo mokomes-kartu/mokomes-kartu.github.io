@@ -17,6 +17,7 @@
 <script src="tekstai.lt.js"></script>
 <script src="daiktai.js"></script>
 <script src="pele.js"></script>
+<script src="namelis.js"></script>
 <script src="slepynes-logika.js"></script>
 <script src="slepynes-kambariai.js"></script>
 <style>
@@ -109,6 +110,15 @@ details.lr p{margin:0 12px 10px;font:500 15px/1.5 var(--body)}
 .rooms h4{margin:16px auto 8px;max-width:420px;text-align:left;font:900 17px/1.2 var(--kid)}.rooms h4 small{font:700 13px/1 var(--body);opacity:.75;margin-left:6px}
 .rgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:420px;margin:0 auto}
 .rb{aspect-ratio:1;border:3px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink);cursor:pointer;display:grid;place-content:center;gap:3px;box-shadow:0 4px 0 rgba(0,0,0,.35);padding:0}
+.cn{display:inline-block;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe680,#f7b500);box-shadow:inset 0 0 0 2px #c98a00;position:relative;vertical-align:-3px}
+.cn:before,.cn:after{content:"";position:absolute;border-radius:50%;background:#c98a00}.cn:before{width:5px;height:5px;left:4px;top:5px}.cn:after{width:4px;height:4px;right:3px;bottom:4px}
+.nm{position:relative;max-width:420px;margin:0 auto 14px;border:3px solid var(--ink);border-radius:18px;overflow:hidden;background:#1a1f33;box-shadow:0 5px 0 rgba(0,0,0,.35)}
+.nmc{aspect-ratio:1.6;background:#1a1f33}.nmcv{display:block;width:100%;height:100%}
+.nm .coin{position:absolute;top:8px;right:8px;display:inline-flex;align-items:center;gap:6px;padding:4px 11px 4px 6px;border:3px solid var(--ink);border-radius:99px;background:#fff;color:var(--ink);font:900 16px/1.2 var(--kid)}
+.nmt{display:flex;gap:6px;padding:8px;background:#232846}.nmt button{height:38px;padding:0 13px;border:3px solid var(--ink);border-radius:12px;background:#3a4066;color:#fff;font:900 14.5px/1 var(--kid);cursor:pointer}.nmt button.on{background:#fff;color:var(--ink)}.nmt .nms{margin-left:auto;background:#ffd23f;color:var(--ink)}
+.shop{display:grid;gap:8px;max-width:420px;margin:0 auto;text-align:left}.it{display:flex;align-items:center;gap:10px;padding:8px 10px;border:3px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink)}.it .ic{flex:none;width:30px;height:30px;border-radius:9px;border:2px solid var(--ink)}.it b{flex:1;font:900 15.5px/1.2 var(--kid)}
+.it button{flex:none;height:38px;padding:0 12px;border:3px solid var(--ink);border-radius:12px;background:#ffd23f;color:var(--ink);font:900 15px/1 var(--kid);cursor:pointer;white-space:nowrap}.it button:disabled{background:#eceef4;color:#8a8fa3;cursor:default}.it .ok{font:900 14px/1 var(--kid);color:#1f8a43;white-space:nowrap}.it.poor b{opacity:.6}
+.rc p small{font-weight:600;opacity:.75}
 .rb b{font:900 20px/1 var(--kid)}.rb i{font:normal 800 11px/1 var(--body);color:#c98a00;letter-spacing:1px}.rb.done{background:#dffbe6}.rb:disabled{opacity:.35;cursor:default}
 @media (min-width:800px){.tgrid{grid-template-columns:repeat(6,minmax(0,1fr));width:min(100%,760px)}.tb{font-size:13px}.tb img{width:84px;height:84px}#game[data-mode="slepynes"] .mtop,.mrow{right:auto;width:340px}#game[data-mode="slepynes"] .mmsg.top{left:max(8px,env(safe-area-inset-left));transform:none;max-width:340px;text-align:left;top:calc(max(8px,env(safe-area-inset-top)) + 96px)}}
 #ov{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(43,47,58,.5);overflow:auto}

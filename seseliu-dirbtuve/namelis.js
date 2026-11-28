@@ -1,10 +1,19 @@
-/* Pelytės namelis (eskizas): lauko vaizdas prie dirbtuvės sienos ir kambarys viduje. Daiktai rodomi pagal turimų sąrašą own (Set). */
-export const ITEMS = [
-  /* id, pavadinimas, kaina, vieta */
-  ["kilimelis", "Kilimėlis prie durų", 4, "l"], ["vazonas", "Gėlės antpirštyje", 6, "l"], ["pastas", "Pašto dėžutė", 8, "l"], ["suoliukas", "Suoliukas", 10, "l"], ["zibintas", "Žibintas", 12, "l"], ["tvorele", "Degtukų tvorelė", 12, "l"], ["girlianda", "Lempučių girlianda", 15, "l"], ["masina", "Peliamobilis", 40, "l"],
-  ["lova", "Lova iš degtukų dėžutės", 6, "v"], ["kilimas", "Apvalus kilimas", 6, "v"], ["stalas", "Stalas iš siūlų ritės", 8, "v"], ["lentyna", "Knygų lentyna", 10, "v"], ["paveikslas", "Paveikslas", 10, "v"], ["lempa", "Toršeras", 12, "v"], ["fotelis", "Fotelis", 14, "v"], ["molbertas", "Molbertas", 18, "v"]
-];
-export function build(THREE, own, inside){
+/* Šešėlių dirbtuvė – pelytės namelis ir pinigėliai (naudoja „Šešėlių slėpynės“).
+   Pinigėliai: už kambarį pagal GERIAUSIĄ rezultatą (1★ 20, 2★ 40, 3★ 70 – pakartojus sumokamas tik trūkstamas skirtumas), aukšto premijos (visi kambariai – 100, visi trimis žvaigždutėmis – dar 200)
+   ir dažų tūbelės (5 × aukšto numeris; surinkta tūbelė vėl prisipildo po valandos). Likutis = uždirbta − išleista.
+   MK_NAMAS.build(THREE, own, inside) – namelio vaizdas lauke arba viduje su turimais daiktais (own – Set). Daiktų pavadinimai – tekstai.lt.js */
+(function(){
+const REWARD = [0, 20, 40, 70], FLOOR_DONE = 100, FLOOR_STARS = 200, TUBE = 5, TUBE_MS = 3600e3;
+/* daiktai: [id, kaina, vieta: l – lauke, v – viduje] */
+const ITEMS = [["kilimelis", 40, "l"], ["vazonas", 60, "l"], ["pastas", 80, "l"], ["suoliukas", 100, "l"], ["zibintas", 120, "l"], ["tvorele", 120, "l"], ["girlianda", 150, "l"], ["masina", 400, "l"],
+  ["lova", 60, "v"], ["kilimas", 60, "v"], ["stalas", 80, "v"], ["lentyna", 100, "v"], ["paveikslas", 100, "v"], ["lempa", 120, "v"], ["fotelis", 140, "v"], ["molbertas", 180, "v"]];
+/* floors: [{ id, n }] – aukštai ir kambarių skaičius; rooms: { "1-3": žvaigždutės } */
+function earned(floors, rooms){ let s = 0; for(const f of floors){ let done = 0, three = 0; for(let i = 1; i <= f.n; i++){ const v = rooms[f.id + "-" + i] || 0; s += REWARD[v] || 0; if(v) done++; if(v === 3) three++; } if(f.id !== "b"){ if(done === f.n) s += FLOOR_DONE; if(three === f.n) s += FLOOR_STARS; } } return s; }
+const balance = (floors, rooms, S) => earned(floors, rooms) + (S.extra || 0) - (S.spent || 0);
+const tubeValue = fid => fid === "b" ? 2 * TUBE : TUBE * (+fid || 1);
+const ripe = (S, rid, i, now) => !(S.tb && S.tb[rid] && S.tb[rid][i] > now - TUBE_MS);
+const price = id => { const it = ITEMS.find(q => q[0] === id); return it ? it[1] : 0; };
+function build(THREE, own, inside){
   const std = (c, e, o) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.85, emissive: e || 0x000000 }, o || {})), g = new THREE.Group();
   const M = (geo, mat, x, y, z, p) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; (p || g).add(m); return m; }, box = (w, h, d) => new THREE.BoxGeometry(w, h, d), cyl = (a, b, h, s) => new THREE.CylinderGeometry(a, b, h, s || 16), sp = r => new THREE.SphereGeometry(r, 14, 10), has = id => own.has(id);
   const wood = std("#8a5a34"), woodL = std("#c58a4e"), red = std("#e5484d", 0x3a0e10), blue = std("#3b82e6", 0x0d2550), yel = std("#ffd23f", 0x5a4500), grn = std("#4caf50", 0x103a12), wht = std("#f4f1ea", 0x333333), dark = std("#2b2f3a"), glowM = c => new THREE.MeshBasicMaterial({ color: c });
@@ -20,9 +29,9 @@ export function build(THREE, own, inside){
     if(has("pastas")){ M(cyl(0.025, 0.025, 0.6, 8), wood, 0.85, 0.3, 0.35); M(box(0.26, 0.17, 0.18), red, 0.85, 0.66, 0.35); M(box(0.03, 0.14, 0.02), yel, 0.99, 0.74, 0.35); }
     if(has("suoliukas")){ M(box(0.9, 0.05, 0.28), woodL, -1.9, 0.26, 0.4); M(box(0.9, 0.22, 0.04), woodL, -1.9, 0.44, 0.27); for(const dx of [-0.38, 0.38]) M(box(0.06, 0.26, 0.26), wood, -1.9 + dx, 0.13, 0.4); }
     if(has("zibintas")){ M(cyl(0.03, 0.04, 1.25, 8), dark, 1.5, 0.625, 0.45); M(box(0.2, 0.24, 0.2), glowM(0xffe9a8), 1.5, 1.36, 0.45); const cp = M(cyl(0.02, 0.17, 0.12, 4), dark, 1.5, 1.54, 0.45); cp.rotation.y = Math.PI / 4; const pl = new THREE.PointLight(0xffd98a, 2.2, 3.5); pl.position.set(1.5, 1.36, 0.6); g.add(pl); }
-    if(has("tvorele")){ for(let k = 0; k < 9; k++){ const x = -3.9 + k * 0.2; M(box(0.05, 0.42, 0.05), wht, x, 0.21, 1.25); M(sp(0.045), red, x, 0.44, 1.25); } M(box(1.7, 0.04, 0.03), wht, -3.1, 0.26, 1.25); for(let k = 0; k < 4; k++){ const x = 3.75 + k * 0.2; M(box(0.05, 0.42, 0.05), wht, x, 0.21, 1.25); M(sp(0.045), red, x, 0.44, 1.25); } M(box(0.7, 0.04, 0.03), wht, 4.05, 0.26, 1.25); }
+    if(has("tvorele")){ for(const [x0, n] of [[-2.0, 5], [2.15, 4]]){ for(let k = 0; k < n; k++){ const x = x0 + k * 0.2; M(box(0.05, 0.42, 0.05), wht, x, 0.21, 1.0); M(sp(0.045), red, x, 0.44, 1.0); } M(box((n - 1) * 0.2 + 0.1, 0.04, 0.03), wht, x0 + (n - 1) * 0.1, 0.26, 1.0); } }
     if(has("girlianda")){ const cs = [0xff5d73, 0xffd23f, 0x4dd0e1, 0x7ee081, 0xb388ff]; for(let k = 0; k <= 12; k++){ const u = k / 12, x = -1.7 + u * 3.4, y = 1.62 - Math.sin(u * Math.PI) * 0.22 + (k % 2 ? -0.03 : 0); M(sp(0.045), glowM(cs[k % 5]), x, y, 0.08); } const w = M(box(3.4, 0.012, 0.012), dark, 0, 1.6, 0.06); }
-    if(has("masina")){ const c = new THREE.Group(); c.position.set(2.9, 0, 0.6); c.rotation.y = -0.3; g.add(c); M(box(1.2, 0.26, 0.62), blue, 0, 0.3, 0, c); M(box(1.24, 0.04, 0.66), std("#cfd6e2", 0x222222, { metalness: 0.5, roughness: 0.4 }), 0, 0.44, 0, c); M(box(0.5, 0.2, 0.5), red, -0.1, 0.56, 0, c); const ws = M(box(0.04, 0.24, 0.5), std("#bfe6ff", 0x224455, { transparent: true, opacity: 0.7 }), 0.2, 0.6, 0, c); ws.rotation.z = -0.3;
+    if(has("masina")){ const c = new THREE.Group(); c.position.set(2.55, 0, 0.42); c.rotation.y = -0.3; g.add(c); M(box(1.2, 0.26, 0.62), blue, 0, 0.3, 0, c); M(box(1.24, 0.04, 0.66), std("#cfd6e2", 0x222222, { metalness: 0.5, roughness: 0.4 }), 0, 0.44, 0, c); M(box(0.5, 0.2, 0.5), red, -0.1, 0.56, 0, c); const ws = M(box(0.04, 0.24, 0.5), std("#bfe6ff", 0x224455, { transparent: true, opacity: 0.7 }), 0.2, 0.6, 0, c); ws.rotation.z = -0.3;
       for(const [x, z] of [[-0.4, 0.34], [0.4, 0.34], [-0.4, -0.34], [0.4, -0.34]]){ const w = M(cyl(0.2, 0.2, 0.07, 20), dark, x, 0.2, z, c); w.rotation.x = Math.PI / 2; const h = M(cyl(0.11, 0.11, 0.08, 16), yel, x, 0.2, z, c); h.rotation.x = Math.PI / 2; } M(sp(0.06), glowM(0xfff3b0), 0.61, 0.33, 0.2, c); M(sp(0.06), glowM(0xfff3b0), 0.61, 0.33, -0.2, c); }
   } else {
     /* kambarys: grindys, galinė ir šoninės sienos */
@@ -39,3 +48,5 @@ export function build(THREE, own, inside){
   }
   return g;
 }
+window.MK_NAMAS = { ITEMS, REWARD, FLOOR_DONE, FLOOR_STARS, TUBE_MS, earned, balance, tubeValue, ripe, price, build };
+})();
